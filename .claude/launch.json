@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "aether-dev",
+      "runtimeExecutable": "/Users/gastonfrydlewski/.nvm/versions/node/v20.20.0/bin/npx",
+      "runtimeArgs": ["vite", "--port", "5176"],
+      "port": 5176
+    }
+  ]
+}

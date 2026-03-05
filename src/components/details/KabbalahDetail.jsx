@@ -1,0 +1,307 @@
+import { SEPHIROTH, PATHS } from '../../data/kabbalahData'
+
+const SEPHIROTH_DETAIL = [
+  { name: 'Kether', num: 1, attr: 'Crown', pillar: 'Equilibrium',
+    interp: 'The source of divine will. Your Kether activation indicates a strong connection to transcendent awareness and the origin point of consciousness.', active: true },
+  { name: 'Chokmah', num: 2, attr: 'Wisdom', pillar: 'Mercy',
+    interp: 'Primal masculine force and the first flash of creative insight. Your activation here reveals raw visionary capacity -- ideas arise before form.', active: true },
+  { name: 'Binah', num: 3, attr: 'Understanding', pillar: 'Severity',
+    interp: 'The Great Mother who gives form to the formless. Deep receptive intelligence, capacity to hold paradox, and structural comprehension.', active: true },
+  { name: 'Chesed', num: 4, attr: 'Mercy', pillar: 'Mercy',
+    interp: 'Loving-kindness and expansion. Currently dormant -- a growth edge inviting you to cultivate generosity without condition.', active: false },
+  { name: 'Geburah', num: 5, attr: 'Severity', pillar: 'Severity',
+    interp: 'The warrior\'s discipline. Active in your tree -- you carry the capacity for discernment, boundaries, and the courage to cut away what no longer serves.', active: true },
+  { name: 'Tiphareth', num: 6, attr: 'Beauty', pillar: 'Equilibrium',
+    interp: 'The heart of the Tree, the Christ/Buddha center. Your strongest activation -- the integrator of all opposites, beauty born from balance.', active: true },
+  { name: 'Netzach', num: 7, attr: 'Emotions', pillar: 'Mercy',
+    interp: 'Victory through endurance and feeling. Currently dormant -- an invitation to develop trust in emotional intelligence and creative passion.', active: false },
+  { name: 'Hod', num: 8, attr: 'Mind', pillar: 'Severity',
+    interp: 'Splendor of the intellect, communication, and form. Active -- your analytical and communicative faculties are well-developed and precise.', active: true },
+  { name: 'Yesod', num: 9, attr: 'Foundation', pillar: 'Equilibrium',
+    interp: 'The astral bridge between the seen and unseen. Active -- strong dream life, psychic sensitivity, and capacity to channel higher energies into daily reality.', active: true },
+  { name: 'Malkuth', num: 10, attr: 'Kingdom', pillar: 'Equilibrium',
+    interp: 'The physical realm and embodied presence. Active -- grounded manifestation is your birthright, bringing the spiritual into matter.', active: true },
+]
+
+const PILLARS = [
+  { name: 'Pillar of Severity', hebrew: 'Din', side: 'Left',
+    sephiroth: ['Binah', 'Geburah', 'Hod'],
+    desc: 'The feminine, receptive, form-giving pillar. Represents discipline, structure, and the power to limit and define. Active Geburah and Hod on this pillar indicate strong analytical boundaries.',
+    color: 'var(--rose)' },
+  { name: 'Pillar of Equilibrium', hebrew: 'Shvil haZahav', side: 'Middle',
+    sephiroth: ['Kether', 'Tiphareth', 'Yesod', 'Malkuth'],
+    desc: 'The central column of balance and consciousness. All four sephiroth are active -- the spine of your Tree is fully illuminated, indicating a soul path focused on integration and wholeness.',
+    color: 'var(--gold)' },
+  { name: 'Pillar of Mercy', hebrew: 'Chesed', side: 'Right',
+    sephiroth: ['Chokmah', 'Chesed', 'Netzach'],
+    desc: 'The masculine, expansive, force-giving pillar. Chokmah is active but Chesed and Netzach are dormant -- wisdom flows but may struggle to find its generous, loving expression.',
+    color: 'var(--aqua2)' },
+]
+
+const ACTIVE_PATHS = [
+  { num: 14, from: 'Kether', to: 'Tiphareth', tarot: 'The Empress (III)', desc: 'Creative abundance flowing from crown to heart' },
+  { num: 17, from: 'Chokmah', to: 'Tiphareth', tarot: 'The Lovers (VI)', desc: 'Wisdom integrating through the heart center' },
+  { num: 25, from: 'Tiphareth', to: 'Yesod', tarot: 'Temperance (XIV)', desc: 'Balanced alchemy between beauty and foundation' },
+  { num: 30, from: 'Yesod', to: 'Malkuth', tarot: 'The Sun (XIX)', desc: 'Solar vitality grounding into physical reality' },
+  { num: 31, from: 'Netzach', to: 'Malkuth', tarot: 'Judgment (XX)', desc: 'Emotional resurrection manifesting in the world' },
+  { num: 7, from: 'Binah', to: 'Hod', tarot: 'The Chariot (VII)', desc: 'Understanding disciplining the mind into motion' },
+  { num: 11, from: 'Geburah', to: 'Hod', tarot: 'Justice (VIII)', desc: 'Severity refining intellectual discernment' },
+]
+
+const PILLAR_COLORS = {
+  Severity: 'var(--rose)',
+  Equilibrium: 'var(--gold)',
+  Mercy: 'var(--aqua2)',
+}
+
+/* ---- shared styles ---- */
+const S = {
+  panel: {
+    width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
+    display: 'flex', flexDirection: 'column', gap: 28,
+    background: 'rgba(5,5,22,.97)', color: 'var(--text)',
+    fontFamily: "'Cormorant Garamond', Georgia, serif",
+  },
+  sectionTitle: {
+    fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.25em',
+    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
+    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+  },
+  heading: {
+    fontFamily: "'Cinzel', serif", fontSize: 18, letterSpacing: '.18em',
+    color: 'var(--gold)', marginBottom: 4,
+  },
+  subHeading: {
+    fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.15em',
+    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+  },
+  mono: {
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--text)',
+  },
+  monoSm: {
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+  },
+  row: {
+    display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
+    borderRadius: 8, background: 'rgba(255,255,255,.02)',
+    border: '1px solid rgba(255,255,255,.04)', transition: 'background .2s',
+  },
+  glass: {
+    background: 'rgba(5,5,26,.7)', border: '1px solid rgba(201,168,76,.1)',
+    borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
+  },
+  badge: (bg, border, color) => ({
+    display: 'inline-block', padding: '3px 10px', borderRadius: 12,
+    fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.1em',
+    textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
+  }),
+  interpretation: {
+    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    padding: '14px 18px', borderRadius: 10,
+    background: 'rgba(201,168,76,.03)', border: '1px solid rgba(201,168,76,.06)',
+  },
+}
+
+export default function KabbalahDetail() {
+  const activeCount = SEPHIROTH_DETAIL.filter(s => s.active).length
+
+  return (
+    <div style={S.panel}>
+      {/* HEADER */}
+      <div>
+        <div style={S.heading}>{'\u2721'} Kabbalah</div>
+        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+          Tree of Life -- Sephiroth, pillars, paths, and the hidden Da'ath
+        </div>
+      </div>
+
+      {/* SEPHIROTH */}
+      <div>
+        <div style={S.sectionTitle}>
+          The 10 Sephiroth
+          <span style={{ float: 'right', fontFamily: "'Inconsolata', monospace", fontSize: 10 }}>
+            <span style={{ color: 'var(--gold)' }}>{activeCount} active</span>
+            {' / '}
+            <span style={{ color: 'var(--text3)' }}>{10 - activeCount} dormant</span>
+          </span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {SEPHIROTH_DETAIL.map((s, i) => {
+            const orig = SEPHIROTH.find(o => o.name === s.name)
+            const colBase = orig ? orig.col : 'rgba(201,168,76,'
+            return (
+              <div key={i} style={{
+                ...S.row,
+                borderColor: s.active ? colBase + '0.2)' : 'rgba(255,255,255,.04)',
+                background: s.active ? colBase + '0.04)' : 'rgba(255,255,255,.015)',
+                flexDirection: 'column', alignItems: 'stretch', gap: 6,
+                padding: '12px 16px',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{
+                    fontSize: 22, minWidth: 36, textAlign: 'center',
+                    color: s.active ? colBase + '0.9)' : 'var(--text3)',
+                    opacity: s.active ? 1 : 0.4,
+                  }}>
+                    {orig?.glyph || '\u25CB'}
+                  </span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{
+                        fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: '.1em',
+                        color: s.active ? colBase + '0.9)' : 'var(--text3)',
+                      }}>
+                        {s.name}
+                      </span>
+                      <span style={{
+                        fontFamily: "'Inconsolata', monospace", fontSize: 11,
+                        color: 'var(--text3)', opacity: 0.6,
+                      }}>#{s.num}</span>
+                      <span style={S.badge(
+                        PILLAR_COLORS[s.pillar] ? PILLAR_COLORS[s.pillar].replace(')', '') + ', .08)' : 'rgba(255,255,255,.04)',
+                        PILLAR_COLORS[s.pillar] ? PILLAR_COLORS[s.pillar].replace(')', '') + ', .2)' : 'rgba(255,255,255,.08)',
+                        PILLAR_COLORS[s.pillar] || 'var(--text3)',
+                      )}>
+                        {s.pillar}
+                      </span>
+                    </div>
+                    <div style={{
+                      fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.12em',
+                      textTransform: 'uppercase', color: 'var(--text3)', marginTop: 2,
+                    }}>
+                      {s.attr}
+                    </div>
+                  </div>
+                  <span style={S.badge(
+                    s.active ? 'rgba(201,168,76,.1)' : 'rgba(255,255,255,.04)',
+                    s.active ? 'rgba(201,168,76,.25)' : 'rgba(255,255,255,.08)',
+                    s.active ? 'var(--gold)' : 'var(--text3)',
+                  )}>
+                    {s.active ? 'Active' : 'Dormant'}
+                  </span>
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5, paddingLeft: 48 }}>
+                  {s.interp}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* THE THREE PILLARS */}
+      <div>
+        <div style={S.sectionTitle}>The Three Pillars</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          {PILLARS.map((p, i) => (
+            <div key={i} style={{
+              ...S.glass,
+              borderColor: p.color.includes('var') ? undefined : p.color + '22',
+              display: 'flex', flexDirection: 'column', gap: 10,
+            }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 13, letterSpacing: '.12em',
+                  color: p.color, marginBottom: 2,
+                }}>{p.name}</div>
+                <div style={{
+                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                }}>{p.hebrew} -- {p.side}</div>
+              </div>
+              <div style={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap' }}>
+                {p.sephiroth.map((sn, j) => {
+                  const sd = SEPHIROTH_DETAIL.find(s => s.name === sn)
+                  return (
+                    <span key={j} style={S.badge(
+                      sd?.active ? 'rgba(201,168,76,.1)' : 'rgba(255,255,255,.04)',
+                      sd?.active ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.08)',
+                      sd?.active ? 'var(--gold)' : 'var(--text3)',
+                    )}>{sn}</span>
+                  )
+                })}
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center' }}>
+                {p.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ACTIVE PATHS */}
+      <div>
+        <div style={S.sectionTitle}>Active Paths &amp; Tarot Arcana</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {ACTIVE_PATHS.map((p, i) => (
+            <div key={i} style={S.row}>
+              <span style={{
+                fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--gold)',
+                width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: 8, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)',
+                flexShrink: 0,
+              }}>{p.num}</span>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ ...S.mono, color: 'var(--text2)', fontSize: 11 }}>
+                    {p.from} {'\u2192'} {p.to}
+                  </span>
+                </div>
+                <span style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>{p.desc}</span>
+              </div>
+              <span style={{
+                ...S.badge('rgba(144,80,224,.1)', 'rgba(144,80,224,.25)', 'var(--violet2)'),
+                flexShrink: 0, whiteSpace: 'nowrap',
+              }}>{p.tarot}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* DA'ATH */}
+      <div>
+        <div style={S.sectionTitle}>Da'ath -- The Hidden Knowledge</div>
+        <div style={{
+          ...S.glass,
+          background: 'rgba(104,32,176,.04)', borderColor: 'rgba(144,80,224,.15)',
+          textAlign: 'center', padding: '24px 20px',
+        }}>
+          <div style={{
+            fontFamily: "'Cinzel', serif", fontSize: 24, color: 'var(--violet2)',
+            letterSpacing: '.2em', marginBottom: 8,
+          }}>Da'ath</div>
+          <div style={{
+            fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.18em',
+            textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 14,
+          }}>The Abyss -- Knowledge Beyond Understanding</div>
+          <div style={{
+            fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.7,
+            maxWidth: 600, margin: '0 auto',
+          }}>
+            Da'ath is the invisible Sephirah that sits between the Supernal Triad (Kether, Chokmah, Binah)
+            and the lower seven. It represents the crossing of the Abyss -- the ego-death necessary to
+            access higher consciousness. With both Chokmah and Binah active in your tree, Da'ath becomes
+            a gateway. The challenge is to cross without grasping -- to let go of what you think you know
+            and embrace the void of unknowing. This is where intellect surrenders to gnosis.
+          </div>
+        </div>
+      </div>
+
+      {/* LIFE PATH ANALYSIS */}
+      <div>
+        <div style={S.sectionTitle}>Personal Kabbalah Life Path</div>
+        <div style={S.interpretation}>
+          Your Tree of Life reveals a <span style={{ color: 'var(--gold)' }}>strongly illuminated central pillar</span> --
+          Kether, Tiphareth, Yesod, and Malkuth are all active, forming an unbroken channel from
+          divine crown to earthly kingdom. This is the mark of a soul whose purpose is{' '}
+          <span style={{ color: 'var(--aqua2)' }}>integration and embodiment</span> rather than retreat
+          from the world. The active Geburah-Hod axis on the Pillar of Severity gives you sharp
+          discernment and intellectual discipline, while the dormant Chesed and Netzach suggest that
+          your growth edge lies in opening to <span style={{ color: 'var(--rose2)' }}>unconditional
+          generosity and emotional expression</span>. The path from Kether to Tiphareth through The
+          Empress archetype (Path 14) indicates that your creative power flows most naturally when
+          rooted in beauty, sensuality, and natural abundance rather than forced effort.
+        </div>
+      </div>
+    </div>
+  )
+}

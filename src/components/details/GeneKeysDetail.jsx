@@ -1,0 +1,392 @@
+import { SPHERES, GK_LIST } from '../../data/geneKeysData'
+
+const GK_DETAIL = [
+  {
+    num: 41, sphere: "Life's Work", line: 3,
+    shadow: { name: 'Fantasy', desc: 'Lost in dreams, unable to ground visions into reality' },
+    gift: { name: 'Anticipation', desc: 'Healthy expectation that life will deliver its promises' },
+    siddhi: { name: 'Emanation', desc: 'Pure creative force flowing through without personal agenda' },
+    iching: 'Decrease \u2014 The contraction before the next expansion',
+    contemplation: 'Where in your life are you still living in fantasy rather than grounded anticipation?',
+  },
+  {
+    num: 31, sphere: 'Evolution', line: 1,
+    shadow: { name: 'Arrogance', desc: 'Need to be right, intellectual superiority' },
+    gift: { name: 'Leadership', desc: 'Natural democratic leadership through humility' },
+    siddhi: { name: 'Humility', desc: 'Complete absence of the need for recognition' },
+    iching: 'Influence \u2014 Leading through attraction, not force',
+    contemplation: 'How does your need to lead prevent you from truly listening?',
+  },
+  {
+    num: 28, sphere: 'Radiance', line: 5,
+    shadow: { name: 'Purposelessness', desc: 'Fear of death, meaninglessness, existential anxiety' },
+    gift: { name: 'Totality', desc: 'Living fully in each moment, embracing life completely' },
+    siddhi: { name: 'Immortality', desc: 'Transcendence of the fear of death through total presence' },
+    iching: 'Preponderance of the Great \u2014 Taking great risks for great purpose',
+    contemplation: 'What would you do if you knew you could not fail and had nothing to lose?',
+  },
+  {
+    num: 27, sphere: 'Purpose', line: 5,
+    shadow: { name: 'Selfishness', desc: 'Caring only for personal needs, hoarding resources' },
+    gift: { name: 'Altruism', desc: 'Natural generosity, caring for others without agenda' },
+    siddhi: { name: 'Selflessness', desc: 'Complete dissolution of personal agenda in service' },
+    iching: 'Nourishment \u2014 The art of nourishing all beings',
+    contemplation: 'Where does your generosity have a hidden string attached?',
+  },
+]
+
+const SPHERE_COLORS = {
+  "Life's Work": '#50b4dc',
+  'Evolution': '#dc5050',
+  'Radiance': '#dc5050',
+  'Purpose': '#dc5050',
+}
+
+const SEQUENCE_STEPS = [
+  { label: 'Activation', desc: 'The awakening sequence that initiates your journey through the Gene Keys', keys: [41, 31, 28, 27] },
+  { label: 'Venus', desc: 'The love sequence revealing your relationship patterns', keys: [41, 31] },
+  { label: 'Pearl', desc: 'The prosperity sequence connecting purpose to abundance', keys: [28, 27] },
+]
+
+/* ---- shared styles ---- */
+const S = {
+  panel: {
+    width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
+    display: 'flex', flexDirection: 'column', gap: 28,
+    background: 'rgba(5,5,22,.97)', color: 'var(--text)',
+    fontFamily: "'Cormorant Garamond', Georgia, serif",
+  },
+  sectionTitle: {
+    fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.25em',
+    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
+    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+  },
+  heading: {
+    fontFamily: "'Cinzel', serif", fontSize: 18, letterSpacing: '.18em',
+    color: 'var(--gold)', marginBottom: 4,
+  },
+  subHeading: {
+    fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.15em',
+    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+  },
+  mono: {
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--text)',
+  },
+  monoSm: {
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+  },
+  row: {
+    display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
+    borderRadius: 8, background: 'rgba(255,255,255,.02)',
+    border: '1px solid rgba(255,255,255,.04)', transition: 'background .2s',
+  },
+  glass: {
+    background: 'rgba(5,5,26,.7)', border: '1px solid rgba(201,168,76,.1)',
+    borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
+  },
+  badge: (bg, border, color) => ({
+    display: 'inline-block', padding: '3px 10px', borderRadius: 12,
+    fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.1em',
+    textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
+  }),
+  interpretation: {
+    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    padding: '14px 18px', borderRadius: 10,
+    background: 'rgba(201,168,76,.03)', border: '1px solid rgba(201,168,76,.06)',
+  },
+}
+
+function SpectrumBar({ shadow, gift, siddhi, color }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 0, height: 8, borderRadius: 4, overflow: 'hidden' }}>
+        <div style={{ flex: 1, height: '100%', background: 'rgba(220,60,60,.5)', borderRadius: '4px 0 0 4px' }} />
+        <div style={{ flex: 1, height: '100%', background: color + '88' }} />
+        <div style={{ flex: 1, height: '100%', background: 'rgba(201,168,76,.6)', borderRadius: '0 4px 4px 0' }} />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: 10, color: '#dc6060' }}>Shadow: {shadow}</span>
+        <span style={{ fontSize: 10, color: color }}>{'\u2192'} Gift: {gift}</span>
+        <span style={{ fontSize: 10, color: 'var(--gold)' }}>{'\u2192'} Siddhi: {siddhi}</span>
+      </div>
+    </div>
+  )
+}
+
+export default function GeneKeysDetail() {
+  return (
+    <div style={S.panel}>
+      {/* HEADER */}
+      <div>
+        <div style={S.heading}>{'\u2B21'} Gene Keys</div>
+        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+          Hologenetic Profile -- activation sequence, shadow/gift/siddhi spectrums, and contemplation
+        </div>
+      </div>
+
+      {/* HOLOGENETIC PROFILE OVERVIEW */}
+      <div>
+        <div style={S.sectionTitle}>Hologenetic Profile</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+          {GK_DETAIL.map((gk, i) => {
+            const color = SPHERE_COLORS[gk.sphere] || '#40ccdd'
+            return (
+              <div key={i} style={{
+                ...S.glass, textAlign: 'center', padding: '20px 14px',
+                borderColor: color + '22',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+              }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
+                  textTransform: 'uppercase', color: color + 'aa',
+                }}>{gk.sphere}</div>
+                <div style={{
+                  width: 56, height: 56, borderRadius: '50%',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: color + '0c', border: `2px solid ${color}44`,
+                  fontFamily: "'Cinzel', serif", fontSize: 24, color,
+                  fontWeight: 600, position: 'relative',
+                }}>
+                  {gk.num}
+                  <div style={{
+                    position: 'absolute', bottom: -2, right: -2,
+                    width: 20, height: 20, borderRadius: '50%',
+                    background: 'rgba(5,5,22,.95)', border: '1px solid ' + color + '44',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                  }}>
+                    .{gk.line}
+                  </div>
+                </div>
+                <div style={{
+                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                }}>Line {gk.line}</div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* DETAILED KEY PROFILES */}
+      <div>
+        <div style={S.sectionTitle}>Gene Key Profiles</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {GK_DETAIL.map((gk, i) => {
+            const color = SPHERE_COLORS[gk.sphere] || '#40ccdd'
+            return (
+              <div key={i} style={{
+                ...S.glass, padding: '20px 22px',
+                borderColor: color + '18',
+                display: 'flex', flexDirection: 'column', gap: 14,
+              }}>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <div style={{
+                    width: 48, height: 48, borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: color + '0c', border: `2px solid ${color}33`,
+                    fontFamily: "'Cinzel', serif", fontSize: 22, color, fontWeight: 600,
+                    flexShrink: 0,
+                  }}>{gk.num}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: '.1em', color,
+                    }}>Gene Key {gk.num} -- {gk.sphere}</div>
+                    <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>
+                      Line {gk.line} {'\u00B7'} {gk.iching}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Spectrum Bar */}
+                <SpectrumBar
+                  shadow={gk.shadow.name}
+                  gift={gk.gift.name}
+                  siddhi={gk.siddhi.name}
+                  color={color}
+                />
+
+                {/* Three levels */}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+                  <div style={{
+                    padding: '10px 12px', borderRadius: 8,
+                    background: 'rgba(220,60,60,.04)', border: '1px solid rgba(220,60,60,.12)',
+                  }}>
+                    <div style={{
+                      fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
+                      textTransform: 'uppercase', color: '#dc6060', marginBottom: 4,
+                    }}>Shadow</div>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 13, color: '#dc6060', marginBottom: 4 }}>
+                      {gk.shadow.name}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                      {gk.shadow.desc}
+                    </div>
+                  </div>
+                  <div style={{
+                    padding: '10px 12px', borderRadius: 8,
+                    background: color + '06', border: '1px solid ' + color + '18',
+                  }}>
+                    <div style={{
+                      fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
+                      textTransform: 'uppercase', color, marginBottom: 4,
+                    }}>Gift</div>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 13, color, marginBottom: 4 }}>
+                      {gk.gift.name}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                      {gk.gift.desc}
+                    </div>
+                  </div>
+                  <div style={{
+                    padding: '10px 12px', borderRadius: 8,
+                    background: 'rgba(201,168,76,.04)', border: '1px solid rgba(201,168,76,.12)',
+                  }}>
+                    <div style={{
+                      fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
+                      textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 4,
+                    }}>Siddhi</div>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 13, color: 'var(--gold)', marginBottom: 4 }}>
+                      {gk.siddhi.name}
+                    </div>
+                    <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                      {gk.siddhi.desc}
+                    </div>
+                  </div>
+                </div>
+
+                {/* I-Ching */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
+                  background: 'rgba(255,255,255,.02)', borderRadius: 6,
+                  border: '1px solid rgba(255,255,255,.04)',
+                }}>
+                  <span style={{ fontSize: 18 }}>{'\u2630'}</span>
+                  <div>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                      I-Ching Hexagram
+                    </div>
+                    <div style={{ ...S.mono, color: 'var(--text2)', fontSize: 12 }}>{gk.iching}</div>
+                  </div>
+                </div>
+
+                {/* Contemplation */}
+                <div style={{
+                  padding: '12px 16px', borderRadius: 8,
+                  background: 'rgba(144,80,224,.04)', border: '1px solid rgba(144,80,224,.12)',
+                }}>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
+                    textTransform: 'uppercase', color: 'var(--violet2)', marginBottom: 6,
+                  }}>Contemplation Prompt</div>
+                  <div style={{ fontSize: 13, color: 'var(--violet2)', fontStyle: 'italic', lineHeight: 1.5 }}>
+                    "{gk.contemplation}"
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* ACTIVATION SEQUENCE */}
+      <div>
+        <div style={S.sectionTitle}>The Activation Sequence</div>
+        <div style={{ display: 'flex', alignItems: 'stretch', gap: 0 }}>
+          {GK_DETAIL.map((gk, i) => {
+            const color = SPHERE_COLORS[gk.sphere] || '#40ccdd'
+            return (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+                <div style={{
+                  flex: 1, textAlign: 'center',
+                  padding: '16px 8px',
+                  background: color + '06', border: '1px solid ' + color + '18',
+                  borderRadius: i === 0 ? '10px 0 0 10px' : i === GK_DETAIL.length - 1 ? '0 10px 10px 0' : '0',
+                  borderLeft: i === 0 ? undefined : 'none',
+                }}>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 7, letterSpacing: '.2em',
+                    textTransform: 'uppercase', color: color + 'aa', marginBottom: 6,
+                  }}>{gk.sphere}</div>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 20, color, fontWeight: 600,
+                  }}>{gk.num}</div>
+                  <div style={{
+                    fontSize: 10, color: 'var(--text3)', marginTop: 4,
+                  }}>{gk.gift.name}</div>
+                </div>
+                {i < GK_DETAIL.length - 1 && (
+                  <div style={{
+                    fontSize: 16, color: 'var(--text3)', padding: '0 2px',
+                    zIndex: 1, position: 'relative',
+                  }}>{'\u2192'}</div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+        <div style={{
+          marginTop: 12, fontSize: 12, color: 'var(--text3)', fontStyle: 'italic',
+          textAlign: 'center', lineHeight: 1.5,
+        }}>
+          The Activation Sequence traces the path from Life's Work through Evolution and Radiance to Purpose,
+          revealing how your deepest gifts unfold through life experience.
+        </div>
+      </div>
+
+      {/* SEQUENCES */}
+      <div>
+        <div style={S.sectionTitle}>The Three Sequences</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          {SEQUENCE_STEPS.map((seq, i) => {
+            const colors = ['#50b4dc', '#d43070', '#f0c040']
+            return (
+              <div key={i} style={{
+                ...S.glass, textAlign: 'center', padding: '18px 14px',
+                borderColor: colors[i] + '18',
+              }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.12em',
+                  color: colors[i], marginBottom: 6,
+                }}>{seq.label} Sequence</div>
+                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4, marginBottom: 10 }}>
+                  {seq.desc}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: 6 }}>
+                  {seq.keys.map((k, j) => (
+                    <span key={j} style={{
+                      width: 32, height: 32, borderRadius: '50%',
+                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                      background: colors[i] + '0c', border: `1px solid ${colors[i]}33`,
+                      fontFamily: "'Cinzel', serif", fontSize: 13, color: colors[i],
+                    }}>{k}</span>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* OVERALL CONTEMPLATION */}
+      <div>
+        <div style={S.sectionTitle}>Hologenetic Contemplation</div>
+        <div style={S.interpretation}>
+          Your hologenetic profile weaves a story of{' '}
+          <span style={{ color: '#50b4dc' }}>creative anticipation</span> (Gene Key 41) learning to
+          become <span style={{ color: '#dc5050' }}>humble leadership</span> (Gene Key 31) through the
+          crucible of <span style={{ color: '#dc5050' }}>total living</span> (Gene Key 28), ultimately
+          arriving at <span style={{ color: '#dc5050' }}>selfless service</span> (Gene Key 27).
+          The journey from Shadow to Siddhi in each key is not linear but spiral -- you will revisit
+          each frequency many times, each time at a deeper level of integration. The contemplation
+          prompts are not questions to be answered intellectually but{' '}
+          <span style={{ color: 'var(--violet2)' }}>koans to be lived</span>. Let them sit in your
+          awareness without forcing resolution. The Gene Keys teach that{' '}
+          <span style={{ color: 'var(--gold)' }}>transformation happens through contemplation,
+          not effort</span> -- by simply holding awareness on a pattern, the pattern begins to shift
+          on its own.
+        </div>
+      </div>
+    </div>
+  )
+}
