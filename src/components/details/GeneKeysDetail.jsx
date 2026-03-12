@@ -1,4 +1,5 @@
 import { SPHERES, GK_LIST } from '../../data/geneKeysData'
+import GeneKeysWheel from '../canvas/GeneKeysWheel'
 
 const GK_DETAIL = [
   {
@@ -10,7 +11,7 @@ const GK_DETAIL = [
     contemplation: 'Where in your life are you still living in fantasy rather than grounded anticipation?',
   },
   {
-    num: 31, sphere: 'Evolution', line: 1,
+    num: 31, sphere: 'Evolution', line: 3,
     shadow: { name: 'Arrogance', desc: 'Need to be right, intellectual superiority' },
     gift: { name: 'Leadership', desc: 'Natural democratic leadership through humility' },
     siddhi: { name: 'Humility', desc: 'Complete absence of the need for recognition' },
@@ -53,35 +54,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'rgba(5,5,22,.97)', color: 'var(--text)',
+    background: 'var(--panel-bg)', color: 'var(--text)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
-    fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.25em',
+    fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
     textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
     borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
   },
   heading: {
-    fontFamily: "'Cinzel', serif", fontSize: 18, letterSpacing: '.18em',
+    fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
     color: 'var(--gold)', marginBottom: 4,
   },
   subHeading: {
-    fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.15em',
+    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
     textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
   },
   monoSm: {
     fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'rgba(255,255,255,.02)',
-    border: '1px solid rgba(255,255,255,.04)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--row-bg)',
+    border: '1px solid var(--row-border)', transition: 'background .2s',
   },
   glass: {
-    background: 'rgba(5,5,26,.7)', border: '1px solid rgba(201,168,76,.1)',
+    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -92,7 +93,7 @@ const S = {
   interpretation: {
     fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'rgba(201,168,76,.03)', border: '1px solid rgba(201,168,76,.06)',
+    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
   },
 }
 
@@ -124,6 +125,17 @@ export default function GeneKeysDetail() {
         </div>
       </div>
 
+      {/* HOLOGENETIC WHEEL VISUALIZATION */}
+      <div>
+        <div style={S.sectionTitle}>Hologenetic Wheel</div>
+        <div style={{
+          ...S.glass, padding: 0, overflow: 'hidden',
+          height: 360, position: 'relative',
+        }}>
+          <GeneKeysWheel />
+        </div>
+      </div>
+
       {/* HOLOGENETIC PROFILE OVERVIEW */}
       <div>
         <div style={S.sectionTitle}>Hologenetic Profile</div>
@@ -151,7 +163,7 @@ export default function GeneKeysDetail() {
                   <div style={{
                     position: 'absolute', bottom: -2, right: -2,
                     width: 20, height: 20, borderRadius: '50%',
-                    background: 'rgba(5,5,22,.95)', border: '1px solid ' + color + '44',
+                    background: 'var(--panel-bg)', border: '1px solid ' + color + '44',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
                   }}>

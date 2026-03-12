@@ -1,4 +1,5 @@
 import { SEPHIROTH, PATHS } from '../../data/kabbalahData'
+import KabbalahTree from '../canvas/KabbalahTree'
 
 const SEPHIROTH_DETAIL = [
   { name: 'Kether', num: 1, attr: 'Crown', pillar: 'Equilibrium',
@@ -59,35 +60,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'rgba(5,5,22,.97)', color: 'var(--text)',
+    background: 'var(--panel-bg)', color: 'var(--text)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
-    fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.25em',
+    fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
     textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
     borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
   },
   heading: {
-    fontFamily: "'Cinzel', serif", fontSize: 18, letterSpacing: '.18em',
+    fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
     color: 'var(--gold)', marginBottom: 4,
   },
   subHeading: {
-    fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.15em',
+    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
     textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
   },
   monoSm: {
     fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'rgba(255,255,255,.02)',
-    border: '1px solid rgba(255,255,255,.04)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--row-bg)',
+    border: '1px solid var(--row-border)', transition: 'background .2s',
   },
   glass: {
-    background: 'rgba(5,5,26,.7)', border: '1px solid rgba(201,168,76,.1)',
+    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -98,7 +99,7 @@ const S = {
   interpretation: {
     fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'rgba(201,168,76,.03)', border: '1px solid rgba(201,168,76,.06)',
+    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
   },
 }
 
@@ -112,6 +113,17 @@ export default function KabbalahDetail() {
         <div style={S.heading}>{'\u2721'} Kabbalah</div>
         <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
           Tree of Life -- Sephiroth, pillars, paths, and the hidden Da'ath
+        </div>
+      </div>
+
+      {/* INTERACTIVE TREE */}
+      <div>
+        <div style={S.sectionTitle}>Tree of Life</div>
+        <div style={{
+          ...S.glass, padding: 0, overflow: 'hidden',
+          height: 480, position: 'relative',
+        }}>
+          <KabbalahTree />
         </div>
       </div>
 

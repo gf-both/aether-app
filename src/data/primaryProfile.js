@@ -3,21 +3,22 @@ export const DEFAULT_PRIMARY_PROFILE = {
   dob: '1981-01-23',
   tob: '22:10',
   pob: 'Buenos Aires, Argentina',
+  gender: 'male',
   emoji: '♒',
   sign: 'Aquarius',
-  asc: 'Libra',
-  moon: 'Scorpio',
+  asc: 'Virgo',
+  moon: 'Virgo',
   hdType: 'Projector',
   hdProfile: '3/5',
   hdAuth: 'Emotional',
   hdDef: 'Split',
-  lifePath: 5,
+  lifePath: 7,
   crossGK: '41/31|28/27',
 }
 
 export const DEFAULT_PEOPLE = [
-  { id: 1, name: 'Father', dob: '1952-06-15', tob: '08:00', pob: 'Buenos Aires, AR', rel: 'father', emoji: '♊', notes: '', sign: 'Gemini' },
-  { id: 2, name: 'Mother', dob: '1955-11-22', tob: '', pob: 'Rosario, AR', rel: 'mother', emoji: '♏', notes: '', sign: 'Scorpio' },
+  { id: 1, name: 'Father', dob: '1952-06-15', tob: '08:00', pob: 'Buenos Aires, AR', rel: 'father', gender: 'male', emoji: '♊', notes: '', sign: 'Gemini' },
+  { id: 2, name: 'Mother', dob: '1955-11-22', tob: '', pob: 'Rosario, AR', rel: 'mother', gender: 'female', emoji: '♏', notes: '', sign: 'Scorpio' },
 ]
 
 export const REL_CONFIG = {

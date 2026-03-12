@@ -1,3 +1,5 @@
+import HumanDesign from '../canvas/HumanDesign'
+
 const HD_PROFILE = {
   type: 'Projector', strategy: 'Wait for the Invitation', authority: 'Emotional - Solar Plexus',
   profile: '3/5 \u2014 Martyr / Heretic', definition: 'Split Definition',
@@ -13,30 +15,40 @@ const CENTERS_DETAIL = [
   { name: 'G/Self', defined: true, meaning: 'Fixed identity and direction, knows who they are and where they are going' },
   { name: 'Heart/Will', defined: false, meaning: 'Not here to prove worth through willpower, free from ego pressure' },
   { name: 'Sacral', defined: false, meaning: 'Projector \u2014 no consistent life force energy, must manage energy wisely' },
-  { name: 'Spleen', defined: false, meaning: 'Open intuition, amplifies fear and survival instincts, learns from body awareness' },
+  { name: 'Spleen', defined: true, meaning: 'Consistent intuitive awareness, spontaneous knowing, survival instincts grounded in the body' },
   { name: 'Solar Plexus', defined: true, meaning: 'Emotional authority \u2014 rides the wave, never decides in the moment' },
   { name: 'Root', defined: true, meaning: 'Consistent adrenaline pressure, can handle stress without being overwhelmed' },
 ]
 
 const CHANNELS = [
-  { name: 'Channel of Initiation', gates: '51-25', type: 'Individual', center1: 'Heart/Will', center2: 'G/Self' },
-  { name: 'Channel of Struggle', gates: '28-38', type: 'Individual', center1: 'Spleen', center2: 'Root' },
-  { name: 'Channel of Discovery', gates: '46-29', type: 'Collective', center1: 'G/Self', center2: 'Sacral' },
-  { name: 'Channel of Transitoriness', gates: '35-36', type: 'Collective', center1: 'Throat', center2: 'Solar Plexus' },
+  { name: 'Channel of The Alpha', gates: '7-31', type: 'Collective', center1: 'G/Self', center2: 'Throat' },
+  { name: 'Channel of The Prodigal', gates: '13-33', type: 'Collective', center1: 'G/Self', center2: 'Throat' },
+  { name: 'Channel of Synthesis', gates: '19-49', type: 'Tribal', center1: 'Root', center2: 'Solar Plexus' },
+  { name: 'Channel of Transformation', gates: '32-54', type: 'Tribal', center1: 'Spleen', center2: 'Root' },
 ]
 
 const GATES = [
   { num: 41, line: 3, desc: 'Decrease \u2014 Contraction, fantasy, imagination' },
-  { num: 31, line: 1, desc: 'Influence \u2014 Leadership, democracy, elected leader' },
+  { num: 31, line: 3, desc: 'Influence \u2014 Leadership, democracy, elected leader' },
   { num: 28, line: 5, desc: 'The Great \u2014 Struggle, game player, risk' },
   { num: 27, line: 5, desc: 'Nourishment \u2014 Caring, altruism, selflessness' },
-  { num: 51, line: 2, desc: 'Shock \u2014 Initiative, warrior, competitive spirit' },
-  { num: 25, line: 4, desc: 'Innocence \u2014 Spirit, universal love, acceptance' },
-  { num: 35, line: 6, desc: 'Change \u2014 Progress, experience, adventure' },
-  { num: 36, line: 3, desc: 'Crisis \u2014 Darkening of the light, emotional depth' },
+  { num: 7, line: 4, desc: 'The Army \u2014 Role of the self, direction, leadership' },
+  { num: 13, line: 4, desc: 'Fellowship \u2014 Listener, secrets, memory' },
+  { num: 33, line: 4, desc: 'Retreat \u2014 Privacy, reflection, spirit' },
+  { num: 19, line: 4, desc: 'Approach \u2014 Wanting, sensitivity, need' },
+  { num: 49, line: 1, desc: 'Revolution \u2014 Principles, rejection, transformation' },
+  { num: 54, line: 1, desc: 'The Marrying Maiden \u2014 Ambition, drive, greed' },
+  { num: 32, line: 2, desc: 'Duration \u2014 Continuity, conservation, transformation' },
+  { num: 53, line: 4, desc: 'Development \u2014 Starting, initiation, new beginnings' },
+  { num: 1, line: 5, desc: 'Self-Expression \u2014 Creative, individual, unique' },
   { num: 46, line: 1, desc: 'Pushing Upward \u2014 Body, serendipity, love of body' },
-  { num: 29, line: 4, desc: 'The Abyss \u2014 Commitment, saying yes, perseverance' },
-  { num: 38, line: 2, desc: 'Opposition \u2014 Fighter, stubbornness, purpose in struggle' },
+  { num: 5, line: 1, desc: 'Waiting \u2014 Fixed rhythms, patience, habits' },
+  { num: 47, line: 2, desc: 'Oppression \u2014 Realization, mental process, epiphany' },
+  { num: 48, line: 1, desc: 'The Well \u2014 Depth, talent, inadequacy' },
+  { num: 14, line: 1, desc: 'Possession \u2014 Power skills, direction of resources' },
+  { num: 18, line: 1, desc: 'Work on What Has Been Spoilt \u2014 Correction, judgment' },
+  { num: 26, line: 5, desc: 'The Taming Power \u2014 Egoist, memory, accumulation' },
+  { num: 11, line: 2, desc: 'Peace \u2014 Ideas, harmony, conceptualization' },
 ]
 
 const CENTER_GLYPHS = {
@@ -57,35 +69,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'rgba(5,5,22,.97)', color: 'var(--text)',
+    background: 'var(--panel-bg)', color: 'var(--text)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
-    fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.25em',
+    fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
     textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
     borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
   },
   heading: {
-    fontFamily: "'Cinzel', serif", fontSize: 18, letterSpacing: '.18em',
+    fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
     color: 'var(--gold)', marginBottom: 4,
   },
   subHeading: {
-    fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.15em',
+    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
     textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
   },
   monoSm: {
     fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'rgba(255,255,255,.02)',
-    border: '1px solid rgba(255,255,255,.04)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--row-bg)',
+    border: '1px solid var(--row-border)', transition: 'background .2s',
   },
   glass: {
-    background: 'rgba(5,5,26,.7)', border: '1px solid rgba(201,168,76,.1)',
+    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -96,10 +108,10 @@ const S = {
   interpretation: {
     fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'rgba(201,168,76,.03)', border: '1px solid rgba(201,168,76,.06)',
+    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
   },
   keyVal: {
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    display: 'flex', alignItems: 'center', gap: 16,
     padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,.04)',
   },
 }
@@ -116,6 +128,17 @@ export default function HDDetail() {
         <div style={S.heading}>{'\u25C8'} Human Design</div>
         <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
           Rave Chart body graph analysis -- type, authority, centers, channels, and gates
+        </div>
+      </div>
+
+      {/* BODY GRAPH VISUALIZATION */}
+      <div>
+        <div style={S.sectionTitle}>Body Graph</div>
+        <div style={{
+          ...S.glass, padding: 0, overflow: 'hidden',
+          height: 460, position: 'relative',
+        }}>
+          <HumanDesign />
         </div>
       </div>
 

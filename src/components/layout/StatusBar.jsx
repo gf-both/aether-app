@@ -1,10 +1,10 @@
-import { useAetherStore } from '../../store/useAetherStore'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { useClock } from '../../hooks/useClock'
 
 export default function StatusBar() {
-  const profile = useAetherStore((s) => s.primaryProfile)
-  const people = useAetherStore((s) => s.people)
-  const setActivePanel = useAetherStore((s) => s.setActivePanel)
+  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const people = useAboveInsideStore((s) => s.people)
+  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const time = useClock()
 
   const items = [

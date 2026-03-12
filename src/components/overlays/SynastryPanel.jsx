@@ -1,4 +1,4 @@
-import { useAetherStore } from '../../store/useAetherStore'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { REL_CONFIG } from '../../data/primaryProfile'
 import { isRomantic, romanticFramework, familyFramework } from '../../data/synastryFrameworks'
 import SynastryWheel from '../canvas/SynastryWheel'
@@ -206,12 +206,12 @@ function FamilyContent({ a, b, aName, bName }) {
   )
 }
 
-export default function SynastryPanel({ open, onClose }) {
-  const primaryProfile = useAetherStore((s) => s.primaryProfile)
-  const people = useAetherStore((s) => s.people)
-  const synSelA = useAetherStore((s) => s.synSelA)
-  const synSelB = useAetherStore((s) => s.synSelB)
-  const setSynSel = useAetherStore((s) => s.setSynSel)
+export function SynastryInner({ onClose }) {
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const people = useAboveInsideStore((s) => s.people)
+  const synSelA = useAboveInsideStore((s) => s.synSelA)
+  const synSelB = useAboveInsideStore((s) => s.synSelB)
+  const setSynSel = useAboveInsideStore((s) => s.setSynSel)
 
   const a = getProfile(synSelA, primaryProfile, people)
   const b = synSelB !== null ? getProfile(synSelB, primaryProfile, people) : null
@@ -225,67 +225,73 @@ export default function SynastryPanel({ open, onClose }) {
   const romantic = hasSelection && (isRomantic(b.rel) || isRomantic(a.rel || ''))
 
   return (
-    <div className={`overlay${open ? ' open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="synastry-panel">
-        <div className="syn-header">
-          <span className="syn-title">⊕ Synastry · Composite Analysis</span>
+    <div className="synastry-panel">
+      <div className="syn-header">
+        <span className="syn-title">{'\u2295'} Synastry {'\u00B7'} Composite Analysis</span>
 
-          {/* Person A */}
-          <div className="syn-select">
-            <div className="syn-avatar" style={{ borderColor: 'var(--gold)', background: 'rgba(201,168,76,.1)' }}>
-              {a.emoji || cfgA?.emoji || '✦'}
-            </div>
-            <div>
-              <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--gold2)' }}>{aName}</div>
-              <SelectorChips slot="A" currentId={synSelA} primaryProfile={primaryProfile} people={people} onSelect={setSynSel} />
-            </div>
+        {/* Person A */}
+        <div className="syn-select">
+          <div className="syn-avatar" style={{ borderColor: 'var(--gold)', background: 'rgba(201,168,76,.1)' }}>
+            {a.emoji || cfgA?.emoji || '\u2726'}
           </div>
-
-          <div className="syn-vs">vs</div>
-
-          {/* Person B */}
-          <div className="syn-select">
-            <div className="syn-avatar" style={{ borderColor: 'var(--rose2)', background: 'rgba(212,48,112,.1)' }}>
-              {b ? (b.emoji || cfgB?.emoji || '?') : '?'}
-            </div>
-            <div>
-              <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--rose2)' }}>{bName}</div>
-              <SelectorChips slot="B" currentId={synSelB} primaryProfile={primaryProfile} people={people} onSelect={setSynSel} />
-            </div>
+          <div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--gold2)' }}>{aName}</div>
+            <SelectorChips slot="A" currentId={synSelA} primaryProfile={primaryProfile} people={people} onSelect={setSynSel} />
           </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginLeft: 10 }}>
-            <div
-              className={`rel-badge ${hasSelection ? (romantic ? 'rel-romantic' : 'rel-family') : ''}`}
-              style={!hasSelection ? { opacity: .4 } : {}}
-            >
-              {hasSelection ? (romantic ? '♀ Romantic Synastry' : '◈ Family Synastry') : 'No Selection'}
-            </div>
-            <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: '7.5px', color: 'var(--text3)' }}>
-              {hasSelection
-                ? (romantic ? 'Venus/Mars · Soul Contracts · Composite Chart' : 'Karmic Bonds · Family Karma · Generational Patterns')
-                : 'Choose people to compare'}
-            </div>
-          </div>
-
-          <div style={{ flex: 1 }} />
-          <div className="pp-close" onClick={onClose}>✕</div>
         </div>
 
-        <div className="syn-body">
-          {hasSelection ? (
-            romantic
-              ? <RomanticContent a={a} b={b} aName={aName} bName={bName} />
-              : <FamilyContent a={a} b={b} aName={aName} bName={bName} />
-          ) : (
-            <div style={{ gridColumn: '1/4', gridRow: '1/3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, opacity: .35 }}>
-              <div style={{ fontSize: 48 }}>⊕</div>
-              <div style={{ fontFamily: "'Cinzel',serif", fontSize: '13px', letterSpacing: '.25em', color: 'var(--gold)' }}>Select Two People to Begin</div>
-              <div style={{ fontSize: '11px', color: 'var(--text3)', fontStyle: 'italic' }}>Choose profiles from the selectors above</div>
-            </div>
-          )}
+        <div className="syn-vs">vs</div>
+
+        {/* Person B */}
+        <div className="syn-select">
+          <div className="syn-avatar" style={{ borderColor: 'var(--rose2)', background: 'rgba(212,48,112,.1)' }}>
+            {b ? (b.emoji || cfgB?.emoji || '?') : '?'}
+          </div>
+          <div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--rose2)' }}>{bName}</div>
+            <SelectorChips slot="B" currentId={synSelB} primaryProfile={primaryProfile} people={people} onSelect={setSynSel} />
+          </div>
         </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginLeft: 10 }}>
+          <div
+            className={`rel-badge ${hasSelection ? (romantic ? 'rel-romantic' : 'rel-family') : ''}`}
+            style={!hasSelection ? { opacity: .4 } : {}}
+          >
+            {hasSelection ? (romantic ? '\u2640 Romantic Synastry' : '\u25C8 Family Synastry') : 'No Selection'}
+          </div>
+          <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: '7.5px', color: 'var(--text3)' }}>
+            {hasSelection
+              ? (romantic ? 'Venus/Mars \u00B7 Soul Contracts \u00B7 Composite Chart' : 'Karmic Bonds \u00B7 Family Karma \u00B7 Generational Patterns')
+              : 'Choose people to compare'}
+          </div>
+        </div>
+
+        <div style={{ flex: 1 }} />
+        {onClose && <div className="pp-close" onClick={onClose}>{'\u2715'}</div>}
       </div>
+
+      <div className="syn-body">
+        {hasSelection ? (
+          romantic
+            ? <RomanticContent a={a} b={b} aName={aName} bName={bName} />
+            : <FamilyContent a={a} b={b} aName={aName} bName={bName} />
+        ) : (
+          <div style={{ gridColumn: '1/4', gridRow: '1/3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, opacity: .35 }}>
+            <div style={{ fontSize: 48 }}>{'\u2295'}</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '13px', letterSpacing: '.25em', color: 'var(--gold)' }}>Select Two People to Begin</div>
+            <div style={{ fontSize: '11px', color: 'var(--text3)', fontStyle: 'italic' }}>Choose profiles from the selectors above</div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default function SynastryPanel({ open, onClose }) {
+  return (
+    <div className={`overlay${open ? ' open' : ''}`} onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <SynastryInner onClose={onClose} />
     </div>
   )
 }

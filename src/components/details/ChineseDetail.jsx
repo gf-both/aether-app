@@ -1,0 +1,457 @@
+import { CHINESE_ANIMALS, FIVE_ELEMENTS, CHINESE_PROFILE } from '../../data/chineseData'
+
+/* ---- shared styles (matching app conventions) ---- */
+const S = {
+  panel: {
+    width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
+    display: 'flex', flexDirection: 'column', gap: 28,
+    background: 'var(--panel-bg)', color: 'var(--text)',
+    fontFamily: "'Cormorant Garamond', Georgia, serif",
+  },
+  sectionTitle: {
+    fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
+    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
+    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+  },
+  heading: {
+    fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
+    color: 'var(--gold)', marginBottom: 4,
+  },
+  subHeading: {
+    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
+    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+  },
+  mono: {
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+  },
+  monoSm: {
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+  },
+  row: {
+    display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
+    borderRadius: 8, background: 'var(--row-bg)',
+    border: '1px solid var(--row-border)', transition: 'background .2s',
+  },
+  glass: {
+    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
+  },
+  badge: (bg, border, color) => ({
+    display: 'inline-block', padding: '3px 10px', borderRadius: 12,
+    fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.1em',
+    textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
+  }),
+  interpretation: {
+    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    padding: '14px 18px', borderRadius: 10,
+    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+  },
+}
+
+const ELEM_COLORS = { Wood: '#4caf50', Fire: '#e53935', Earth: '#d4a017', Metal: '#cfd8dc', Water: '#1e88e5' }
+
+const P = CHINESE_PROFILE
+const animalData = CHINESE_ANIMALS.find(a => a.name === P.animal)
+
+export default function ChineseDetail() {
+  return (
+    <div style={S.panel}>
+      {/* HEADER */}
+      <div>
+        <div style={S.heading}>{animalData.emoji} Chinese Astrology</div>
+        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+          Four Pillars of Destiny (Ba Zi), zodiac animals, five elements, and annual forecast
+        </div>
+      </div>
+
+      {/* PRIMARY SIGN OVERVIEW */}
+      <div>
+        <div style={S.sectionTitle}>Primary Sign</div>
+        <div style={{ ...S.glass, display: 'flex', gap: 24, alignItems: 'center', padding: '24px 22px' }}>
+          {/* Large emblem */}
+          <div style={{
+            width: 80, height: 80, borderRadius: '50%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(201,168,76,.08)', border: '2px solid rgba(201,168,76,.25)',
+            fontSize: 44, flexShrink: 0,
+          }}>
+            {animalData.emoji}
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{
+              fontFamily: "'Cinzel', serif", fontSize: 20, letterSpacing: '.15em', color: 'var(--gold)',
+            }}>
+              {P.polarity} {P.animal}
+            </div>
+            <div style={{ ...S.monoSm, color: 'var(--text3)' }}>
+              {P.stemChinese}{P.branch} &middot; {P.stem} {P.branchPinyin} &middot; Born {P.dob}
+            </div>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+              <span style={S.badge('rgba(201,168,76,.1)', 'rgba(201,168,76,.25)', 'var(--gold)')}>
+                {P.yinYang}
+              </span>
+              <span style={S.badge('rgba(207,216,220,.1)', 'rgba(207,216,220,.25)', '#cfd8dc')}>
+                {P.element}
+              </span>
+              <span style={S.badge('rgba(201,168,76,.06)', 'rgba(201,168,76,.15)', 'var(--gold3)')}>
+                Order #{animalData.order}
+              </span>
+              <span style={S.badge('rgba(201,168,76,.06)', 'rgba(201,168,76,.15)', 'var(--gold3)')}>
+                {animalData.season}
+              </span>
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+              Traits: {animalData.traits.join(' \u00B7 ')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* FOUR PILLARS */}
+      <div>
+        <div style={S.sectionTitle}>Four Pillars of Destiny (Ba Zi)</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+          {['year', 'month', 'day', 'hour'].map(key => {
+            const pillar = P.fourPillars[key]
+            return (
+              <div key={key} style={{
+                ...S.glass, textAlign: 'center', padding: '20px 12px',
+                borderColor: key === 'day' ? 'rgba(30,136,229,.2)' : 'rgba(201,168,76,.1)',
+                display: 'flex', flexDirection: 'column', gap: 8,
+              }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
+                  textTransform: 'uppercase',
+                  color: key === 'day' ? '#1e88e5' : 'var(--gold3)',
+                }}>
+                  {key} pillar {key === 'day' ? '(day master)' : ''}
+                </div>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 15, letterSpacing: '.1em',
+                  color: key === 'day' ? '#1e88e5' : 'var(--gold)',
+                }}>
+                  {pillar.label}
+                </div>
+                <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)' }}>
+                  {pillar.stem} {pillar.branch}
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4, marginTop: 4 }}>
+                  {pillar.desc}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        <div style={{
+          marginTop: 12, padding: '12px 16px', borderRadius: 8,
+          background: 'rgba(30,136,229,.04)', border: '1px solid rgba(30,136,229,.12)',
+          textAlign: 'center',
+        }}>
+          <div style={{
+            fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.18em',
+            textTransform: 'uppercase', color: '#1e88e5', marginBottom: 4,
+          }}>Day Master</div>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, color: '#1e88e5', marginBottom: 4 }}>
+            {P.dayMaster}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>
+            {P.dayMasterDesc}
+          </div>
+        </div>
+      </div>
+
+      {/* INNER & SECRET ANIMALS */}
+      <div>
+        <div style={S.sectionTitle}>Inner & Secret Animals</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          {[
+            { label: 'Year Animal (Outer)', animal: P.animal, branch: P.branch, element: P.element, stem: P.stem,
+              desc: 'How others perceive you. The public persona \u2014 clever, curious, and versatile.' },
+            { label: 'Month Animal (Inner)', animal: P.innerAnimal, branch: P.innerBranch, element: P.innerElement, stem: P.innerStem,
+              desc: 'Your inner self, revealed in close relationships. The Ox within brings patience, determination, and quiet perseverance that grounds the Monkey\'s restless brilliance.' },
+            { label: 'Hour Animal (Secret)', animal: P.secretAnimal, branch: P.secretBranch, element: P.secretElement, stem: P.secretStem,
+              desc: 'Your truest, most hidden self. The Pig reveals warmth, generosity, and an honest sincerity that operates beneath the Monkey\'s clever exterior.' },
+          ].map((item, i) => {
+            const animalData = CHINESE_ANIMALS.find(a => a.name === item.animal)
+            const elemCol = ELEM_COLORS[item.element] || '#ccc'
+            return (
+              <div key={i} style={{
+                ...S.glass, textAlign: 'center', padding: '20px 14px',
+                borderColor: i === 0 ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.06)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+              }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
+                  textTransform: 'uppercase', color: 'var(--gold3)',
+                }}>{item.label}</div>
+                <div style={{ fontSize: 36 }}>{animalData?.emoji}</div>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: '.1em',
+                  color: i === 0 ? 'var(--gold)' : 'var(--text)',
+                }}>
+                  {item.element} {item.animal}
+                </div>
+                <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)' }}>
+                  {item.stem} {item.branch}
+                </div>
+                <span style={S.badge(elemCol + '12', elemCol + '30', elemCol)}>
+                  {item.element}
+                </span>
+                <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4, marginTop: 4 }}>
+                  {item.desc}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* COMPATIBILITY */}
+      <div>
+        <div style={S.sectionTitle}>Compatibility</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <div style={{
+            ...S.glass, padding: '16px 18px',
+            borderColor: 'rgba(96,176,48,.15)',
+          }}>
+            <div style={{
+              fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
+              textTransform: 'uppercase', color: '#60b030', marginBottom: 10,
+            }}>Best Matches</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {P.compatible.map((name, i) => {
+                const a = CHINESE_ANIMALS.find(x => x.name === name)
+                return (
+                  <div key={i} style={{ ...S.row, borderColor: 'rgba(96,176,48,.1)' }}>
+                    <span style={{ fontSize: 22 }}>{a?.emoji}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: '#60b030' }}>{name}</div>
+                      <div style={{ fontSize: 10, color: 'var(--text3)' }}>{a?.traits?.slice(0, 2).join(' \u00B7 ')}</div>
+                    </div>
+                    {name === P.bestFriend && (
+                      <span style={S.badge('rgba(96,176,48,.12)', 'rgba(96,176,48,.3)', '#60b030')}>
+                        Best friend
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          <div style={{
+            ...S.glass, padding: '16px 18px',
+            borderColor: 'rgba(220,60,60,.15)',
+          }}>
+            <div style={{
+              fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
+              textTransform: 'uppercase', color: '#dc5050', marginBottom: 10,
+            }}>Challenging Matches</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {P.incompatible.map((name, i) => {
+                const a = CHINESE_ANIMALS.find(x => x.name === name)
+                return (
+                  <div key={i} style={{ ...S.row, borderColor: 'rgba(220,60,60,.1)' }}>
+                    <span style={{ fontSize: 22 }}>{a?.emoji}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: '#dc5050' }}>{name}</div>
+                      <div style={{ fontSize: 10, color: 'var(--text3)' }}>{a?.traits?.slice(0, 2).join(' \u00B7 ')}</div>
+                    </div>
+                    {name === P.conflictAnimal && (
+                      <span style={S.badge('rgba(220,60,60,.12)', 'rgba(220,60,60,.3)', '#dc5050')}>
+                        Conflict
+                      </span>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ALL 12 ANIMALS TABLE */}
+      <div>
+        <div style={S.sectionTitle}>The Twelve Animals</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {CHINESE_ANIMALS.map((animal, i) => {
+            const isActive = animal.name === P.animal
+            const elemCol = ELEM_COLORS[animal.fixedElement] || '#ccc'
+            return (
+              <div key={i} style={{
+                ...S.row,
+                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.04)',
+                background: isActive ? 'rgba(201,168,76,.04)' : 'rgba(255,255,255,.015)',
+                padding: '6px 12px',
+              }}>
+                <span style={{ fontSize: 20, minWidth: 32, textAlign: 'center' }}>{animal.emoji}</span>
+                <div style={{ width: 72 }}>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em',
+                    color: isActive ? 'var(--gold)' : 'var(--text)',
+                  }}>{animal.name}</div>
+                  <div style={{ fontSize: 9, color: 'var(--text3)' }}>{animal.branch}</div>
+                </div>
+                <span style={S.badge(elemCol + '10', elemCol + '28', elemCol)}>
+                  {animal.fixedElement}
+                </span>
+                <span style={{
+                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                  width: 30, textAlign: 'center',
+                }}>{animal.yinYang}</span>
+                <div style={{ flex: 1, fontSize: 10, color: 'var(--text3)' }}>
+                  {animal.traits.join(' \u00B7 ')}
+                </div>
+                {isActive && (
+                  <span style={S.badge('rgba(201,168,76,.12)', 'rgba(201,168,76,.3)', 'var(--gold)')}>
+                    You
+                  </span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* FIVE ELEMENTS */}
+      <div>
+        <div style={S.sectionTitle}>The Five Elements (Wu Xing)</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
+          {FIVE_ELEMENTS.map((elem, i) => {
+            const isActive = elem.name === P.element
+            return (
+              <div key={i} style={{
+                ...S.glass, textAlign: 'center', padding: '16px 10px',
+                borderColor: isActive ? elem.color + '44' : 'rgba(255,255,255,.04)',
+                background: isActive ? elem.color + '08' : 'rgba(5,5,26,.7)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+              }}>
+                <div style={{ fontSize: 28, color: elem.color }}>{elem.chinese}</div>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.1em', color: elem.color,
+                }}>{elem.name}</div>
+                <div style={{ fontSize: 9, color: 'var(--text3)' }}>
+                  {elem.yin}/{elem.yang}
+                </div>
+                <div style={{ fontSize: 9, color: 'var(--text3)' }}>
+                  {elem.season} &middot; {elem.direction}
+                </div>
+                <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.3, marginTop: 4 }}>
+                  {elem.qualities.join(', ')}
+                </div>
+                {isActive && (
+                  <span style={S.badge(elem.color + '18', elem.color + '40', elem.color)}>
+                    Your element
+                  </span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+        <div style={{
+          marginTop: 12, fontSize: 12, color: 'var(--text3)', fontStyle: 'italic',
+          textAlign: 'center', lineHeight: 1.5,
+        }}>
+          The five elements cycle through generation (Wood feeds Fire, Fire creates Earth, Earth bears Metal, Metal collects Water, Water nourishes Wood) and control (Wood parts Earth, Earth dams Water, Water extinguishes Fire, Fire melts Metal, Metal chops Wood).
+        </div>
+      </div>
+
+      {/* 2026 FORECAST */}
+      <div>
+        <div style={S.sectionTitle}>2026 Annual Forecast</div>
+        <div style={{
+          ...S.glass, padding: '24px 22px',
+          borderColor: P.currentYear.ratingColor + '22',
+          background: P.currentYear.ratingColor + '04',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+            <div style={{
+              width: 64, height: 64, borderRadius: '50%',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: P.currentYear.ratingColor + '10',
+              border: '2px solid ' + P.currentYear.ratingColor + '33',
+              fontSize: 34, flexShrink: 0,
+            }}>
+              {CHINESE_ANIMALS.find(a => a.name === P.currentYear.animal)?.emoji}
+            </div>
+            <div>
+              <div style={{
+                fontFamily: "'Cinzel', serif", fontSize: 16, letterSpacing: '.12em',
+                color: P.currentYear.ratingColor,
+              }}>
+                Year of the {P.currentYear.label}
+              </div>
+              <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)' }}>
+                {P.currentYear.chinese} &middot; {P.currentYear.stem} {P.currentYear.animal} &middot; {P.currentYear.year}
+              </div>
+              <span style={S.badge(
+                P.currentYear.ratingColor + '15',
+                P.currentYear.ratingColor + '35',
+                P.currentYear.ratingColor,
+              )}>
+                {P.currentYear.rating}
+              </span>
+            </div>
+          </div>
+          <div style={S.interpretation}>
+            <span style={{ color: 'var(--gold)' }}>Metal Monkey in the Year of the Fire Horse:</span>{' '}
+            {P.currentYear.influence}
+          </div>
+        </div>
+      </div>
+
+      {/* LUCKY ATTRIBUTES */}
+      <div>
+        <div style={S.sectionTitle}>Lucky Attributes</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          {[
+            { label: 'Lucky Numbers', items: P.lucky.numbers.map(String), icon: '#' },
+            { label: 'Lucky Colors', items: P.lucky.colors, icon: '\u25CF' },
+            { label: 'Lucky Directions', items: P.lucky.directions, icon: '\u2192' },
+            { label: 'Lucky Flowers', items: P.lucky.flowers, icon: '\u2740' },
+            { label: 'Lucky Day', items: [P.lucky.day], icon: '\u2606' },
+            { label: 'Fixed Element', items: [P.element + ' (' + P.elementChinese + ')'], icon: '\u2726' },
+          ].map((group, i) => (
+            <div key={i} style={{
+              ...S.glass, padding: '14px 16px',
+              display: 'flex', flexDirection: 'column', gap: 6,
+            }}>
+              <div style={{
+                fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.18em',
+                textTransform: 'uppercase', color: 'var(--gold3)',
+              }}>{group.label}</div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {group.items.map((item, j) => (
+                  <span key={j} style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.18)', 'var(--gold)')}>
+                    {group.icon} {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* HOLISTIC INTERPRETATION */}
+      <div>
+        <div style={S.sectionTitle}>Holistic Interpretation</div>
+        <div style={S.interpretation}>
+          As a <span style={{ color: 'var(--gold)' }}>Yang Metal Monkey</span> with a{' '}
+          <span style={{ color: '#1e88e5' }}>Ren Water day master</span>, your chart reveals a
+          fascinating interplay between the surface and the depths. The Monkey's sharp intellect and
+          versatile nature (Metal) serves as the outer vessel for a far more fluid, adaptable inner
+          reality (Water). Your <span style={{ color: '#4caf50' }}>inner Ox</span> (month pillar)
+          adds unexpected steadiness and patient determination to this quick-witted exterior, while the{' '}
+          <span style={{ color: '#e53935' }}>secret Pig</span> (hour pillar) reveals a generous warmth
+          and honest sincerity operating beneath conscious awareness. The Metal element in your year
+          pillar grants exceptional clarity and discrimination, but the day master's Water nature
+          ensures this sharpness is tempered by{' '}
+          <span style={{ color: '#1e88e5' }}>wisdom and flow</span> rather than rigidity.
+          In relationships, the Monkey-Rat-Dragon triangle forms your natural alliance --
+          clever, dynamic partners who appreciate your ingenuity. The current{' '}
+          <span style={{ color: P.currentYear.ratingColor }}>Fire Horse year</span> challenges
+          you to harness your mental agility and channel it into bold, decisive action.
+        </div>
+      </div>
+    </div>
+  )
+}

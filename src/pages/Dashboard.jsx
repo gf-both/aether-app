@@ -1,21 +1,49 @@
-import { useState, useRef, useCallback } from 'react'
-import { useAetherStore } from '../store/useAetherStore'
+import { useState, useRef, useCallback, useEffect } from 'react'
+import { useAboveInsideStore } from '../store/useAboveInsideStore'
 import Sidebar from '../components/layout/Sidebar'
 import TopBar from '../components/layout/TopBar'
 import StatusBar from '../components/layout/StatusBar'
+import Starfield from '../components/Starfield'
 import NatalWheel from '../components/canvas/NatalWheel'
 import HumanDesign from '../components/canvas/HumanDesign'
 import KabbalahTree from '../components/canvas/KabbalahTree'
 import GeneKeysWheel from '../components/canvas/GeneKeysWheel'
 import NumerologyBars from '../components/canvas/NumerologyBars'
+import MayanWheel from '../components/canvas/MayanWheel'
+import EnneagramSymbol from '../components/canvas/EnneagramSymbol'
+import ChineseZodiac from '../components/canvas/ChineseZodiac'
+import GematriaChart from '../components/canvas/GematriaChart'
+import PatternsWeb from '../components/canvas/PatternsWeb'
+import MBTIChart from '../components/canvas/MBTIChart'
+import EgyptianChart from '../components/canvas/EgyptianChart'
+import IntegralFigure from '../components/canvas/IntegralFigure'
 import NatalDetail from '../components/details/NatalDetail'
 import HDDetail from '../components/details/HDDetail'
 import KabbalahDetail from '../components/details/KabbalahDetail'
 import NumerologyDetail from '../components/details/NumerologyDetail'
 import GeneKeysDetail from '../components/details/GeneKeysDetail'
 import TransitsDetail from '../components/details/TransitsDetail'
+import MayanDetail from '../components/details/MayanDetail'
+import EnneagramDetail from '../components/details/EnneagramDetail'
+import ChineseDetail from '../components/details/ChineseDetail'
+import GematriaDetail from '../components/details/GematriaDetail'
+import PatternsDetail from '../components/details/PatternsDetail'
+import MBTIDetail from '../components/details/MBTIDetail'
+import EgyptianDetail from '../components/details/EgyptianDetail'
+import IntegralDetail from '../components/details/IntegralDetail'
+import SynastryDetail from '../components/details/SynastryDetail'
+import ProfileDetail from '../components/details/ProfileDetail'
+import PricingPage from './PricingPage'
+import PractitionerPortal from './PractitionerPortal'
+import ClientPortal from './ClientPortal'
 import { DESIGN_PLANETS, PERSONALITY_PLANETS, HD_TAGS } from '../data/hdData'
 import { GK_LIST } from '../data/geneKeysData'
+import { MAYAN_PROFILE } from '../data/mayanData'
+import { ENNEAGRAM_PROFILE, ENNEAGRAM_TYPES } from '../data/enneagramData'
+import { CHINESE_PROFILE } from '../data/chineseData'
+import { GEMATRIA_PROFILE } from '../data/gematriaData'
+import { CROSS_FRAMEWORK_ALIGNMENTS } from '../data/patternsData'
+import { EGYPTIAN_PROFILE } from '../data/egyptianData'
 
 const TRANSITS = [
   { sym: '\u2609', color: '#f0c040', sign: "Pisces 13\u00B047\u2032", aspect: '\u25B3 Natal Moon \u00B7 Trine', aspLabel: 'Trine \u25B3', aspColor: 'rgba(255,200,60,.7)', pct: 78, gradient: 'linear-gradient(90deg,#f0c040,#e8c07a)' },
@@ -30,60 +58,149 @@ const TRANSITS = [
 ]
 
 const NUM_CELLS = [
-  { val: 5, label: 'Life Path', hl: true },
-  { val: 7, label: 'Expression' },
+  { val: 7, label: 'Life Path', hl: true },
+  { val: 1, label: 'Expression' },
   { val: 3, label: 'Soul Urge' },
   { val: 11, label: 'Master', master: true },
-  { val: 5, label: 'Birthday' },
-  { val: 4, label: 'Maturity' },
+  { val: 23, label: 'Birthday' },
+  { val: 8, label: 'Maturity' },
   { val: 22, label: 'M.Builder', master: true },
-  { val: 9, label: 'Personality' },
+  { val: 7, label: 'Personality' },
   { val: 6, label: 'Pinnacle I' },
-  { val: 2, label: 'Pinnacle II' },
+  { val: 6, label: 'Pinnacle II' },
 ]
 
-// Grid positions for each widget slot (2 wide, spanning columns for big widgets in top row, single for bottom row)
-const GRID_POSITIONS = {
-  // Row 2-3 (top row, tall widgets)
-  0: { gridColumn: '2/4', gridRow: '2/4' },
-  1: { gridColumn: '4/6', gridRow: '2/4' },
-  2: { gridColumn: '6/8', gridRow: '2/4' },
-  // Row 4 (bottom row)
-  3: { gridColumn: '2/4', gridRow: '4' },
-  4: { gridColumn: '4/6', gridRow: '4' },
-  5: { gridColumn: '6/8', gridRow: '4' },
-}
+const DELAYS = ['.04s', '.08s', '.12s', '.16s', '.2s', '.24s', '.28s', '.32s', '.36s', '.4s', '.44s', '.48s', '.52s']
 
-const WIDGET_CLASSES = ['c-wheel', 'c-hd', 'c-kab', 'c-num', 'c-gk', 'c-tr']
-const DELAYS = ['.04s', '.08s', '.12s', '.16s', '.2s', '.24s']
+/* ── Constellation Grid: Row definitions ── */
+const ROWS = [
+  {
+    label: 'CORE STRUCTURAL SYSTEMS',
+    sub: 'Foundational Maps \u00B7 Birth Charts \u00B7 Energy Systems',
+    color: 'var(--gold)',
+    border: 'rgba(201,168,76,.3)',
+    widgets: ['integral', 'natal', 'tr', 'hd', 'kab'],
+    cols: '1fr 1.5fr 1fr 1.5fr 1fr',
+  },
+  {
+    label: 'ARCHETYPAL SYSTEMS',
+    sub: 'Numbers \u00B7 Keys \u00B7 Calendars \u00B7 Types',
+    color: 'var(--violet2)',
+    border: 'rgba(144,80,224,.3)',
+    widgets: ['num', 'gk', 'mayan', 'enn', 'chi'],
+    cols: '1fr 1.3fr 1fr 1.3fr 1fr',
+  },
+  {
+    label: 'META SYSTEMS',
+    sub: 'Names \u00B7 Patterns \u00B7 Personality \u00B7 Ancient Wisdom',
+    color: 'var(--aqua2)',
+    border: 'rgba(64,204,221,.3)',
+    widgets: ['gem', 'pat', 'mbti', 'egyptian'],
+    cols: 'repeat(4, 1fr)',
+  },
+]
+
+const CARD_HEIGHT = 440
+
+const CONSTELLATION_LINKS = [
+  ['gk', 'hd'], ['natal', 'tr'], ['num', 'gem'], ['enn', 'mbti'],
+  ['kab', 'integral'], ['natal', 'hd'], ['mayan', 'chi'],
+]
 
 const DETAIL_COMPONENTS = {
+  integral: IntegralDetail,
   natal: NatalDetail,
   hd: HDDetail,
   kab: KabbalahDetail,
   num: NumerologyDetail,
   gk: GeneKeysDetail,
   tr: TransitsDetail,
+  mayan: MayanDetail,
+  enn: EnneagramDetail,
+  chi: ChineseDetail,
+  gem: GematriaDetail,
+  pat: PatternsDetail,
+  mbti: MBTIDetail,
+  egyptian: EgyptianDetail,
+  synastry: SynastryDetail,
+  profile: ProfileDetail,
+  pricing: PricingPage,
+  practitioner: PractitionerPortal,
+  client: ClientPortal,
 }
 
 const DETAIL_TITLES = {
-  natal: 'Natal Astrology — Full Profile',
-  hd: 'Human Design — Full Profile',
-  kab: 'Kabbalah — Full Profile',
-  num: 'Numerology — Full Profile',
-  gk: 'Gene Keys — Full Profile',
-  tr: 'Transits — Full Report',
+  integral: 'Integral Consciousness \u2014 Full Map',
+  natal: 'Natal Astrology \u2014 Full Profile',
+  hd: 'Human Design \u2014 Full Profile',
+  kab: 'Kabbalah \u2014 Full Profile',
+  num: 'Numerology \u2014 Full Profile',
+  gk: 'Gene Keys \u2014 Full Profile',
+  tr: 'Transits \u2014 Full Report',
+  mayan: 'Mayan Calendar \u2014 Full Profile',
+  enn: 'Enneagram \u2014 Full Profile',
+  chi: 'Chinese Zodiac \u2014 Full Profile',
+  gem: 'Gematria \u2014 Name Numerology Analysis',
+  pat: 'Patterns \u2014 Cross-Framework Alignments',
+  mbti: 'Myers-Briggs \u2014 Personality Type',
+  egyptian: 'Egyptian Astrology \u2014 Full Profile',
+  synastry: 'Synastry \u2014 Composite Analysis',
+  profile: 'Profiles \u2014 Constellation',
+  pricing: 'Choose Your Path \u2014 Pricing',
+  practitioner: 'Practitioner Portal \u2014 Practice Management',
+  client: 'Client Portal \u2014 Your Journey',
+}
+
+function NatalWidget() {
+  const [showAspects, setShowAspects] = useState(true)
+  const [showHouses, setShowHouses] = useState(true)
+  return (
+    <>
+      <div className="ch">
+        <span className="ct">Natal &middot; Aquarius Sun &middot; Virgo ASC</span>
+        <span style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowAspects(a => !a) }}
+            style={{
+              background: showAspects ? 'rgba(201,168,76,.18)' : 'rgba(255,255,255,.04)',
+              border: `1px solid ${showAspects ? 'rgba(201,168,76,.4)' : 'rgba(255,255,255,.08)'}`,
+              borderRadius: 4, padding: '2px 6px', fontSize: 8, letterSpacing: '.06em',
+              color: showAspects ? 'var(--gold)' : 'var(--text2)', cursor: 'pointer',
+              fontFamily: "'Cinzel',serif", transition: 'all .2s',
+            }}
+          >ASP</button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowHouses(h => !h) }}
+            style={{
+              background: showHouses ? 'rgba(201,168,76,.18)' : 'rgba(255,255,255,.04)',
+              border: `1px solid ${showHouses ? 'rgba(201,168,76,.4)' : 'rgba(255,255,255,.08)'}`,
+              borderRadius: 4, padding: '2px 6px', fontSize: 8, letterSpacing: '.06em',
+              color: showHouses ? 'var(--gold)' : 'var(--text2)', cursor: 'pointer',
+              fontFamily: "'Cinzel',serif", transition: 'all .2s',
+            }}
+          >HSE</button>
+          <span className="ci">{'\u2609'}</span>
+        </span>
+      </div>
+      <div className="cb"><NatalWheel showAspects={showAspects} showHouses={showHouses} /></div>
+    </>
+  )
 }
 
 function WidgetContent({ widgetId }) {
+  const mbtiType = useAboveInsideStore((s) => s.mbtiType)
+  const enneagramType = useAboveInsideStore((s) => s.enneagramType)
+  const enneagramWing = useAboveInsideStore((s) => s.enneagramWing)
   switch (widgetId) {
-    case 'natal':
+    case 'integral':
       return (
         <>
-          <div className="ch"><span className="ct">Natal Astrology &middot; Zodiac Wheel &middot; Aspects</span><span className="ci">{'\u2609'}</span></div>
-          <div className="cb"><NatalWheel /></div>
+          <div className="ch"><span className="ct">Integral Consciousness &middot; Body Map</span><span className="ci">{'\u25CE'}</span></div>
+          <div className="cb"><IntegralFigure /></div>
         </>
       )
+    case 'natal':
+      return <NatalWidget />
     case 'hd':
       return (
         <>
@@ -140,11 +257,11 @@ function WidgetContent({ widgetId }) {
               </div>
               <NumerologyBars />
               <div style={{
-                fontSize: '9px', color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.5,
+                fontSize: '10px', color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.5,
                 padding: '5px 7px', background: 'rgba(201,168,76,.03)', borderRadius: '6px',
                 border: '1px solid rgba(201,168,76,.05)'
               }}>
-                <span style={{ color: 'var(--gold)' }}>Life Path 5</span> — The Adventurer. Freedom &amp; radical change.{' '}
+                <span style={{ color: 'var(--gold)' }}>Life Path 7</span> — The Seeker. Introspection &amp; spiritual wisdom.{' '}
                 <span style={{ color: 'var(--violet2)' }}>Master 11/22</span> anchors intuition into form.
               </div>
             </div>
@@ -182,7 +299,7 @@ function WidgetContent({ widgetId }) {
     case 'tr':
       return (
         <>
-          <div className="ch"><span className="ct">Transits &middot; Mar 4 2026 &middot; Natal Aspects</span><span className="ci">{'\u263F'}</span></div>
+          <div className="ch"><span className="ct">Transits &middot; Mar 5 2026 &middot; Natal Aspects</span><span className="ci">{'\u263F'}</span></div>
           <div className="cb">
             <div className="tr-outer">
               {TRANSITS.map((t, i) => (
@@ -202,30 +319,344 @@ function WidgetContent({ widgetId }) {
           </div>
         </>
       )
+    case 'mayan':
+      return (
+        <>
+          <div className="ch"><span className="ct">Mayan Dreamspell &middot; Kin {MAYAN_PROFILE.kin} &middot; {MAYAN_PROFILE.signature}</span><span className="ci">{'\u{1F4AE}'}</span></div>
+          <div className="cb"><MayanWheel /></div>
+        </>
+      )
+    case 'enn':
+      return (
+        <>
+          <div className="ch"><span className="ct">Enneagram &middot; Type {enneagramType || ENNEAGRAM_PROFILE.type}w{enneagramWing || (enneagramType ? ENNEAGRAM_TYPES[enneagramType - 1]?.wings[0] : ENNEAGRAM_PROFILE.wing)} &middot; {ENNEAGRAM_PROFILE.tritype.label}</span><span className="ci">{'\u262F'}</span></div>
+          <div className="cb"><EnneagramSymbol typeOverride={enneagramType} wingOverride={enneagramWing} /></div>
+        </>
+      )
+    case 'chi':
+      return (
+        <>
+          <div className="ch"><span className="ct">Chinese Zodiac &middot; {CHINESE_PROFILE.element} {CHINESE_PROFILE.animal}</span><span className="ci">{'\u{1F409}'}</span></div>
+          <div className="cb"><ChineseZodiac /></div>
+        </>
+      )
+    case 'gem':
+      return (
+        <>
+          <div className="ch"><span className="ct">Gematria &middot; {GEMATRIA_PROFILE.name} &middot; {GEMATRIA_PROFILE.hebrew.fullValue}</span><span className="ci">{'\u{1F520}'}</span></div>
+          <div className="cb"><GematriaChart /></div>
+        </>
+      )
+    case 'pat':
+      return (
+        <>
+          <div className="ch"><span className="ct">Patterns &middot; {CROSS_FRAMEWORK_ALIGNMENTS.length} Alignments</span><span className="ci">{'\u{1F578}'}</span></div>
+          <div className="cb"><PatternsWeb /></div>
+        </>
+      )
+    case 'mbti':
+      return (
+        <>
+          <div className="ch"><span className="ct">Myers-Briggs &middot; {mbtiType || 'Take Quiz'}</span><span className="ci">{'\u{1F9E0}'}</span></div>
+          <div className="cb"><MBTIChart type={mbtiType} /></div>
+        </>
+      )
+    case 'egyptian':
+      return (
+        <>
+          <div className="ch"><span className="ct">Egyptian &middot; {EGYPTIAN_PROFILE.sign} &middot; {EGYPTIAN_PROFILE.symbol}</span><span className="ci">{'\u{1F3DB}'}</span></div>
+          <div className="cb"><EgyptianChart /></div>
+        </>
+      )
     default:
       return null
   }
 }
 
+/* ── Shared shell for all layouts ── */
+const CARD_BASE = {
+  background: 'var(--card-bg)', border: '1px solid var(--card-border)',
+  borderRadius: 'var(--r)', overflow: 'hidden', backdropFilter: 'blur(12px)',
+}
+
+const WIDGET_META = {
+  integral: { icon: '\u25CE', label: 'Integral Map', sub: 'Consciousness \u00B7 Body Scan' },
+  natal: { icon: '\u2609', label: 'Natal Astrology', sub: 'Zodiac Wheel \u00B7 Aspects' },
+  hd: { icon: '\u25C8', label: 'Human Design', sub: 'Rave Chart \u00B7 Body Graph' },
+  kab: { icon: '\u2721', label: 'Kabbalah', sub: 'Tree of Life \u00B7 Sephiroth' },
+  num: { icon: '\u221E', label: 'Numerology', sub: 'Core Numbers \u00B7 Cycles' },
+  gk: { icon: '\u2B21', label: 'Gene Keys', sub: 'Hologenetic Profile' },
+  tr: { icon: '\u263F', label: 'Transits', sub: 'Current Positions \u00B7 Forecast' },
+  mayan: { icon: '\u{1F4AE}', label: 'Mayan Calendar', sub: 'Tzolkin \u00B7 Dreamspell \u00B7 Kin' },
+  enn: { icon: '\u262F', label: 'Enneagram', sub: 'Type \u00B7 Wings \u00B7 Tritype' },
+  chi: { icon: '\u{1F409}', label: 'Chinese Zodiac', sub: 'Four Pillars \u00B7 Elements' },
+  gem: { icon: '\u{1F520}', label: 'Gematria', sub: 'Name Numerology \u00B7 Hebrew Values' },
+  pat: { icon: '\u{1F578}', label: 'Patterns', sub: 'Cross-Framework \u00B7 Alignments' },
+  mbti: { icon: '\u{1F9E0}', label: 'Myers-Briggs', sub: 'Personality Type \u00B7 Cognitive Functions' },
+  egyptian: { icon: '\u{1F3DB}', label: 'Egyptian Astrology', sub: 'Ancient Egypt \u00B7 Zodiac' },
+  practitioner: { icon: '\uD83C\uDFE5', label: 'Practitioner Portal', sub: 'Clients \u00B7 Sessions \u00B7 Revenue' },
+  client: { icon: '\uD83D\uDCCB', label: 'Client Portal', sub: 'Sessions \u00B7 Progress \u00B7 Messages' },
+}
+
+/* ── Widget Manager Bar ── */
+function WidgetManagerBar() {
+  const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
+  const hiddenWidgets = useAboveInsideStore((s) => s.hiddenWidgets)
+  const toggleWidgetVisibility = useAboveInsideStore((s) => s.toggleWidgetVisibility)
+  const showWidgetManager = useAboveInsideStore((s) => s.showWidgetManager)
+
+  if (!showWidgetManager) return null
+
+  return (
+    <div className="widget-manager">
+      {widgetOrder.map((id) => {
+        const meta = WIDGET_META[id]
+        const isHidden = hiddenWidgets.includes(id)
+        return (
+          <div
+            key={id}
+            className={`wm-chip${isHidden ? ' hidden' : ' active'}`}
+            onClick={() => toggleWidgetVisibility(id)}
+            title={isHidden ? `Show ${meta?.label}` : `Hide ${meta?.label}`}
+          >
+            {meta?.icon || '\u2726'} {meta?.label || id}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+/* ── Bento Layout ── */
+function BentoLayout({ visibleWidgets, setActiveDetail }) {
+  const hero = visibleWidgets[0]
+  const sideWidgets = visibleWidgets.slice(1, 3)
+  const bottomWidgets = visibleWidgets.slice(3)
+  return (
+    <div style={{ gridColumn: 2, gridRow: 2, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr) 260px', gridTemplateRows: '2fr 1fr 1fr', gap: 7, overflow: 'hidden' }}>
+      <div className="card" style={{ gridColumn: '1/4', gridRow: '1', cursor: 'pointer' }} onClick={() => setActiveDetail(hero)}>
+        <WidgetContent widgetId={hero} />
+      </div>
+      {sideWidgets.map((id, i) => (
+        <div key={id} className="card" style={{ gridColumn: 4, gridRow: i + 1, cursor: 'pointer', display: 'flex', flexDirection: 'column' }} onClick={() => setActiveDetail(id)}>
+          <div style={{ padding: '12px 14px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ fontSize: 11, letterSpacing: '.12em', color: 'var(--gold)', fontFamily: "'Cinzel',serif", marginBottom: 4 }}>
+              {WIDGET_META[id]?.label || id}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--text2)' }}>{WIDGET_META[id]?.sub || ''}</div>
+          </div>
+        </div>
+      ))}
+      {bottomWidgets.map((id, i) => (
+        <div key={id} className="card" style={{ gridColumn: (i % 3) + 1, gridRow: Math.floor(i / 3) + 2, cursor: 'pointer' }} onClick={() => setActiveDetail(id)}>
+          <div style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 20 }}>{WIDGET_META[id]?.icon || '\u2726'}</span>
+            <div>
+              <div style={{ fontSize: 11, letterSpacing: '.08em', color: 'var(--gold)', fontFamily: "'Cinzel',serif" }}>{WIDGET_META[id]?.label || id}</div>
+              <div style={{ fontSize: 10, color: 'var(--text2)' }}>{WIDGET_META[id]?.sub || ''}</div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/* ── Focus Layout ── */
+function FocusLayout({ visibleWidgets, setActiveDetail }) {
+  const [focusIdx, setFocusIdx] = useState(0)
+  const focusId = visibleWidgets[focusIdx] || visibleWidgets[0]
+  return (
+    <div style={{ gridColumn: 2, gridRow: 2, display: 'flex', overflow: 'hidden', gap: 0 }}>
+      <div style={{ width: 56, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 4px', background: 'rgba(5,5,22,.5)', borderRadius: 'var(--r) 0 0 var(--r)', borderRight: '1px solid rgba(201,168,76,.08)' }}>
+        {visibleWidgets.map((id, idx) => {
+          const meta = WIDGET_META[id]
+          const active = idx === focusIdx
+          return (
+            <div key={id} onClick={() => setFocusIdx(idx)} style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              padding: '8px 0', borderRadius: 8, cursor: 'pointer',
+              background: active ? 'rgba(201,168,76,.12)' : 'transparent',
+              border: active ? '1px solid rgba(201,168,76,.3)' : '1px solid transparent',
+              transition: 'all .2s', position: 'relative',
+            }}>
+              {active && <div style={{ position: 'absolute', left: -4, top: '50%', transform: 'translateY(-50%)', width: 3, height: 18, background: 'var(--gold)', borderRadius: '0 2px 2px 0' }} />}
+              <span style={{ fontSize: 16 }}>{meta?.icon || '\u2726'}</span>
+              <span style={{ fontSize: 7, letterSpacing: '.05em', color: active ? 'var(--gold)' : 'var(--text2)', marginTop: 2 }}>
+                {id.toUpperCase()}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      <div className="card" style={{ flex: 1, borderRadius: '0 var(--r) var(--r) 0', display: 'flex', flexDirection: 'column' }}>
+        <WidgetContent widgetId={focusId} />
+        <div style={{ padding: '8px 14px', borderTop: '1px solid rgba(201,168,76,.08)', display: 'flex', justifyContent: 'flex-end' }}>
+          <div onClick={() => setActiveDetail(focusId)} style={{
+            padding: '4px 14px', borderRadius: 8, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
+            fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--gold2)', cursor: 'pointer', transition: 'all .2s',
+          }}>View Full Profile</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Magazine Layout ── */
+function MagazineLayout({ visibleWidgets, setActiveDetail, profile }) {
+  return (
+    <div style={{ gridColumn: 2, gridRow: 2, overflow: 'auto', padding: '0 8px 8px' }}>
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: 16, overflow: 'hidden',
+        border: '1px solid rgba(255,255,255,.06)', marginBottom: 16,
+      }}>
+        <div style={{ padding: '32px 28px', background: 'linear-gradient(135deg, rgba(120,80,200,.08), rgba(201,168,76,.05))' }}>
+          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 24, color: 'var(--text)', lineHeight: 1.2, marginBottom: 8 }}>Your Cosmic Blueprint</h2>
+          <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 16 }}>
+            {profile.sign} Sun with {profile.moon} Moon and {profile.asc} Rising. A {profile.hdProfile} {profile.hdType} walking Life Path {profile.lifePath}.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+            {[`\u2609 ${profile.sign}`, `\u25C8 ${profile.hdType} ${profile.hdProfile}`, `\u221E Life Path ${profile.lifePath}`, '\u2721 Tiphareth'].map((chip, i) => (
+              <span key={i} style={{ padding: '4px 10px', borderRadius: 16, fontSize: 10, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)', color: 'var(--gold)' }}>{chip}</span>
+            ))}
+          </div>
+        </div>
+        <div className="card" style={{ borderRadius: 0, minHeight: 200 }}>
+          <WidgetContent widgetId={visibleWidgets[0]} />
+        </div>
+      </div>
+      <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.2em', color: 'rgba(201,168,76,.5)', marginBottom: 10 }}>
+        EXPLORE YOUR FRAMEWORKS
+      </div>
+      <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 12, scrollSnapType: 'x mandatory' }}>
+        {visibleWidgets.map(id => {
+          const meta = WIDGET_META[id]
+          return (
+            <div key={id} onClick={() => setActiveDetail(id)} style={{
+              minWidth: 200, scrollSnapAlign: 'start', borderRadius: 14, overflow: 'hidden',
+              border: '1px solid rgba(255,255,255,.06)', cursor: 'pointer', flexShrink: 0, transition: 'all .3s',
+            }}>
+              <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, background: 'rgba(201,168,76,.03)' }}>
+                {meta?.icon || '\u2726'}
+              </div>
+              <div style={{ padding: '10px 14px', background: 'rgba(255,255,255,.02)' }}>
+                <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.06em', color: 'var(--text)', marginBottom: 2 }}>{meta?.label || id}</div>
+                <div style={{ fontSize: 10, color: 'var(--text2)' }}>{meta?.sub || ''}</div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, marginTop: 4 }}>
+        <div style={{ ...CARD_BASE, padding: 20, cursor: 'pointer' }} onClick={() => setActiveDetail('tr')}>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--gold)', letterSpacing: '.1em', marginBottom: 8 }}>TODAY'S TRANSITS</div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>Current planetary positions and their aspects to your natal chart.</div>
+        </div>
+        <div style={{ ...CARD_BASE, padding: 20, cursor: 'pointer' }} onClick={() => setActiveDetail(visibleWidgets[1])}>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--gold)', letterSpacing: '.1em', marginBottom: 8 }}>QUICK INSIGHT</div>
+          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{WIDGET_META[visibleWidgets[1]]?.label} &mdash; {WIDGET_META[visibleWidgets[1]]?.sub}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Constellation Lines: SVG connections between related systems ── */
+function ConstellationLines({ wrapperRef }) {
+  const [state, setState] = useState({ paths: [], w: 0, h: 0 })
+
+  useEffect(() => {
+    function update() {
+      const el = wrapperRef.current
+      if (!el) return
+
+      const wr = el.getBoundingClientRect()
+      const paths = []
+
+      for (const [a, b] of CONSTELLATION_LINKS) {
+        const ea = el.querySelector(`[data-widget="${a}"]`)
+        const eb = el.querySelector(`[data-widget="${b}"]`)
+        if (!ea || !eb) continue
+
+        const ra = ea.getBoundingClientRect()
+        const rb = eb.getBoundingClientRect()
+
+        const x1 = ra.left + ra.width / 2 - wr.left
+        const y1 = ra.top + ra.height / 2 - wr.top
+        const x2 = rb.left + rb.width / 2 - wr.left
+        const y2 = rb.top + rb.height / 2 - wr.top
+
+        const dx = x2 - x1, dy = y2 - y1
+        const len = Math.sqrt(dx * dx + dy * dy) || 1
+        const off = Math.min(len * 0.06, 25)
+        const mx = (x1 + x2) / 2 + (-dy / len) * off
+        const my = (y1 + y2) / 2 + (dx / len) * off
+
+        paths.push({
+          d: `M${x1},${y1} Q${mx},${my} ${x2},${y2}`,
+          key: `${a}-${b}`,
+          i: paths.length,
+        })
+      }
+
+      setState({ paths, w: el.offsetWidth, h: el.offsetHeight })
+    }
+
+    const t = setTimeout(update, 600)
+    const ro = new ResizeObserver(() => requestAnimationFrame(update))
+    if (wrapperRef.current) ro.observe(wrapperRef.current)
+    window.addEventListener('resize', update)
+    return () => { clearTimeout(t); ro.disconnect(); window.removeEventListener('resize', update) }
+  }, [wrapperRef])
+
+  if (!state.paths.length) return null
+
+  return (
+    <svg viewBox={`0 0 ${state.w} ${state.h}`} preserveAspectRatio="none" style={{
+      position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+      pointerEvents: 'none', zIndex: 0, overflow: 'visible',
+    }}>
+      <defs>
+        <filter id="cGlow">
+          <feGaussianBlur stdDeviation="3" result="b" />
+          <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+        </filter>
+      </defs>
+      {state.paths.map(p => (
+        <path key={p.key} d={p.d}
+          stroke="rgba(255,215,120,0.18)" strokeWidth="1.2" fill="none"
+          strokeDasharray="8 5" filter="url(#cGlow)"
+          style={{ animation: `linePulse 4s ease-in-out ${p.i * 0.5}s infinite` }} />
+      ))}
+    </svg>
+  )
+}
+
 export default function Dashboard() {
-  const widgetOrder = useAetherStore((s) => s.widgetOrder)
-  const setWidgetOrder = useAetherStore((s) => s.setWidgetOrder)
-  const activeDetail = useAetherStore((s) => s.activeDetail)
-  const setActiveDetail = useAetherStore((s) => s.setActiveDetail)
+  const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
+  const setWidgetOrder = useAboveInsideStore((s) => s.setWidgetOrder)
+  const hiddenWidgets = useAboveInsideStore((s) => s.hiddenWidgets)
+  const toggleWidgetVisibility = useAboveInsideStore((s) => s.toggleWidgetVisibility)
+  const activeDetail = useAboveInsideStore((s) => s.activeDetail)
+  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
+  const layoutMode = useAboveInsideStore((s) => s.layoutMode)
+  const profile = useAboveInsideStore((s) => s.primaryProfile)
 
   const [dragIdx, setDragIdx] = useState(null)
   const [overIdx, setOverIdx] = useState(null)
   const dragStartPos = useRef(null)
+  const scrollRef = useRef(null)
+  const wrapperRef = useRef(null)
+
+  // Filter out hidden widgets
+  const visibleWidgets = widgetOrder.filter((id) => !hiddenWidgets.includes(id))
 
   const handleDragStart = useCallback((e, idx) => {
     e.dataTransfer.effectAllowed = 'move'
     e.dataTransfer.setData('text/plain', idx.toString())
     setDragIdx(idx)
     dragStartPos.current = { x: e.clientX, y: e.clientY }
-    // Slight delay to let browser snapshot the element
-    requestAnimationFrame(() => {
-      e.target.style.opacity = '.4'
-    })
+    requestAnimationFrame(() => { e.target.style.opacity = '.4' })
   }, [])
 
   const handleDragEnd = useCallback((e) => {
@@ -252,122 +683,129 @@ export default function Dashboard() {
     setOverIdx(null)
   }, [widgetOrder, setWidgetOrder])
 
-  // Detail view mode
+  // Detail view mode (shared across all layouts)
   if (activeDetail) {
     const DetailComponent = DETAIL_COMPONENTS[activeDetail]
     const title = DETAIL_TITLES[activeDetail]
     return (
       <div style={{
-        display: 'grid',
-        gridTemplateColumns: '52px 1fr',
-        gridTemplateRows: '46px 1fr 42px',
-        gap: '7px',
-        padding: '7px 7px 7px 0',
-        width: '100vw',
-        height: '100vh',
-        position: 'relative',
-        zIndex: 1,
+        display: 'grid', gridTemplateColumns: '52px 1fr', gridTemplateRows: '46px 1fr 42px',
+        gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
       }}>
+        <Starfield />
         <Sidebar />
         <TopBar />
-
         <div style={{
-          gridColumn: 2, gridRow: 2,
-          background: 'rgba(5,5,22,.83)',
-          border: '1px solid rgba(201,168,76,.15)',
-          borderRadius: 'var(--r)',
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          backdropFilter: 'blur(12px)',
-          animation: 'fadeUp .35s ease backwards',
+          gridColumn: 2, gridRow: 2, ...CARD_BASE,
+          display: 'flex', flexDirection: 'column', animation: 'fadeUp .35s ease backwards',
         }}>
           <div style={{
-            padding: '10px 18px 8px',
-            borderBottom: '1px solid rgba(201,168,76,.08)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexShrink: 0,
+            padding: '10px 18px 8px', borderBottom: '1px solid rgba(201,168,76,.08)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
           }}>
-            <span style={{
-              fontFamily: "'Cinzel',serif",
-              fontSize: '10px',
-              letterSpacing: '.2em',
-              textTransform: 'uppercase',
-              color: 'var(--gold)',
-            }}>{title}</span>
-            <div
-              onClick={() => setActiveDetail(null)}
-              style={{
-                padding: '4px 14px',
-                borderRadius: '8px',
-                background: 'rgba(201,168,76,.08)',
-                border: '1px solid rgba(201,168,76,.2)',
-                fontFamily: "'Cinzel',serif",
-                fontSize: '8px',
-                letterSpacing: '.12em',
-                color: 'var(--gold2)',
-                cursor: 'pointer',
-                transition: 'all .2s',
-              }}
-            >
-              Back to Dashboard
-            </div>
+            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--gold)' }}>{title}</span>
+            <div onClick={() => setActiveDetail(null)} style={{
+              padding: '4px 14px', borderRadius: 8, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
+              fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--gold2)', cursor: 'pointer', transition: 'all .2s',
+            }}>Back to Dashboard</div>
           </div>
           <div style={{ flex: 1, overflow: 'auto' }}>
             {DetailComponent && <DetailComponent />}
           </div>
         </div>
-
         <StatusBar />
       </div>
     )
   }
 
-  // Normal dashboard grid mode
+  // Constellation Grid layout
+  const isGrid = layoutMode === 'grid'
+  if (isGrid) {
+    return (
+      <div style={{
+        display: 'grid', gridTemplateColumns: '52px 1fr',
+        gridTemplateRows: '46px 1fr 42px', gap: '7px', padding: '7px 7px 7px 0',
+        width: '100%', height: '100vh', position: 'relative', zIndex: 1,
+      }}>
+        <Starfield />
+        <Sidebar />
+        <TopBar />
+        <div style={{
+          gridColumn: 2, gridRow: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}>
+          <WidgetManagerBar />
+          <div ref={scrollRef} style={{
+            flex: 1, overflowY: 'auto', overflowX: 'hidden',
+          }}>
+            <div ref={wrapperRef} style={{ position: 'relative', padding: '4px 20px 40px' }}>
+              <ConstellationLines wrapperRef={wrapperRef} />
+
+              {ROWS.map((row, ri) => {
+                const rowWidgets = row.widgets.filter(w => visibleWidgets.includes(w))
+                if (!rowWidgets.length) return null
+                return (
+                  <div key={ri} style={{ marginBottom: ri < ROWS.length - 1 ? 48 : 0, position: 'relative', zIndex: 1 }}>
+                    {/* Decorative row header with constellation lines */}
+                    <div className="col-header" style={{ padding: '16px 0 14px' }}>
+                      <div className="col-line" style={{ '--line-c': row.border }} />
+                      <div className="col-header-text">
+                        <div className="col-header-title" style={{ color: row.color }}>{row.label}</div>
+                        <div className="col-header-sub">{row.sub}</div>
+                      </div>
+                      <div className="col-line" style={{ '--line-c': row.border }} />
+                    </div>
+
+                    {/* Widget row — constellation nodes */}
+                    <div className="constellation-row" style={{
+                      display: 'grid',
+                      gridTemplateColumns: row.cols,
+                      gap: 24,
+                    }}>
+                      {rowWidgets.map((widgetId) => {
+                        const globalIdx = visibleWidgets.indexOf(widgetId)
+                        const h = CARD_HEIGHT
+                        return (
+                          <div key={widgetId} data-widget={widgetId} className="card"
+                            onDoubleClick={() => setActiveDetail(widgetId)}
+                            style={{
+                              height: h,
+                              animationDelay: `${globalIdx * 0.04}s`,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <div
+                              className="widget-close"
+                              onClick={(e) => { e.stopPropagation(); toggleWidgetVisibility(widgetId) }}
+                              title="Hide widget"
+                            >{'\u2715'}</div>
+                            <WidgetContent widgetId={widgetId} />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+        <StatusBar />
+      </div>
+    )
+  }
+
+  // Bento, Focus, Magazine
   return (
     <div style={{
-      display: 'grid',
-      gridTemplateColumns: '52px 1fr 1fr 1fr 1fr 1fr 1fr',
-      gridTemplateRows: '46px 1fr 1fr 1fr 42px',
-      gap: '7px',
-      padding: '7px 7px 7px 0',
-      width: '100vw',
-      height: '100vh',
-      position: 'relative',
-      zIndex: 1,
+      display: 'grid', gridTemplateColumns: '52px 1fr', gridTemplateRows: '46px 1fr 42px',
+      gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
     }}>
+      <Starfield />
       <Sidebar />
       <TopBar />
-
-      {widgetOrder.map((widgetId, idx) => {
-        const pos = GRID_POSITIONS[idx]
-        const isOver = overIdx === idx && dragIdx !== idx
-        return (
-          <div
-            key={widgetId}
-            data-widget={widgetId}
-            className="card"
-            draggable
-            onDragStart={(e) => handleDragStart(e, idx)}
-            onDragEnd={handleDragEnd}
-            onDragOver={(e) => handleDragOver(e, idx)}
-            onDrop={(e) => handleDrop(e, idx)}
-            onDoubleClick={() => setActiveDetail(widgetId)}
-            style={{
-              ...pos,
-              animationDelay: DELAYS[idx],
-              outline: isOver ? '2px solid rgba(201,168,76,.5)' : 'none',
-              outlineOffset: '-2px',
-              transition: 'outline .2s, border-color .3s',
-            }}
-          >
-            <WidgetContent widgetId={widgetId} />
-          </div>
-        )
-      })}
-
+      {layoutMode === 'bento' && <BentoLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
+      {layoutMode === 'focus' && <FocusLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
+      {layoutMode === 'magazine' && <MagazineLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} profile={profile} />}
       <StatusBar />
     </div>
   )

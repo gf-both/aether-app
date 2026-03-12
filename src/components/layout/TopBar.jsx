@@ -1,5 +1,144 @@
-import { useAetherStore } from '../../store/useAetherStore'
+import { useState, useRef, useEffect } from 'react'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { useClock } from '../../hooks/useClock'
+
+const NAV_SECTIONS = [
+  { icon: '\u25CE', label: 'Integral Map', widget: 'integral' },
+  null,
+  { icon: '\u2609', label: 'Natal Chart', widget: 'natal' },
+  { icon: '\u263D', label: 'Transits', widget: 'tr' },
+  null,
+  { icon: '\u25C8', label: 'Human Design', widget: 'hd' },
+  { icon: '\u2721', label: 'Kabbalah', widget: 'kab' },
+  null,
+  { icon: '\u221E', label: 'Numerology', widget: 'num' },
+  { icon: '\u2B21', label: 'Gene Keys', widget: 'gk' },
+  null,
+  { icon: '\uD83D\uDCAE', label: 'Mayan Calendar', widget: 'mayan' },
+  { icon: '\u262F', label: 'Enneagram', widget: 'enn' },
+  { icon: '\uD83D\uDC09', label: 'Chinese Zodiac', widget: 'chi' },
+  null,
+  { icon: '\uD83D\uDD20', label: 'Gematria', widget: 'gem' },
+  { icon: '\uD83D\uDD78', label: 'Patterns', widget: 'pat' },
+  null,
+  { icon: '\uD83E\uDDE0', label: 'Myers-Briggs', widget: 'mbti' },
+  { icon: '\uD83C\uDFDB', label: 'Egyptian', widget: 'egyptian' },
+  null,
+  { icon: '\u2295', label: 'Synastry', widget: 'synastry' },
+  { icon: '\uD83D\uDC64', label: 'Profiles', widget: 'profile' },
+  null,
+  { icon: '\uD83D\uDC8E', label: 'Pricing', widget: 'pricing' },
+  { icon: '\uD83D\uDCAC', label: 'AI Guide', panel: 'aichat' },
+  { icon: '\uD83C\uDFE5', label: 'Practitioner', widget: 'practitioner' },
+  { icon: '\uD83D\uDCCB', label: 'Client Portal', widget: 'client' },
+]
+
+function HamburgerMenu() {
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+  const activeDetail = useAboveInsideStore((s) => s.activeDetail)
+  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
+  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
+
+  useEffect(() => {
+    if (!open) return
+    const close = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [open])
+
+  function handleClick(item) {
+    if (item.panel) {
+      setActivePanel(item.panel)
+    } else if (item.widget) {
+      setActiveDetail(item.widget)
+      setActiveNav(item.widget)
+    }
+    setOpen(false)
+  }
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 30, height: 30, borderRadius: 7,
+          background: open ? 'rgba(201,168,76,.15)' : 'rgba(255,255,255,.04)',
+          border: `1px solid ${open ? 'rgba(201,168,76,.35)' : 'rgba(255,255,255,.08)'}`,
+          cursor: 'pointer', fontSize: 16, transition: 'all .2s',
+          color: open ? 'var(--gold)' : 'var(--text2)',
+          flexShrink: 0,
+        }}
+        title="All Sections"
+      >
+        {'\u2630'}
+      </div>
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, marginTop: 4, zIndex: 200,
+          background: 'var(--dropdown-bg)', border: '1px solid var(--dropdown-border)',
+          borderRadius: 10, backdropFilter: 'blur(16px)',
+          overflow: 'hidden', minWidth: 200, maxHeight: 500, overflowY: 'auto',
+          boxShadow: 'var(--dropdown-shadow)',
+        }}>
+          {/* Dashboard link */}
+          <div
+            onClick={() => { setActiveDetail(null); setActiveNav('dashboard'); setOpen(false) }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              padding: '9px 16px', cursor: 'pointer',
+              fontSize: 12, fontFamily: "'Cinzel',serif",
+              letterSpacing: '.06em',
+              color: !activeDetail ? 'var(--gold)' : 'var(--text)',
+              background: !activeDetail ? 'rgba(201,168,76,.1)' : 'transparent',
+              borderBottom: '1px solid rgba(201,168,76,.06)',
+              transition: 'all .15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,168,76,.08)'}
+            onMouseLeave={e => e.currentTarget.style.background = !activeDetail ? 'rgba(201,168,76,.1)' : 'transparent'}
+          >
+            <span style={{ fontSize: 14, minWidth: 20, textAlign: 'center' }}>{'\u2302'}</span>
+            Dashboard
+          </div>
+          {NAV_SECTIONS.map((item, i) => {
+            if (!item) return <div key={i} style={{ height: 1, background: 'rgba(201,168,76,.06)', margin: '2px 12px' }} />
+            const isActive = activeDetail === item.widget
+            return (
+              <div
+                key={item.label}
+                onClick={() => handleClick(item)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '8px 16px', cursor: 'pointer',
+                  fontSize: 11, fontFamily: "'Cinzel',serif",
+                  letterSpacing: '.06em',
+                  color: isActive ? 'var(--gold)' : 'var(--text2)',
+                  background: isActive ? 'rgba(201,168,76,.1)' : 'transparent',
+                  transition: 'all .15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,168,76,.08)'}
+                onMouseLeave={e => e.currentTarget.style.background = isActive ? 'rgba(201,168,76,.1)' : 'transparent'}
+              >
+                <span style={{ fontSize: 14, minWidth: 20, textAlign: 'center' }}>{item.icon}</span>
+                {item.label}
+                {isActive && <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--gold)' }}>{'\u2713'}</span>}
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const LAYOUTS = [
+  { id: 'grid', label: 'Grid', icon: '\u2637' },
+  { id: 'bento', label: 'Bento', icon: '\u2B1A' },
+  { id: 'focus', label: 'Focus', icon: '\u25CE' },
+  { id: 'magazine', label: 'Magazine', icon: '\u2630' },
+]
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
@@ -11,31 +150,251 @@ function formatDOB(dob) {
   } catch { return dob }
 }
 
+function LayoutSwitcher() {
+  const layoutMode = useAboveInsideStore((s) => s.layoutMode)
+  const setLayoutMode = useAboveInsideStore((s) => s.setLayoutMode)
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    const close = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [open])
+
+  const current = LAYOUTS.find(l => l.id === layoutMode) || LAYOUTS[0]
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          padding: '3px 10px', borderRadius: 6,
+          background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
+          cursor: 'pointer', fontSize: 10, fontFamily: "'Cinzel',serif",
+          letterSpacing: '.08em', color: 'var(--gold)', whiteSpace: 'nowrap',
+          transition: 'all .2s',
+        }}
+      >
+        <span style={{ fontSize: 13 }}>{current.icon}</span>
+        {current.label}
+        <span style={{ fontSize: 8, opacity: .5, marginLeft: 2 }}>{open ? '\u25B2' : '\u25BC'}</span>
+      </div>
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 200,
+          background: 'var(--dropdown-bg)', border: '1px solid var(--dropdown-border)',
+          borderRadius: 8, backdropFilter: 'blur(16px)',
+          overflow: 'hidden', minWidth: 140,
+          boxShadow: 'var(--dropdown-shadow)',
+        }}>
+          {LAYOUTS.map(l => (
+            <div
+              key={l.id}
+              onClick={() => { setLayoutMode(l.id); setOpen(false) }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '8px 14px', cursor: 'pointer',
+                fontSize: 11, fontFamily: "'Cinzel',serif",
+                letterSpacing: '.06em',
+                color: l.id === layoutMode ? 'var(--gold)' : 'var(--text2)',
+                background: l.id === layoutMode ? 'rgba(201,168,76,.1)' : 'transparent',
+                transition: 'all .15s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,168,76,.08)'}
+              onMouseLeave={e => e.currentTarget.style.background = l.id === layoutMode ? 'rgba(201,168,76,.1)' : 'transparent'}
+            >
+              <span style={{ fontSize: 14 }}>{l.icon}</span>
+              {l.label}
+              {l.id === layoutMode && <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--gold)' }}>{'\u2713'}</span>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ProfileSwitcher() {
+  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const people = useAboveInsideStore((s) => s.people)
+  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
+  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
+  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
+  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    const close = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [open])
+
+  const [originalPrimary] = useState(() => ({ ...profile }))
+
+  const allProfiles = [
+    { ...originalPrimary, _isPrimary: true },
+    ...people,
+  ]
+
+  function switchTo(p) {
+    if (p._isPrimary) {
+      setPrimaryProfile(originalPrimary)
+    } else {
+      setPrimaryProfile({
+        name: p.name, dob: p.dob, tob: p.tob || '', pob: p.pob || '',
+        emoji: p.emoji || '\u2726', sign: p.sign || '?',
+        asc: p.asc || '?', moon: p.moon || '?',
+        hdType: p.hdType || '?', hdProfile: p.hdProfile || '?',
+        hdAuth: p.hdAuth || '?', hdDef: p.hdDef || '?',
+        lifePath: p.lifePath || '?', crossGK: p.crossGK || '?',
+      })
+    }
+    setOpen(false)
+  }
+
+  return (
+    <div ref={ref} style={{ position: 'relative', minWidth: 0 }}>
+      <div className="active-profile-bar" onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
+        <div className="apb-avatar">{profile.emoji}</div>
+        <div style={{ minWidth: 0 }}>
+          <div className="apb-name" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {profile.name}
+            <span style={{ fontSize: 7, opacity: .5 }}>{open ? '\u25B2' : '\u25BC'}</span>
+          </div>
+          <div className="apb-detail">
+            {profile.hdType} {profile.hdProfile} &middot; {formatDOB(profile.dob)} &middot; {profile.tob || '?'} &middot; {profile.pob}
+          </div>
+        </div>
+      </div>
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, marginTop: 4, zIndex: 200,
+          background: 'var(--dropdown-bg)', border: '1px solid var(--dropdown-border)',
+          borderRadius: 8, backdropFilter: 'blur(16px)',
+          overflow: 'hidden', minWidth: 240, maxHeight: 320, overflowY: 'auto',
+          boxShadow: 'var(--dropdown-shadow)',
+        }}>
+          {allProfiles.map((p, i) => {
+            const isActive = p.name === profile.name
+            return (
+              <div
+                key={p.id || i}
+                onClick={() => switchTo(p)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10,
+                  padding: '8px 14px', cursor: 'pointer',
+                  background: isActive ? 'rgba(201,168,76,.1)' : 'transparent',
+                  transition: 'all .15s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,168,76,.08)'}
+                onMouseLeave={e => e.currentTarget.style.background = isActive ? 'rgba(201,168,76,.1)' : 'transparent'}
+              >
+                <span style={{ fontSize: 16 }}>{p.emoji || '\u2726'}</span>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{
+                    fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.04em',
+                    color: isActive ? 'var(--gold)' : 'var(--text)',
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  }}>
+                    {p.name}
+                    {p._isPrimary && <span style={{ fontSize: 8, color: 'var(--text2)', marginLeft: 6 }}>PRIMARY</span>}
+                  </div>
+                  <div style={{ fontSize: 9, color: 'var(--text2)' }}>
+                    {p.sign || '?'} &middot; {formatDOB(p.dob)} {p.rel ? `\u00B7 ${p.rel}` : ''}
+                  </div>
+                </div>
+                {isActive && <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--gold)' }}>{'\u2713'}</span>}
+              </div>
+            )
+          })}
+          <div
+            onClick={() => { setActiveDetail('profile'); setActiveNav('profile'); setOpen(false) }}
+            style={{
+              padding: '8px 14px', cursor: 'pointer', borderTop: '1px solid rgba(201,168,76,.1)',
+              fontSize: 10, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
+              color: 'var(--gold)', textAlign: 'center', transition: 'all .15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,168,76,.08)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            + Manage Profiles
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ThemeToggle() {
+  const theme = useAboveInsideStore((s) => s.theme)
+  const setTheme = useAboveInsideStore((s) => s.setTheme)
+  const isLight = theme === 'light'
+  return (
+    <div
+      onClick={() => setTheme(isLight ? 'dark' : 'light')}
+      style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: 28, height: 28, borderRadius: 7,
+        background: isLight ? 'rgba(201,168,76,.15)' : 'rgba(255,255,255,.04)',
+        border: `1px solid ${isLight ? 'rgba(201,168,76,.35)' : 'rgba(255,255,255,.08)'}`,
+        cursor: 'pointer', fontSize: 14, transition: 'all .2s',
+      }}
+      title={isLight ? 'Switch to dark' : 'Switch to light'}
+    >
+      {isLight ? '\u263D' : '\u2609'}
+    </div>
+  )
+}
+
+function WidgetManagerToggle() {
+  const showWidgetManager = useAboveInsideStore((s) => s.showWidgetManager)
+  const setShowWidgetManager = useAboveInsideStore((s) => s.setShowWidgetManager)
+  return (
+    <div
+      onClick={() => setShowWidgetManager(!showWidgetManager)}
+      style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        width: 28, height: 28, borderRadius: 7,
+        background: showWidgetManager ? 'rgba(201,168,76,.15)' : 'rgba(255,255,255,.04)',
+        border: `1px solid ${showWidgetManager ? 'rgba(201,168,76,.35)' : 'rgba(255,255,255,.08)'}`,
+        cursor: 'pointer', fontSize: 13, transition: 'all .2s',
+        color: showWidgetManager ? 'var(--gold)' : 'var(--text3)',
+      }}
+      title="Widget Manager"
+    >
+      {'\u2699'}
+    </div>
+  )
+}
+
 export default function TopBar() {
-  const profile = useAetherStore((s) => s.primaryProfile)
-  const setActivePanel = useAetherStore((s) => s.setActivePanel)
+  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
+  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
+  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
   const time = useClock()
 
   return (
     <div className="tb">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0 }}>
-        <span className="tb-brand">AETHER</span>
-        <div className="active-profile-bar">
-          <div className="apb-avatar">{profile.emoji}</div>
-          <div>
-            <div className="apb-name">{profile.name}</div>
-            <div className="apb-detail">
-              {profile.hdType} {profile.hdProfile} &middot; {formatDOB(profile.dob)} &middot; {profile.tob || '?'} &middot; {profile.pob}
-            </div>
-          </div>
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+        <HamburgerMenu />
+        <span className="tb-brand" style={{ cursor: 'pointer' }} onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }}>ABOVE + INSIDE</span>
+        <ProfileSwitcher />
+        <LayoutSwitcher />
       </div>
       <div className="tb-chips">
         <div className="chip chip-g">{'\u2609'} {profile.sign} &middot; &uarr; {profile.asc} &middot; {'\u263D'} {profile.moon}</div>
         <div className="chip chip-b">{'\u25C8'} {profile.hdType} &middot; {profile.hdProfile} &middot; Martyr/Heretic</div>
         <div className="chip chip-r">{'\u221E'} Life Path {profile.lifePath}</div>
         <div className="chip chip-v">{'\u2721'} Tiphareth 13/8</div>
-        <div className="chip chip-b" onClick={() => setActivePanel('synastry')}>{'\u2295'} Synastry</div>
+        <div className="chip chip-b" onClick={() => { setActiveDetail('synastry'); setActiveNav('synastry') }}>{'\u2295'} Synastry</div>
+        <ThemeToggle />
+        <WidgetManagerToggle />
         <span className="ttime">{time}</span>
       </div>
     </div>

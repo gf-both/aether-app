@@ -2,6 +2,25 @@ import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { CENTERS, CHANNELS, GATES } from '../../data/hdData'
 
+// Traditional bodygraph silhouette path (normalized 0-1 coordinates)
+const SILHOUETTE = [
+  [.42,.03],[.38,.05],[.36,.08],[.35,.12],[.36,.16],[.38,.18],
+  [.40,.20],[.39,.22],[.38,.24],
+  [.28,.28],[.22,.30],[.18,.33],[.16,.36],
+  [.15,.40],[.16,.44],[.18,.48],
+  [.22,.52],[.24,.56],[.26,.60],[.27,.65],[.28,.70],
+  [.30,.75],[.32,.80],[.33,.85],[.34,.88],[.35,.92],[.36,.96],
+  [.40,.97],[.44,.97],
+  [.46,.97],[.50,.97],[.54,.97],[.56,.97],[.60,.97],
+  [.64,.97],[.66,.96],[.67,.92],[.68,.88],[.67,.85],[.68,.80],[.70,.75],
+  [.73,.70],[.74,.65],[.74,.60],[.76,.56],[.78,.52],
+  [.82,.48],[.84,.44],[.85,.40],
+  [.84,.36],[.82,.33],[.78,.30],[.72,.28],
+  [.62,.24],[.61,.22],[.60,.20],
+  [.62,.18],[.64,.16],[.65,.12],[.64,.08],[.62,.05],[.58,.03],
+  [.54,.015],[.50,.01],[.46,.015],[.42,.03],
+]
+
 export default function HumanDesign() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
@@ -17,63 +36,153 @@ export default function HumanDesign() {
       const x = xf * W, y = yf * H, r = sz
       const glow = defined ? (.22 + .07 * Math.sin(pulse)) : 0
       ctx.save()
+
       if (defined) {
-        const aura = ctx.createRadialGradient(x, y, 0, x, y, r * 2.2)
-        aura.addColorStop(0, cB + (glow * .75) + ')'); aura.addColorStop(1, cB + '0)')
-        ctx.beginPath(); ctx.arc(x, y, r * 2.2, 0, Math.PI * 2); ctx.fillStyle = aura; ctx.fill()
+        const aura = ctx.createRadialGradient(x, y, 0, x, y, r * 2.5)
+        aura.addColorStop(0, cB + (glow * .8) + ')')
+        aura.addColorStop(.5, cB + (glow * .3) + ')')
+        aura.addColorStop(1, cB + '0)')
+        ctx.beginPath()
+        ctx.arc(x, y, r * 2.5, 0, Math.PI * 2)
+        ctx.fillStyle = aura
+        ctx.fill()
       }
+
       ctx.beginPath()
-      if (shape === 'tri_up') { ctx.moveTo(x, y - r * 1.28); ctx.lineTo(x + r * 1.18, y + r * .78); ctx.lineTo(x - r * 1.18, y + r * .78); ctx.closePath() }
-      else if (shape === 'tri_down') { ctx.moveTo(x, y + r * 1.28); ctx.lineTo(x + r * 1.18, y - r * .78); ctx.lineTo(x - r * 1.18, y - r * .78); ctx.closePath() }
-      else if (shape === 'diamond') { ctx.moveTo(x, y - r * 1.32); ctx.lineTo(x + r * 1.32, y); ctx.lineTo(x, y + r * 1.32); ctx.lineTo(x - r * 1.32, y); ctx.closePath() }
-      else if (shape === 'rect') { ctx.roundRect(x - r * 1.3, y - r * .82, r * 2.6, r * 1.64, r * .22) }
-      else if (shape === 'tri_left') { ctx.moveTo(x - r * 1.28, y); ctx.lineTo(x + r * .78, y - r * 1.18); ctx.lineTo(x + r * .78, y + r * 1.18); ctx.closePath() }
-      else if (shape === 'tri_right') { ctx.moveTo(x + r * 1.28, y); ctx.lineTo(x - r * .78, y - r * 1.18); ctx.lineTo(x - r * .78, y + r * 1.18); ctx.closePath() }
-      if (defined) {
-        const fg = ctx.createRadialGradient(x, y, 0, x, y, r * 1.1)
-        fg.addColorStop(0, cB + '0.52)'); fg.addColorStop(1, cB + '0.18)')
-        ctx.fillStyle = fg; ctx.fill(); ctx.strokeStyle = cB + (0.68 + glow * .25) + ')'
-      } else {
-        ctx.fillStyle = 'rgba(28,34,68,.22)'; ctx.fill(); ctx.strokeStyle = 'rgba(75,85,135,.3)'
+      if (shape === 'tri_up') {
+        ctx.moveTo(x, y - r * 1.3)
+        ctx.lineTo(x + r * 1.2, y + r * .8)
+        ctx.lineTo(x - r * 1.2, y + r * .8)
+        ctx.closePath()
+      } else if (shape === 'tri_down') {
+        ctx.moveTo(x, y + r * 1.3)
+        ctx.lineTo(x + r * 1.2, y - r * .8)
+        ctx.lineTo(x - r * 1.2, y - r * .8)
+        ctx.closePath()
+      } else if (shape === 'diamond') {
+        ctx.moveTo(x, y - r * 1.35)
+        ctx.lineTo(x + r * 1.35, y)
+        ctx.lineTo(x, y + r * 1.35)
+        ctx.lineTo(x - r * 1.35, y)
+        ctx.closePath()
+      } else if (shape === 'rect') {
+        ctx.roundRect(x - r * 1.3, y - r * .85, r * 2.6, r * 1.7, r * .2)
+      } else if (shape === 'tri_left') {
+        ctx.moveTo(x - r * 1.3, y)
+        ctx.lineTo(x + r * .8, y - r * 1.2)
+        ctx.lineTo(x + r * .8, y + r * 1.2)
+        ctx.closePath()
+      } else if (shape === 'tri_right') {
+        ctx.moveTo(x + r * 1.3, y)
+        ctx.lineTo(x - r * .8, y - r * 1.2)
+        ctx.lineTo(x - r * .8, y + r * 1.2)
+        ctx.closePath()
       }
-      ctx.lineWidth = defined ? 1.4 : .6; ctx.stroke()
-      ctx.font = `${Math.max(7, sz * .5)}px 'Cinzel',serif`
-      ctx.fillStyle = defined ? cB + (0.82 + glow * .12) + ')' : 'rgba(75,85,135,.38)'
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(name, x, y)
+
+      if (defined) {
+        const fg = ctx.createRadialGradient(x, y, 0, x, y, r * 1.2)
+        fg.addColorStop(0, cB + '0.55)')
+        fg.addColorStop(1, cB + '0.2)')
+        ctx.fillStyle = fg
+        ctx.fill()
+        ctx.strokeStyle = cB + (0.7 + glow * .2) + ')'
+        ctx.lineWidth = 1.8
+      } else {
+        ctx.fillStyle = 'rgba(28,34,68,.2)'
+        ctx.fill()
+        ctx.strokeStyle = 'rgba(75,85,135,.25)'
+        ctx.lineWidth = .8
+      }
+      ctx.stroke()
+
+      const fs = Math.max(7, sz * .52)
+      ctx.font = `bold ${fs}px 'Cinzel',serif`
+      ctx.fillStyle = defined ? cB + (0.85 + glow * .1) + ')' : 'rgba(75,85,135,.35)'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(name, x, y)
       ctx.restore()
     }
 
     function draw() {
-      const dpr = window.devicePixelRatio
+      const dpr = window.devicePixelRatio || 1
       const W = canvas.width / dpr, H = canvas.height / dpr
-      if (W === 0 || H === 0) { animRef.current = requestAnimationFrame(draw); return }
+      if (W < 10 || H < 10) { animRef.current = requestAnimationFrame(draw); return }
       const ctx = canvas.getContext('2d')
       ctx.save()
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
-      pulse += .022
-      const sz = Math.min(W, H) * .062
+      pulse += .018
+      const sz = Math.min(W, H) * .068
+
+      // Human silhouette
+      ctx.beginPath()
+      ctx.moveTo(SILHOUETTE[0][0] * W, SILHOUETTE[0][1] * H)
+      for (let i = 1; i < SILHOUETTE.length; i++) {
+        const [x1, y1] = SILHOUETTE[i]
+        const [x0, y0] = SILHOUETTE[i - 1]
+        const cpx = (x0 + x1) / 2 * W
+        const cpy = (y0 + y1) / 2 * H
+        ctx.quadraticCurveTo(x0 * W, y0 * H, cpx, cpy)
+      }
+      ctx.closePath()
+
+      const sGrad = ctx.createLinearGradient(W * .5, 0, W * .5, H)
+      sGrad.addColorStop(0, `rgba(64,204,221,${.02 + .01 * Math.sin(pulse * .5)})`)
+      sGrad.addColorStop(.5, `rgba(80,80,200,${.025 + .01 * Math.sin(pulse * .7)})`)
+      sGrad.addColorStop(1, `rgba(201,168,76,${.02 + .008 * Math.sin(pulse)})`)
+      ctx.fillStyle = sGrad
+      ctx.fill()
+      ctx.strokeStyle = `rgba(120,130,170,${.08 + .03 * Math.sin(pulse * .4)})`
+      ctx.lineWidth = .8
+      ctx.stroke()
 
       // Channels
       CHANNELS.forEach(([ai, bi, def]) => {
-        const cA = CENTERS[ai], cB = CENTERS[bi]
-        ctx.beginPath(); ctx.moveTo(cA.xf * W, cA.yf * H); ctx.lineTo(cB.xf * W, cB.yf * H)
-        ctx.strokeStyle = def ? `rgba(80,80,200,${.58 + .09 * Math.sin(pulse)})` : 'rgba(65,75,125,.18)'
-        ctx.lineWidth = def ? 2.8 : 1; ctx.stroke()
+        const cA = CENTERS[ai], cBc = CENTERS[bi]
+        const x1 = cA.xf * W, y1 = cA.yf * H
+        const x2 = cBc.xf * W, y2 = cBc.yf * H
+
+        if (def) {
+          const grad = ctx.createLinearGradient(x1, y1, x2, y2)
+          const alpha = .55 + .1 * Math.sin(pulse + ai)
+          grad.addColorStop(0, `rgba(80,80,200,${alpha})`)
+          grad.addColorStop(1, `rgba(80,80,200,${alpha * .8})`)
+          ctx.beginPath()
+          ctx.moveTo(x1, y1)
+          ctx.lineTo(x2, y2)
+          ctx.strokeStyle = grad
+          ctx.lineWidth = 3
+          ctx.stroke()
+        } else {
+          ctx.beginPath()
+          ctx.moveTo(x1, y1)
+          ctx.lineTo(x2, y2)
+          ctx.strokeStyle = 'rgba(65,75,125,.15)'
+          ctx.lineWidth = 1
+          ctx.stroke()
+        }
       })
 
-      // Gates
+      // Gate numbers
       GATES.forEach(({ x, y, g }) => {
-        ctx.font = "6.5px 'Inconsolata',monospace"; ctx.fillStyle = 'rgba(201,168,76,.38)'
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(g, x * W, y * H)
+        const fs = Math.max(6.5, sz * .38)
+        ctx.font = `${fs}px 'Inconsolata',monospace`
+        ctx.fillStyle = 'rgba(201,168,76,.35)'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(g, x * W, y * H)
       })
 
       // Centers
       CENTERS.forEach(c => drawCenter(ctx, c.name, c.xf, c.yf, c.shape, c.defined, c.col, W, H, sz, pulse))
 
       // Bottom label
-      ctx.font = `bold ${W * .024}px 'Cinzel',serif`; ctx.fillStyle = 'rgba(64,204,221,.65)'
-      ctx.textAlign = 'center'; ctx.fillText('5 / 1 · PROJECTOR', W * .5, H * .93)
+      const lblFs = Math.max(10, W * .028)
+      ctx.font = `bold ${lblFs}px 'Cinzel',serif`
+      ctx.fillStyle = 'rgba(64,204,221,.6)'
+      ctx.textAlign = 'center'
+      ctx.fillText('5 / 1 \u00B7 PROJECTOR', W * .5, H * .94)
 
       ctx.restore()
       animRef.current = requestAnimationFrame(draw)

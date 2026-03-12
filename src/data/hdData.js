@@ -5,14 +5,14 @@ export const CENTERS = [
   { name: 'G/SELF', xf: .50, yf: .46, shape: 'diamond',   defined: true,  col: 'rgba(240,200,40,' },
   { name: 'HEART',  xf: .685, yf: .46, shape: 'tri_right', defined: false, col: 'rgba(120,130,170,' },
   { name: 'SACRAL', xf: .50, yf: .61, shape: 'rect',      defined: false, col: 'rgba(120,130,170,' },
-  { name: 'SPLEEN', xf: .315, yf: .52, shape: 'tri_left',  defined: false, col: 'rgba(120,130,170,' },
+  { name: 'SPLEEN', xf: .315, yf: .52, shape: 'tri_left',  defined: true,  col: 'rgba(80,80,200,' },
   { name: 'SOLAR',  xf: .685, yf: .61, shape: 'tri_right', defined: true,  col: 'rgba(80,80,200,' },
   { name: 'ROOT',   xf: .50, yf: .79, shape: 'rect',      defined: true,  col: 'rgba(80,80,200,' },
 ]
 
 export const CHANNELS = [
   [0,1,false],[1,2,false],[2,3,true],[3,5,false],[3,4,false],
-  [5,8,false],[6,5,false],[4,7,false],[7,8,false],[3,8,false],[2,7,true],
+  [5,8,false],[6,5,false],[4,7,false],[7,8,true],[6,8,true],[2,7,false],
 ]
 
 export const GATES = [

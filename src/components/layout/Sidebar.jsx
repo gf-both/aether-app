@@ -1,7 +1,7 @@
-import { useAetherStore } from '../../store/useAetherStore'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
 const NAV_ITEMS = [
-  { icon: '\u2726', label: 'Dashboard', id: 'dashboard' },
+  { icon: '\u25CE', label: 'Integral Map', id: 'integral', widget: 'integral' },
   'sep',
   { icon: '\u2609', label: 'Natal Chart', id: 'natal', widget: 'natal' },
   { icon: '\u263D', label: 'Transits', id: 'transits', widget: 'tr' },
@@ -12,15 +12,31 @@ const NAV_ITEMS = [
   { icon: '\u221E', label: 'Numerology', id: 'num', widget: 'num' },
   { icon: '\u2B21', label: 'Gene Keys', id: 'gk', widget: 'gk' },
   'sep',
-  { icon: '\u2295', label: 'Synastry', id: 'synastry', panel: 'synastry' },
+  { icon: '\u{1F4AE}', label: 'Mayan Calendar', id: 'mayan', widget: 'mayan' },
+  { icon: '\u262F', label: 'Enneagram', id: 'enn', widget: 'enn' },
+  { icon: '\u{1F409}', label: 'Chinese Zodiac', id: 'chi', widget: 'chi' },
+  'sep',
+  { icon: '\u{1F520}', label: 'Gematria', id: 'gem', widget: 'gem' },
+  { icon: '\u{1F578}', label: 'Patterns', id: 'pat', widget: 'pat' },
+  'sep',
+  { icon: '\u{1F9E0}', label: 'Myers-Briggs', id: 'mbti', widget: 'mbti' },
+  { icon: '\u{1F3DB}', label: 'Egyptian', id: 'egyptian', widget: 'egyptian' },
+  'sep',
+  { icon: '\u2295', label: 'Synastry', id: 'synastry', widget: 'synastry' },
+  'sep',
+  { icon: '\u{1F48E}', label: 'Pricing', id: 'pricing', widget: 'pricing' },
+  'sep',
+  { icon: '\uD83D\uDCAC', label: 'AI Guide', id: 'aichat', panel: 'aichat' },
+  { icon: '\uD83C\uDFE5', label: 'Practitioner', id: 'practitioner', widget: 'practitioner' },
+  { icon: '\uD83D\uDCCB', label: 'Client Portal', id: 'client', widget: 'client' },
 ]
 
 export default function Sidebar() {
-  const activeNav = useAetherStore((s) => s.activeNav)
-  const setActiveNav = useAetherStore((s) => s.setActiveNav)
-  const setActivePanel = useAetherStore((s) => s.setActivePanel)
-  const activeDetail = useAetherStore((s) => s.activeDetail)
-  const setActiveDetail = useAetherStore((s) => s.setActiveDetail)
+  const activeNav = useAboveInsideStore((s) => s.activeNav)
+  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
+  const activeDetail = useAboveInsideStore((s) => s.activeDetail)
+  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
 
   function handleClick(item) {
     setActiveNav(item.id)
@@ -85,7 +101,7 @@ export default function Sidebar() {
 
       <div style={{ flex: 1 }} />
 
-      <div className={`ni${activeNav === 'profile' ? ' on' : ''}`} onClick={() => { setActivePanel('profile'); setActiveNav('profile') }}>
+      <div className={`ni${activeNav === 'profile' || activeDetail === 'profile' ? ' on' : ''}`} onClick={() => { setActiveDetail('profile'); setActiveNav('profile') }}>
         <span style={{ fontSize: '13px' }}>{'\uD83D\uDC64'}</span>
         <div className="ntip">Profiles</div>
       </div>
