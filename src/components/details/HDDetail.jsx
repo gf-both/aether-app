@@ -1,12 +1,7 @@
+import { useMemo } from 'react'
 import HumanDesign from '../canvas/HumanDesign'
-
-const HD_PROFILE = {
-  type: 'Projector', strategy: 'Wait for the Invitation', authority: 'Emotional - Solar Plexus',
-  profile: '3/5 \u2014 Martyr / Heretic', definition: 'Split Definition',
-  cross: 'Right Angle Cross of the Unexpected (41/31 | 28/27)',
-  notSelf: 'Bitterness', signature: 'Success',
-  variable: { design: 'PRR', personality: 'DLL' },
-}
+import { getHDChart } from '../../data/hdData'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
 const CENTERS_DETAIL = [
   { name: 'Head', defined: false, meaning: 'Open to inspiration from many sources, not pressured by fixed mental patterns' },
@@ -116,10 +111,73 @@ const S = {
   },
 }
 
+// Center name map: engine key → display name used in CENTERS_DETAIL
+const ENGINE_TO_DISPLAY = {
+  HEAD: 'Head', AJNA: 'Ajna', THROAT: 'Throat', G_SELF: 'G/Self',
+  HEART: 'Heart/Will', SACRAL: 'Sacral', SPLEEN: 'Spleen',
+  SOLAR: 'Solar Plexus', ROOT: 'Root'
+}
+
 export default function HDDetail() {
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+
+  // Compute HD chart from birth data
+  const hdChart = useMemo(() => {
+    try {
+      const { dob, tob } = primaryProfile
+      if (!dob) return null
+      const [year, month, day] = dob.split('-').map(Number)
+      const [hour, minute] = (tob || '00:00').split(':').map(Number)
+      return getHDChart({ day, month, year, hour: hour || 0, minute: minute || 0, lat: -34.6037, lon: -58.3816, timezone: -3 })
+    } catch (e) {
+      console.warn('HD chart error in detail:', e)
+      return null
+    }
+  }, [primaryProfile])
+
+  // Derive HD_PROFILE from computed chart or fall back to static
+  const HD_PROFILE = useMemo(() => {
+    if (!hdChart) return {
+      type: 'Projector', strategy: 'Wait for the Invitation', authority: 'Emotional - Solar Plexus',
+      profile: '3/5 \u2014 Martyr / Heretic', definition: 'Split Definition',
+      cross: 'Right Angle Cross of the Unexpected (41/31 | 28/27)',
+      notSelf: 'Bitterness', signature: 'Success',
+    }
+    return {
+      type: hdChart.type,
+      strategy: hdChart.strategy,
+      authority: hdChart.authority,
+      profile: `${hdChart.profile}`,
+      definition: `${hdChart.definition} Definition`,
+      cross: hdChart.cross.name + ` (${hdChart.cross.key.replace('|', ' | ')})`,
+      notSelf: hdChart.notSelf,
+      signature: hdChart.signature,
+    }
+  }, [hdChart])
+
+  // Build CENTERS_DETAIL from engine output
+  const centersDetail = useMemo(() => {
+    if (!hdChart) return CENTERS_DETAIL
+    const definedSet = new Set(hdChart.definedCenters)
+    return CENTERS_DETAIL.map(c => {
+      // Find engine key for this center
+      const engineKey = Object.entries(ENGINE_TO_DISPLAY).find(([k, v]) => v === c.name)?.[0]
+      return { ...c, defined: engineKey ? definedSet.has(engineKey) : c.defined }
+    })
+  }, [hdChart])
+
+  // Build CHANNELS from engine output
+  const channels = useMemo(() => {
+    if (!hdChart) return CHANNELS
+    return hdChart.activeChannels.map(key => {
+      const existing = CHANNELS.find(ch => ch.gates === key)
+      return existing || { name: `Channel ${key}`, gates: key, type: 'Unknown', center1: '', center2: '' }
+    })
+  }, [hdChart])
+
   const tc = TYPE_COLORS[HD_PROFILE.type] || TYPE_COLORS.Projector
-  const definedCount = CENTERS_DETAIL.filter(c => c.defined).length
-  const undefinedCount = CENTERS_DETAIL.length - definedCount
+  const definedCount = centersDetail.filter(c => c.defined).length
+  const undefinedCount = centersDetail.length - definedCount
 
   return (
     <div style={S.panel}>
@@ -220,7 +278,7 @@ export default function HDDetail() {
           </span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {CENTERS_DETAIL.map((c, i) => (
+          {centersDetail.map((c, i) => (
             <div key={i} style={{
               ...S.row,
               borderColor: c.defined ? 'rgba(201,168,76,.12)' : 'rgba(255,255,255,.04)',
@@ -259,7 +317,7 @@ export default function HDDetail() {
       <div>
         <div style={S.sectionTitle}>Active Channels</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {CHANNELS.map((ch, i) => (
+          {channels.map((ch, i) => (
             <div key={i} style={{
               ...S.glass, padding: '12px 16px',
               display: 'flex', flexDirection: 'column', gap: 6,

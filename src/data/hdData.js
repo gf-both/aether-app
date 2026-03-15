@@ -1,3 +1,5 @@
+export { getHDChart } from '../engines/hdEngine.js'
+
 export const CENTERS = [
   { name: 'HEAD',   xf: .50, yf: .06, shape: 'tri_up',    defined: false, col: 'rgba(120,130,170,' },
   { name: 'AJNA',   xf: .50, yf: .19, shape: 'tri_down',  defined: false, col: 'rgba(120,130,170,' },

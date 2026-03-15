@@ -1,6 +1,16 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { CENTERS, CHANNELS, GATES } from '../../data/hdData'
+import { CENTERS as CENTERS_STATIC, CHANNELS as CHANNELS_STATIC, GATES, getHDChart } from '../../data/hdData'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+
+// Center name → index in CENTERS array
+const CENTER_INDEX = { HEAD: 0, AJNA: 1, THROAT: 2, 'G_SELF': 3, HEART: 4, SACRAL: 5, SPLEEN: 6, SOLAR: 7, ROOT: 8 }
+// SOLAR center is named 'SOLAR' in engine but 'SOLAR' in canvas (index 7)
+
+// Define which center pairs each canvas CHANNELS entry connects
+const CHANNEL_CENTER_PAIRS = [
+  [0,1],[1,2],[2,3],[3,5],[3,4],[5,8],[6,5],[4,7],[7,8],[6,8],[2,7]
+]
 
 // Traditional bodygraph silhouette path (normalized 0-1 coordinates)
 const SILHOUETTE = [
@@ -24,6 +34,51 @@ const SILHOUETTE = [
 export default function HumanDesign() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+
+  // Compute HD chart from birth data
+  const hdChart = useMemo(() => {
+    try {
+      const { dob, tob } = primaryProfile
+      if (!dob) return null
+      const [year, month, day] = dob.split('-').map(Number)
+      const [hour, minute] = (tob || '00:00').split(':').map(Number)
+      return getHDChart({ day, month, year, hour: hour || 0, minute: minute || 0, lat: -34.6037, lon: -58.3816, timezone: -3 })
+    } catch (e) {
+      console.warn('HD chart error:', e)
+      return null
+    }
+  }, [primaryProfile])
+
+  // Build dynamic CENTERS with defined state from engine
+  const CENTERS = useMemo(() => {
+    if (!hdChart) return CENTERS_STATIC
+    const definedSet = new Set(hdChart.definedCenters)
+    return CENTERS_STATIC.map((c, i) => {
+      // Map canvas center names to engine names
+      const nameMap = { 'HEAD': 'HEAD', 'AJNA': 'AJNA', 'THROAT': 'THROAT', 'G/SELF': 'G_SELF', 'HEART': 'HEART', 'SACRAL': 'SACRAL', 'SPLEEN': 'SPLEEN', 'SOLAR': 'SOLAR', 'ROOT': 'ROOT' }
+      const engineName = nameMap[c.name] || c.name
+      const defined = definedSet.has(engineName)
+      return { ...c, defined, col: defined ? 'rgba(80,80,200,' : 'rgba(120,130,170,' }
+    })
+  }, [hdChart])
+
+  // Build dynamic CHANNELS with defined state from engine
+  const CHANNELS = useMemo(() => {
+    if (!hdChart) return CHANNELS_STATIC
+    const definedSet = new Set(hdChart.definedCenters)
+    return CHANNEL_CENTER_PAIRS.map(([ai, bi], i) => {
+      const c1 = CENTERS_STATIC[ai]
+      const c2 = CENTERS_STATIC[bi]
+      const nameMap = { 'HEAD': 'HEAD', 'AJNA': 'AJNA', 'THROAT': 'THROAT', 'G/SELF': 'G_SELF', 'HEART': 'HEART', 'SACRAL': 'SACRAL', 'SPLEEN': 'SPLEEN', 'SOLAR': 'SOLAR', 'ROOT': 'ROOT' }
+      const defined = definedSet.has(nameMap[c1.name]) && definedSet.has(nameMap[c2.name])
+      return [ai, bi, defined]
+    })
+  }, [hdChart, CENTERS])
+
+  const profileLabel = hdChart
+    ? `${hdChart.profile} · ${hdChart.type.toUpperCase()}`
+    : '5 / 1 · PROJECTOR'
 
   useCanvasResize(canvasRef)
 
@@ -182,14 +237,14 @@ export default function HumanDesign() {
       ctx.font = `bold ${lblFs}px 'Cinzel',serif`
       ctx.fillStyle = 'rgba(64,204,221,.6)'
       ctx.textAlign = 'center'
-      ctx.fillText('5 / 1 \u00B7 PROJECTOR', W * .5, H * .94)
+      ctx.fillText(profileLabel, W * .5, H * .94)
 
       ctx.restore()
       animRef.current = requestAnimationFrame(draw)
     }
     draw()
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
-  }, [])
+  }, [CENTERS, CHANNELS, profileLabel])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }
