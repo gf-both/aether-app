@@ -18,6 +18,7 @@ import PatternsWeb from '../components/canvas/PatternsWeb'
 import MBTIChart from '../components/canvas/MBTIChart'
 import EgyptianChart from '../components/canvas/EgyptianChart'
 import VedicChart from '../components/canvas/VedicChart'
+import BiorhythmChart from '../components/canvas/BiorhythmChart'
 import IntegralFigure from '../components/canvas/IntegralFigure'
 import NatalDetail from '../components/details/NatalDetail'
 import HDDetail from '../components/details/HDDetail'
@@ -33,6 +34,9 @@ import PatternsDetail from '../components/details/PatternsDetail'
 import MBTIDetail from '../components/details/MBTIDetail'
 import EgyptianDetail from '../components/details/EgyptianDetail'
 import VedicDetail from '../components/details/VedicDetail'
+import BiorhythmDetail from '../components/details/BiorhythmDetail'
+import TarotDetail from '../components/details/TarotDetail'
+import CelticTreeDetail from '../components/details/CelticTreeDetail'
 import IntegralDetail from '../components/details/IntegralDetail'
 import SynastryDetail from '../components/details/SynastryDetail'
 import ProfileDetail from '../components/details/ProfileDetail'
@@ -41,6 +45,9 @@ import PractitionerPortal from './PractitionerPortal'
 import ClientPortal from './ClientPortal'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
+import { getBiorhythms } from '../engines/biorhythmEngine'
+import { getTarotBirthCards } from '../engines/tarotEngine'
+import { getCelticTree } from '../engines/celticTreeEngine'
 import { GK_LIST } from '../data/geneKeysData'
 import { MAYAN_PROFILE } from '../data/mayanData'
 import { ENNEAGRAM_PROFILE, ENNEAGRAM_TYPES } from '../data/enneagramData'
@@ -110,6 +117,14 @@ const ROWS = [
     widgets: ['vedic'],
     cols: '1fr',
   },
+  {
+    label: 'CYCLES & DIVINATION',
+    sub: 'Biorhythms \u00B7 Tarot Birth Cards \u00B7 Celtic Tree Calendar',
+    color: 'rgba(96,200,80,1)',
+    border: 'rgba(96,200,80,.3)',
+    widgets: ['biorhythm', 'tarot', 'celtic'],
+    cols: '1.5fr 1fr 1fr',
+  },
 ]
 
 const CARD_HEIGHT = 440
@@ -135,6 +150,9 @@ const DETAIL_COMPONENTS = {
   mbti: MBTIDetail,
   egyptian: EgyptianDetail,
   vedic: VedicDetail,
+  biorhythm: BiorhythmDetail,
+  tarot: TarotDetail,
+  celtic: CelticTreeDetail,
   synastry: SynastryDetail,
   profile: ProfileDetail,
   pricing: PricingPage,
@@ -157,8 +175,11 @@ const DETAIL_TITLES = {
   pat: 'Patterns \u2014 Cross-Framework Alignments',
   mbti: 'Myers-Briggs \u2014 Personality Type',
   egyptian: 'Egyptian Astrology \u2014 Full Profile',
-  vedic: 'Vedic Astrology \u2014 Jyotish Profile',
-  synastry: 'Synastry \u2014 Composite Analysis',
+  vedic:     'Vedic Astrology \u2014 Jyotish Profile',
+  biorhythm: 'Biorhythms \u2014 Physical \u00B7 Emotional \u00B7 Intellectual',
+  tarot:     'Tarot Birth Cards \u2014 Major Arcana Soul Reading',
+  celtic:    'Celtic Tree Calendar \u2014 Ogham Tree Zodiac',
+  synastry:  'Synastry \u2014 Composite Analysis',
   profile: 'Profiles \u2014 Constellation',
   pricing: 'Choose Your Path \u2014 Pricing',
   practitioner: 'Practitioner Portal \u2014 Practice Management',
@@ -198,6 +219,87 @@ function NatalWidget() {
       </div>
       <div className="cb"><NatalWheel showAspects={showAspects} showHouses={showHouses} /></div>
     </>
+  )
+}
+
+function TarotWidget() {
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  let result
+  if (primaryProfile?.dob) {
+    const [y, m, d] = primaryProfile.dob.split('-').map(Number)
+    result = getTarotBirthCards({ day: d, month: m, year: y })
+  } else {
+    result = getTarotBirthCards({ day: 23, month: 1, year: 1981 })
+  }
+  const { primaryCard, pairCard, birthNumber } = result
+  const ROMAN = { 1:'I',2:'II',3:'III',4:'IV',5:'V',6:'VI',7:'VII',8:'VIII',9:'IX',10:'X',11:'XI',12:'XII',13:'XIII',14:'XIV',15:'XV',16:'XVI',17:'XVII',18:'XVIII',19:'XIX',20:'XX',21:'XXI',22:'0' }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%', padding: '8px 0' }}>
+      <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
+        {primaryCard && (
+          <div style={{ textAlign: 'center', padding: '16px 20px', borderRadius: 12, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.2)', minWidth: 100 }}>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', color: 'rgba(201,168,76,.6)', marginBottom: 6 }}>BIRTH CARD</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 36, color: 'var(--gold)', lineHeight: 1, marginBottom: 6 }}>{ROMAN[primaryCard.num]}</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--gold)', letterSpacing: '.08em' }}>{primaryCard.name}</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', marginTop: 4 }}>{primaryCard.archetype}</div>
+          </div>
+        )}
+        {pairCard && (
+          <div style={{ textAlign: 'center', padding: '16px 20px', borderRadius: 12, background: 'rgba(144,80,224,.06)', border: '1px solid rgba(144,80,224,.2)', minWidth: 100 }}>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', color: 'rgba(144,80,224,.6)', marginBottom: 6 }}>SHADOW</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 36, color: 'rgba(144,80,224,1)', lineHeight: 1, marginBottom: 6 }}>{ROMAN[pairCard.num]}</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'rgba(144,80,224,1)', letterSpacing: '.08em' }}>{pairCard.name}</div>
+            <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', marginTop: 4 }}>{pairCard.archetype}</div>
+          </div>
+        )}
+      </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Inconsolata',monospace" }}>
+        Birth Number · {birthNumber}
+      </div>
+    </div>
+  )
+}
+
+function CelticWidget() {
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  let tree
+  if (primaryProfile?.dob) {
+    const [, m, d] = primaryProfile.dob.split('-').map(Number)
+    tree = getCelticTree({ day: d, month: m })
+  } else {
+    tree = getCelticTree({ day: 23, month: 1 })
+  }
+  const ELEMENT_COLORS = { Air:'rgba(64,204,221,1)', Fire:'rgba(255,120,60,1)', Water:'rgba(80,140,220,1)', Earth:'rgba(120,180,80,1)', All:'rgba(201,168,76,1)' }
+  const elCol = ELEMENT_COLORS[tree?.element] || 'rgba(201,168,76,1)'
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  const fmt = ([mo, dy]) => `${months[mo - 1]} ${dy}`
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%', padding: '8px 0' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: 40, lineHeight: 1, marginBottom: 8 }}>🌿</div>
+        <div style={{ fontFamily: "'Cinzel',serif", fontSize: 20, color: elCol, letterSpacing: '.15em' }}>{tree?.name}</div>
+        <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+          {tree?.ogham}
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--text2)', fontStyle: 'italic', marginTop: 6, maxWidth: 200, lineHeight: 1.5 }}>
+          {tree?.meaning}
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: elCol, background: elCol.replace('1)', '.08)'), border: `1px solid ${elCol.replace('1)', '.25)')}` }}>
+          {tree?.element}
+        </span>
+        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: 'var(--gold3)', background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)' }}>
+          {tree?.planet}
+        </span>
+        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: 'var(--text2)', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.1)' }}>
+          {tree?.keyword}
+        </span>
+      </div>
+      <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Inconsolata',monospace" }}>
+        {tree ? `${fmt(tree.startDate)} – ${fmt(tree.endDate)}` : ''}
+      </div>
+    </div>
   )
 }
 
@@ -389,6 +491,31 @@ function WidgetContent({ widgetId }) {
           <div className="cb"><VedicChart /></div>
         </>
       )
+    case 'biorhythm':
+      return (
+        <>
+          <div className="ch"><span className="ct">Biorhythms &middot; Physical &middot; Emotional &middot; Intellectual</span><span className="ci">{'◈'}</span></div>
+          <div className="cb"><BiorhythmChart /></div>
+        </>
+      )
+    case 'tarot':
+      return (
+        <>
+          <div className="ch"><span className="ct">Tarot Birth Cards &middot; Major Arcana &middot; Soul Cards</span><span className="ci">{'🃏'}</span></div>
+          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, padding: '16px' }}>
+            <TarotWidget />
+          </div>
+        </>
+      )
+    case 'celtic':
+      return (
+        <>
+          <div className="ch"><span className="ct">Celtic Tree Calendar &middot; Ogham &middot; Sacred Trees</span><span className="ci">{'🌳'}</span></div>
+          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, padding: '16px' }}>
+            <CelticWidget />
+          </div>
+        </>
+      )
     default:
       return null
   }
@@ -415,7 +542,10 @@ const WIDGET_META = {
   pat: { icon: '\u{1F578}', label: 'Patterns', sub: 'Cross-Framework \u00B7 Alignments' },
   mbti: { icon: '\u{1F9E0}', label: 'Myers-Briggs', sub: 'Personality Type \u00B7 Cognitive Functions' },
   egyptian: { icon: '\u{1F3DB}', label: 'Egyptian Astrology', sub: 'Ancient Egypt \u00B7 Zodiac' },
-  vedic: { icon: '🕉️', label: 'Vedic Astrology', sub: 'Jyotish \u00B7 Sidereal \u00B7 Nakshatras' },
+  vedic:      { icon: '🕉️', label: 'Vedic Astrology', sub: 'Jyotish \u00B7 Sidereal \u00B7 Nakshatras' },
+  biorhythm:  { icon: '◈', label: 'Biorhythms', sub: 'Physical \u00B7 Emotional \u00B7 Intellectual' },
+  tarot:      { icon: '🃏', label: 'Tarot Birth Cards', sub: 'Major Arcana \u00B7 Soul Cards' },
+  celtic:     { icon: '🌳', label: 'Celtic Tree Calendar', sub: 'Ogham \u00B7 13 Sacred Trees' },
   practitioner: { icon: '\uD83C\uDFE5', label: 'Practitioner Portal', sub: 'Clients \u00B7 Sessions \u00B7 Revenue' },
   client: { icon: '\uD83D\uDCCB', label: 'Client Portal', sub: 'Sessions \u00B7 Progress \u00B7 Messages' },
 }
@@ -436,7 +566,10 @@ const WIDGET_CATEGORIES = {
   enn:      { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
   chi:      { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
   mbti:     { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
-  pat:      { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
+  pat:        { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
+  biorhythm:  { label: 'CYCLES',      color: 'rgba(96,200,80,.8)',  bg: 'rgba(96,200,80,.08)',  border: 'rgba(96,200,80,.2)'  },
+  tarot:      { label: 'DIVINATION',  color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  celtic:     { label: 'CELTIC',      color: 'rgba(120,180,80,.8)', bg: 'rgba(120,180,80,.08)', border: 'rgba(120,180,80,.2)' },
 }
 
 function CategoryBadge({ widgetId }) {
