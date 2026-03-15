@@ -1,6 +1,40 @@
 import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { HEBREW_ALPHABET, GEMATRIA_PROFILE } from '../../data/gematriaData'
+import { HEBREW_ALPHABET, GEMATRIA_PROFILE, getGematriaProfile } from '../../data/gematriaData'
+import { DEFAULT_PRIMARY_PROFILE } from '../../data/primaryProfile'
+
+// Compute chart data from engine (dynamic, reads primaryProfile)
+function getChartData() {
+  const { name, dob } = DEFAULT_PRIMARY_PROFILE
+  let day = 23, month = 1, year = 1981
+  if (dob) {
+    const parts = dob.split('-')
+    year = parseInt(parts[0], 10)
+    month = parseInt(parts[1], 10)
+    day = parseInt(parts[2], 10)
+  }
+  const fullName = name || 'GASTON FRYDLEWSKI'
+  const eng = getGematriaProfile({ fullName, day, month, year })
+
+  // Build a letterBreakdown compatible with the canvas drawing code:
+  // needs { letter, hebrewEquiv, hebrewValue }
+  const letterBreakdown = eng.nameLetterBreakdown.map(({ letter }) => {
+    const staticEntry = GEMATRIA_PROFILE.letterBreakdown.find(b => b.letter === letter)
+    return {
+      letter,
+      hebrewEquiv: staticEntry?.hebrewEquiv || '--',
+      hebrewChar: staticEntry?.hebrewChar || '',
+      hebrewValue: staticEntry?.hebrewValue || 0,
+    }
+  })
+
+  return {
+    fullName,
+    breakdown: letterBreakdown,
+    totalHebrew: eng.methods.hebrew.fullName.total,
+    reducedHebrew: eng.methods.hebrew.fullName.reduced,
+  }
+}
 
 export default function GematriaChart() {
   const canvasRef = useRef(null)
@@ -14,9 +48,10 @@ export default function GematriaChart() {
     if (!canvas) return
     let pulse = 0
 
-    const name = GEMATRIA_PROFILE.fullName.toUpperCase().replace(/\s/g, '')
-    const breakdown = GEMATRIA_PROFILE.letterBreakdown
-    const totalHebrew = GEMATRIA_PROFILE.hebrew.fullValue
+    const chartData = getChartData()
+    const name = chartData.fullName.toUpperCase().replace(/\s/g, '')
+    const breakdown = chartData.breakdown
+    const totalHebrew = chartData.totalHebrew
 
     // Build letter frequency map
     const freq = {}
@@ -245,7 +280,7 @@ export default function GematriaChart() {
       // Reduced value small
       ctx.font = `${Math.max(6, outerR * .04)}px 'Inconsolata',monospace`
       ctx.fillStyle = 'rgba(201,168,76,.35)'
-      ctx.fillText('\u2192 ' + GEMATRIA_PROFILE.hebrew.reducedValue, cx, cy + centerSize * 1.1)
+      ctx.fillText('\u2192 ' + chartData.reducedHebrew, cx, cy + centerSize * 1.1)
 
       // Bottom: letter frequency bar chart
       const barArea = { x: W * .08, y: H * .86, w: W * .84, h: H * .10 }

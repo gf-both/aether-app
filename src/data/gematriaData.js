@@ -303,3 +303,8 @@ export const GEMATRIA_PROFILE = {
     },
   ],
 }
+
+
+// ── Engine Export ─────────────────────────────────────────────────────────────
+// Re-export the Gematria calculation engine so consumers can import from here.
+export { getGematriaProfile } from '../engines/gematriaEngine'

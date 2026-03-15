@@ -1,4 +1,95 @@
-import { HEBREW_ALPHABET, GEMATRIA_METHODS, GEMATRIA_PROFILE } from '../../data/gematriaData'
+import { HEBREW_ALPHABET, GEMATRIA_METHODS, GEMATRIA_PROFILE, getGematriaProfile } from '../../data/gematriaData'
+import { DEFAULT_PRIMARY_PROFILE } from '../../data/primaryProfile'
+
+// Build a dynamically-computed profile from the engine, merged with the rich
+// static content (interpretations, kabbalistic paths) that is editorial in nature.
+function buildComputedProfile() {
+  const { name, dob } = DEFAULT_PRIMARY_PROFILE
+  let day = 23, month = 1, year = 1981
+  if (dob) {
+    const parts = dob.split('-')
+    year = parseInt(parts[0], 10)
+    month = parseInt(parts[1], 10)
+    day = parseInt(parts[2], 10)
+  }
+  const fullName = name || 'GASTON FRYDLEWSKI'
+  const eng = getGematriaProfile({ fullName, day, month, year })
+
+  // Map engine output to the shape expected by the existing template
+  const heb = eng.methods.hebrew
+  const pyt = eng.methods.pythagorean
+  const cha = eng.methods.chaldean
+  const ord = eng.methods.ordinal
+
+  return {
+    // Identity
+    fullName: fullName,
+    firstName: fullName.split(' ')[0],
+    lastName: fullName.split(' ').slice(1).join(' ') || fullName.split(' ')[0],
+
+    // Hebrew block
+    hebrew: {
+      fullValue: heb.fullName.total,
+      firstNameValue: heb.firstName.total,
+      lastNameValue: heb.lastName.total,
+      reducedValue: heb.fullName.reduced,
+      significantNumbers: [heb.fullName.total, heb.firstName.total, heb.lastName.total, heb.fullName.reduced],
+    },
+
+    // Pythagorean block
+    pythagorean: {
+      fullValue: pyt.fullName.total,
+      firstNameValue: pyt.firstName.total,
+      lastNameValue: pyt.lastName.total,
+      reducedValue: pyt.fullName.reduced,
+      nameNumber: pyt.fullName.reduced,
+      vowelNumber: eng.soulNumber ? eng.soulNumber.reduced : 0,
+      consonantNumber: eng.personalityNumber ? eng.personalityNumber.reduced : 0,
+      rawVowelSum: eng.soulNumber ? eng.soulNumber.total : 0,
+      rawConsonantSum: eng.personalityNumber ? eng.personalityNumber.total : 0,
+    },
+
+    // Chaldean block
+    chaldean: {
+      fullValue: cha.fullName.total,
+      firstNameValue: cha.firstName.total,
+      lastNameValue: cha.lastName.total,
+      reducedValue: cha.fullName.reduced,
+    },
+
+    // English ordinal block
+    english: {
+      fullValue: ord.fullName.total,
+      firstNameValue: ord.firstName.total,
+      lastNameValue: ord.lastName.total,
+      reducedValue: ord.fullName.reduced,
+    },
+
+    // Letter breakdown — build rich version with all system values
+    letterBreakdown: eng.nameLetterBreakdown.map(({ letter }) => {
+      const hebrewMatch = GEMATRIA_PROFILE.letterBreakdown.find(b => b.letter === letter)
+      const pytEntry = pyt.fullName.letterValues.find(lv => lv.letter === letter)
+      const chaEntry = cha.fullName.letterValues.find(lv => lv.letter === letter)
+      const ordEntry = ord.fullName.letterValues.find(lv => lv.letter === letter)
+      return {
+        letter,
+        hebrewEquiv: hebrewMatch?.hebrewEquiv || '--',
+        hebrewChar: hebrewMatch?.hebrewChar || '',
+        hebrewValue: hebrewMatch?.hebrewValue || 0,
+        pythagoreanValue: pytEntry?.value || 0,
+        chaldeanValue: chaEntry?.value || 0,
+        ordinalValue: ordEntry?.value || 0,
+      }
+    }),
+
+    // Engine extras
+    engineProfile: eng,
+
+    // Rich editorial content — kept from static profile
+    significantMatches: GEMATRIA_PROFILE.significantMatches,
+    kabbalisticCorrespondences: GEMATRIA_PROFILE.kabbalisticCorrespondences,
+  }
+}
 
 /* ---- shared styles ---- */
 const S = {
@@ -87,7 +178,8 @@ function NumCircle({ val, color, size = 54, label, sub }) {
 }
 
 export default function GematriaDetail() {
-  const P = GEMATRIA_PROFILE
+  // Use engine-computed profile (dynamic, reads from primaryProfile)
+  const P = buildComputedProfile()
 
   return (
     <div style={S.panel}>
