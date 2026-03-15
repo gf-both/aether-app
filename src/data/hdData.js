@@ -1,3 +1,14 @@
+/**
+ * hdData.js — Static layout data for the Human Design canvas.
+ *
+ * CENTERS, CHANNELS (canvas indices), and GATES drive the body graph rendering.
+ * The `defined` state is now computed dynamically by hdEngine.js.
+ *
+ * DESIGN_PLANETS, PERSONALITY_PLANETS, and HD_TAGS are computed from the engine
+ * — see HumanDesign.jsx and HDDetail.jsx for usage.
+ */
+
+// Canvas layout data for body graph rendering (positions in 0-1 normalized coords)
 export const CENTERS = [
   { name: 'HEAD',   xf: .50, yf: .06, shape: 'tri_up',    defined: false, col: 'rgba(120,130,170,' },
   { name: 'AJNA',   xf: .50, yf: .19, shape: 'tri_down',  defined: false, col: 'rgba(120,130,170,' },
@@ -10,11 +21,20 @@ export const CENTERS = [
   { name: 'ROOT',   xf: .50, yf: .79, shape: 'rect',      defined: true,  col: 'rgba(80,80,200,' },
 ]
 
+// Canvas center index map (name → index in CENTERS array)
+export const CENTER_INDEX = {
+  HEAD: 0, AJNA: 1, THROAT: 2, G_SELF: 3, HEART: 4,
+  SACRAL: 5, SPLEEN: 6, SOLAR: 7, ROOT: 8,
+}
+
+// Canvas channel connections [centerIndex1, centerIndex2, defined]
+// defined state is updated dynamically from engine output
 export const CHANNELS = [
   [0,1,false],[1,2,false],[2,3,true],[3,5,false],[3,4,false],
   [5,8,false],[6,5,false],[4,7,false],[7,8,true],[6,8,true],[2,7,false],
 ]
 
+// Gate label positions on canvas
 export const GATES = [
   { x: .5, y: .12, g: '64 61 63' },
   { x: .5, y: .25, g: '47 24 4' },
@@ -27,27 +47,24 @@ export const GATES = [
   { x: .5, y: .855, g: '53 60 52 19 58 41' },
 ]
 
-export const DESIGN_PLANETS = [
-  { sym: '☉', val: '28.5' }, { sym: '⊕', val: '27.5' }, { sym: '☽', val: '53.4' },
-  { sym: '☊', val: '7.4' },  { sym: '☋', val: '13.4' }, { sym: '☿', val: '1.5' },
-  { sym: '♀', val: '46.1' }, { sym: '♂', val: '5.1' },  { sym: '♃', val: '46.3' },
-  { sym: '♄', val: '18.1' }, { sym: '♅', val: '14.1' }, { sym: '♆', val: '26.5' },
-  { sym: '♇', val: '32.2' },
-]
+// Planet symbols (used in planet tables)
+export const PLANET_SYMBOLS = {
+  sun:       '☉',
+  earth:     '⊕',
+  moon:      '☽',
+  northNode: '☊',
+  southNode: '☋',
+  mercury:   '☿',
+  venus:     '♀',
+  mars:      '♂',
+  jupiter:   '♃',
+  saturn:    '♄',
+  uranus:    '♅',
+  neptune:   '♆',
+  pluto:     '♇',
+}
 
-export const PERSONALITY_PLANETS = [
-  { sym: '☉', val: '41.3' }, { sym: '⊕', val: '31.3' }, { sym: '☽', val: '47.2' },
-  { sym: '☊', val: '33.4' }, { sym: '☋', val: '19.4' }, { sym: '☿', val: '49.1' },
-  { sym: '♀', val: '54.1' }, { sym: '♂', val: '49.1' }, { sym: '♃', val: '48.1' },
-  { sym: '♄', val: '48.1' }, { sym: '♅', val: '14.6' }, { sym: '♆', val: '11.2' },
-  { sym: '♇', val: '32.4' },
-]
-
-export const HD_TAGS = [
-  { label: 'PROJECTOR', bg: 'rgba(64,204,221,.07)', border: 'rgba(64,204,221,.22)', color: 'var(--aqua2)' },
-  { label: '3/5 MARTYR·HERETIC', bg: 'rgba(201,168,76,.06)', border: 'rgba(201,168,76,.18)', color: 'var(--gold)' },
-  { label: 'EMOTIONAL AUTHORITY', bg: 'rgba(212,48,112,.06)', border: 'rgba(240,96,160,.18)', color: 'var(--rose2)' },
-  { label: 'SPLIT DEFINITION', bg: 'rgba(104,32,176,.06)', border: 'rgba(144,80,224,.18)', color: 'var(--violet2)' },
-  { label: 'WAIT FOR INVITATION', bg: 'rgba(96,176,48,.06)', border: 'rgba(96,176,48,.18)', color: 'var(--lime2)' },
-  { label: 'CROSS UNEXPECTED 41/31|28/27', bg: 'rgba(136,68,255,.06)', border: 'rgba(136,68,255,.18)', color: '#aa80ff' },
+export const PLANET_ORDER = [
+  'sun','earth','moon','northNode','southNode',
+  'mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto',
 ]

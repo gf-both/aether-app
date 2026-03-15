@@ -1,70 +1,113 @@
+import { useMemo } from 'react'
 import HumanDesign from '../canvas/HumanDesign'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { computeHDChart } from '../../engines/hdEngine'
+import { PLANET_SYMBOLS, PLANET_ORDER } from '../../data/hdData'
 
-const HD_PROFILE = {
+// ── Fallback static profile (used if engine fails) ─────────────────────────
+const FALLBACK_PROFILE = {
   type: 'Projector', strategy: 'Wait for the Invitation', authority: 'Emotional - Solar Plexus',
-  profile: '3/5 \u2014 Martyr / Heretic', definition: 'Split Definition',
+  profile: '3/5', profileNames: 'Martyr / Heretic', definition: 'Split Definition',
   cross: 'Right Angle Cross of the Unexpected (41/31 | 28/27)',
   notSelf: 'Bitterness', signature: 'Success',
-  variable: { design: 'PRR', personality: 'DLL' },
 }
 
-const CENTERS_DETAIL = [
-  { name: 'Head', defined: false, meaning: 'Open to inspiration from many sources, not pressured by fixed mental patterns' },
-  { name: 'Ajna', defined: false, meaning: 'Flexible thinking, can see all perspectives but may feel mental pressure' },
-  { name: 'Throat', defined: true, meaning: 'Consistent voice and manifestation capacity, natural communicator' },
-  { name: 'G/Self', defined: true, meaning: 'Fixed identity and direction, knows who they are and where they are going' },
-  { name: 'Heart/Will', defined: false, meaning: 'Not here to prove worth through willpower, free from ego pressure' },
-  { name: 'Sacral', defined: false, meaning: 'Projector \u2014 no consistent life force energy, must manage energy wisely' },
-  { name: 'Spleen', defined: true, meaning: 'Consistent intuitive awareness, spontaneous knowing, survival instincts grounded in the body' },
-  { name: 'Solar Plexus', defined: true, meaning: 'Emotional authority \u2014 rides the wave, never decides in the moment' },
-  { name: 'Root', defined: true, meaning: 'Consistent adrenaline pressure, can handle stress without being overwhelmed' },
-]
+const GATE_DESCRIPTIONS = {
+  41: 'Decrease — Contraction, fantasy, imagination',
+  31: 'Influence — Leadership, democracy, elected leader',
+  28: 'The Great — Struggle, game player, risk',
+  27: 'Nourishment — Caring, altruism, selflessness',
+  7:  'The Army — Role of the self, direction, leadership',
+  13: 'Fellowship — Listener, secrets, memory',
+  33: 'Retreat — Privacy, reflection, spirit',
+  19: 'Approach — Wanting, sensitivity, need',
+  49: 'Revolution — Principles, rejection, transformation',
+  54: 'The Marrying Maiden — Ambition, drive, greed',
+  32: 'Duration — Continuity, conservation, transformation',
+  53: 'Development — Starting, initiation, new beginnings',
+  1:  'Self-Expression — Creative, individual, unique',
+  46: 'Pushing Upward — Body, serendipity, love of body',
+  5:  'Waiting — Fixed rhythms, patience, habits',
+  47: 'Oppression — Realization, mental process, epiphany',
+  48: 'The Well — Depth, talent, inadequacy',
+  14: 'Possession — Power skills, direction of resources',
+  18: 'Work on What Has Been Spoilt — Correction, judgment',
+  26: 'The Taming Power — Egoist, memory, accumulation',
+  11: 'Peace — Ideas, harmony, conceptualization',
+  57: 'The Gentle — Intuition, instinct, clarity',
+  34: 'The Power of the Great — Power, strength, energy',
+  20: 'Contemplation — Now, awareness, presence',
+  17: 'Following — Opinions, organization, opinionated',
+  15: 'Modesty — Extremes, love of humanity, flow',
+  29: 'The Abysmal — Yes, commitment, perseverance',
+  2:  'The Receptive — Direction, higher self, receptivity',
+  10: 'Treading — Behaviour, love of self, journey',
+  8:  'Holding Together — Contribution, individual, role model',
+  25: 'Innocence — Spirit, universal love, universalizing',
+  51: 'The Arousing — Shock, initiative, competition',
+  40: 'Deliverance — Aloneness, desire, work',
+  37: 'The Family — Friendship, equality, community',
+  36: 'The Darkening of the Light — Crisis, inexperience, sensitivity',
+  22: 'Grace — Openness, social being, emotional expression',
+  55: 'Abundance — Spirit, mood, freedom',
+  39: 'Obstruction — Provocation, pressure, optimism',
+  30: 'The Clinging Fire — Recognition, desire, feelings',
+  38: 'Opposition — Fighter, struggle, perseverance',
+  58: 'The Joyous — Vitality, aliveness, joy',
+  50: 'The Cauldron — Values, responsibility, nurturing',
+  44: 'Coming to Meet — Alertness, memory, patterns',
+  43: 'Breakthrough — Insight, knowing, individuality',
+  24: 'Return — Rationalization, returning, mental renewal',
+  4:  'Youthful Folly — Formulization, logic, answers',
+  63: 'After Completion — Doubt, questions, completion',
+  64: 'Before Completion — Confusion, cycles, transition',
+  23: 'Splitting Apart — Assimilation, mutation, fringe',
+  62: 'Preponderance of the Small — Detail, precision, small steps',
+  16: 'Enthusiasm — Talents, skills, zeal',
+  35: 'Progress — Experience, change, hunger',
+  12: 'Standstill — Caution, social spirit, articulation',
+  45: 'Gathering Together — Ruler, tribe, community',
+  21: 'Biting Through — Control, hunter, self-regulation',
+  42: 'Increase — Growth, expansion, maturation',
+  3:  'Difficulty at the Beginning — Innovation, mutation, chaos',
+  60: 'Limitation — Acceptance, mutation, stillness',
+  52: 'Keeping Still (Mountain) — Stillness, concentration, inaction',
+  9:  'The Taming Power of the Small — Focus, determination, details',
+  59: 'Dispersion — Sexuality, openness, breaking down barriers',
+  6:  'Conflict — Friction, bonding, intimacy',
+}
 
-const CHANNELS = [
-  { name: 'Channel of The Alpha', gates: '7-31', type: 'Collective', center1: 'G/Self', center2: 'Throat' },
-  { name: 'Channel of The Prodigal', gates: '13-33', type: 'Collective', center1: 'G/Self', center2: 'Throat' },
-  { name: 'Channel of Synthesis', gates: '19-49', type: 'Tribal', center1: 'Root', center2: 'Solar Plexus' },
-  { name: 'Channel of Transformation', gates: '32-54', type: 'Tribal', center1: 'Spleen', center2: 'Root' },
-]
+const CENTER_MEANINGS = {
+  HEAD:   'Inspiration and pressure to think — the source of mental inquiry',
+  AJNA:   'Conceptualization and mental processing — fixed ways of thinking',
+  THROAT: 'Manifestation, communication, and action — the center of expression',
+  'G/SELF': 'Identity, love, and direction — the magnetic core of the self',
+  HEART:  'Will power, ego, and tribal commitments — the seat of courage',
+  SACRAL: 'Life force energy, sexuality, and sustainability — generator power',
+  SPLEEN: 'Spontaneous awareness, immune system, intuition, and survival instincts',
+  SOLAR:  'Emotional wave, feelings, and sensitivity — the source of emotional clarity',
+  ROOT:   'Adrenaline pressure, stress, and the drive to complete — root force',
+}
 
-const GATES = [
-  { num: 41, line: 3, desc: 'Decrease \u2014 Contraction, fantasy, imagination' },
-  { num: 31, line: 3, desc: 'Influence \u2014 Leadership, democracy, elected leader' },
-  { num: 28, line: 5, desc: 'The Great \u2014 Struggle, game player, risk' },
-  { num: 27, line: 5, desc: 'Nourishment \u2014 Caring, altruism, selflessness' },
-  { num: 7, line: 4, desc: 'The Army \u2014 Role of the self, direction, leadership' },
-  { num: 13, line: 4, desc: 'Fellowship \u2014 Listener, secrets, memory' },
-  { num: 33, line: 4, desc: 'Retreat \u2014 Privacy, reflection, spirit' },
-  { num: 19, line: 4, desc: 'Approach \u2014 Wanting, sensitivity, need' },
-  { num: 49, line: 1, desc: 'Revolution \u2014 Principles, rejection, transformation' },
-  { num: 54, line: 1, desc: 'The Marrying Maiden \u2014 Ambition, drive, greed' },
-  { num: 32, line: 2, desc: 'Duration \u2014 Continuity, conservation, transformation' },
-  { num: 53, line: 4, desc: 'Development \u2014 Starting, initiation, new beginnings' },
-  { num: 1, line: 5, desc: 'Self-Expression \u2014 Creative, individual, unique' },
-  { num: 46, line: 1, desc: 'Pushing Upward \u2014 Body, serendipity, love of body' },
-  { num: 5, line: 1, desc: 'Waiting \u2014 Fixed rhythms, patience, habits' },
-  { num: 47, line: 2, desc: 'Oppression \u2014 Realization, mental process, epiphany' },
-  { num: 48, line: 1, desc: 'The Well \u2014 Depth, talent, inadequacy' },
-  { num: 14, line: 1, desc: 'Possession \u2014 Power skills, direction of resources' },
-  { num: 18, line: 1, desc: 'Work on What Has Been Spoilt \u2014 Correction, judgment' },
-  { num: 26, line: 5, desc: 'The Taming Power \u2014 Egoist, memory, accumulation' },
-  { num: 11, line: 2, desc: 'Peace \u2014 Ideas, harmony, conceptualization' },
-]
-
-const CENTER_GLYPHS = {
-  Head: '\u2731', Ajna: '\u25C7', Throat: '\u25CE', 'G/Self': '\u2B21',
-  'Heart/Will': '\u2665', Sacral: '\u25A3', Spleen: '\u25C6',
-  'Solar Plexus': '\u223F', Root: '\u25A0',
+const CENTER_DISPLAY_NAMES = {
+  HEAD: 'Head', AJNA: 'Ajna', THROAT: 'Throat', G_SELF: 'G/Self',
+  HEART: 'Heart/Will', SACRAL: 'Sacral', SPLEEN: 'Spleen', SOLAR: 'Solar Plexus', ROOT: 'Root',
 }
 
 const TYPE_COLORS = {
-  Projector: { bg: 'rgba(201,168,76,.1)', border: 'rgba(201,168,76,.3)', color: 'var(--gold2)' },
-  Generator: { bg: 'rgba(212,48,112,.1)', border: 'rgba(240,96,160,.3)', color: 'var(--rose2)' },
-  Manifestor: { bg: 'rgba(238,68,68,.1)', border: 'rgba(238,68,68,.3)', color: '#ee5544' },
-  Reflector: { bg: 'rgba(144,80,224,.1)', border: 'rgba(144,80,224,.3)', color: 'var(--violet2)' },
+  Projector:             { bg: 'rgba(201,168,76,.1)',   border: 'rgba(201,168,76,.3)',   color: 'var(--gold2)' },
+  Generator:             { bg: 'rgba(212,48,112,.1)',   border: 'rgba(240,96,160,.3)',   color: 'var(--rose2)' },
+  'Manifesting Generator': { bg: 'rgba(212,48,112,.1)', border: 'rgba(240,96,160,.3)', color: 'var(--rose2)' },
+  Manifestor:            { bg: 'rgba(238,68,68,.1)',    border: 'rgba(238,68,68,.3)',    color: '#ee5544' },
+  Reflector:             { bg: 'rgba(144,80,224,.1)',   border: 'rgba(144,80,224,.3)',   color: 'var(--violet2)' },
 }
 
-/* ---- shared styles ---- */
+const CENTER_GLYPHS = {
+  Head: '✱', Ajna: '◇', Throat: '◎', 'G/Self': '⬡',
+  'Heart/Will': '♥', Sacral: '▣', Spleen: '◆', 'Solar Plexus': '∿', Root: '■',
+}
+
+/* ─── Styles ──────────────────────────────────────────────────────────────── */
 const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
@@ -77,24 +120,12 @@ const S = {
     textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
     borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
   },
-  heading: {
-    fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
-  },
-  subHeading: {
-    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
-  },
-  mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
-  },
-  monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
-  },
+  heading: { fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em', color: 'var(--gold)', marginBottom: 4 },
+  mono:   { fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)' },
+  monoSm: { fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)' },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--row-bg)', border: '1px solid var(--row-border)',
   },
   glass: {
     background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
@@ -110,34 +141,82 @@ const S = {
     padding: '14px 18px', borderRadius: 10,
     background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
   },
-  keyVal: {
-    display: 'flex', alignItems: 'center', gap: 16,
-    padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,.04)',
-  },
+  keyVal: { display: 'flex', alignItems: 'center', gap: 16, padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,.04)' },
 }
 
 export default function HDDetail() {
-  const tc = TYPE_COLORS[HD_PROFILE.type] || TYPE_COLORS.Projector
-  const definedCount = CENTERS_DETAIL.filter(c => c.defined).length
-  const undefinedCount = CENTERS_DETAIL.length - definedCount
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+
+  const chart = useMemo(() => {
+    try {
+      const { dob, tob } = primaryProfile
+      if (!dob) return null
+      return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: -3 })
+    } catch (e) {
+      console.error('HDDetail chart error:', e)
+      return null
+    }
+  }, [primaryProfile])
+
+  const hd = chart || FALLBACK_PROFILE
+  const tc = TYPE_COLORS[hd.type] || TYPE_COLORS.Projector
+
+  // Build centers list from engine output
+  const centersDisplay = chart
+    ? Object.entries(chart.centers).map(([key, val]) => ({
+        key,
+        name: CENTER_DISPLAY_NAMES[key] || key,
+        defined: val.defined,
+        meaning: CENTER_MEANINGS[key] || CENTER_MEANINGS[CENTER_DISPLAY_NAMES[key] || key] || '',
+      }))
+    : Object.keys(CENTER_MEANINGS).map(k => ({
+        key: k, name: CENTER_DISPLAY_NAMES[k] || k, defined: false, meaning: CENTER_MEANINGS[k],
+      }))
+
+  const definedCount   = centersDisplay.filter(c => c.defined).length
+  const undefinedCount = centersDisplay.length - definedCount
+
+  // Active channels from engine
+  const channelsDisplay = chart
+    ? chart.activeChannels.map(ch => ({
+        name: ch.name,
+        gates: ch.gates.join('-'),
+        type: ch.circuit || 'Collective',
+        center1: CENTER_DISPLAY_NAMES[ch.centers[0]] || ch.centers[0],
+        center2: CENTER_DISPLAY_NAMES[ch.centers[1]] || ch.centers[1],
+      }))
+    : []
+
+  // Active gates from both personality and design
+  const allGates = chart
+    ? Array.from(new Set([
+        ...Object.values(chart.personality),
+        ...Object.values(chart.design),
+      ].map(p => p.gate))).sort((a, b) => a - b)
+    : []
+
+  // Profile string for display
+  const profileDisplay = chart
+    ? `${chart.profile} — ${chart.profileNames}`
+    : '3/5 — Martyr / Heretic'
 
   return (
     <div style={S.panel}>
       {/* HEADER */}
       <div>
-        <div style={S.heading}>{'\u25C8'} Human Design</div>
+        <div style={S.heading}>◈ Human Design</div>
         <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
-          Rave Chart body graph analysis -- type, authority, centers, channels, and gates
+          Rave Chart body graph analysis — type, authority, centers, channels, and gates
+          {chart && <span style={{ color: 'var(--text3)', marginLeft: 8, fontSize: 11 }}>
+            · Design date: {chart.designDate}
+          </span>}
         </div>
       </div>
 
-      {/* BODY GRAPH VISUALIZATION */}
+      {/* BODY GRAPH */}
       <div>
         <div style={S.sectionTitle}>Body Graph</div>
-        <div style={{
-          ...S.glass, padding: 0, overflow: 'hidden',
-          height: 460, position: 'relative',
-        }}>
+        <div style={{ ...S.glass, padding: 0, overflow: 'hidden', height: 460, position: 'relative' }}>
           <HumanDesign />
         </div>
       </div>
@@ -147,27 +226,20 @@ export default function HDDetail() {
         <div style={S.sectionTitle}>Core Profile</div>
         <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 2 }}>
           {[
-            ['Type', HD_PROFILE.type],
-            ['Strategy', HD_PROFILE.strategy],
-            ['Authority', HD_PROFILE.authority],
-            ['Profile', HD_PROFILE.profile],
-            ['Definition', HD_PROFILE.definition],
-            ['Incarnation Cross', HD_PROFILE.cross],
+            ['Type',             hd.type],
+            ['Strategy',         hd.strategy],
+            ['Authority',        hd.authority],
+            ['Profile',          profileDisplay],
+            ['Definition',       hd.definition],
+            ['Incarnation Cross', hd.cross],
           ].map(([label, val], i) => (
             <div key={i} style={S.keyVal}>
-              <span style={{
-                fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-                textTransform: 'uppercase', color: 'var(--text3)', minWidth: 140,
-              }}>{label}</span>
-              <span style={{
-                ...S.mono, color: i === 0 ? tc.color : 'var(--gold2)',
-                textAlign: 'right',
-              }}>
+              <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--text3)', minWidth: 140 }}>
+                {label}
+              </span>
+              <span style={{ ...S.mono, color: i === 0 ? tc.color : 'var(--gold2)', textAlign: 'right' }}>
                 {i === 0
-                  ? <span style={{
-                      ...S.badge(tc.bg, tc.border, tc.color),
-                      fontSize: 10, padding: '4px 14px',
-                    }}>{val}</span>
+                  ? <span style={{ ...S.badge(tc.bg, tc.border, tc.color), fontSize: 10, padding: '4px 14px' }}>{val}</span>
                   : val}
               </span>
             </div>
@@ -177,37 +249,41 @@ export default function HDDetail() {
 
       {/* SIGNATURE & NOT-SELF */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <div style={{
-          ...S.glass,
-          background: 'rgba(96,176,48,.04)', borderColor: 'rgba(96,176,48,.15)',
-          textAlign: 'center', padding: '20px 18px',
-        }}>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(96,176,48,.6)', marginBottom: 6 }}>
-            Signature
-          </div>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, color: '#88dd44', letterSpacing: '.15em' }}>
-            {HD_PROFILE.signature}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6, fontStyle: 'italic' }}>
-            The feeling that confirms you are living your design
-          </div>
+        <div style={{ ...S.glass, background: 'rgba(96,176,48,.04)', borderColor: 'rgba(96,176,48,.15)', textAlign: 'center', padding: '20px 18px' }}>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(96,176,48,.6)', marginBottom: 6 }}>Signature</div>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, color: '#88dd44', letterSpacing: '.15em' }}>{hd.signature}</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6, fontStyle: 'italic' }}>The feeling that confirms you are living your design</div>
         </div>
-        <div style={{
-          ...S.glass,
-          background: 'rgba(212,48,112,.04)', borderColor: 'rgba(212,48,112,.15)',
-          textAlign: 'center', padding: '20px 18px',
-        }}>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(212,48,112,.6)', marginBottom: 6 }}>
-            Not-Self Theme
-          </div>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, color: 'var(--rose2)', letterSpacing: '.15em' }}>
-            {HD_PROFILE.notSelf}
-          </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6, fontStyle: 'italic' }}>
-            The warning signal that you are off-track
-          </div>
+        <div style={{ ...S.glass, background: 'rgba(212,48,112,.04)', borderColor: 'rgba(212,48,112,.15)', textAlign: 'center', padding: '20px 18px' }}>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(212,48,112,.6)', marginBottom: 6 }}>Not-Self Theme</div>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, color: 'var(--rose2)', letterSpacing: '.15em' }}>{hd.notSelf}</div>
+          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6, fontStyle: 'italic' }}>The warning signal that you are off-track</div>
         </div>
       </div>
+
+      {/* PLANET TABLES */}
+      {chart && (
+        <div>
+          <div style={S.sectionTitle}>Planetary Activations</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            {[['Personality (Conscious)', chart.personality, 'var(--personality)'], ['Design (Unconscious)', chart.design, 'var(--design)']].map(([title, planets, color]) => (
+              <div key={title} style={S.glass}>
+                <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em', textTransform: 'uppercase', color, marginBottom: 12 }}>{title}</div>
+                {PLANET_ORDER.map(key => {
+                  const p = planets[key]
+                  if (!p) return null
+                  return (
+                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '3px 0', borderBottom: '1px solid rgba(255,255,255,.03)' }}>
+                      <span style={{ width: 20, textAlign: 'center', fontSize: 14, color }}>{PLANET_SYMBOLS[key]}</span>
+                      <span style={{ ...S.monoSm, color, fontWeight: 600, minWidth: 40 }}>{p.gate}.{p.line}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* CENTERS */}
       <div>
@@ -220,35 +296,21 @@ export default function HDDetail() {
           </span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {CENTERS_DETAIL.map((c, i) => (
-            <div key={i} style={{
-              ...S.row,
-              borderColor: c.defined ? 'rgba(201,168,76,.12)' : 'rgba(255,255,255,.04)',
-              background: c.defined ? 'rgba(201,168,76,.04)' : 'rgba(255,255,255,.02)',
-            }}>
-              <span style={{
-                fontSize: 20, minWidth: 32, textAlign: 'center',
-                color: c.defined ? 'var(--gold)' : 'var(--text3)',
-                opacity: c.defined ? 1 : 0.5,
-              }}>
-                {CENTER_GLYPHS[c.name] || '\u25CB'}
+          {centersDisplay.map((c, i) => (
+            <div key={i} style={{ ...S.row, borderColor: c.defined ? 'rgba(201,168,76,.12)' : 'rgba(255,255,255,.04)', background: c.defined ? 'rgba(201,168,76,.04)' : 'rgba(255,255,255,.02)' }}>
+              <span style={{ fontSize: 20, minWidth: 32, textAlign: 'center', color: c.defined ? 'var(--gold)' : 'var(--text3)', opacity: c.defined ? 1 : 0.5 }}>
+                {CENTER_GLYPHS[c.name] || '○'}
               </span>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ ...S.mono, color: c.defined ? 'var(--gold2)' : 'var(--text2)', fontSize: 13 }}>
-                    {c.name}
-                  </span>
+                  <span style={{ ...S.mono, color: c.defined ? 'var(--gold2)' : 'var(--text2)', fontSize: 13 }}>{c.name}</span>
                   <span style={S.badge(
                     c.defined ? 'rgba(201,168,76,.1)' : 'rgba(255,255,255,.04)',
                     c.defined ? 'rgba(201,168,76,.25)' : 'rgba(255,255,255,.08)',
                     c.defined ? 'var(--gold)' : 'var(--text3)',
-                  )}>
-                    {c.defined ? 'Defined' : 'Undefined'}
-                  </span>
+                  )}>{c.defined ? 'Defined' : 'Undefined'}</span>
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
-                  {c.meaning}
-                </span>
+                <span style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>{c.meaning}</span>
               </div>
             </div>
           ))}
@@ -258,91 +320,51 @@ export default function HDDetail() {
       {/* CHANNELS */}
       <div>
         <div style={S.sectionTitle}>Active Channels</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {CHANNELS.map((ch, i) => (
-            <div key={i} style={{
-              ...S.glass, padding: '12px 16px',
-              display: 'flex', flexDirection: 'column', gap: 6,
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ ...S.mono, color: 'var(--gold2)', fontSize: 13 }}>{ch.name}</span>
-                <span style={S.badge(
-                  ch.type === 'Individual' ? 'rgba(144,80,224,.1)' : 'rgba(64,204,221,.1)',
-                  ch.type === 'Individual' ? 'rgba(144,80,224,.25)' : 'rgba(64,204,221,.25)',
-                  ch.type === 'Individual' ? 'var(--violet2)' : 'var(--aqua2)',
-                )}>{ch.type}</span>
+        {channelsDisplay.length === 0
+          ? <div style={{ color: 'var(--text3)', fontStyle: 'italic', fontSize: 13 }}>No chart computed</div>
+          : (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            {channelsDisplay.map((ch, i) => (
+              <div key={i} style={{ ...S.glass, padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ ...S.mono, color: 'var(--gold2)', fontSize: 13 }}>{ch.name}</span>
+                  <span style={S.badge(
+                    ch.type === 'Individual' ? 'rgba(144,80,224,.1)' : 'rgba(64,204,221,.1)',
+                    ch.type === 'Individual' ? 'rgba(144,80,224,.25)' : 'rgba(64,204,221,.25)',
+                    ch.type === 'Individual' ? 'var(--violet2)' : 'var(--aqua2)',
+                  )}>{ch.type}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 16, color: 'var(--gold)', fontWeight: 700, letterSpacing: '.05em' }}>{ch.gates}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text3)' }}>{ch.center1} ↔ {ch.center2}</span>
+                </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{
-                  fontFamily: "'Inconsolata', monospace", fontSize: 16, color: 'var(--gold)',
-                  fontWeight: 700, letterSpacing: '.05em',
-                }}>{ch.gates}</span>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>
-                  {ch.center1} {'\u2194'} {ch.center2}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* GATES */}
       <div>
         <div style={S.sectionTitle}>Active Gates</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-          {GATES.map((g, i) => (
-            <div key={i} style={{
-              ...S.row, flexDirection: 'column', alignItems: 'flex-start', gap: 4,
-              padding: '10px 14px',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
-                <span style={{
-                  fontFamily: "'Cinzel', serif", fontSize: 18, color: 'var(--gold)',
-                  width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: 8, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)',
-                }}>{g.num}</span>
-                <span style={{ ...S.monoSm, color: 'var(--text3)', fontSize: 10 }}>
-                  Line {g.line}
-                </span>
+          {allGates.map(gNum => {
+            const pGate = Object.values(chart?.personality || {}).find(p => p.gate === gNum)
+            const dGate = Object.values(chart?.design || {}).find(p => p.gate === gNum)
+            const line = pGate?.line || dGate?.line || 1
+            const desc = GATE_DESCRIPTIONS[gNum] || `Gate ${gNum}`
+            return (
+              <div key={gNum} style={{ ...S.row, flexDirection: 'column', alignItems: 'flex-start', gap: 4, padding: '10px 14px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+                  <span style={{ fontFamily: "'Cinzel', serif", fontSize: 18, color: 'var(--gold)', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)' }}>{gNum}</span>
+                  <span style={{ ...S.monoSm, color: 'var(--text3)', fontSize: 10 }}>Line {line}</span>
+                  {pGate && <span style={{ ...S.badge('rgba(51,68,204,.15)', 'rgba(51,68,204,.3)', 'var(--personality)'), fontSize: 7 }}>P</span>}
+                  {dGate && <span style={{ ...S.badge('rgba(204,34,68,.15)', 'rgba(204,34,68,.3)', 'var(--design)'), fontSize: 7 }}>D</span>}
+                </div>
+                <span style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.4 }}>{desc}</span>
               </div>
-              <span style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.4 }}>{g.desc}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* VARIABLE */}
-      <div>
-        <div style={S.sectionTitle}>Variable (Cognitive Architecture)</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          <div style={{
-            ...S.glass, textAlign: 'center',
-            background: 'rgba(204,34,68,.04)', borderColor: 'rgba(204,34,68,.15)',
-          }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--design)', marginBottom: 6 }}>
-              Design Variable
-            </div>
-            <div style={{ fontFamily: "'Inconsolata', monospace", fontSize: 28, color: 'var(--design)', letterSpacing: '.2em' }}>
-              {HD_PROFILE.variable.design}
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6 }}>
-              Passive Right {'\u2192'} Receptive strategic awareness
-            </div>
-          </div>
-          <div style={{
-            ...S.glass, textAlign: 'center',
-            background: 'rgba(51,68,204,.04)', borderColor: 'rgba(51,68,204,.15)',
-          }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--personality)', marginBottom: 6 }}>
-              Personality Variable
-            </div>
-            <div style={{ fontFamily: "'Inconsolata', monospace", fontSize: 28, color: 'var(--personality)', letterSpacing: '.2em' }}>
-              {HD_PROFILE.variable.personality}
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6 }}>
-              Active Left {'\u2192'} Focused specific processing
-            </div>
-          </div>
+            )
+          })}
         </div>
       </div>
 
@@ -350,18 +372,13 @@ export default function HDDetail() {
       <div>
         <div style={S.sectionTitle}>Profile Reading</div>
         <div style={S.interpretation}>
-          As a <span style={{ color: 'var(--gold)' }}>3/5 Emotional Projector</span> with Split Definition,
-          your life is a journey of experiential learning through trial and error (Line 3) combined with
-          an external reputation as a practical problem-solver and heretic (Line 5). Your{' '}
-          <span style={{ color: 'var(--rose2)' }}>Emotional Solar Plexus authority</span> means
-          that clarity comes in waves -- never trust the highs or the lows, but the calm recognition
-          that emerges after the emotional cycle completes. The{' '}
-          <span style={{ color: 'var(--gold)' }}>Right Angle Cross of the Unexpected</span> (41/31 | 28/27)
-          carries a deeply personal destiny: to discover purpose through crisis and emerge as a leader
-          who nourishes others through authentic experience. Your open Head and Ajna centers make you a
-          receiver of collective inspiration, while the defined Throat and G center give you a consistent
-          and recognizable voice in the world. Wait for the invitation -- your greatest power comes when
-          others recognize your gifts and ask for your guidance.
+          As a <span style={{ color: 'var(--gold)' }}>{hd.profile} {hd.type}</span>{hd.profileNames ? ` (${hd.profileNames})` : ''} with {hd.definition},
+          your life is shaped by the unique configuration of your defined centers and channels.
+          Your <span style={{ color: 'var(--rose2)' }}>{hd.authority} authority</span> guides your decision-making process.
+          {hd.cross && <span> The <span style={{ color: 'var(--gold)' }}>{hd.cross}</span> carries your soul's purpose in this lifetime.</span>}
+          {' '}Your signature is <span style={{ color: '#88dd44' }}>{hd.signature}</span> — the feeling that confirms alignment — while{' '}
+          <span style={{ color: 'var(--rose2)' }}>{hd.notSelf}</span> signals you are off-track.
+          Strategy: <span style={{ color: 'var(--aqua2)' }}>{hd.strategy}</span>.
         </div>
       </div>
     </div>

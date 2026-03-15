@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
 import Sidebar from '../components/layout/Sidebar'
 import TopBar from '../components/layout/TopBar'
@@ -36,7 +36,8 @@ import ProfileDetail from '../components/details/ProfileDetail'
 import PricingPage from './PricingPage'
 import PractitionerPortal from './PractitionerPortal'
 import ClientPortal from './ClientPortal'
-import { DESIGN_PLANETS, PERSONALITY_PLANETS, HD_TAGS } from '../data/hdData'
+import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
+import { computeHDChart, buildHDTags } from '../engines/hdEngine'
 import { GK_LIST } from '../data/geneKeysData'
 import { MAYAN_PROFILE } from '../data/mayanData'
 import { ENNEAGRAM_PROFILE, ENNEAGRAM_TYPES } from '../data/enneagramData'
@@ -210,14 +211,14 @@ function WidgetContent({ widgetId }) {
               <div className="hd-columns">
                 <div className="hd-design">
                   <div className="hd-cl">Design</div>
-                  {DESIGN_PLANETS.map((p, i) => (
+                  {hdDesignPlanets.map((p, i) => (
                     <div key={i} className="hd-pr d"><span className="hd-ps">{p.sym}</span><span className="hd-pv">{p.val}</span></div>
                   ))}
                 </div>
                 <div className="hd-graph"><HumanDesign /></div>
                 <div className="hd-pers" style={{ alignItems: 'flex-end' }}>
                   <div className="hd-cl" style={{ textAlign: 'right' }}>Personality</div>
-                  {PERSONALITY_PLANETS.map((p, i) => (
+                  {hdPersonalityPlanets.map((p, i) => (
                     <div key={i} className="hd-pr p" style={{ flexDirection: 'row-reverse' }}>
                       <span className="hd-ps">{p.sym}</span>
                       <span className="hd-pv" style={{ textAlign: 'right' }}>{p.val}</span>
@@ -226,7 +227,7 @@ function WidgetContent({ widgetId }) {
                 </div>
               </div>
               <div className="hd-meta">
-                {HD_TAGS.map((tag, i) => (
+                {hdTags.map((tag, i) => (
                   <span key={i} className="hd-tag" style={{ background: tag.bg, borderColor: tag.border, color: tag.color }}>{tag.label}</span>
                 ))}
               </div>
@@ -647,6 +648,26 @@ export default function Dashboard() {
   const dragStartPos = useRef(null)
   const scrollRef = useRef(null)
   const wrapperRef = useRef(null)
+
+  // Compute HD chart from stored profile
+  const hdChart = useMemo(() => {
+    try {
+      const { dob, tob } = profile
+      if (!dob) return null
+      return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: -3 })
+    } catch (e) {
+      console.error('HD chart error in Dashboard:', e)
+      return null
+    }
+  }, [profile])
+
+  const hdDesignPlanets = hdChart
+    ? PLANET_ORDER.map(k => ({ sym: PLANET_SYMBOLS[k], val: hdChart.design[k] ? `${hdChart.design[k].gate}.${hdChart.design[k].line}` : '' }))
+    : []
+  const hdPersonalityPlanets = hdChart
+    ? PLANET_ORDER.map(k => ({ sym: PLANET_SYMBOLS[k], val: hdChart.personality[k] ? `${hdChart.personality[k].gate}.${hdChart.personality[k].line}` : '' }))
+    : []
+  const hdTags = hdChart ? buildHDTags(hdChart) : []
 
   // Filter out hidden widgets
   const visibleWidgets = widgetOrder.filter((id) => !hiddenWidgets.includes(id))
