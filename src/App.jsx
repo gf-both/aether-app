@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import ProfilePanel from './components/overlays/ProfilePanel'
 import SynastryPanel from './components/overlays/SynastryPanel'
 import AIChatPanel from './components/overlays/AIChatPanel'
+import Oracle from './components/overlays/Oracle'
 import AuthModal from './components/auth/AuthModal'
 import Starfield from './components/ui/Starfield'
 import Cursor from './components/ui/Cursor'
@@ -61,12 +62,13 @@ function AuthSync() {
 }
 
 function OverlayManager() {
-  const { activePanel, setActivePanel, showAuthModal, setShowAuthModal } = useAboveInsideStore()
+  const { activePanel, setActivePanel, showAuthModal, setShowAuthModal, oracleOpen, setOracleOpen } = useAboveInsideStore()
   return createPortal(
     <>
       <ProfilePanel open={activePanel === 'profile'} onClose={() => setActivePanel(null)} />
       <SynastryPanel open={activePanel === 'synastry'} onClose={() => setActivePanel(null)} />
       <AIChatPanel open={activePanel === 'aichat'} onClose={() => setActivePanel(null)} />
+      <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>,
     document.body
@@ -82,6 +84,8 @@ function ThemeSync() {
       'cosmic-night': '#01010a', 'cosmic-day': '#0f0820',
       'parchment-night': '#0d0805', 'parchment-day': '#f5e8c8',
       'crystal-night': '#060810', 'crystal-day': '#f8faff',
+      'nebula-night': '#08060f', 'nebula-day': '#0d0b1a',
+      'manuscript-night': '#0d0805', 'manuscript-day': '#f5f0e8',
       'dark': '#01010a', 'light': '#f5f2ec',
     }
     document.body.style.background = bgMap[theme] || '#01010a'
@@ -89,6 +93,7 @@ function ThemeSync() {
     // Update text color
     const textMap = {
       'parchment-day': '#2a1a0a', 'crystal-day': '#1e293b',
+      'manuscript-day': '#2a2520',
     }
     document.body.style.color = textMap[theme] || ''
   }, [theme])

@@ -59,7 +59,7 @@ export const useAboveInsideStore = create(
 
       // Theme: full key like 'cosmic-night' | 'cosmic-day' | 'parchment-night' | 'parchment-day' | 'crystal-night' | 'crystal-day' | 'dark' | 'light'
       theme: 'cosmic-night',
-      themeStyle: 'cosmic',   // 'cosmic' | 'parchment' | 'crystal'
+      themeStyle: 'cosmic',   // 'cosmic' | 'parchment' | 'crystal' | 'nebula' | 'manuscript'
       themeMode: 'night',     // 'night' | 'day'
       setTheme: (style, mode) => {
         if (mode === undefined) {
@@ -69,6 +69,10 @@ export const useAboveInsideStore = create(
           set({ theme: `${style}-${mode}`, themeStyle: style, themeMode: mode })
         }
       },
+
+      // Oracle AI panel state
+      oracleOpen: false,
+      setOracleOpen: (v) => set({ oracleOpen: v }),
 
       // Active nav highlight
       activeNav: 'dashboard',

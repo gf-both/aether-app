@@ -353,7 +353,7 @@ function ThemeToggle() {
   const style = themeStyle || 'cosmic'
 
   // Accent dot color per theme style
-  const dotColors = { cosmic: '#c9a84c', parchment: '#d4a84c', crystal: '#00c8ff' }
+  const dotColors = { cosmic: '#c9a84c', parchment: '#d4a84c', crystal: '#00c8ff', nebula: '#ffb830', manuscript: '#8b6820' }
   const dotColor = dotColors[style] || '#c9a84c'
 
   useEffect(() => {
@@ -369,15 +369,21 @@ function ThemeToggle() {
   }
 
   const THEMES = [
-    { id: 'cosmic', name: 'Cosmic Void', description: 'Deep space observatory',
+    { id: 'cosmic', name: 'Cosmic Void', description: 'Deep space',
       night: { bg: '#01010a', accent: '#c9a84c', text: '#e8e0d0' },
       day: { bg: '#0f0820', accent: '#d4a547', text: '#f0ece4' } },
-    { id: 'parchment', name: 'Sacred Parchment', description: 'Ancient manuscript',
+    { id: 'parchment', name: 'Sacred Parchment', description: 'Ancient grimoire',
       night: { bg: '#0d0805', accent: '#d4a84c', text: '#e8dcc4' },
       day: { bg: '#f5e8c8', accent: '#8b6014', text: '#2a1a0a' } },
     { id: 'crystal', name: 'Crystal Matrix', description: 'Quantum clarity',
       night: { bg: '#060810', accent: '#00c8ff', text: '#e2e8f0' },
       day: { bg: '#f8faff', accent: '#4f46e5', text: '#1e293b' } },
+    { id: 'nebula', name: 'Nebula', description: 'Cosmic depths',
+      night: { bg: '#08060f', accent: '#ffb830', text: '#e8dcc8' },
+      day: { bg: '#0d0b1a', accent: '#c9a84c', text: '#e8dcc8' } },
+    { id: 'manuscript', name: 'Manuscript', description: 'Luminous parchment',
+      night: { bg: '#0d0805', accent: '#d4a84c', text: '#e8dcc4' },
+      day: { bg: '#f5f0e8', accent: '#8b6820', text: '#2a2520' } },
   ]
 
   return (
@@ -416,13 +422,13 @@ function ThemeToggle() {
           position: 'absolute', top: '100%', right: 0, marginTop: 6, zIndex: 300,
           background: 'var(--dropdown-bg)', border: '1px solid var(--dropdown-border)',
           borderRadius: 12, backdropFilter: 'blur(20px)',
-          padding: 16, minWidth: 460,
+          padding: 16, minWidth: 580,
           boxShadow: 'var(--dropdown-shadow)',
         }}>
           <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.2em', color: 'var(--gold)', marginBottom: 12, textAlign: 'center', textTransform: 'uppercase' }}>
-            Select Theme
+            ✦ Select Theme ✦
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 10 }}>
             {THEMES.map(t => (
               <div key={t.id}>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.12em', color: 'var(--text2)', textAlign: 'center', marginBottom: 6, textTransform: 'uppercase' }}>
@@ -597,6 +603,8 @@ export default function TopBar() {
   const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const oracleOpen = useAboveInsideStore((s) => s.oracleOpen)
+  const setOracleOpen = useAboveInsideStore((s) => s.setOracleOpen)
   const time = useClock()
 
   // Derive dynamic values instead of hardcoding
@@ -621,6 +629,13 @@ export default function TopBar() {
         )}
         <div className="chip chip-b" onClick={() => { setActiveDetail('synastry'); setActiveNav('synastry') }}>{'\u2295'} Synastry</div>
         <ThemeToggle />
+        <button
+          className={`oracle-toggle-btn${oracleOpen ? ' active' : ''}`}
+          onClick={() => setOracleOpen(!oracleOpen)}
+          title="Oracle AI"
+        >
+          ◈
+        </button>
         <WidgetManagerToggle />
         <SignInButton />
         <span className="ttime">{time}</span>
