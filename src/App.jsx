@@ -24,6 +24,20 @@ function ThemeSync() {
   const theme = useAboveInsideStore((s) => s.theme)
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
+    // Update body background to match theme
+    const bgMap = {
+      'cosmic-night': '#01010a', 'cosmic-day': '#0f0820',
+      'parchment-night': '#0d0805', 'parchment-day': '#f5e8c8',
+      'crystal-night': '#060810', 'crystal-day': '#f8faff',
+      'dark': '#01010a', 'light': '#f5f2ec',
+    }
+    document.body.style.background = bgMap[theme] || '#01010a'
+    document.documentElement.style.background = bgMap[theme] || '#01010a'
+    // Update text color
+    const textMap = {
+      'parchment-day': '#2a1a0a', 'crystal-day': '#1e293b',
+    }
+    document.body.style.color = textMap[theme] || ''
   }, [theme])
   return null
 }

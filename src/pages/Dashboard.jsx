@@ -1208,7 +1208,7 @@ export default function Dashboard() {
     )
   }
 
-  // Bento, Focus, Magazine
+  // Bento, Focus, Magazine, Cosmic
   return (
     <div style={{
       display: 'grid', gridTemplateColumns: '52px 1fr', gridTemplateRows: '46px 1fr 42px',
@@ -1220,7 +1220,178 @@ export default function Dashboard() {
       {layoutMode === 'bento' && <BentoLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       {layoutMode === 'focus' && <FocusLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       {layoutMode === 'magazine' && <MagazineLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} profile={profile} />}
+      {layoutMode === 'cosmic' && <CosmicLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       <StatusBar />
     </div>
   )
+}
+
+/* ── Cosmic 3-column layout ── */
+function CosmicLayout({ visibleWidgets, setActiveDetail }) {
+  const STRUCTURE_WIDGETS = ['integral', 'hd', 'kab']
+  const COSMIC_WIDGETS = ['natal', 'tr', 'mayan', 'gk']
+  const IDENTITY_WIDGETS = ['enn', 'num', 'mbti', 'egyptian', 'pat']
+
+  const WIDGET_MAP = {
+    integral: () => <CosmicIntegralWidget setActiveDetail={setActiveDetail} />,
+    natal: () => <CosmicNatalWidget setActiveDetail={setActiveDetail} />,
+    tr: () => <CosmicTransitsWidget setActiveDetail={setActiveDetail} />,
+    hd: () => <CosmicHDWidget setActiveDetail={setActiveDetail} />,
+    kab: () => <CosmicKabWidget setActiveDetail={setActiveDetail} />,
+    num: () => <CosmicNumWidget setActiveDetail={setActiveDetail} />,
+    gk: () => <CosmicGKWidget setActiveDetail={setActiveDetail} />,
+    mayan: () => <CosmicMayanWidget setActiveDetail={setActiveDetail} />,
+    enn: () => <CosmicEnnWidget setActiveDetail={setActiveDetail} />,
+    pat: () => <CosmicPatWidget setActiveDetail={setActiveDetail} />,
+    mbti: () => <CosmicMBTIWidget setActiveDetail={setActiveDetail} />,
+    egyptian: () => <CosmicEgyptianWidget setActiveDetail={setActiveDetail} />,
+  }
+
+  function renderCol(widgets, minH = 280) {
+    return widgets
+      .filter(id => visibleWidgets?.includes ? visibleWidgets.includes(id) : true)
+      .map(id => {
+        const Render = WIDGET_MAP[id]
+        if (!Render) return null
+        return (
+          <div
+            key={id}
+            className="card"
+            style={{ minHeight: minH, flexShrink: 0, cursor: 'pointer' }}
+            onClick={() => setActiveDetail(id)}
+          >
+            <Render />
+          </div>
+        )
+      })
+  }
+
+  return (
+    <div style={{ overflow: 'hidden', padding: '0 4px' }}>
+      <div className="cosmic-layout">
+        {/* Left: Structure */}
+        <div className="cosmic-col">
+          <div className="cosmic-col-header">
+            <div className="cosmic-col-line" />
+            <div className="cosmic-col-title">Structure</div>
+            <div className="cosmic-col-line" />
+          </div>
+          {renderCol(STRUCTURE_WIDGETS, 260)}
+        </div>
+        {/* Center: Cosmic Signals */}
+        <div className="cosmic-col">
+          <div className="cosmic-col-header">
+            <div className="cosmic-col-line" />
+            <div className="cosmic-col-title">Cosmic Signals</div>
+            <div className="cosmic-col-line" />
+          </div>
+          {renderCol(COSMIC_WIDGETS, 320)}
+        </div>
+        {/* Right: Identity Signals */}
+        <div className="cosmic-col">
+          <div className="cosmic-col-header">
+            <div className="cosmic-col-line" />
+            <div className="cosmic-col-title">Identity Signals</div>
+            <div className="cosmic-col-line" />
+          </div>
+          {renderCol(IDENTITY_WIDGETS, 220)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Widget shim wrappers for CosmicLayout (prefixed to avoid name conflicts) ── */
+function CosmicIntegralWidget() {
+  return <>
+    <div className="ch"><span className="ct">Integral Map</span><span className="ci">◉</span></div>
+    <div className="cb" style={{ minHeight: 200 }}><IntegralFigure /></div>
+  </>
+}
+function CosmicNatalWidget() {
+  return <>
+    <div className="ch"><span className="ct">Natal · Aquarius Sun · Virgo ASC</span></div>
+    <div className="cb" style={{ minHeight: 260 }}><NatalWheel showAspects showHouses /></div>
+  </>
+}
+function CosmicTransitsWidget() {
+  return <>
+    <div className="ch"><span className="ct">Current Transits</span></div>
+    <div className="cb" style={{ padding: '5px 7px', display: 'flex', flexDirection: 'column', gap: 3 }}>
+      {TRANSITS.slice(0, 6).map((t, i) => (
+        <div key={i} className="tr-item">
+          <span className="tr-pl" style={{ color: t.color }}>{t.sym}</span>
+          <div className="tr-inf">
+            <div className="tr-sign">{t.sign}</div>
+            <div className="tr-deg">{t.aspLabel}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </>
+}
+function CosmicHDWidget() {
+  return <>
+    <div className="ch"><span className="ct">Human Design</span></div>
+    <div className="cb" style={{ minHeight: 200 }}><HumanDesign /></div>
+  </>
+}
+function CosmicKabWidget() {
+  return <>
+    <div className="ch"><span className="ct">Kabbalah Tree</span></div>
+    <div className="cb" style={{ minHeight: 200 }}><KabbalahTree /></div>
+  </>
+}
+function CosmicNumWidget() {
+  return <>
+    <div className="ch"><span className="ct">Numerology</span></div>
+    <div className="cb">
+      <div className="num-outer">
+        <div className="num-grid">
+          {NUM_CELLS.map((c, i) => (
+            <div key={i} className={`nc${c.hl ? ' hl' : ''}${c.master ? ' master' : ''}`}>
+              <span className="nv">{c.val}</span>
+              <span className="nl">{c.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </>
+}
+function CosmicGKWidget() {
+  return <>
+    <div className="ch"><span className="ct">Gene Keys</span></div>
+    <div className="cb" style={{ minHeight: 180 }}><GeneKeysWheel /></div>
+  </>
+}
+function CosmicMayanWidget() {
+  return <>
+    <div className="ch"><span className="ct">Mayan Calendar</span></div>
+    <div className="cb" style={{ minHeight: 220 }}><MayanWheel /></div>
+  </>
+}
+function CosmicEnnWidget() {
+  return <>
+    <div className="ch"><span className="ct">Enneagram</span></div>
+    <div className="cb" style={{ minHeight: 180 }}><EnneagramSymbol /></div>
+  </>
+}
+function CosmicPatWidget() {
+  return <>
+    <div className="ch"><span className="ct">Patterns</span></div>
+    <div className="cb" style={{ minHeight: 160 }}><PatternsWeb /></div>
+  </>
+}
+function CosmicMBTIWidget() {
+  return <>
+    <div className="ch"><span className="ct">Myers-Briggs</span></div>
+    <div className="cb" style={{ minHeight: 160 }}><MBTIChart /></div>
+  </>
+}
+function CosmicEgyptianWidget() {
+  return <>
+    <div className="ch"><span className="ct">Egyptian</span></div>
+    <div className="cb" style={{ minHeight: 160 }}><EgyptianChart /></div>
+  </>
 }

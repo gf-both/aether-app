@@ -47,9 +47,18 @@ export const useAboveInsideStore = create(
       layoutMode: 'grid',
       setLayoutMode: (mode) => set({ layoutMode: mode }),
 
-      // Theme: 'dark' | 'light'
-      theme: 'dark',
-      setTheme: (t) => set({ theme: t }),
+      // Theme: full key like 'cosmic-night' | 'cosmic-day' | 'parchment-night' | 'parchment-day' | 'crystal-night' | 'crystal-day' | 'dark' | 'light'
+      theme: 'cosmic-night',
+      themeStyle: 'cosmic',   // 'cosmic' | 'parchment' | 'crystal'
+      themeMode: 'night',     // 'night' | 'day'
+      setTheme: (style, mode) => {
+        if (mode === undefined) {
+          // Legacy single-arg call (e.g. 'dark' / 'light')
+          set({ theme: style, themeStyle: style === 'light' ? 'cosmic' : 'cosmic', themeMode: style === 'light' ? 'day' : 'night' })
+        } else {
+          set({ theme: `${style}-${mode}`, themeStyle: style, themeMode: mode })
+        }
+      },
 
       // Active nav highlight
       activeNav: 'dashboard',

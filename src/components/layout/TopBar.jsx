@@ -148,6 +148,7 @@ const LAYOUTS = [
   { id: 'bento', label: 'Bento', icon: '\u2B1A' },
   { id: 'focus', label: 'Focus', icon: '\u25CE' },
   { id: 'magazine', label: 'Magazine', icon: '\u2630' },
+  { id: 'cosmic', label: 'Cosmic', icon: '\u2726' },
 ]
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -342,21 +343,141 @@ function ProfileSwitcher() {
 
 function ThemeToggle() {
   const theme = useAboveInsideStore((s) => s.theme)
+  const themeStyle = useAboveInsideStore((s) => s.themeStyle)
+  const themeMode = useAboveInsideStore((s) => s.themeMode)
   const setTheme = useAboveInsideStore((s) => s.setTheme)
-  const isLight = theme === 'light'
+  const [showPicker, setShowPicker] = useState(false)
+  const ref = useRef(null)
+
+  const isDay = themeMode === 'day' || theme === 'light'
+  const style = themeStyle || 'cosmic'
+
+  // Accent dot color per theme style
+  const dotColors = { cosmic: '#c9a84c', parchment: '#d4a84c', crystal: '#00c8ff' }
+  const dotColor = dotColors[style] || '#c9a84c'
+
+  useEffect(() => {
+    if (!showPicker) return
+    const close = (e) => { if (ref.current && !ref.current.contains(e.target)) setShowPicker(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [showPicker])
+
+  function toggleMode() {
+    const newMode = isDay ? 'night' : 'day'
+    setTheme(style, newMode)
+  }
+
+  const THEMES = [
+    { id: 'cosmic', name: 'Cosmic Void', description: 'Deep space observatory',
+      night: { bg: '#01010a', accent: '#c9a84c', text: '#e8e0d0' },
+      day: { bg: '#0f0820', accent: '#d4a547', text: '#f0ece4' } },
+    { id: 'parchment', name: 'Sacred Parchment', description: 'Ancient manuscript',
+      night: { bg: '#0d0805', accent: '#d4a84c', text: '#e8dcc4' },
+      day: { bg: '#f5e8c8', accent: '#8b6014', text: '#2a1a0a' } },
+    { id: 'crystal', name: 'Crystal Matrix', description: 'Quantum clarity',
+      night: { bg: '#060810', accent: '#00c8ff', text: '#e2e8f0' },
+      day: { bg: '#f8faff', accent: '#4f46e5', text: '#1e293b' } },
+  ]
+
   return (
-    <div
-      onClick={() => setTheme(isLight ? 'dark' : 'light')}
-      style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        width: 28, height: 28, borderRadius: 7,
-        background: isLight ? 'rgba(201,168,76,.15)' : 'rgba(255,255,255,.04)',
-        border: `1px solid ${isLight ? 'rgba(201,168,76,.35)' : 'rgba(255,255,255,.08)'}`,
-        cursor: 'pointer', fontSize: 14, transition: 'all .2s',
-      }}
-      title={isLight ? 'Switch to dark' : 'Switch to light'}
-    >
-      {isLight ? '\u263D' : '\u2609'}
+    <div ref={ref} style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 4 }}>
+      {/* Theme style dot — opens picker */}
+      <div
+        onClick={() => setShowPicker(!showPicker)}
+        title="Theme Picker"
+        style={{
+          width: 12, height: 12, borderRadius: '50%',
+          background: dotColor,
+          border: `2px solid ${showPicker ? 'rgba(255,255,255,.6)' : 'rgba(255,255,255,.2)'}`,
+          cursor: 'pointer', flexShrink: 0,
+          boxShadow: `0 0 8px ${dotColor}`,
+          transition: 'all .2s',
+        }}
+      />
+      {/* Day/night toggle */}
+      <div
+        onClick={toggleMode}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 28, height: 28, borderRadius: 7,
+          background: isDay ? 'rgba(201,168,76,.15)' : 'rgba(255,255,255,.04)',
+          border: `1px solid ${isDay ? 'rgba(201,168,76,.35)' : 'rgba(255,255,255,.08)'}`,
+          cursor: 'pointer', fontSize: 14, transition: 'all .2s',
+        }}
+        title={isDay ? 'Switch to night' : 'Switch to day'}
+      >
+        {isDay ? '☀️' : '🌙'}
+      </div>
+
+      {/* Theme picker dropdown */}
+      {showPicker && (
+        <div style={{
+          position: 'absolute', top: '100%', right: 0, marginTop: 6, zIndex: 300,
+          background: 'var(--dropdown-bg)', border: '1px solid var(--dropdown-border)',
+          borderRadius: 12, backdropFilter: 'blur(20px)',
+          padding: 16, minWidth: 460,
+          boxShadow: 'var(--dropdown-shadow)',
+        }}>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.2em', color: 'var(--gold)', marginBottom: 12, textAlign: 'center', textTransform: 'uppercase' }}>
+            Select Theme
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+            {THEMES.map(t => (
+              <div key={t.id}>
+                <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.12em', color: 'var(--text2)', textAlign: 'center', marginBottom: 6, textTransform: 'uppercase' }}>
+                  {t.name}
+                </div>
+                <div style={{ display: 'flex', gap: 6 }}>
+                  {['night', 'day'].map(mode => {
+                    const colors = t[mode]
+                    const isActive = themeStyle === t.id && themeMode === mode
+                    return (
+                      <div
+                        key={mode}
+                        onClick={() => { setTheme(t.id, mode); setShowPicker(false) }}
+                        style={{
+                          flex: 1, height: 70, borderRadius: 8, overflow: 'hidden',
+                          background: colors.bg, cursor: 'pointer',
+                          border: `2px solid ${isActive ? colors.accent : 'rgba(255,255,255,.1)'}`,
+                          boxShadow: isActive ? `0 0 12px ${colors.accent}50` : 'none',
+                          transition: 'all .2s', position: 'relative',
+                        }}
+                      >
+                        {/* Mini card preview */}
+                        <div style={{
+                          position: 'absolute', inset: '8px 6px',
+                          background: `rgba(${t.id === 'parchment' && mode === 'day' ? '0,0,0' : '255,255,255'},.06)`,
+                          borderRadius: 4, border: `1px solid ${colors.accent}40`,
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 3,
+                        }}>
+                          <div style={{ width: 14, height: 2, background: colors.accent, borderRadius: 1 }} />
+                          <div style={{ width: 10, height: 1, background: colors.text, borderRadius: 1, opacity: .5 }} />
+                          <div style={{ width: 12, height: 1, background: colors.text, borderRadius: 1, opacity: .3 }} />
+                        </div>
+                        {/* Mode label */}
+                        <div style={{
+                          position: 'absolute', bottom: 4, left: 0, right: 0, textAlign: 'center',
+                          fontSize: 7, fontFamily: "'Cinzel',serif", letterSpacing: '.1em',
+                          color: colors.text, opacity: .7, textTransform: 'uppercase',
+                        }}>{mode}</div>
+                        {isActive && (
+                          <div style={{
+                            position: 'absolute', top: 3, right: 3,
+                            width: 8, height: 8, borderRadius: '50%', background: colors.accent,
+                            boxShadow: `0 0 6px ${colors.accent}`,
+                          }} />
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+                <div style={{ fontSize: 8, color: 'var(--text3)', textAlign: 'center', marginTop: 4, fontStyle: 'italic' }}>{t.description}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

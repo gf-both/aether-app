@@ -75,7 +75,7 @@ export default function Sidebar() {
     : activeNav
 
   return (
-    <nav className="sb">
+    <nav className="sb" style={{ background: 'var(--sidebar-bg, rgba(3,3,18,.95))' }}>
       <svg className="logo" viewBox="0 0 28 28" fill="none" onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }} style={{ cursor: 'pointer' }}>
         <circle cx="14" cy="14" r="12" stroke="rgba(201,168,76,.3)" strokeWidth=".5" />
         <circle cx="14" cy="14" r="7.5" stroke="rgba(201,168,76,.5)" strokeWidth=".5" />
