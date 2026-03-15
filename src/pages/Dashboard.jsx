@@ -355,6 +355,21 @@ function WidgetContent({ widgetId }) {
   const doshaType = useAboveInsideStore((s) => s.doshaType)
   const archetypeType = useAboveInsideStore((s) => s.archetypeType)
   const loveLanguage = useAboveInsideStore((s) => s.loveLanguage)
+  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const hdChartLocal = useMemo(() => {
+    try {
+      const { dob, tob } = profile || {}
+      if (!dob) return null
+      return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: profile.birthTimezone ?? -3 })
+    } catch (e) { return null }
+  }, [profile])
+  const hdDesignPlanets = hdChartLocal
+    ? PLANET_ORDER.map(k => ({ sym: PLANET_SYMBOLS[k], val: hdChartLocal.design[k] ? `${hdChartLocal.design[k].gate}.${hdChartLocal.design[k].line}` : '' }))
+    : []
+  const hdPersonalityPlanets = hdChartLocal
+    ? PLANET_ORDER.map(k => ({ sym: PLANET_SYMBOLS[k], val: hdChartLocal.personality[k] ? `${hdChartLocal.personality[k].gate}.${hdChartLocal.personality[k].line}` : '' }))
+    : []
+  const hdTags = hdChartLocal ? buildHDTags(hdChartLocal) : []
   switch (widgetId) {
     case 'integral':
       return (
