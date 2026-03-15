@@ -16,6 +16,7 @@ import GematriaChart from '../components/canvas/GematriaChart'
 import PatternsWeb from '../components/canvas/PatternsWeb'
 import MBTIChart from '../components/canvas/MBTIChart'
 import EgyptianChart from '../components/canvas/EgyptianChart'
+import VedicChart from '../components/canvas/VedicChart'
 import IntegralFigure from '../components/canvas/IntegralFigure'
 import NatalDetail from '../components/details/NatalDetail'
 import HDDetail from '../components/details/HDDetail'
@@ -30,6 +31,7 @@ import GematriaDetail from '../components/details/GematriaDetail'
 import PatternsDetail from '../components/details/PatternsDetail'
 import MBTIDetail from '../components/details/MBTIDetail'
 import EgyptianDetail from '../components/details/EgyptianDetail'
+import VedicDetail from '../components/details/VedicDetail'
 import IntegralDetail from '../components/details/IntegralDetail'
 import SynastryDetail from '../components/details/SynastryDetail'
 import ProfileDetail from '../components/details/ProfileDetail'
@@ -99,6 +101,14 @@ const ROWS = [
     widgets: ['gem', 'pat', 'mbti', 'egyptian'],
     cols: 'repeat(4, 1fr)',
   },
+  {
+    label: 'EASTERN WISDOM',
+    sub: 'Jyotish \u00B7 Sidereal \u00B7 Nakshatras \u00B7 Dasha',
+    color: 'rgba(160,100,255,1)',
+    border: 'rgba(160,100,255,.3)',
+    widgets: ['vedic'],
+    cols: '1fr',
+  },
 ]
 
 const CARD_HEIGHT = 440
@@ -123,6 +133,7 @@ const DETAIL_COMPONENTS = {
   pat: PatternsDetail,
   mbti: MBTIDetail,
   egyptian: EgyptianDetail,
+  vedic: VedicDetail,
   synastry: SynastryDetail,
   profile: ProfileDetail,
   pricing: PricingPage,
@@ -145,6 +156,7 @@ const DETAIL_TITLES = {
   pat: 'Patterns \u2014 Cross-Framework Alignments',
   mbti: 'Myers-Briggs \u2014 Personality Type',
   egyptian: 'Egyptian Astrology \u2014 Full Profile',
+  vedic: 'Vedic Astrology \u2014 Jyotish Profile',
   synastry: 'Synastry \u2014 Composite Analysis',
   profile: 'Profiles \u2014 Constellation',
   pricing: 'Choose Your Path \u2014 Pricing',
@@ -369,6 +381,13 @@ function WidgetContent({ widgetId }) {
           <div className="cb"><EgyptianChart /></div>
         </>
       )
+    case 'vedic':
+      return (
+        <>
+          <div className="ch"><span className="ct">Vedic Astrology &middot; Jyotish &middot; Sidereal</span><span className="ci">{'🕉️'}</span></div>
+          <div className="cb"><VedicChart /></div>
+        </>
+      )
     default:
       return null
   }
@@ -395,6 +414,7 @@ const WIDGET_META = {
   pat: { icon: '\u{1F578}', label: 'Patterns', sub: 'Cross-Framework \u00B7 Alignments' },
   mbti: { icon: '\u{1F9E0}', label: 'Myers-Briggs', sub: 'Personality Type \u00B7 Cognitive Functions' },
   egyptian: { icon: '\u{1F3DB}', label: 'Egyptian Astrology', sub: 'Ancient Egypt \u00B7 Zodiac' },
+  vedic: { icon: '🕉️', label: 'Vedic Astrology', sub: 'Jyotish \u00B7 Sidereal \u00B7 Nakshatras' },
   practitioner: { icon: '\uD83C\uDFE5', label: 'Practitioner Portal', sub: 'Clients \u00B7 Sessions \u00B7 Revenue' },
   client: { icon: '\uD83D\uDCCB', label: 'Client Portal', sub: 'Sessions \u00B7 Progress \u00B7 Messages' },
 }

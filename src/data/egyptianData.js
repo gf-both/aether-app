@@ -141,3 +141,7 @@ export const EGYPTIAN_PROFILE = {
     'energy of the Moon. When obstacles arise, the children of Mut endure with a silent strength that outlasts ' +
     'every storm. Their greatest gift is the ability to transform protective love into lasting legacy.',
 }
+
+
+// Re-export the computed sign lookup from the engine
+export { getEgyptianSign } from '../engines/egyptianEngine.js'

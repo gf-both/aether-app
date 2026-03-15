@@ -1,11 +1,24 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { EGYPTIAN_SIGNS, EGYPTIAN_PROFILE } from '../../data/egyptianData'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { EGYPTIAN_SIGNS, EGYPTIAN_PROFILE, getEgyptianSign } from '../../data/egyptianData'
 
 export default function EgyptianChart() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const hovRef = useRef(-1)
+
+  const profile = useAboveInsideStore(s => s.primaryProfile)
+
+  // Compute active sign dynamically from birth data
+  const activeSign = useMemo(() => {
+    if (!profile.dob) return EGYPTIAN_PROFILE.sign
+    const [, m, d] = profile.dob.split('-').map(Number)
+    return getEgyptianSign(d, m)?.name || EGYPTIAN_PROFILE.sign
+  }, [profile.dob])
+
+  const activeSignRef = useRef(activeSign)
+  useEffect(() => { activeSignRef.current = activeSign }, [activeSign])
 
   useCanvasResize(canvasRef)
 
@@ -14,8 +27,7 @@ export default function EgyptianChart() {
     if (!canvas) return
     let pulse = 0
 
-    const activeSign = EGYPTIAN_PROFILE.sign
-    const activeIdx = EGYPTIAN_SIGNS.findIndex(s => s.name === activeSign)
+    const getActiveSign = () => activeSignRef.current
 
     /* Egyptian palette */
     const GOLD = '#c9a84c'
@@ -66,6 +78,9 @@ export default function EgyptianChart() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
       pulse += .008
+
+      const activeSign = getActiveSign()
+      const activeIdx = EGYPTIAN_SIGNS.findIndex(s => s.name === activeSign)
 
       const cx = W / 2, cy = H / 2
       const R = Math.min(W, H) * .38
@@ -349,7 +364,8 @@ export default function EgyptianChart() {
       const subtitleSize = Math.max(6, centerR * .28)
       ctx.font = `${subtitleSize}px 'Inconsolata',monospace`
       ctx.fillStyle = 'rgba(184,160,112,.4)'
-      ctx.fillText(EGYPTIAN_PROFILE.element + ' \u00B7 ' + EGYPTIAN_PROFILE.planet, cx, cy + centerR + signNameSize * .7 + nameSize * 1.5 + subtitleSize * 1.8)
+      const activeSignData = EGYPTIAN_SIGNS.find(s => s.name === activeSign) || EGYPTIAN_SIGNS.find(s => s.name === 'Mut')
+      ctx.fillText((activeSignData?.element || '') + ' \u00B7 ' + (activeSignData?.planet || ''), cx, cy + centerR + signNameSize * .7 + nameSize * 1.5 + subtitleSize * 1.8)
 
       /* ---- Outer ring border ---- */
       ctx.beginPath()

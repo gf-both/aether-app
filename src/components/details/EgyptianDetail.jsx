@@ -1,4 +1,6 @@
-import { EGYPTIAN_SIGNS, EGYPTIAN_PROFILE } from '../../data/egyptianData'
+import { useMemo } from 'react'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { EGYPTIAN_SIGNS, EGYPTIAN_PROFILE, getEgyptianSign } from '../../data/egyptianData'
 
 /* ---- shared styles (matching app conventions) ---- */
 const S = {
@@ -65,10 +67,34 @@ const SIGN_GLYPHS = {
   'Sekhmet': '\u{1F981}',
 }
 
-const P = EGYPTIAN_PROFILE
-const mutData = EGYPTIAN_SIGNS.find(s => s.name === 'Mut')
-
 export default function EgyptianDetail() {
+  const profile = useAboveInsideStore(s => s.primaryProfile)
+
+  // Compute Egyptian sign dynamically from birth data
+  const computedSign = useMemo(() => {
+    if (!profile.dob) return null
+    const [, m, d] = profile.dob.split('-').map(Number)
+    return getEgyptianSign(d, m)
+  }, [profile.dob])
+
+  // Use computed sign's name to look up full sign data; fall back to static profile
+  const activeSignName = computedSign?.name || EGYPTIAN_PROFILE.sign
+  const activeSignData = EGYPTIAN_SIGNS.find(s => s.name === activeSignName) || EGYPTIAN_SIGNS.find(s => s.name === 'Mut')
+
+  // Merge: use static EGYPTIAN_PROFILE for rich data (description, compatibility etc.)
+  // but override sign/element/planet if computed sign differs
+  const P = activeSignName === EGYPTIAN_PROFILE.sign
+    ? EGYPTIAN_PROFILE
+    : {
+        ...EGYPTIAN_PROFILE,
+        sign: activeSignName,
+        element: activeSignData?.element || EGYPTIAN_PROFILE.element,
+        planet: activeSignData?.planet || EGYPTIAN_PROFILE.planet,
+        symbol: activeSignData?.symbol || EGYPTIAN_PROFILE.symbol,
+        traits: activeSignData?.traits || EGYPTIAN_PROFILE.traits,
+        dates: activeSignData?.dates || EGYPTIAN_PROFILE.dates,
+      }
+
   return (
     <div style={S.panel}>
       {/* HEADER */}
