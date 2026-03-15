@@ -1,11 +1,30 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { SEPHIROTH, PATHS, PATH_COLORS } from '../../data/kabbalahData'
+import { getKabbalahProfile, profileToKabArgs } from '../../engines/kabbalahEngine'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
 export default function KabbalahTree() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const hovRef = useRef(-1)
+
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+
+  // Compute live active states from birth data; fall back to static SEPHIROTH if engine throws
+  const sephirothLive = useMemo(() => {
+    try {
+      const args = profileToKabArgs(primaryProfile)
+      const result = getKabbalahProfile(args)
+      // Merge computed active states into the static visual SEPHIROTH array
+      return SEPHIROTH.map(s => {
+        const computed = result.sephiroth.find(r => r.name === s.name)
+        return computed ? { ...s, active: computed.active } : s
+      })
+    } catch (e) {
+      return SEPHIROTH
+    }
+  }, [primaryProfile])
 
   useCanvasResize(canvasRef)
 
@@ -18,7 +37,7 @@ export default function KabbalahTree() {
       const r = canvas.getBoundingClientRect()
       const mx = e.clientX - r.left, my = e.clientY - r.top
       hovRef.current = -1
-      SEPHIROTH.forEach((s, i) => {
+      sephirothLive.forEach((s, i) => {
         if (Math.hypot(mx - s.xf * (canvas.width / window.devicePixelRatio), my - s.yf * (canvas.height / window.devicePixelRatio)) < 20) hovRef.current = i
       })
     }
@@ -45,7 +64,7 @@ export default function KabbalahTree() {
 
       // Paths
       PATHS.forEach(([ai, bi, num, ck]) => {
-        const sA = SEPHIROTH[ai], sB = SEPHIROTH[bi]
+        const sA = sephirothLive[ai], sB = sephirothLive[bi]
         const ax = sA.xf * W, ay = sA.yf * H, bx = sB.xf * W, by = sB.yf * H
         const active = sA.active && sB.active
         const col = PATH_COLORS[ck] || (active ? 'rgba(201,168,76,.3)' : 'rgba(75,85,140,.11)')
@@ -75,7 +94,7 @@ export default function KabbalahTree() {
       ctx.fillText("3", W * .46, H * .285); ctx.fillText("Da'ath", dax, day + dar + 8)
 
       // Sephiroth
-      SEPHIROTH.forEach((s, idx) => {
+      sephirothLive.forEach((s, idx) => {
         const x = s.xf * W, y = s.yf * H
         const r = sr * (s.name === 'Kether' ? 1.18 : s.name === 'Tiphareth' || s.name === 'Malkuth' ? 1.08 : 1)
         const hov = hovS === idx
@@ -117,7 +136,7 @@ export default function KabbalahTree() {
       canvas.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [])
+  }, [sephirothLive])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }
