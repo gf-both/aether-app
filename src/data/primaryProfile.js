@@ -14,6 +14,10 @@ export const DEFAULT_PRIMARY_PROFILE = {
   hdDef: 'Split',
   lifePath: 7,
   crossGK: '41/31|28/27',
+  // Birth location for natal chart calculation
+  birthLat: -34.6037,
+  birthLon: -58.3816,
+  birthTimezone: -3,
 }
 
 export const DEFAULT_PEOPLE = [

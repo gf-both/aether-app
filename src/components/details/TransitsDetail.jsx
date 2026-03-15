@@ -1,4 +1,121 @@
+import { useMemo } from 'react'
 import TransitWheel from '../canvas/TransitWheel'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { getNatalChart } from '../../engines/natalEngine'
+
+const PLANET_ORDER = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto']
+const PLANET_SYMS_T = { sun:'☉',moon:'☽',mercury:'☿',venus:'♀',mars:'♂',jupiter:'♃',saturn:'♄',uranus:'♅',neptune:'♆',pluto:'♇' }
+const PLANET_SPEED = { sun:'Normal',moon:'Fast',mercury:'Normal',venus:'Normal',mars:'Normal',jupiter:'Slow',saturn:'Slow',uranus:'Very Slow',neptune:'Very Slow',pluto:'Very Slow' }
+const ASPECT_DEFS_T = [
+  { aspect: 'Conjunction', angle: 0, orb: 8, type: 'activating', col: '#f0c040' },
+  { aspect: 'Sextile',     angle: 60, orb: 6, type: 'flowing',    col: '#50c8a0' },
+  { aspect: 'Square',      angle: 90, orb: 8, type: 'challenging', col: '#ee4466' },
+  { aspect: 'Trine',       angle: 120, orb: 8, type: 'flowing',   col: '#40ccdd' },
+  { aspect: 'Opposition',  angle: 180, orb: 8, type: 'challenging',col: '#7890ee' },
+]
+
+function mod360(x) { return ((x % 360) + 360) % 360 }
+function formatDeg2(deg) {
+  const d = Math.floor(deg); const m = Math.round((deg - d) * 60)
+  return `${d}\u00B0${String(m).padStart(2,'0')}\u2032`
+}
+
+function parseDOB(dob) {
+  if (!dob) return null
+  const [y, m, d] = dob.split('-').map(Number)
+  return { year: y, month: m, day: d }
+}
+function parseTOB(tob) {
+  if (!tob) return { hour: 12, minute: 0 }
+  const [h, m] = tob.split(':').map(Number)
+  return { hour: h || 0, minute: m || 0 }
+}
+
+function findAspect(transitLon, natalLon) {
+  let diff = Math.abs(mod360(transitLon - natalLon))
+  if (diff > 180) diff = 360 - diff
+  for (const asp of ASPECT_DEFS_T) {
+    const orb = Math.abs(diff - asp.angle)
+    if (orb <= asp.orb) return { aspect: asp.aspect, orb, type: asp.type }
+  }
+  return null
+}
+
+/** Compute live transits against natal chart */
+function useCurrentTransits() {
+  const profile = useAboveInsideStore(s => s.primaryProfile)
+  return useMemo(() => {
+    const dob = parseDOB(profile.dob)
+    const tob = parseTOB(profile.tob)
+    if (!dob) return []
+    let natal
+    try {
+      natal = getNatalChart({
+        day: dob.day, month: dob.month, year: dob.year,
+        hour: tob.hour, minute: tob.minute,
+        lat: profile.birthLat ?? -34.6037,
+        lon: profile.birthLon ?? -58.3816,
+        timezone: profile.birthTimezone ?? -3,
+      })
+    } catch { return [] }
+
+    // Current time transits
+    const now = new Date()
+    let current
+    try {
+      current = getNatalChart({
+        day: now.getDate(), month: now.getMonth() + 1, year: now.getFullYear(),
+        hour: now.getUTCHours(), minute: now.getUTCMinutes(),
+        lat: profile.birthLat ?? -34.6037,
+        lon: profile.birthLon ?? -58.3816,
+        timezone: 0,  // already UTC
+      })
+    } catch { return [] }
+
+    const transits = []
+    for (const key of PLANET_ORDER) {
+      const tp = current.planets[key]
+      if (!tp) continue
+      const bestAsp = { aspect: '—', aspOrb: '—', aspType: 'neutral', natalPlanet: '' }
+      let minOrb = 999
+
+      // Check against all natal planets
+      for (const [nKey, np] of Object.entries(natal.planets)) {
+        const asp = findAspect(tp.lon, np.lon)
+        if (asp && asp.orb < minOrb) {
+          minOrb = asp.orb
+          bestAsp.aspect = `${asp.aspect} Natal ${nKey.charAt(0).toUpperCase() + nKey.slice(1)}`
+          bestAsp.aspOrb = formatDeg2(asp.orb)
+          bestAsp.aspType = asp.type
+        }
+      }
+      // Check against natal angles
+      for (const [aKey, angle] of Object.entries(natal.angles)) {
+        const asp = findAspect(tp.lon, angle.lon)
+        if (asp && asp.orb < minOrb) {
+          minOrb = asp.orb
+          bestAsp.aspect = `${asp.aspect} ${aKey.toUpperCase()}`
+          bestAsp.aspOrb = formatDeg2(asp.orb)
+          bestAsp.aspType = asp.type
+        }
+      }
+
+      transits.push({
+        planet: key.charAt(0).toUpperCase() + key.slice(1),
+        sym: PLANET_SYMS_T[key] || '?',
+        sign: tp.sign,
+        deg: formatDeg2(tp.degree),
+        house: 0,  // simplified — not computing house for transits
+        retro: tp.retrograde,
+        speed: PLANET_SPEED[key] || 'Normal',
+        aspect: bestAsp.aspect,
+        aspOrb: bestAsp.aspOrb,
+        aspType: bestAsp.aspType,
+      })
+    }
+    return transits
+  }, [profile.dob, profile.birthLat, profile.birthLon, profile.birthTimezone])
+}
 
 const CURRENT_TRANSITS = [
   { planet: 'Sun', sym: '\u2609', sign: 'Pisces', deg: '13\u00B047\'', house: 5, retro: false, speed: 'Normal', aspect: 'Trine Natal Moon', aspOrb: '2\u00B005\'', aspType: 'flowing' },
@@ -136,6 +253,9 @@ const S = {
 }
 
 export default function TransitsDetail() {
+  const liveTransits = useCurrentTransits()
+  const CURRENT_TRANSITS_LIVE = liveTransits.length > 0 ? liveTransits : CURRENT_TRANSITS
+
   return (
     <div style={S.panel}>
       {/* HEADER */}
@@ -181,7 +301,7 @@ export default function TransitsDetail() {
               <span key={i} style={{ fontFamily: "'Inconsolata', monospace", fontSize: 9, color: 'var(--text3)' }}>{h}</span>
             ))}
           </div>
-          {CURRENT_TRANSITS.map((t, i) => {
+          {CURRENT_TRANSITS_LIVE.map((t, i) => {
             const ac = ASP_COLORS[t.aspType] || ASP_COLORS.activating
             return (
               <div key={i} style={{
@@ -234,7 +354,7 @@ export default function TransitsDetail() {
       <div>
         <div style={S.sectionTitle}>Retrograde Status</div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {CURRENT_TRANSITS.map((t, i) => {
+          {CURRENT_TRANSITS_LIVE.map((t, i) => {
             const isRetro = t.retro
             const isStation = t.aspect.includes('Stationary')
             return (

@@ -1,49 +1,62 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { getNatalChart } from '../../engines/natalEngine'
 
-const signs = ['\u2648','\u2649','\u264A','\u264B','\u264C','\u264D','\u264E','\u264F','\u2650','\u2651','\u2652','\u2653']
-const scols = ['#e85555','#a08050','#7799dd','#66bbaa','#f0c040','#88aa77','#cc9966','#8b2244','#dd8833','#667788','#44aacc','#6699bb']
-const elems = ['fire','earth','air','water','fire','earth','air','water','fire','earth','air','water']
-const eBg = { fire: 'rgba(220,80,50,.1)', earth: 'rgba(120,100,60,.1)', air: 'rgba(100,160,220,.08)', water: 'rgba(60,150,170,.09)' }
-// Verified against Swiss Ephemeris (Kerykeion/pyswisseph) for Jan 23 1981, 22:10 Buenos Aires
-const planets = [
-  { s: '\u2609', d: 304, r: .67, c: '#f0c040', n: 'Sun', sign: 'Aquarius', deg: "3\u00B057\u2032", h: 5 },
-  { s: '\u263D', d: 168, r: .63, c: '#d0d8f0', n: 'Moon', sign: 'Virgo', deg: "18\u00B026\u2032", h: 1 },
-  { s: '\u263F', d: 319, r: .71, c: '#99ccee', n: 'Mercury', sign: 'Aquarius', deg: "19\u00B001\u2032", h: 6 },
-  { s: '\u2640', d: 286, r: .59, c: '#ddaa88', n: 'Venus', sign: 'Capricorn', deg: "15\u00B058\u2032", h: 5 },
-  { s: '\u2642', d: 319, r: .65, c: '#ee6644', n: 'Mars', sign: 'Aquarius', deg: "19\u00B000\u2032", h: 6 },
-  { s: '\u2643', d: 190, r: .69, c: '#e8cc50', n: 'Jupiter', sign: 'Libra', deg: "10\u00B023\u2032", h: 1 },
-  { s: '\u2644', d: 190, r: .61, c: '#aabb88', n: 'Saturn', sign: 'Libra', deg: "9\u00B045\u2032", h: 1 },
-  { s: '\u2645', d: 239, r: .66, c: '#88ddcc', n: 'Uranus', sign: 'Scorpio', deg: "29\u00B023\u2032", h: 2 },
-  { s: '\u2646', d: 264, r: .57, c: '#6699ee', n: 'Neptune', sign: 'Sagittarius', deg: "23\u00B049\u2032", h: 4 },
-  { s: '\u2647', d: 204, r: .55, c: '#997799', n: 'Pluto', sign: 'Libra', deg: "24\u00B020\u2032", h: 1 },
-  { s: 'AC', d: 168, r: .80, c: 'rgba(201,168,76,.85)', n: 'ASC', sign: 'Virgo', deg: "18\u00B013\u2032", h: 1 },
+const SIGN_GLYPHS = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓']
+const PLANET_GLYPHS = {
+  sun: '☉', moon: '☽', mercury: '☿', venus: '♀', mars: '♂',
+  jupiter: '♃', saturn: '♄', uranus: '♅', neptune: '♆', pluto: '♇',
+  northNode: '☊', chiron: '⚷',
+}
+const PLANET_COLORS = {
+  sun: '#f0c040', moon: '#d0d8f0', mercury: '#99ccee', venus: '#ddaa88',
+  mars: '#ee6644', jupiter: '#e8cc50', saturn: '#aabb88', uranus: '#88ddcc',
+  neptune: '#6699ee', pluto: '#997799', northNode: '#ccaa66', chiron: '#cc9988',
+}
+const SIGN_COLORS = [
+  '#e85555','#a08050','#7799dd','#66bbaa','#f0c040','#88aa77',
+  '#cc9966','#8b2244','#dd8833','#667788','#44aacc','#6699bb',
 ]
-
-// Aspect types with colors and labels
-const ASPECT_TYPES = {
-  '\u25B3': { name: 'Trine',       col: 'rgba(255,220,80,', orb: '120\u00B0' },
-  '\u25A1': { name: 'Square',      col: 'rgba(220,80,80,',  orb: '90\u00B0' },
-  '\u260C': { name: 'Conjunction', col: 'rgba(170,80,220,', orb: '0\u00B0' },
-  '\u260D': { name: 'Opposition',  col: 'rgba(120,160,255,', orb: '180\u00B0' },
-  '\u26BA': { name: 'Sextile',     col: 'rgba(80,200,160,', orb: '60\u00B0' },
-  '\u22BC': { name: 'Quincunx',    col: 'rgba(180,140,100,', orb: '150\u00B0' },
+const ELEMS = ['fire','earth','air','water','fire','earth','air','water','fire','earth','air','water']
+const eBg = {
+  fire: 'rgba(220,80,50,.1)', earth: 'rgba(120,100,60,.1)',
+  air: 'rgba(100,160,220,.08)', water: 'rgba(60,150,170,.09)',
 }
 
-const aspects = [
-  [0, 1, '\u25B3', 0.18],  // Sun trine Moon
-  [0, 4, '\u25A1', 0.16],  // Sun square Mars
-  [0, 7, '\u260C', 0.14],  // Sun conjunct Uranus
-  [1, 4, '\u260C', 0.16],  // Moon conjunct Mars
-  [3, 5, '\u25B3', 0.10],  // Venus trine Jupiter
-  [0, 5, '\u260D', 0.10],  // Sun opposition Jupiter
-  [6, 7, '\u25A1', 0.09],  // Saturn square Uranus
-  [2, 8, '\u26BA', 0.12],  // Mercury sextile Neptune
-  [4, 9, '\u260C', 0.14],  // Mars conjunct Pluto
-  [5, 6, '\u260C', 0.10],  // Jupiter conjunct Saturn
-  [1, 7, '\u260C', 0.13],  // Moon conjunct Uranus
-  [3, 0, '\u260C', 0.12],  // Venus conjunct Sun
-]
+const ASPECT_COLORS = {
+  conjunction: 'rgba(170,80,220,',
+  opposition:  'rgba(120,160,255,',
+  trine:       'rgba(255,220,80,',
+  square:      'rgba(220,80,80,',
+  sextile:     'rgba(80,200,160,',
+  quincunx:    'rgba(180,140,100,',
+}
+
+function parseDOB(dob) {
+  if (!dob) return null
+  const [y, m, d] = dob.split('-').map(Number)
+  return { year: y, month: m, day: d }
+}
+
+function parseTOB(tob) {
+  if (!tob) return { hour: 12, minute: 0 }
+  const [h, m] = tob.split(':').map(Number)
+  return { hour: h || 0, minute: m || 0 }
+}
+
+function computeChart(profile) {
+  const dob = parseDOB(profile.dob)
+  const tob = parseTOB(profile.tob)
+  if (!dob) return null
+  return getNatalChart({
+    day: dob.day, month: dob.month, year: dob.year,
+    hour: tob.hour, minute: tob.minute,
+    lat: profile.birthLat ?? -34.6037,
+    lon: profile.birthLon ?? -58.3816,
+    timezone: profile.birthTimezone ?? -3,
+  })
+}
 
 export default function NatalWheel({ showAspects = true, showHouses = true }) {
   const canvasRef = useRef(null)
@@ -51,9 +64,17 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
   const hovRef = useRef(-1)
   const showAspectsRef = useRef(showAspects)
   const showHousesRef = useRef(showHouses)
+  const chartRef = useRef(null)
 
+  const profile = useAboveInsideStore(s => s.primaryProfile)
+
+  // Compute natal chart
+  const chart = useMemo(() => {
+    try { return computeChart(profile) } catch { return null }
+  }, [profile.dob, profile.tob, profile.birthLat, profile.birthLon, profile.birthTimezone])
+
+  useEffect(() => { chartRef.current = chart }, [chart])
   useCanvasResize(canvasRef)
-
   useEffect(() => { showAspectsRef.current = showAspects }, [showAspects])
   useEffect(() => { showHousesRef.current = showHouses }, [showHouses])
 
@@ -61,25 +82,26 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    // Fixed rotation: ASC (168°) placed at LEFT (180° canvas)
-    // (168 - 90 + rot) = 180 → rot = 102
-    const rot = 102
-
     const handleMouseMove = (e) => {
       const r = canvas.getBoundingClientRect()
       const mx = e.clientX - r.left, my = e.clientY - r.top
       const cx = canvas.width / window.devicePixelRatio / 2
       const cy = canvas.height / window.devicePixelRatio / 2
       const R = Math.min(cx, cy) * .96
+      const ch = chartRef.current
+      if (!ch) return
       hovRef.current = -1
-      planets.forEach((p, i) => {
-        const a = (p.d - 90 + rot) * Math.PI / 180
-        const rp = R * p.r * .67
+      const planetKeys = Object.keys(ch.planets)
+      const ascLon = ch.angles.asc.lon
+      const rot = (180 - (ascLon - 90) + 360) % 360  // place ASC at left (180°)
+      planetKeys.forEach((key, i) => {
+        const p = ch.planets[key]
+        const a = (p.lon - 90 + rot) * Math.PI / 180
+        const rp = R * 0.67 * 0.67
         if (Math.hypot(mx - cx - rp * Math.cos(a), my - cy - rp * Math.sin(a)) < 16) hovRef.current = i
       })
     }
     const handleMouseLeave = () => { hovRef.current = -1 }
-
     canvas.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('mouseleave', handleMouseLeave)
 
@@ -92,7 +114,22 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       const cx = W / 2, cy = H / 2, R = Math.min(cx, cy) * .96
       ctx.clearRect(0, 0, W, H)
+
+      const ch = chartRef.current
+      if (!ch) {
+        ctx.font = `${R * .08}px sans-serif`
+        ctx.fillStyle = 'rgba(201,168,76,.5)'
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+        ctx.fillText('Loading chart...', cx, cy)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(draw)
+        return
+      }
+
+      const ascLon = ch.angles.asc.lon
+      const rot = (180 - (ascLon - 90) + 360) % 360
       const hov = hovRef.current
+      const planetKeys = Object.keys(ch.planets)
 
       // Background gradient
       const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R)
@@ -104,14 +141,12 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
         const a0 = (i * 30 - 90 + rot) * Math.PI / 180
         const a1 = ((i + 1) * 30 - 90 + rot) * Math.PI / 180
         ctx.beginPath(); ctx.arc(cx, cy, R * .97, a0, a1); ctx.arc(cx, cy, R * .79, a1, a0, true); ctx.closePath()
-        ctx.fillStyle = eBg[elems[i]]; ctx.fill()
-        ctx.strokeStyle = scols[i] + '66'; ctx.lineWidth = 1.1; ctx.stroke()
+        ctx.fillStyle = eBg[ELEMS[i]]; ctx.fill()
+        ctx.strokeStyle = SIGN_COLORS[i] + '66'; ctx.lineWidth = 1.1; ctx.stroke()
         const am = (i * 30 + 15 - 90 + rot) * Math.PI / 180
-        const rG = R * .875
-        ctx.font = `bold ${R * .12}px serif`; ctx.fillStyle = scols[i]
+        ctx.font = `bold ${R * .12}px serif`; ctx.fillStyle = SIGN_COLORS[i]
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-        ctx.fillText(signs[i], cx + rG * Math.cos(am), cy + rG * Math.sin(am))
-        // Tick marks
+        ctx.fillText(SIGN_GLYPHS[i], cx + R * .875 * Math.cos(am), cy + R * .875 * Math.sin(am))
         for (let d = 0; d < 30; d++) {
           const ta = (i * 30 + d - 90 + rot) * Math.PI / 180
           const t0 = d % 10 === 0 ? .975 : d % 5 === 0 ? .983 : .989
@@ -126,90 +161,105 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
       // Concentric rings
       ;[.97, .79, .63, .51, .38].forEach((rf, i) => {
         ctx.beginPath(); ctx.arc(cx, cy, R * rf, 0, Math.PI * 2)
-        ctx.strokeStyle = ['.40', '.30', '.22', '.15', '.10'].map(o => `rgba(201,168,76,${o})`)[i]
+        ctx.strokeStyle = ['rgba(201,168,76,.40)','rgba(201,168,76,.30)','rgba(201,168,76,.22)','rgba(201,168,76,.15)','rgba(201,168,76,.10)'][i]
         ctx.lineWidth = 1.2; ctx.stroke()
       })
 
       // House cusps
       if (showHousesRef.current) {
-        ;[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].forEach((hd, i) => {
-          const a = (hd - 90 + rot) * Math.PI / 180
-          const ang = i % 3 === 0
+        ch.houses.forEach((house, i) => {
+          const a = (house.lon - 90 + rot) * Math.PI / 180
+          const isAngular = i % 3 === 0
           ctx.beginPath()
           ctx.moveTo(cx + R * .79 * Math.cos(a), cy + R * .79 * Math.sin(a))
-          ctx.lineTo(cx + R * (ang ? .38 : .51) * Math.cos(a), cy + R * (ang ? .38 : .51) * Math.sin(a))
-          ctx.strokeStyle = ang ? 'rgba(201,168,76,.65)' : 'rgba(201,168,76,.30)'
-          ctx.lineWidth = ang ? 1.8 : .9; ctx.stroke()
+          ctx.lineTo(cx + R * (isAngular ? .38 : .51) * Math.cos(a), cy + R * (isAngular ? .38 : .51) * Math.sin(a))
+          ctx.strokeStyle = isAngular ? 'rgba(201,168,76,.65)' : 'rgba(201,168,76,.30)'
+          ctx.lineWidth = isAngular ? 1.8 : .9; ctx.stroke()
           // House number
-          const numA = ((i * 30) + 15 - 90 + rot) * Math.PI / 180
-          const hr = R * .45
+          const nextIdx = (i + 1) % 12
+          const nextLon = ch.houses[nextIdx].lon
+          let midLon = house.lon + ((nextLon - house.lon + 360) % 360) / 2
+          const numA = (midLon - 90 + rot) * Math.PI / 180
           ctx.font = `bold ${R * .058}px 'Cinzel',serif`
-          ctx.fillStyle = ang ? 'rgba(201,168,76,.70)' : 'rgba(201,168,76,.45)'
+          ctx.fillStyle = isAngular ? 'rgba(201,168,76,.70)' : 'rgba(201,168,76,.45)'
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-          ctx.fillText(i + 1, cx + hr * Math.cos(numA), cy + hr * Math.sin(numA))
+          ctx.fillText(i + 1, cx + R * .45 * Math.cos(numA), cy + R * .45 * Math.sin(numA))
         })
       }
 
       // Aspect lines
       if (showAspectsRef.current) {
-        aspects.forEach(([a, b, type, alpha]) => {
-          const pa = planets[a], pb = planets[b]
-          const aa = (pa.d - 90 + rot) * Math.PI / 180
-          const ab = (pb.d - 90 + rot) * Math.PI / 180
-          const rA = R * .49
-          const aspType = ASPECT_TYPES[type]
+        const rA = R * .49
+        ch.aspects.forEach(({ planet1, planet2, aspect, orb }) => {
+          const lon1 = ch.planets[planet1]?.lon
+          const lon2 = ch.planets[planet2]?.lon
+          if (lon1 == null || lon2 == null) return
+          const aa = (lon1 - 90 + rot) * Math.PI / 180
+          const ab = (lon2 - 90 + rot) * Math.PI / 180
+          const col = ASPECT_COLORS[aspect] || 'rgba(201,168,76,'
+          const alpha = Math.max(0.12, 0.38 - orb * 0.03)
           ctx.beginPath()
           ctx.moveTo(cx + rA * Math.cos(aa), cy + rA * Math.sin(aa))
           ctx.lineTo(cx + rA * Math.cos(ab), cy + rA * Math.sin(ab))
-          ctx.strokeStyle = aspType ? aspType.col + (alpha + 0.18) + ')' : `rgba(201,168,76,${alpha + 0.18})`
+          ctx.strokeStyle = col + alpha + ')'
           ctx.lineWidth = 1.5; ctx.stroke()
-          // Aspect symbol at midpoint
-          const mx = (Math.cos(aa) + Math.cos(ab)) / 2
-          const my = (Math.sin(aa) + Math.sin(ab)) / 2
-          const mLen = Math.hypot(mx, my) || 1
-          ctx.font = `bold ${R * .065}px serif`
-          ctx.fillStyle = aspType ? aspType.col + (alpha + 0.35) + ')' : 'rgba(201,168,76,.60)'
-          ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-          ctx.fillText(type, cx + rA * .7 * mx / mLen, cy + rA * .7 * my / mLen)
         })
       }
 
       // Planets
-      planets.forEach((p, i) => {
-        const a = (p.d - 90 + rot) * Math.PI / 180
-        const rp = R * p.r * .67
+      planetKeys.forEach((key, i) => {
+        const p = ch.planets[key]
+        const glyph = PLANET_GLYPHS[key] || '?'
+        const color = PLANET_COLORS[key] || '#aaaaaa'
+        const a = (p.lon - 90 + rot) * Math.PI / 180
+        const rp = R * 0.67 * 0.67
         const px2 = cx + rp * Math.cos(a), py2 = cy + rp * Math.sin(a)
         const isH = hov === i
+
         ctx.beginPath()
         ctx.moveTo(px2, py2)
         ctx.lineTo(cx + R * .63 * Math.cos(a), cy + R * .63 * Math.sin(a))
-        ctx.strokeStyle = p.c + '66'; ctx.lineWidth = 1.1; ctx.stroke()
+        ctx.strokeStyle = color + '66'; ctx.lineWidth = 1.1; ctx.stroke()
+
         if (isH) {
           const g = ctx.createRadialGradient(px2, py2, 0, px2, py2, R * .09)
-          g.addColorStop(0, p.c + '66'); g.addColorStop(1, 'transparent')
+          g.addColorStop(0, color + '66'); g.addColorStop(1, 'transparent')
           ctx.beginPath(); ctx.arc(px2, py2, R * .09, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill()
         }
-        ctx.beginPath(); ctx.arc(px2, py2, R * .028, 0, Math.PI * 2); ctx.fillStyle = p.c; ctx.fill()
-        ctx.font = `bold ${R * (isH ? .13 : .10)}px serif`; ctx.fillStyle = isH ? '#fff' : p.c
+        ctx.beginPath(); ctx.arc(px2, py2, R * .028, 0, Math.PI * 2); ctx.fillStyle = color; ctx.fill()
+        ctx.font = `bold ${R * (isH ? .13 : .10)}px serif`; ctx.fillStyle = isH ? '#fff' : color
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-        ctx.fillText(p.s, px2, py2 - R * .055)
+        ctx.fillText(glyph, px2, py2 - R * .055)
+
         if (isH) {
+          const signInfo = p.sign + ' ' + Math.floor(p.degree) + '°' + (p.retrograde ? ' Rx' : '')
           ctx.font = `bold ${R * .075}px 'Cinzel',serif`; ctx.fillStyle = 'rgba(201,168,76,.95)'
-          ctx.textAlign = 'center'; ctx.fillText(p.n, cx, cy - R * .12)
+          ctx.textAlign = 'center'; ctx.fillText(key.charAt(0).toUpperCase() + key.slice(1), cx, cy - R * .12)
           ctx.font = `${R * .055}px serif`; ctx.fillStyle = 'rgba(200,215,255,.90)'
-          ctx.fillText(p.sign + ' ' + p.deg + ' \u00B7 H' + p.h, cx, cy + R * .02)
+          ctx.fillText(signInfo, cx, cy + R * .02)
         }
+      })
+
+      // ASC/MC markers
+      ;[['ASC', ch.angles.asc.lon, 'rgba(201,168,76,.85)'], ['MC', ch.angles.mc.lon, 'rgba(136,190,255,.75)']].forEach(([label, lon, col]) => {
+        const a = (lon - 90 + rot) * Math.PI / 180
+        const rp = R * 0.76
+        ctx.font = `bold ${R * .055}px 'Cinzel',serif`
+        ctx.fillStyle = col; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+        ctx.fillText(label, cx + rp * Math.cos(a), cy + rp * Math.sin(a))
       })
 
       // Center glow
       const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * .22)
       cg.addColorStop(0, 'rgba(201,168,76,.14)'); cg.addColorStop(1, 'rgba(1,1,10,0)')
       ctx.beginPath(); ctx.arc(cx, cy, R * .22, 0, Math.PI * 2); ctx.fillStyle = cg; ctx.fill()
+      const sunSign = ch.planets.sun?.sign || ''
+      const ascSign = ch.angles.asc?.sign || ''
       ctx.font = `bold ${R * .15}px serif`; ctx.fillStyle = 'rgba(201,168,76,.65)'
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-      ctx.fillText('\u2652', cx, cy - R * .04)
-      ctx.font = `bold ${R * .05}px 'Cinzel',serif`; ctx.fillStyle = 'rgba(201,168,76,.50)'
-      ctx.fillText('AQUARIUS \u00B7 VIRGO ASC', cx, cy + R * .09)
+      ctx.fillText('♒', cx, cy - R * .04)
+      ctx.font = `bold ${R * .045}px 'Cinzel',serif`; ctx.fillStyle = 'rgba(201,168,76,.50)'
+      ctx.fillText((sunSign + ' · ' + ascSign + ' ASC').toUpperCase(), cx, cy + R * .09)
 
       ctx.restore()
       animRef.current = requestAnimationFrame(draw)
