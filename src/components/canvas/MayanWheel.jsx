@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, SEAL_COLORS } from '../../data/mayanData'
+import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, SEAL_COLORS, computeFullProfile } from '../../data/mayanData'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
 export default function MayanWheel() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
 
   useCanvasResize(canvasRef)
 
@@ -13,7 +15,12 @@ export default function MayanWheel() {
     if (!canvas) return
     let pulse = 0
 
-    const P = MAYAN_PROFILE
+    // Compute profile dynamically from stored birth date (dob = 'YYYY-MM-DD')
+    let P = MAYAN_PROFILE
+    if (primaryProfile?.dob) {
+      const [y, m, d] = primaryProfile.dob.split('-').map(Number)
+      if (y && m && d) P = computeFullProfile(y, m, d)
+    }
     const activeSealIdx = P.sealNum - 1
     const activeToneIdx = P.toneNum - 1
 

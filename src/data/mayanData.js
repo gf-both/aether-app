@@ -204,3 +204,8 @@ export const MAYAN_PROFILE = computeFullProfile(1981, 1, 23)
 export const MAYAN_DAY_SIGNS = DREAMSPELL_SEALS
 export const DIRECTION_COLORS = { East: '#cc3333', North: '#d0d0d0', West: '#3366aa', South: '#ddaa22' }
 export const ELEMENT_COLORS = { Fire: '#cc4433', Air: '#88aacc', Water: '#4466aa', Earth: '#aa8833' }
+
+// ---- Classical Maya Engine re-exports ----
+// The Classical engine uses the GMT correlation constant (584283) for historically
+// accurate Tzolkin, Haab, Long Count, and related computations.
+export { getMayanProfile, TZOLKIN_DAY_SIGNS, TZOLKIN_TONES, HAAB_MONTHS } from '../engines/mayanEngine'

@@ -1,7 +1,6 @@
-import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, CASTLES, EARTH_FAMILIES, COLOR_FAMILIES, SEAL_COLORS } from '../../data/mayanData'
+import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, CASTLES, EARTH_FAMILIES, COLOR_FAMILIES, SEAL_COLORS, computeFullProfile, getMayanProfile } from '../../data/mayanData'
 import MayanWheel from '../canvas/MayanWheel'
-
-const P = MAYAN_PROFILE
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
 /* ---- shared styles ---- */
 const S = {
@@ -138,6 +137,19 @@ function OracleCard({ entry, label, desc, col, isCenter }) {
 }
 
 export default function MayanDetail() {
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+
+  // Compute Dreamspell profile dynamically from stored birth date (dob = 'YYYY-MM-DD')
+  let P = MAYAN_PROFILE
+  let classicalProfile = null
+  if (primaryProfile?.dob) {
+    const [y, m, d] = primaryProfile.dob.split('-').map(Number)
+    if (y && m && d) {
+      P = computeFullProfile(y, m, d)
+      classicalProfile = getMayanProfile(d, m, y)
+    }
+  }
+
   const seal = P.seal
   const tone = P.tone
   const sealCol = SEAL_COLORS[seal.color]
@@ -512,32 +524,58 @@ export default function MayanDetail() {
       <div>
         <div style={S.sectionTitle}>Your Dreamspell Reading</div>
         <div style={S.interpretation}>
-          As <span style={{ color: 'var(--gold)' }}>Kin {P.kin} {'\u2014'} {P.signature}</span>, you carry
-          the highest galactic signature in the entire Tzolkin: the last kin of the 260-day cycle, embodying the
-          completion and transcendence of all that came before. The{' '}
-          <span style={{ color: sealCol }}>{seal.name} seal ({seal.mayanName})</span> represents{' '}
-          {seal.power.toLowerCase()} {'\u2014'} the force of enlightenment and universal fire. As{' '}
-          <span style={{ color: 'var(--gold)' }}>Tone 13 (Cosmic)</span>, you{' '}
+          As <span style={{ color: 'var(--gold)' }}>Kin {P.kin} {'\u2014'} {P.signature}</span>, you embody
+          the galactic signature of the {seal.name} seal ({seal.mayanName}) — the power of {seal.power.toLowerCase()}.
+          As <span style={{ color: 'var(--gold)' }}>Tone {tone.number} ({tone.name})</span>, you{' '}
           {tone.action.toLowerCase()} in order to {seal.action.toLowerCase()},{' '}
           {tone.power.toLowerCase()}ing the power of {seal.power.toLowerCase()}.{' '}
           Your oracle cross reveals{' '}
-          <span style={{ color: '#88dd44' }}>{P.oracle.guide.signature}</span> as your Guide (higher self),
-          pointing you toward the patient flowering of awareness;{' '}
-          <span style={{ color: 'var(--gold)' }}>{P.oracle.analog.signature}</span> as your Analog (support),
-          the primordial nurturing energy that births new cycles;{' '}
-          <span style={{ color: '#ee5544' }}>{P.oracle.antipode.signature}</span> as your Antipode (challenge),
-          pushing you through the lens of unconditional love and heart; and{' '}
-          <span style={{ color: 'var(--aqua2)' }}>{P.oracle.occult.signature}</span> as your Occult (hidden power),
-          the magnetic origin of creation itself.{' '}
+          <span style={{ color: '#88dd44' }}>{P.oracle.guide.signature}</span> as your Guide (higher self);{' '}
+          <span style={{ color: 'var(--gold)' }}>{P.oracle.analog.signature}</span> as your Analog (support);{' '}
+          <span style={{ color: '#ee5544' }}>{P.oracle.antipode.signature}</span> as your Antipode (challenge); and{' '}
+          <span style={{ color: 'var(--aqua2)' }}>{P.oracle.occult.signature}</span> as your Occult (hidden power).{' '}
           You walk within the{' '}
           <span style={{ color: P.castle.color }}>{P.castle.name}</span>,
-          the Court of {P.castle.court} {'\u2014'} the final castle where all threads converge
-          into synchronized wholeness. The{' '}
+          the Court of {P.castle.court}. The{' '}
           <span style={{ color: 'var(--gold2)' }}>{P.wavespell.name} Wavespell</span> infuses your
-          journey with the power of {P.wavespell.seal.power.toLowerCase()}, beautifying every step
-          of the path toward cosmic presence.
+          journey with the power of {P.wavespell.seal.power.toLowerCase()}.
         </div>
       </div>
+
+      {/* CLASSICAL MAYA SECTION */}
+      {classicalProfile && (
+        <div>
+          <div style={S.sectionTitle}>Classical Mayan Calendar (GMT 584283)</div>
+          <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {[
+              ['Tzolkin', `${classicalProfile.tzolkin.daySign} ${classicalProfile.tzolkin.tone} (${classicalProfile.tzolkin.toneName}) — Kin ${classicalProfile.tzolkin.kinNumber}`],
+              ['Day Sign', `${classicalProfile.tzolkin.daySign} — ${classicalProfile.tzolkin.daySignMeaning}`],
+              ['Tone', `${classicalProfile.tzolkin.tone} ${classicalProfile.tzolkin.toneName} — ${classicalProfile.tzolkin.toneKeyword}`],
+              ['Haab', classicalProfile.haab.formatted],
+              ['Long Count', classicalProfile.longCount.formatted],
+              ['Lord of Night', classicalProfile.lordOfNight],
+              ['Trecena Lord', classicalProfile.trecenaLord],
+              ['Year Bearer', classicalProfile.yearBearer.formatted],
+            ].map(([label, val], i) => (
+              <div key={i} style={S.keyVal}>
+                <span style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
+                  textTransform: 'uppercase', color: 'var(--text3)', minWidth: 140,
+                }}>{label}</span>
+                <span style={{ ...S.mono, color: i === 0 ? 'var(--gold)' : 'var(--gold2)', fontSize: 12 }}>
+                  {val}
+                </span>
+              </div>
+            ))}
+          </div>
+          <div style={{ ...S.interpretation, marginTop: 12 }}>
+            <span style={{ color: 'var(--gold)' }}>{classicalProfile.tzolkin.daySign}</span> —
+            {' '}{classicalProfile.tzolkin.daySignDescription}
+            {' '}As <span style={{ color: 'var(--gold)' }}>Tone {classicalProfile.tzolkin.tone} ({classicalProfile.tzolkin.toneName})</span>:{' '}
+            {classicalProfile.tzolkin.toneMeaning}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
