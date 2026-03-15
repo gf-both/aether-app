@@ -3,7 +3,20 @@ import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, SEAL_COLORS, computeFullProfile } from '../../data/mayanData'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
-export default function MayanWheel() {
+const DAY_SIGN_EMOJI = {
+  'Imix': '🐊', 'Ik': '💨', 'Akbal': '🌙', 'Kan': '🌱', 'Chicchan': '🐍',
+  'Cimi': '💀', 'Manik': '🦌', 'Lamat': '⭐', 'Muluc': '🌕', 'Oc': '🐕',
+  'Chuen': '🐒', 'Eb': '🛤️', 'Ben': '🎋', 'Ix': '🐆', 'Men': '🦅',
+  'Cib': '🦅', 'Caban': '🌍', 'Etznab': '🪞', 'Cauac': '⛈️', 'Ahau': '☀️',
+}
+
+const TONE_NAMES = {
+  1: 'Magnetic', 2: 'Lunar', 3: 'Electric', 4: 'Self-Existing',
+  5: 'Overtone', 6: 'Rhythmic', 7: 'Resonant', 8: 'Galactic',
+  9: 'Solar', 10: 'Planetary', 11: 'Spectral', 12: 'Crystal', 13: 'Cosmic'
+}
+
+export default function MayanWheel({ classicalDaySign, classicalTone, classicalKin }) {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
@@ -15,7 +28,7 @@ export default function MayanWheel() {
     if (!canvas) return
     let pulse = 0
 
-    // Compute profile dynamically from stored birth date (dob = 'YYYY-MM-DD')
+    // Compute Dreamspell profile
     let P = MAYAN_PROFILE
     if (primaryProfile?.dob) {
       const [y, m, d] = primaryProfile.dob.split('-').map(Number)
@@ -23,6 +36,13 @@ export default function MayanWheel() {
     }
     const activeSealIdx = P.sealNum - 1
     const activeToneIdx = P.toneNum - 1
+
+    // Use classical data if provided, else fall back to Dreamspell
+    const centerDaySign = classicalDaySign || P.seal.name
+    const centerTone = classicalTone || P.toneNum
+    const centerKin = classicalKin || P.kin
+    const centerEmoji = DAY_SIGN_EMOJI[centerDaySign] || '✨'
+    const centerToneName = TONE_NAMES[centerTone] || ''
 
     function draw() {
       const dpr = window.devicePixelRatio || 1
@@ -177,102 +197,133 @@ export default function MayanWheel() {
       ctx.lineWidth = .7
       ctx.stroke()
 
-      // ---- CENTER: Oracle Cross ----
+      // ---- CENTER: Day Sign info + Oracle Cross ----
       const centerR = toneInnerR - R * .02
-      const orbR = centerR * .42 // distance of oracle positions from center
-      const dotSize = centerR * .22 // oracle dot size
+      const orbR = centerR * .38
+      const dotSize = centerR * .2
 
       // Center glow
       const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, centerR * .7)
-      cg.addColorStop(0, 'rgba(201,168,76,.15)')
-      cg.addColorStop(.5, 'rgba(180,140,60,.05)')
+      cg.addColorStop(0, 'rgba(201,168,76,.18)')
+      cg.addColorStop(.5, 'rgba(180,140,60,.06)')
       cg.addColorStop(1, 'rgba(1,1,10,0)')
       ctx.beginPath()
       ctx.arc(cx, cy, centerR * .7, 0, Math.PI * 2)
       ctx.fillStyle = cg
       ctx.fill()
 
-      // Oracle positions: [x,y, label, color, kin-entry]
+      // ---- CENTER DISPLAY: Day Sign Name + Emoji + Tone ----
+      const centerCircleR = orbR * .85
+      // Draw center circle background
+      ctx.beginPath()
+      ctx.arc(cx, cy, centerCircleR, 0, Math.PI * 2)
+      ctx.fillStyle = 'rgba(201,168,76,.06)'
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(201,168,76,.3)'
+      ctx.lineWidth = 1.2
+      ctx.stroke()
+
+      // Emoji (large, centered)
+      const emojiSize = Math.max(16, centerCircleR * .55)
+      ctx.font = `${emojiSize}px serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(centerEmoji, cx, cy - centerCircleR * .22)
+
+      // Day Sign name
+      const nameSize = Math.max(9, centerCircleR * .22)
+      ctx.font = `bold ${nameSize}px 'Cinzel',serif`
+      ctx.fillStyle = 'rgba(255,235,180,.95)'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(centerDaySign.toUpperCase(), cx, cy + centerCircleR * .15)
+
+      // Tone number
+      const toneDisplaySize = Math.max(8, centerCircleR * .2)
+      ctx.font = `${toneDisplaySize}px 'Cinzel',serif`
+      ctx.fillStyle = 'rgba(201,168,76,.8)'
+      ctx.fillText(`Tone ${centerTone}`, cx, cy + centerCircleR * .38)
+
+      // Tone name
+      if (R > 80) {
+        const toneNameSize = Math.max(6, centerCircleR * .14)
+        ctx.font = `${toneNameSize}px 'Inconsolata',monospace`
+        ctx.fillStyle = 'rgba(201,168,76,.5)'
+        ctx.fillText(centerToneName, cx, cy + centerCircleR * .55)
+      }
+
+      // Kin number (small, bottom of center circle)
+      const kinSize = Math.max(5, centerCircleR * .13)
+      ctx.font = `${kinSize}px 'Inconsolata',monospace`
+      ctx.fillStyle = 'rgba(201,168,76,.35)'
+      ctx.fillText(`Kin ${centerKin}`, cx, cy + centerCircleR * .72)
+
+      // ---- ORACLE CROSS (Dreamspell) around center ----
       const oracle = P.oracle
-      const positions = [
-        [cx, cy,             'destiny',  'rgba(221,170,34,',  oracle.destiny],
-        [cx, cy - orbR,      'guide',    'rgba(96,200,80,',   oracle.guide],
-        [cx + orbR, cy,      'analog',   'rgba(201,168,76,',  oracle.analog],
-        [cx - orbR, cy,      'antipode', 'rgba(220,60,60,',   oracle.antipode],
-        [cx, cy + orbR,      'occult',   'rgba(64,204,221,',  oracle.occult],
+      const oraclePositions = [
+        [cx, cy - orbR - centerCircleR * .1,  'guide',    'rgba(96,200,80,',   oracle.guide],
+        [cx + orbR + centerCircleR * .1, cy,  'analog',   'rgba(201,168,76,',  oracle.analog],
+        [cx - orbR - centerCircleR * .1, cy,  'antipode', 'rgba(220,60,60,',   oracle.antipode],
+        [cx, cy + orbR + centerCircleR * .1,  'occult',   'rgba(64,204,221,',  oracle.occult],
       ]
 
-      // Connecting lines from center to oracle positions
-      for (let i = 1; i < 5; i++) {
-        const [px, py,,colBase] = positions[i]
+      // Connecting lines from center edge to oracle dots
+      oraclePositions.forEach(([px, py,, colBase]) => {
+        const angle = Math.atan2(py - cy, px - cx)
+        const startX = cx + centerCircleR * Math.cos(angle)
+        const startY = cy + centerCircleR * Math.sin(angle)
         ctx.beginPath()
-        ctx.moveTo(cx, cy)
+        ctx.moveTo(startX, startY)
         ctx.lineTo(px, py)
-        ctx.strokeStyle = colBase + '0.15)'
-        ctx.lineWidth = 1
+        ctx.strokeStyle = colBase + '0.2)'
+        ctx.lineWidth = .8
         ctx.setLineDash([3, 3])
         ctx.stroke()
         ctx.setLineDash([])
-      }
+      })
 
       // Draw oracle dots
-      positions.forEach(([px, py, role, colBase, entry], idx) => {
-        const isCenter = idx === 0
-        const dr = isCenter ? dotSize * 1.2 : dotSize * .8
-        const gp = .2 + .1 * Math.sin(pulse + idx * 1.2)
+      oraclePositions.forEach(([px, py, role, colBase, entry], idx) => {
+        const dr = dotSize * .72
+        const gp = .15 + .08 * Math.sin(pulse + idx * 1.2)
         const sealCol = SEAL_COLORS[entry.seal.color]
 
         // Aura
         const aura = ctx.createRadialGradient(px, py, 0, px, py, dr * 2)
-        aura.addColorStop(0, colBase + (isCenter ? (.3 + gp) : (.15 + gp * .5)) + ')')
+        aura.addColorStop(0, colBase + (.18 + gp) + ')')
         aura.addColorStop(1, colBase + '0)')
         ctx.beginPath()
         ctx.arc(px, py, dr * 2, 0, Math.PI * 2)
         ctx.fillStyle = aura
         ctx.fill()
 
-        // Dot fill with seal color
+        // Dot
         ctx.beginPath()
         ctx.arc(px, py, dr, 0, Math.PI * 2)
-        ctx.fillStyle = isCenter ? `rgba(201,168,76,${.5 + gp})` : sealCol + (isCenter ? 'cc' : '66')
+        ctx.fillStyle = sealCol + '88'
         ctx.fill()
-        ctx.strokeStyle = isCenter ? 'rgba(255,230,150,.6)' : colBase + '0.4)'
-        ctx.lineWidth = isCenter ? 1.5 : .8
+        ctx.strokeStyle = colBase + '0.5)'
+        ctx.lineWidth = .8
         ctx.stroke()
 
-        // Seal glyph or kin number
-        const numS = isCenter ? Math.max(10, dr * .9) : Math.max(7, dr * .7)
+        // Kin number
+        const numS = Math.max(6, dr * .75)
         ctx.font = `bold ${numS}px 'Cinzel',serif`
-        ctx.fillStyle = isCenter ? 'rgba(255,255,255,.95)' : 'rgba(255,255,255,.85)'
+        ctx.fillStyle = 'rgba(255,255,255,.9)'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(entry.kin), px, py)
 
         // Seal name below dot
-        if (R > 60) {
-          const lblS = Math.max(5, dr * .35)
+        if (R > 70) {
+          const lblS = Math.max(5, dr * .38)
           ctx.font = `${lblS}px 'Inconsolata',monospace`
-          ctx.fillStyle = isCenter ? 'rgba(255,235,180,.7)' : colBase + '0.5)'
+          ctx.fillStyle = colBase + '0.55)'
           ctx.fillText(entry.seal.name, px, py + dr + lblS + 2)
         }
       })
 
-      // Kin label above center
-      const labelS = Math.max(6, R * .035)
-      ctx.font = `${labelS}px 'Cinzel',serif`
-      ctx.fillStyle = 'rgba(201,168,76,.45)'
-      ctx.textAlign = 'center'
-      ctx.fillText('KIN', cx, cy - dotSize * 1.2 - labelS - 2)
-
-      // Signature below oracle
-      if (R > 80) {
-        const sigS = Math.max(6, R * .032)
-        ctx.font = `${sigS}px 'Inconsolata',monospace`
-        ctx.fillStyle = 'rgba(201,168,76,.35)'
-        ctx.fillText(P.signature, cx, cy + orbR + dotSize + sigS * 2.5)
-      }
-
-      // ---- LEGEND ----
+      // ---- LEGEND (bottom-left) ----
       const lx = 8, ly = H - 52
       const legS = Math.max(6, R * .04)
       const items = [
@@ -289,12 +340,22 @@ export default function MayanWheel() {
         ctx.fillText(label, lx, ly + i * (legS + 5))
       })
 
+      // ---- Signature label (top-right) ----
+      if (R > 80) {
+        const sigS = Math.max(7, R * .036)
+        ctx.font = `${sigS}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,.4)'
+        ctx.textAlign = 'right'
+        ctx.textBaseline = 'top'
+        ctx.fillText(P.signature, W - 8, 8)
+      }
+
       ctx.restore()
       animRef.current = requestAnimationFrame(draw)
     }
     draw()
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
-  }, [])
+  }, [classicalDaySign, classicalTone, classicalKin])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }

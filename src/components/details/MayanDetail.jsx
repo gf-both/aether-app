@@ -2,6 +2,37 @@ import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, CASTLES, EARTH_FAMILIE
 import MayanWheel from '../canvas/MayanWheel'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
+/* ---- Day Sign data with emoji & element ---- */
+const DAY_SIGNS = {
+  'Imix':    { english: 'Crocodile', emoji: '🐊', element: 'Water', color: '#e74c3c' },
+  'Ik':      { english: 'Wind',      emoji: '💨', element: 'Air',   color: '#3498db' },
+  'Akbal':   { english: 'Night',     emoji: '🌙', element: 'Water', color: '#2c3e50' },
+  'Kan':     { english: 'Seed',      emoji: '🌱', element: 'Earth', color: '#27ae60' },
+  'Chicchan':{ english: 'Serpent',   emoji: '🐍', element: 'Fire',  color: '#e74c3c' },
+  'Cimi':    { english: 'Death',     emoji: '💀', element: 'Water', color: '#8e44ad' },
+  'Manik':   { english: 'Deer',      emoji: '🦌', element: 'Earth', color: '#27ae60' },
+  'Lamat':   { english: 'Star',      emoji: '⭐', element: 'Air',   color: '#f39c12' },
+  'Muluc':   { english: 'Moon',      emoji: '🌕', element: 'Water', color: '#3498db' },
+  'Oc':      { english: 'Dog',       emoji: '🐕', element: 'Air',   color: '#e67e22' },
+  'Chuen':   { english: 'Monkey',    emoji: '🐒', element: 'Air',   color: '#e67e22' },
+  'Eb':      { english: 'Road',      emoji: '🛤️', element: 'Earth', color: '#95a5a6' },
+  'Ben':     { english: 'Reed',      emoji: '🎋', element: 'Earth', color: '#27ae60' },
+  'Ix':      { english: 'Jaguar',    emoji: '🐆', element: 'Earth', color: '#8b4513' },
+  'Men':     { english: 'Eagle',     emoji: '🦅', element: 'Air',   color: '#3498db' },
+  'Cib':     { english: 'Vulture',   emoji: '🦅', element: 'Earth', color: '#7f8c8d' },
+  'Caban':   { english: 'Earth',     emoji: '🌍', element: 'Earth', color: '#8b4513' },
+  'Etznab':  { english: 'Mirror',    emoji: '🪞', element: 'Air',   color: '#bdc3c7' },
+  'Cauac':   { english: 'Storm',     emoji: '⛈️', element: 'Water', color: '#2980b9' },
+  'Ahau':    { english: 'Sun',       emoji: '☀️', element: 'Fire',  color: '#f1c40f' },
+}
+
+const TONE_NAMES = {
+  1: 'Magnetic',  2: 'Lunar',    3: 'Electric', 4: 'Self-Existing',
+  5: 'Overtone',  6: 'Rhythmic', 7: 'Resonant', 8: 'Galactic',
+  9: 'Solar',    10: 'Planetary',11: 'Spectral', 12: 'Crystal',
+  13: 'Cosmic'
+}
+
 /* ---- shared styles ---- */
 const S = {
   panel: {
@@ -50,12 +81,15 @@ const S = {
   },
 }
 
-/* Mayan dot-and-bar tone notation */
+/* Mayan dot-and-bar tone notation (CSS-rendered) */
 function ToneNotation({ tone, size = 6, color = 'var(--gold)' }) {
   const bars = Math.floor(tone / 5)
   const dots = tone % 5
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+      {Array.from({ length: bars }).map((_, i) => (
+        <div key={`b${i}`} style={{ width: size * 4.5, height: size * 0.65, borderRadius: 2, background: color }} />
+      ))}
       {dots > 0 && (
         <div style={{ display: 'flex', gap: size * 0.7 }}>
           {Array.from({ length: dots }).map((_, i) => (
@@ -63,30 +97,97 @@ function ToneNotation({ tone, size = 6, color = 'var(--gold)' }) {
           ))}
         </div>
       )}
-      {Array.from({ length: bars }).map((_, i) => (
-        <div key={`b${i}`} style={{ width: size * 4, height: size * 0.6, borderRadius: 2, background: color }} />
-      ))}
     </div>
   )
 }
 
-/* Oracle Cross visual component */
-function OracleCross() {
+/* Hero card for Day Sign / Trecena Sign */
+function SignHeroCard({ title, signName, description, emoji, color, meaning }) {
+  const signData = DAY_SIGNS[signName] || {}
+  const cardColor = color || signData.color || 'var(--gold)'
+  return (
+    <div style={{
+      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+      padding: '22px 16px', borderRadius: 14, textAlign: 'center',
+      background: cardColor + '10',
+      border: `1.5px solid ${cardColor}44`,
+      gap: 8,
+    }}>
+      <div style={{
+        fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.25em',
+        textTransform: 'uppercase', color: cardColor + 'bb', marginBottom: 2,
+      }}>{title}</div>
+      <div style={{ fontSize: 42, lineHeight: 1 }}>{emoji || signData.emoji || '✨'}</div>
+      <div style={{
+        fontFamily: "'Cinzel', serif", fontSize: 22, fontWeight: 700,
+        letterSpacing: '.12em', color: cardColor,
+        textTransform: 'uppercase', lineHeight: 1.1,
+      }}>{signName}</div>
+      <div style={{
+        fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13,
+        color: 'var(--text2)', fontStyle: 'italic',
+      }}>{signData.english || description}</div>
+      {signData.element && (
+        <div style={S.badge(cardColor + '15', cardColor + '44', cardColor)}>
+          {signData.element}
+        </div>
+      )}
+      {meaning && (
+        <div style={{
+          fontSize: 11, color: 'var(--text3)', fontStyle: 'italic',
+          lineHeight: 1.5, marginTop: 4, paddingTop: 8,
+          borderTop: `1px solid ${cardColor}22`,
+        }}>{meaning}</div>
+      )}
+    </div>
+  )
+}
+
+/* Hero card for Galactic Tone */
+function ToneHeroCard({ tone, toneName, meaning }) {
+  return (
+    <div style={{
+      flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
+      padding: '22px 16px', borderRadius: 14, textAlign: 'center',
+      background: 'rgba(201,168,76,.08)',
+      border: '1.5px solid rgba(201,168,76,.35)',
+      gap: 8,
+    }}>
+      <div style={{
+        fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.25em',
+        textTransform: 'uppercase', color: 'rgba(201,168,76,.7)', marginBottom: 2,
+      }}>Galactic Tone</div>
+      <div style={{
+        fontFamily: "'Cinzel', serif", fontSize: 52, fontWeight: 700,
+        color: 'var(--gold)', lineHeight: 1,
+      }}>{tone}</div>
+      <div style={{
+        fontFamily: "'Cinzel', serif", fontSize: 15, fontWeight: 600,
+        letterSpacing: '.15em', color: 'var(--gold2)',
+        textTransform: 'uppercase',
+      }}>{toneName}</div>
+      <div style={{ paddingTop: 6 }}>
+        <ToneNotation tone={tone} size={9} color="var(--gold)" />
+      </div>
+      {meaning && (
+        <div style={{
+          fontSize: 11, color: 'var(--text3)', fontStyle: 'italic',
+          lineHeight: 1.5, marginTop: 4, paddingTop: 8,
+          borderTop: '1px solid rgba(201,168,76,.15)',
+        }}>{meaning}</div>
+      )}
+    </div>
+  )
+}
+
+/* Oracle Cross component — uses Dreamspell data (P) */
+function OracleCross({ P }) {
   const { destiny, guide, analog, antipode, occult } = P.oracle
-  const roles = [
-    { entry: guide, label: 'Guide', desc: 'Higher self & spiritual guidance', col: 'rgba(96,200,80,', pos: 'top' },
-    { entry: antipode, label: 'Antipode', desc: 'Challenge & strengthening', col: 'rgba(220,60,60,', pos: 'left' },
-    { entry: destiny, label: 'Destiny', desc: 'Your core galactic signature', col: 'rgba(221,170,34,', pos: 'center' },
-    { entry: analog, label: 'Analog', desc: 'Support & best friend', col: 'rgba(201,168,76,', pos: 'right' },
-    { entry: occult, label: 'Occult', desc: 'Hidden power & unexpected strength', col: 'rgba(64,204,221,', pos: 'bottom' },
-  ]
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gridTemplateRows: 'auto auto auto', gap: 10, justifyItems: 'center', alignItems: 'center' }}>
-      {/* Row 1: Guide (top center) */}
       <div style={{ gridColumn: 2, gridRow: 1 }}>
         <OracleCard entry={guide} label="Guide" desc="Higher-self guidance" col="rgba(96,200,80," />
       </div>
-      {/* Row 2: Antipode - Destiny - Analog */}
       <div style={{ gridColumn: 1, gridRow: 2 }}>
         <OracleCard entry={antipode} label="Antipode" desc="Challenge & strength" col="rgba(220,60,60," />
       </div>
@@ -96,7 +197,6 @@ function OracleCross() {
       <div style={{ gridColumn: 3, gridRow: 2 }}>
         <OracleCard entry={analog} label="Analog" desc="Support & ally" col="rgba(201,168,76," />
       </div>
-      {/* Row 3: Occult (bottom center) */}
       <div style={{ gridColumn: 2, gridRow: 3 }}>
         <OracleCard entry={occult} label="Occult" desc="Hidden power" col="rgba(64,204,221," />
       </div>
@@ -139,7 +239,6 @@ function OracleCard({ entry, label, desc, col, isCenter }) {
 export default function MayanDetail() {
   const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
 
-  // Compute Dreamspell profile dynamically from stored birth date (dob = 'YYYY-MM-DD')
   let P = MAYAN_PROFILE
   let classicalProfile = null
   if (primaryProfile?.dob) {
@@ -155,33 +254,252 @@ export default function MayanDetail() {
   const sealCol = SEAL_COLORS[seal.color]
   const colorLabel = seal.color.charAt(0).toUpperCase() + seal.color.slice(1)
 
+  // Classical data for hero section
+  const tz = classicalProfile?.tzolkin
+  const daySignName = tz?.daySign || 'Chicchan'
+  const galacticTone = tz?.tone || 10
+  const toneNameStr = TONE_NAMES[galacticTone] || tz?.toneName || 'Planetary'
+  const trecenaName = classicalProfile?.trecenaLord || 'Cib'
+  const haabFormatted = classicalProfile?.haab?.formatted || ''
+  const longCount = classicalProfile?.longCount?.formatted || ''
+  const kinNumber = tz?.kinNumber || 205
+  const daySignData = DAY_SIGNS[daySignName] || {}
+  const trecenaData = DAY_SIGNS[trecenaName] || {}
+
   return (
     <div style={S.panel}>
-      {/* HEADER */}
+
+      {/* ══════════════════════════════════════════
+          SECTION 1: YOUR MAYAN SOLAR SEAL (HERO)
+      ══════════════════════════════════════════ */}
       <div>
-        <div style={S.heading}>{'\u2600'} Mayan Dreamspell Calendar</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
-          Galactic signature, oracle cross, wavespell, and castle {'\u2014'} the Dreamspell system by Jos{'\u00E9'} Arg{'\u00FC'}elles
-        </div>
         <div style={{
-          ...S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.2)', 'var(--gold3)'),
-          marginTop: 6, fontSize: 7,
-        }}>
-          {P.system} {'\u2022'} Galactic Spinner
+          fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.3em',
+          textTransform: 'uppercase', color: 'var(--gold3)', textAlign: 'center',
+          marginBottom: 18,
+        }}>Your Mayan Solar Seal</div>
+
+        {/* 3 Hero Cards */}
+        <div style={{ display: 'flex', gap: 12 }}>
+          <SignHeroCard
+            title="Day Sign"
+            signName={daySignName}
+            emoji={daySignData.emoji}
+            color={daySignData.color}
+            meaning={tz?.daySignMeaning}
+          />
+          <ToneHeroCard
+            tone={galacticTone}
+            toneName={toneNameStr}
+            meaning={tz?.toneMeaning}
+          />
+          <SignHeroCard
+            title="Trecena Sign"
+            signName={trecenaName}
+            emoji={trecenaData.emoji}
+            color={trecenaData.color}
+            meaning="The day sign that rules your 13-day trecena period"
+          />
         </div>
       </div>
 
-      {/* MAYAN WHEEL CANVAS */}
+      {/* ══════════════════════════════════════════
+          SECTION 2: CALENDAR POSITIONS
+      ══════════════════════════════════════════ */}
+      {classicalProfile && (
+        <div>
+          <div style={S.sectionTitle}>Calendar Positions</div>
+          <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 0 }}>
+
+            {/* Long Count — prominent */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '14px 16px', borderBottom: '1px solid rgba(201,168,76,.1)',
+            }}>
+              <div>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
+                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 4,
+                }}>Long Count</div>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 26, fontWeight: 700,
+                  color: 'var(--gold)', letterSpacing: '.15em',
+                }}>{longCount}</div>
+              </div>
+              <div style={{
+                fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
+                textTransform: 'uppercase', color: 'rgba(201,168,76,.4)',
+                textAlign: 'right', lineHeight: 1.6,
+              }}>
+                {classicalProfile.longCount.baktun} Baktun<br/>
+                {classicalProfile.longCount.katun} Katun<br/>
+                {classicalProfile.longCount.tun} Tun
+              </div>
+            </div>
+
+            {/* Haab & Kin row */}
+            <div style={{ display: 'flex', gap: 0 }}>
+              <div style={{
+                flex: 1, padding: '14px 16px', borderRight: '1px solid rgba(201,168,76,.08)',
+              }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
+                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 4,
+                }}>Haab Date</div>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 600,
+                  color: 'var(--gold2)',
+                }}>{haabFormatted}</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2, fontStyle: 'italic' }}>
+                  {classicalProfile.haab.monthMeaning}
+                </div>
+              </div>
+              <div style={{ flex: 1, padding: '14px 16px' }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
+                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 4,
+                }}>Tzolkin Kin</div>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 600,
+                  color: 'var(--gold2)',
+                }}>Kin {kinNumber}</div>
+                <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2, fontStyle: 'italic' }}>
+                  of 260 in the Tzolkin cycle
+                </div>
+              </div>
+            </div>
+
+            {/* Year Bearer & Lord of Night */}
+            <div style={{ display: 'flex', gap: 0, borderTop: '1px solid rgba(201,168,76,.08)' }}>
+              <div style={{ flex: 1, padding: '12px 16px', borderRight: '1px solid rgba(201,168,76,.08)' }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
+                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 2,
+                }}>Year Bearer</div>
+                <div style={{ ...S.mono, color: 'var(--gold2)' }}>
+                  {classicalProfile.yearBearer.formatted}
+                </div>
+              </div>
+              <div style={{ flex: 1, padding: '12px 16px' }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
+                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 2,
+                }}>Lord of Night</div>
+                <div style={{ ...S.mono, color: 'var(--gold2)' }}>
+                  {classicalProfile.lordOfNight}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════
+          SECTION 3: FULL MEANINGS
+      ══════════════════════════════════════════ */}
+      {classicalProfile && (
+        <div>
+          <div style={S.sectionTitle}>Meanings & Interpretation</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+            {/* Day Sign meaning */}
+            <div style={{
+              ...S.glass,
+              background: (daySignData.color || '#888') + '08',
+              borderColor: (daySignData.color || '#888') + '25',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                <span style={{ fontSize: 28 }}>{daySignData.emoji || '✨'}</span>
+                <div>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 15, fontWeight: 700,
+                    color: daySignData.color || 'var(--gold)', letterSpacing: '.1em',
+                  }}>{daySignName} — {daySignData.english}</div>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
+                    textTransform: 'uppercase', color: 'rgba(201,168,76,.5)',
+                  }}>Day Sign · {daySignData.element} Element</div>
+                </div>
+              </div>
+              <div style={S.interpretation}>
+                {tz?.daySignDescription || tz?.daySignMeaning || 'Day sign energy shapes your core nature and purpose.'}
+              </div>
+            </div>
+
+            {/* Tone meaning */}
+            <div style={{
+              ...S.glass,
+              background: 'rgba(201,168,76,.05)',
+              borderColor: 'rgba(201,168,76,.2)',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                <div style={{ textAlign: 'center', minWidth: 40 }}>
+                  <ToneNotation tone={galacticTone} size={7} color="var(--gold)" />
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 700,
+                    color: 'var(--gold)', marginTop: 4,
+                  }}>{galacticTone}</div>
+                </div>
+                <div>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 15, fontWeight: 700,
+                    color: 'var(--gold)', letterSpacing: '.1em',
+                  }}>Tone {galacticTone} — {toneNameStr}</div>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
+                    textTransform: 'uppercase', color: 'rgba(201,168,76,.5)',
+                  }}>Galactic Tone · {tz?.toneKeyword}</div>
+                </div>
+              </div>
+              <div style={S.interpretation}>
+                {tz?.toneMeaning || 'The galactic tone defines the energy frequency of your day sign.'}
+              </div>
+            </div>
+
+            {/* Trecena meaning */}
+            <div style={{
+              ...S.glass,
+              background: (trecenaData.color || '#888') + '06',
+              borderColor: (trecenaData.color || '#888') + '20',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                <span style={{ fontSize: 28 }}>{trecenaData.emoji || '✨'}</span>
+                <div>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 15, fontWeight: 700,
+                    color: trecenaData.color || 'var(--gold2)', letterSpacing: '.1em',
+                  }}>Trecena of {trecenaName} — {trecenaData.english}</div>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
+                    textTransform: 'uppercase', color: 'rgba(201,168,76,.5)',
+                  }}>Trecena Lord · 13-Day Period</div>
+                </div>
+              </div>
+              <div style={S.interpretation}>
+                You were born in the trecena of <strong style={{ color: trecenaData.color || 'var(--gold2)' }}>{trecenaName} ({trecenaData.english})</strong>.
+                The trecena lord governs the 13-day period that contains your birth, shaping the overarching energy
+                and theme of your life path. {trecenaData.element} energy influences your spiritual foundation.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════
+          SECTION 4: MAYAN WHEEL CANVAS
+      ══════════════════════════════════════════ */}
       <div>
-        <div style={S.sectionTitle}>Tzolkin Wheel & Oracle</div>
+        <div style={S.sectionTitle}>Tzolkin Wheel & Dreamspell Oracle</div>
         <div style={{ ...S.glass, padding: 0, overflow: 'hidden', height: 460, position: 'relative' }}>
-          <MayanWheel />
+          <MayanWheel classicalDaySign={daySignName} classicalTone={galacticTone} classicalKin={kinNumber} />
         </div>
       </div>
 
-      {/* KIN IDENTITY */}
+      {/* ══════════════════════════════════════════
+          SECTION 5: DREAMSPELL GALACTIC SIGNATURE
+      ══════════════════════════════════════════ */}
       <div>
-        <div style={S.sectionTitle}>Your Galactic Signature</div>
+        <div style={S.sectionTitle}>Dreamspell Galactic Signature</div>
         <div style={{ ...S.glass, textAlign: 'center', padding: '28px 22px' }}>
           <div style={{
             fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.25em',
@@ -245,9 +563,9 @@ export default function MayanDetail() {
         </div>
       </div>
 
-      {/* CORE PROFILE */}
+      {/* DREAMSPELL CORE PROFILE */}
       <div>
-        <div style={S.sectionTitle}>Core Profile</div>
+        <div style={S.sectionTitle}>Dreamspell Core Profile</div>
         <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 2 }}>
           {[
             ['Galactic Signature', P.signature],
@@ -264,9 +582,7 @@ export default function MayanDetail() {
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
                 textTransform: 'uppercase', color: 'var(--text3)', minWidth: 140,
               }}>{label}</span>
-              <span style={{
-                ...S.mono, color: i === 0 ? 'var(--gold)' : 'var(--gold2)',
-              }}>
+              <span style={{ ...S.mono, color: i === 0 ? 'var(--gold)' : 'var(--gold2)' }}>
                 {i === 0
                   ? <span style={{
                       ...S.badge('rgba(201,168,76,.1)', 'rgba(201,168,76,.3)', 'var(--gold)'),
@@ -332,7 +648,7 @@ export default function MayanDetail() {
       <div>
         <div style={S.sectionTitle}>Dreamspell Oracle</div>
         <div style={S.glass}>
-          <OracleCross />
+          <OracleCross P={P} />
         </div>
       </div>
 
@@ -542,40 +858,6 @@ export default function MayanDetail() {
         </div>
       </div>
 
-      {/* CLASSICAL MAYA SECTION */}
-      {classicalProfile && (
-        <div>
-          <div style={S.sectionTitle}>Classical Mayan Calendar (GMT 584283)</div>
-          <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {[
-              ['Tzolkin', `${classicalProfile.tzolkin.daySign} ${classicalProfile.tzolkin.tone} (${classicalProfile.tzolkin.toneName}) — Kin ${classicalProfile.tzolkin.kinNumber}`],
-              ['Day Sign', `${classicalProfile.tzolkin.daySign} — ${classicalProfile.tzolkin.daySignMeaning}`],
-              ['Tone', `${classicalProfile.tzolkin.tone} ${classicalProfile.tzolkin.toneName} — ${classicalProfile.tzolkin.toneKeyword}`],
-              ['Haab', classicalProfile.haab.formatted],
-              ['Long Count', classicalProfile.longCount.formatted],
-              ['Lord of Night', classicalProfile.lordOfNight],
-              ['Trecena Lord', classicalProfile.trecenaLord],
-              ['Year Bearer', classicalProfile.yearBearer.formatted],
-            ].map(([label, val], i) => (
-              <div key={i} style={S.keyVal}>
-                <span style={{
-                  fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-                  textTransform: 'uppercase', color: 'var(--text3)', minWidth: 140,
-                }}>{label}</span>
-                <span style={{ ...S.mono, color: i === 0 ? 'var(--gold)' : 'var(--gold2)', fontSize: 12 }}>
-                  {val}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div style={{ ...S.interpretation, marginTop: 12 }}>
-            <span style={{ color: 'var(--gold)' }}>{classicalProfile.tzolkin.daySign}</span> —
-            {' '}{classicalProfile.tzolkin.daySignDescription}
-            {' '}As <span style={{ color: 'var(--gold)' }}>Tone {classicalProfile.tzolkin.tone} ({classicalProfile.tzolkin.toneName})</span>:{' '}
-            {classicalProfile.tzolkin.toneMeaning}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
