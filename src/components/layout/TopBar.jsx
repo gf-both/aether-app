@@ -1,6 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { useClock } from '../../hooks/useClock'
+import { SEPHIROTH } from '../../data/kabbalahData'
+
+const HD_PROFILE_LABELS = {
+  '1/3': 'Investigator/Martyr', '1/4': 'Investigator/Opportunist',
+  '2/4': 'Hermit/Opportunist',  '2/5': 'Hermit/Heretic',
+  '3/5': 'Martyr/Heretic',      '3/6': 'Martyr/Role Model',
+  '4/6': 'Opportunist/Role Model', '4/1': 'Opportunist/Investigator',
+  '5/1': 'Heretic/Investigator', '5/2': 'Heretic/Hermit',
+  '6/2': 'Role Model/Hermit',   '6/3': 'Role Model/Martyr',
+}
 
 const NAV_SECTIONS = [
   { icon: '\u25CE', label: 'Integral Map', widget: 'integral' },
@@ -379,6 +389,11 @@ export default function TopBar() {
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
   const time = useClock()
 
+  // Derive dynamic values instead of hardcoding
+  const hdProfileLabel = HD_PROFILE_LABELS[profile.hdProfile] || profile.hdProfile
+  const activeSephira = SEPHIROTH?.find(s => s.active) || null
+  const sephiraChip = activeSephira ? `${activeSephira.name} ${activeSephira.ratio}` : null
+
   return (
     <div className="tb">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
@@ -389,9 +404,11 @@ export default function TopBar() {
       </div>
       <div className="tb-chips">
         <div className="chip chip-g">{'\u2609'} {profile.sign} &middot; &uarr; {profile.asc} &middot; {'\u263D'} {profile.moon}</div>
-        <div className="chip chip-b">{'\u25C8'} {profile.hdType} &middot; {profile.hdProfile} &middot; Martyr/Heretic</div>
+        <div className="chip chip-b" title={`Human Design: ${hdProfileLabel}`}>{'\u25C8'} {profile.hdType} &middot; {profile.hdProfile} &middot; {hdProfileLabel}</div>
         <div className="chip chip-r">{'\u221E'} Life Path {profile.lifePath}</div>
-        <div className="chip chip-v">{'\u2721'} Tiphareth 13/8</div>
+        {sephiraChip && (
+          <div className="chip chip-v" title="Kabbalah — Active Sephira">{'\u2721'} {sephiraChip}</div>
+        )}
         <div className="chip chip-b" onClick={() => { setActiveDetail('synastry'); setActiveNav('synastry') }}>{'\u2295'} Synastry</div>
         <ThemeToggle />
         <WidgetManagerToggle />

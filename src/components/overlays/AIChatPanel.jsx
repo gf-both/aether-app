@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+// Note: setActiveDetail / setActiveNav used for paywall navigation
 
 /* ── Canned AI responses based on profile data ── */
 const CANNED_RESPONSES = [
@@ -47,9 +48,18 @@ async function sendToClaudeAPI(messages, profileContext) {
   return CANNED_RESPONSES[idx](profileContext)
 }
 
-const WELCOME_MESSAGE = {
-  role: 'assistant',
-  content: 'Welcome to your AI Consciousness Guide. I have access to your full astrological, Human Design, numerological, and multi-framework profile. Ask me anything about your cosmic blueprint, life purpose, current transits, or how different systems in your chart interconnect. What would you like to explore?',
+function buildWelcomeMessage(profile) {
+  const name = profile?.name?.split(' ')[0] || 'Seeker'
+  const sign = profile?.sign || '?'
+  const moon = profile?.moon || '?'
+  const asc = profile?.asc || '?'
+  const hdType = profile?.hdType || '?'
+  const hdProfile = profile?.hdProfile || '?'
+  const lifePath = profile?.lifePath || '?'
+  return {
+    role: 'assistant',
+    content: `Welcome, ${name}. As a ${sign} Sun with ${moon} Moon and ${asc} Rising, your cosmic blueprint runs deep.\n\nYou are a ${hdType} (${hdProfile} profile) in Human Design, with Life Path ${lifePath} — a rare combination that speaks to a life of ${hdType === 'Projector' ? 'guiding others with wisdom and discernment' : hdType === 'Generator' ? 'building and responding with sacral energy' : hdType === 'Manifesting Generator' ? 'initiating and pivoting with multi-passionate drive' : hdType === 'Manifestor' ? 'initiating and creating impact' : 'reflection and sampling life experiences'}.\n\nI have access to your full multi-framework profile. Ask me anything about your chart, current transits, life purpose, or how your different systems interconnect.`,
+  }
 }
 
 const SUGGESTED_PROMPTS = [
@@ -193,8 +203,10 @@ const styles = {
 export default function AIChatPanel({ open, onClose }) {
   const profile = useAboveInsideStore((s) => s.primaryProfile)
   const userPlan = useAboveInsideStore((s) => s.userPlan)
+  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
+  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
 
-  const [messages, setMessages] = useState([WELCOME_MESSAGE])
+  const [messages, setMessages] = useState(() => [buildWelcomeMessage(profile)])
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(true)
@@ -280,8 +292,13 @@ export default function AIChatPanel({ open, onClose }) {
             <div style={{ ...styles.paywallText, fontSize: '12px', marginTop: '-4px' }}>
               This feature requires the <span style={{ color: 'var(--gold)' }}>Explorer plan ($1.99/mo)</span>
             </div>
-            <div style={styles.paywallBtn}>
-              Upgrade to Explorer
+            <div
+              style={styles.paywallBtn}
+              onClick={() => { onClose(); setActiveDetail('pricing'); setActiveNav('pricing') }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,168,76,.2)'; e.currentTarget.style.borderColor = 'rgba(201,168,76,.5)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.08))'; e.currentTarget.style.borderColor = 'rgba(201,168,76,.35)' }}
+            >
+              ✦ Upgrade to Explorer — $1.99/mo
             </div>
           </div>
         ) : (
@@ -342,21 +359,27 @@ export default function AIChatPanel({ open, onClose }) {
 
             {/* Input bar */}
             <div style={styles.inputBar}>
-              <textarea
-                ref={textareaRef}
-                style={styles.textarea}
-                placeholder="Ask about your consciousness map..."
-                value={input}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                rows={1}
-                onFocus={(e) => { e.target.style.borderColor = 'rgba(201,168,76,.3)' }}
-                onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,.1)' }}
-              />
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <textarea
+                  ref={textareaRef}
+                  style={styles.textarea}
+                  placeholder="Ask about your consciousness map..."
+                  value={input}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  rows={1}
+                  onFocus={(e) => { e.target.style.borderColor = 'rgba(201,168,76,.3)' }}
+                  onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,.1)' }}
+                />
+                <div style={{ fontSize: '9px', color: 'var(--text3)', fontFamily: "'Inconsolata',monospace", paddingLeft: '2px' }}>
+                  ↵ Enter to send &nbsp;·&nbsp; Shift+↵ for new line
+                </div>
+              </div>
               <div
                 style={{
                   ...styles.sendBtn,
                   ...(!input.trim() || isTyping ? styles.sendBtnDisabled : {}),
+                  alignSelf: 'flex-start',
                 }}
                 onClick={() => handleSend()}
                 onMouseEnter={(e) => {

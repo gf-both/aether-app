@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { DEFAULT_PRIMARY_PROFILE } from '../data/primaryProfile'
 import Sidebar from '../components/layout/Sidebar'
 import TopBar from '../components/layout/TopBar'
 import StatusBar from '../components/layout/StatusBar'
@@ -419,6 +420,83 @@ const WIDGET_META = {
   client: { icon: '\uD83D\uDCCB', label: 'Client Portal', sub: 'Sessions \u00B7 Progress \u00B7 Messages' },
 }
 
+/* ── Category Badges ── */
+const WIDGET_CATEGORIES = {
+  integral: { label: 'META', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  natal:    { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  tr:       { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  vedic:    { label: 'EASTERN', color: 'rgba(160,100,255,.8)', bg: 'rgba(160,100,255,.08)', border: 'rgba(160,100,255,.2)' },
+  hd:       { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
+  kab:      { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
+  gk:       { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
+  num:      { label: 'NUMBERS', color: 'rgba(64,204,221,.8)', bg: 'rgba(64,204,221,.08)', border: 'rgba(64,204,221,.2)' },
+  mayan:    { label: 'NUMBERS', color: 'rgba(64,204,221,.8)', bg: 'rgba(64,204,221,.08)', border: 'rgba(64,204,221,.2)' },
+  egyptian: { label: 'NUMBERS', color: 'rgba(64,204,221,.8)', bg: 'rgba(64,204,221,.08)', border: 'rgba(64,204,221,.2)' },
+  gem:      { label: 'NUMBERS', color: 'rgba(64,204,221,.8)', bg: 'rgba(64,204,221,.08)', border: 'rgba(64,204,221,.2)' },
+  enn:      { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
+  chi:      { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
+  mbti:     { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
+  pat:      { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
+}
+
+function CategoryBadge({ widgetId }) {
+  const cat = WIDGET_CATEGORIES[widgetId]
+  if (!cat) return null
+  return (
+    <span style={{
+      fontSize: '7px', fontFamily: "'Cinzel',serif", letterSpacing: '.12em',
+      padding: '1px 6px', borderRadius: '8px',
+      color: cat.color, background: cat.bg, border: `1px solid ${cat.border}`,
+      flexShrink: 0, lineHeight: '1.6',
+    }}>{cat.label}</span>
+  )
+}
+
+/* ── Demo Mode Banner ── */
+function DemoBanner() {
+  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
+  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const [dismissed, setDismissed] = useState(false)
+
+  const isDemo = profile.name === DEFAULT_PRIMARY_PROFILE.name &&
+                 profile.dob === DEFAULT_PRIMARY_PROFILE.dob
+
+  if (!isDemo || dismissed) return null
+
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: '7px 16px',
+      background: 'linear-gradient(90deg, rgba(201,168,76,.08), rgba(201,168,76,.04))',
+      borderBottom: '1px solid rgba(201,168,76,.18)',
+      flexShrink: 0,
+    }}>
+      <span style={{ fontSize: '11px', color: 'var(--text2)', fontFamily: "'Cormorant Garamond',serif" }}>
+        <span style={{ color: 'var(--gold)', fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', marginRight: '8px' }}>
+          ✦ DEMO MODE
+        </span>
+        You're viewing a sample profile. Add your birth data to see your cosmic blueprint.
+      </span>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
+        <span
+          onClick={() => { setActiveDetail('profile'); setActiveNav('profile') }}
+          style={{
+            fontSize: '10px', fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
+            color: 'var(--gold)', cursor: 'pointer', padding: '3px 12px',
+            background: 'rgba(201,168,76,.12)', border: '1px solid rgba(201,168,76,.3)',
+            borderRadius: '12px', transition: 'all .2s',
+          }}
+        >Add My Birth Data →</span>
+        <span
+          onClick={() => setDismissed(true)}
+          style={{ fontSize: '12px', color: 'var(--text3)', cursor: 'pointer', lineHeight: 1, padding: '2px 4px' }}
+        >×</span>
+      </div>
+    </div>
+  )
+}
+
 /* ── Widget Manager Bar ── */
 function WidgetManagerBar() {
   const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
@@ -774,6 +852,7 @@ export default function Dashboard() {
         <div style={{
           gridColumn: 2, gridRow: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
+          <DemoBanner />
           <WidgetManagerBar />
           <div ref={scrollRef} style={{
             flex: 1, overflowY: 'auto', overflowX: 'hidden',
@@ -819,6 +898,9 @@ export default function Dashboard() {
                               onClick={(e) => { e.stopPropagation(); toggleWidgetVisibility(widgetId) }}
                               title="Hide widget"
                             >{'\u2715'}</div>
+                            <div style={{ position: 'absolute', top: '8px', right: '28px', zIndex: 5, pointerEvents: 'none' }}>
+                              <CategoryBadge widgetId={widgetId} />
+                            </div>
                             <WidgetContent widgetId={widgetId} />
                           </div>
                         )
