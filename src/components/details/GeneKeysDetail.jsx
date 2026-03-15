@@ -1,5 +1,6 @@
-import { SPHERES, GK_LIST } from '../../data/geneKeysData'
+import { SPHERES, GK_LIST, computeGeneKeysData } from '../../data/geneKeysData'
 import GeneKeysWheel from '../canvas/GeneKeysWheel'
+// computeGeneKeysData can be called with custom birth params to derive a live profile
 
 const GK_DETAIL = [
   {

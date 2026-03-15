@@ -61,7 +61,11 @@ export const useAboveInsideStore = create(
 
       // Enneagram type (null = use default from data, number 1-9 = override)
       enneagramType: null,
-      setEnneagramType: (type) => set({ enneagramType: type }),
+      // Accepts (type) or (type, wing) — wing is optional
+      setEnneagramType: (type, wing) =>
+        wing !== undefined
+          ? set({ enneagramType: type, enneagramWing: wing })
+          : set({ enneagramType: type }),
 
       // Enneagram wing (null = auto from type data, number = explicit wing)
       enneagramWing: null,

@@ -1,27 +1,40 @@
+import { useMemo } from 'react'
 import { SEPHIROTH, PATHS } from '../../data/kabbalahData'
+import { getKabbalahProfile, profileToKabArgs } from '../../engines/kabbalahEngine'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import KabbalahTree from '../canvas/KabbalahTree'
 
-const SEPHIROTH_DETAIL = [
-  { name: 'Kether', num: 1, attr: 'Crown', pillar: 'Equilibrium',
-    interp: 'The source of divine will. Your Kether activation indicates a strong connection to transcendent awareness and the origin point of consciousness.', active: true },
-  { name: 'Chokmah', num: 2, attr: 'Wisdom', pillar: 'Mercy',
-    interp: 'Primal masculine force and the first flash of creative insight. Your activation here reveals raw visionary capacity -- ideas arise before form.', active: true },
-  { name: 'Binah', num: 3, attr: 'Understanding', pillar: 'Severity',
-    interp: 'The Great Mother who gives form to the formless. Deep receptive intelligence, capacity to hold paradox, and structural comprehension.', active: true },
-  { name: 'Chesed', num: 4, attr: 'Mercy', pillar: 'Mercy',
-    interp: 'Loving-kindness and expansion. Currently dormant -- a growth edge inviting you to cultivate generosity without condition.', active: false },
-  { name: 'Geburah', num: 5, attr: 'Severity', pillar: 'Severity',
-    interp: 'The warrior\'s discipline. Active in your tree -- you carry the capacity for discernment, boundaries, and the courage to cut away what no longer serves.', active: true },
-  { name: 'Tiphareth', num: 6, attr: 'Beauty', pillar: 'Equilibrium',
-    interp: 'The heart of the Tree, the Christ/Buddha center. Your strongest activation -- the integrator of all opposites, beauty born from balance.', active: true },
-  { name: 'Netzach', num: 7, attr: 'Emotions', pillar: 'Mercy',
-    interp: 'Victory through endurance and feeling. Currently dormant -- an invitation to develop trust in emotional intelligence and creative passion.', active: false },
-  { name: 'Hod', num: 8, attr: 'Mind', pillar: 'Severity',
-    interp: 'Splendor of the intellect, communication, and form. Active -- your analytical and communicative faculties are well-developed and precise.', active: true },
-  { name: 'Yesod', num: 9, attr: 'Foundation', pillar: 'Equilibrium',
-    interp: 'The astral bridge between the seen and unseen. Active -- strong dream life, psychic sensitivity, and capacity to channel higher energies into daily reality.', active: true },
-  { name: 'Malkuth', num: 10, attr: 'Kingdom', pillar: 'Equilibrium',
-    interp: 'The physical realm and embodied presence. Active -- grounded manifestation is your birthright, bringing the spiritual into matter.', active: true },
+const SEPHIROTH_INTERP = [
+  { name: 'Kether',    attr: 'Crown',         pillar: 'Equilibrium',
+    interp: 'The source of divine will. Your Kether activation indicates a strong connection to transcendent awareness and the origin point of consciousness.',
+    dormInterp: 'The Crown remains veiled — an invitation to dissolve the ego and open to the divine source beyond personal will.' },
+  { name: 'Chokmah',   attr: 'Wisdom',         pillar: 'Mercy',
+    interp: 'Primal masculine force and the first flash of creative insight. Your activation here reveals raw visionary capacity -- ideas arise before form.',
+    dormInterp: 'The flash of primal wisdom is dormant — a growth edge to cultivate spontaneous knowing beyond linear thought.' },
+  { name: 'Binah',     attr: 'Understanding',  pillar: 'Severity',
+    interp: 'The Great Mother who gives form to the formless. Deep receptive intelligence, capacity to hold paradox, and structural comprehension.',
+    dormInterp: 'Understanding waits in potential — the capacity to receive and give form to raw inspiration is still developing.' },
+  { name: 'Chesed',    attr: 'Mercy',           pillar: 'Mercy',
+    interp: 'Loving-kindness and expansion. Chesed active in your tree opens channels of generosity, abundance, and magnanimous vision.',
+    dormInterp: 'Loving-kindness and expansion are dormant — a growth edge inviting you to cultivate generosity without condition.' },
+  { name: 'Geburah',   attr: 'Severity',        pillar: 'Severity',
+    interp: 'The warrior\'s discipline. Active in your tree -- you carry the capacity for discernment, boundaries, and the courage to cut away what no longer serves.',
+    dormInterp: 'The sword of discernment rests — boundaries and disciplined judgment are still being forged.' },
+  { name: 'Tiphareth', attr: 'Beauty',           pillar: 'Equilibrium',
+    interp: 'The heart of the Tree, the Christ/Buddha center. Your strongest activation -- the integrator of all opposites, beauty born from balance.',
+    dormInterp: 'The heart center awaits integration — the path to Tiphareth opens through harmonizing the opposing forces in your life.' },
+  { name: 'Netzach',   attr: 'Emotions',         pillar: 'Mercy',
+    interp: 'Victory through endurance and feeling. Active -- emotional intelligence and creative passion are live currents in your field.',
+    dormInterp: 'Victory through feeling is dormant — an invitation to develop trust in emotional intelligence and creative passion.' },
+  { name: 'Hod',       attr: 'Mind',             pillar: 'Severity',
+    interp: 'Splendor of the intellect, communication, and form. Active -- your analytical and communicative faculties are well-developed and precise.',
+    dormInterp: 'The mind\'s splendor awaits clarity — analytical precision and effective communication are areas of growth.' },
+  { name: 'Yesod',     attr: 'Foundation',       pillar: 'Equilibrium',
+    interp: 'The astral bridge between the seen and unseen. Active -- strong dream life, psychic sensitivity, and capacity to channel higher energies into daily reality.',
+    dormInterp: 'The dream bridge is quiet — the subconscious and astral sensitivities are still being cultivated.' },
+  { name: 'Malkuth',   attr: 'Kingdom',          pillar: 'Equilibrium',
+    interp: 'The physical realm and embodied presence. Active -- grounded manifestation is your birthright, bringing the spiritual into matter.',
+    dormInterp: 'Malkuth is always grounded in physical reality.' },
 ]
 
 const PILLARS = [
@@ -104,6 +117,64 @@ const S = {
 }
 
 export default function KabbalahDetail() {
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+
+  // Compute live active states from birth data
+  const { SEPHIROTH_DETAIL, PILLARS_LIVE, ACTIVE_PATHS_LIVE } = useMemo(() => {
+    let liveResult = null
+    try {
+      liveResult = getKabbalahProfile(profileToKabArgs(primaryProfile))
+    } catch (e) {
+      // fall back to static data
+    }
+
+    const detail = SEPHIROTH_INTERP.map((s, i) => {
+      const liveS = liveResult?.sephiroth?.find(r => r.name === s.name)
+      const active = liveS ? liveS.active : SEPHIROTH[i]?.active ?? true
+      return {
+        ...s,
+        num: i + 1,
+        active,
+        interp: active ? s.interp : s.dormInterp,
+      }
+    })
+
+    const activeNames = new Set(detail.filter(s => s.active).map(s => s.name))
+    const severityActive = ['Binah','Geburah','Hod'].filter(n => activeNames.has(n)).length
+    const mercyActive    = ['Chokmah','Chesed','Netzach'].filter(n => activeNames.has(n)).length
+
+    const pillars = [
+      { name: 'Pillar of Severity', hebrew: 'Din', side: 'Left',
+        sephiroth: ['Binah', 'Geburah', 'Hod'],
+        desc: severityActive >= 2
+          ? 'The left pillar of form and discipline is active — strong analytical boundaries and the power to limit and define shape your path.'
+          : 'The pillar of severity is largely dormant — discipline and structural thinking are growth areas.',
+        color: 'var(--rose)' },
+      { name: 'Pillar of Equilibrium', hebrew: 'Shvil haZahav', side: 'Middle',
+        sephiroth: ['Kether', 'Tiphareth', 'Yesod', 'Malkuth'],
+        desc: (() => {
+          const eq = ['Kether','Tiphareth','Yesod','Malkuth'].filter(n => activeNames.has(n)).length
+          return eq === 4
+            ? 'All four sephiroth are active — the spine of your Tree is fully illuminated, indicating a soul path focused on integration and wholeness.'
+            : `${eq} of 4 equilibrium sephiroth are active — the central column is partially illuminated.`
+        })(),
+        color: 'var(--gold)' },
+      { name: 'Pillar of Mercy', hebrew: 'Chesed', side: 'Right',
+        sephiroth: ['Chokmah', 'Chesed', 'Netzach'],
+        desc: mercyActive >= 2
+          ? 'The right pillar of expansion and force is active — generous, outward-moving energy shapes your expression.'
+          : 'Chokmah may flow but expansive mercy and emotional victory are dormant — wisdom seeks its loving expression.',
+        color: 'var(--aqua2)' },
+    ]
+
+    const activePaths = liveResult?.activePaths?.filter(p => p.active).map(p => ({
+      num: p.num, from: p.from, to: p.to, tarot: p.tarot,
+      desc: `${p.letter} — ${p.from} → ${p.to}`,
+    })) ?? ACTIVE_PATHS
+
+    return { SEPHIROTH_DETAIL: detail, PILLARS_LIVE: pillars, ACTIVE_PATHS_LIVE: activePaths }
+  }, [primaryProfile])
+
   const activeCount = SEPHIROTH_DETAIL.filter(s => s.active).length
 
   return (
@@ -205,7 +276,7 @@ export default function KabbalahDetail() {
       <div>
         <div style={S.sectionTitle}>The Three Pillars</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-          {PILLARS.map((p, i) => (
+          {PILLARS_LIVE.map((p, i) => (
             <div key={i} style={{
               ...S.glass,
               borderColor: p.color.includes('var') ? undefined : p.color + '22',
@@ -244,7 +315,7 @@ export default function KabbalahDetail() {
       <div>
         <div style={S.sectionTitle}>Active Paths &amp; Tarot Arcana</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {ACTIVE_PATHS.map((p, i) => (
+          {ACTIVE_PATHS_LIVE.map((p, i) => (
             <div key={i} style={S.row}>
               <span style={{
                 fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--gold)',

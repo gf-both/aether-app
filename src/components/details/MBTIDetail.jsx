@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { MBTI_TYPES, MBTI_FUNCTIONS, MBTI_QUIZ_QUESTIONS } from '../../data/mbtiData'
+import MBTIQuizOverlay from '../overlays/MBTIQuiz'
 
 const FUNCTION_COLORS = {
   Ni: { color: '#9050e0', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.22)' },
@@ -430,13 +431,17 @@ function MBTIResults({ typeCode, onRetake }) {
 /* ============ MAIN DETAIL COMPONENT ============ */
 export default function MBTIDetail() {
   const storeType = useAboveInsideStore((s) => s.mbtiType)
+  const setMbtiType = useAboveInsideStore((s) => s.setMbtiType)
   const [quizType, setQuizType] = useState(null)
   const [showQuiz, setShowQuiz] = useState(true)
+  const [showQuizOverlay, setShowQuizOverlay] = useState(false)
 
   // Use store type if available, otherwise use quiz result
   const resolvedType = storeType || quizType
 
   function handleQuizComplete(code) {
+    // Save to store immediately on completion
+    setMbtiType(code)
     setQuizType(code)
     setShowQuiz(false)
   }
@@ -450,7 +455,9 @@ export default function MBTIDetail() {
   if (resolvedType) {
     return (
       <div style={S.panel}>
-        <MBTIResults typeCode={resolvedType} onRetake={storeType ? null : handleRetake} />
+        {/* Overlay quiz for retaking when type is already set */}
+        {showQuizOverlay && <MBTIQuizOverlay onClose={() => setShowQuizOverlay(false)} />}
+        <MBTIResults typeCode={resolvedType} onRetake={storeType ? () => setShowQuizOverlay(true) : handleRetake} />
       </div>
     )
   }
@@ -463,7 +470,7 @@ export default function MBTIDetail() {
           <div>
             <div style={S.heading}>{'\u29C9'} MBTI</div>
             <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
-              Discover your cognitive type through 12 questions that reveal how you perceive and judge reality
+              Discover your cognitive type through 20 questions that reveal how you perceive and judge reality
             </div>
           </div>
 

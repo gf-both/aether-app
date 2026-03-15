@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { ENNEAGRAM_TYPES, ENNEAGRAM_PROFILE, ENNEAGRAM_QUIZ, INSTINCTUAL_VARIANTS, TRIAD_COLORS } from '../../data/enneagramData'
 import EnneagramSymbol from '../canvas/EnneagramSymbol'
+import EnneagramQuizOverlay from '../overlays/EnneagramQuiz'
 
 /* ---- shared style fragments ---- */
 const S = {
@@ -56,9 +57,11 @@ const S = {
 }
 
 function EnneagramQuiz() {
+  const setEnneagramType = useAboveInsideStore((s) => s.setEnneagramType)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState({})
   const [result, setResult] = useState(null)
+  const [saved, setSaved] = useState(false)
 
   const handleAnswer = (optIdx) => {
     const q = ENNEAGRAM_QUIZ[step]
@@ -75,11 +78,20 @@ function EnneagramQuiz() {
       const sorted = Object.entries(newAnswers).sort((a, b) => b[1] - a[1])
       const topType = parseInt(sorted[0][0])
       const typeData = ENNEAGRAM_TYPES.find(t => t.number === topType)
+      const topTypeData = ENNEAGRAM_TYPES.find(t => t.number === topType)
+      // Determine wing from adjacent types with highest scores
+      const wings = topTypeData?.wings || []
+      const wingScores = wings.map(w => ({ w, s: newAnswers[w] || 0 }))
+      wingScores.sort((a, b) => b.s - a.s)
+      const suggestedWing = wingScores[0]?.w || wings[0]
+      // Save to store
+      setEnneagramType(topType, suggestedWing)
+      setSaved(true)
       setResult({ type: topType, name: typeData?.name, scores: sorted.slice(0, 3) })
     }
   }
 
-  const reset = () => { setStep(0); setAnswers({}); setResult(null) }
+  const reset = () => { setStep(0); setAnswers({}); setResult(null); setSaved(false) }
 
   if (result) {
     const typeData = ENNEAGRAM_TYPES.find(t => t.number === result.type)
@@ -118,6 +130,14 @@ function EnneagramQuiz() {
           This is a brief indicator. For accurate typing, explore the full descriptions below
           and consider which core fear and desire resonate most deeply.
         </div>
+        {saved && (
+          <div style={{
+            padding: '8px 14px', borderRadius: 8,
+            background: 'rgba(96,200,80,.08)', border: '1px solid rgba(96,200,80,.2)',
+            fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em', color: '#88dd44',
+            textAlign: 'center',
+          }}>✓ Saved to your profile</div>
+        )}
         <div onClick={reset} style={{
           padding: '6px 18px', borderRadius: 8, background: 'rgba(201,168,76,.08)',
           border: '1px solid rgba(201,168,76,.2)', cursor: 'pointer', alignSelf: 'center',
@@ -172,6 +192,7 @@ export default function EnneagramDetail() {
   const storeType = useAboveInsideStore((s) => s.enneagramType)
   const storeWing = useAboveInsideStore((s) => s.enneagramWing)
   const storeInstinct = useAboveInsideStore((s) => s.enneagramInstinct)
+  const [showQuizOverlay, setShowQuizOverlay] = useState(false)
 
   // Resolve active type — store override or static default
   const typeNum = storeType || ENNEAGRAM_PROFILE.type
@@ -231,11 +252,33 @@ export default function EnneagramDetail() {
         </div>
       </div>
 
+      {/* QUIZ OVERLAY */}
+      {showQuizOverlay && <EnneagramQuizOverlay onClose={() => setShowQuizOverlay(false)} />}
+
       {/* INTERACTIVE QUIZ — only show if no type set in profile */}
       {!storeType && (
         <div>
           <div style={S.sectionTitle}>Discover Your Type</div>
           <EnneagramQuiz />
+        </div>
+      )}
+
+      {/* RETAKE QUIZ BUTTON — shown when type is already set */}
+      {storeType && (
+        <div>
+          <div style={S.sectionTitle}>Quiz</div>
+          <div
+            onClick={() => setShowQuizOverlay(true)}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              padding: '10px 20px', borderRadius: 10, cursor: 'pointer',
+              background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
+              fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.12em',
+              color: 'var(--gold2)', transition: 'all .2s',
+            }}
+          >
+            ↺ Retake Enneagram Quiz
+          </div>
         </div>
       )}
 

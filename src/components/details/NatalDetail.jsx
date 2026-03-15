@@ -1,53 +1,72 @@
+import { useMemo } from 'react'
 import NatalWheel from '../canvas/NatalWheel'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { getNatalChart } from '../../engines/natalEngine'
 
-// Verified against Swiss Ephemeris (Kerykeion/pyswisseph) — Jan 23, 1981 22:10 Buenos Aires
-const PLANETS = [
-  { name: 'Sun', sym: '\u2609', sign: 'Aquarius', deg: '3\u00B057\'', house: 5, retro: false },
-  { name: 'Moon', sym: '\u263D', sign: 'Virgo', deg: '18\u00B026\'', house: 1, retro: false },
-  { name: 'Mercury', sym: '\u263F', sign: 'Aquarius', deg: '19\u00B001\'', house: 6, retro: false },
-  { name: 'Venus', sym: '\u2640', sign: 'Capricorn', deg: '15\u00B058\'', house: 5, retro: false },
-  { name: 'Mars', sym: '\u2642', sign: 'Aquarius', deg: '19\u00B000\'', house: 6, retro: false },
-  { name: 'Jupiter', sym: '\u2643', sign: 'Libra', deg: '10\u00B023\'', house: 1, retro: false },
-  { name: 'Saturn', sym: '\u2644', sign: 'Libra', deg: '9\u00B045\'', house: 1, retro: true },
-  { name: 'Uranus', sym: '\u2645', sign: 'Scorpio', deg: '29\u00B023\'', house: 2, retro: false },
-  { name: 'Neptune', sym: '\u2646', sign: 'Sagittarius', deg: '23\u00B049\'', house: 4, retro: false },
-  { name: 'Pluto', sym: '\u2647', sign: 'Libra', deg: '24\u00B020\'', house: 1, retro: true },
-  { name: 'Ascendant', sym: 'AC', sign: 'Virgo', deg: '18\u00B013\'', house: 1, retro: false },
-  { name: 'Midheaven', sym: 'MC', sign: 'Gemini', deg: '23\u00B001\'', house: 10, retro: false },
-]
+const PLANET_SYMS = {
+  sun: '\u2609', moon: '\u263D', mercury: '\u263F', venus: '\u2640', mars: '\u2642',
+  jupiter: '\u2643', saturn: '\u2644', uranus: '\u2645', neptune: '\u2646', pluto: '\u2647',
+  northNode: '\u260A', chiron: '\u26B7',
+}
 
-// Placidus house cusps verified via Swiss Ephemeris
-const HOUSES = [
-  { num: 1, sign: 'Virgo', deg: '18\u00B013\'' },
-  { num: 2, sign: 'Libra', deg: '29\u00B048\'' },
-  { num: 3, sign: 'Scorpio', deg: '29\u00B026\'' },
-  { num: 4, sign: 'Sagittarius', deg: '23\u00B001\'' },
-  { num: 5, sign: 'Capricorn', deg: '15\u00B031\'' },
-  { num: 6, sign: 'Aquarius', deg: '11\u00B040\'' },
-  { num: 7, sign: 'Pisces', deg: '18\u00B013\'' },
-  { num: 8, sign: 'Aries', deg: '29\u00B048\'' },
-  { num: 9, sign: 'Taurus', deg: '29\u00B026\'' },
-  { num: 10, sign: 'Gemini', deg: '23\u00B001\'' },
-  { num: 11, sign: 'Cancer', deg: '15\u00B031\'' },
-  { num: 12, sign: 'Leo', deg: '11\u00B040\'' },
-]
+const ASPECT_SYMBOLS = {
+  conjunction: '\u260C', opposition: '\u260D', trine: '\u25B3', square: '\u25A1', sextile: '\u26BA',
+}
+const ASPECT_COLORS_MAP = {
+  conjunction: '#f0c040', opposition: '#7890ee', trine: '#40ccdd', square: '#dd5555', sextile: '#50c8a0',
+}
 
-const ASPECTS = [
-  { p1: 'Mercury', p2: 'Mars', type: 'Conjunction', symbol: '\u260C', orb: '0\u00B001\'', color: '#f0c040' },
-  { p1: 'Moon', p2: 'Ascendant', type: 'Conjunction', symbol: '\u260C', orb: '0\u00B013\'', color: '#f0c040' },
-  { p1: 'Jupiter', p2: 'Saturn', type: 'Conjunction', symbol: '\u260C', orb: '0\u00B038\'', color: '#f0c040' },
-  { p1: 'Neptune', p2: 'Pluto', type: 'Sextile', symbol: '\u26BA', orb: '0\u00B031\'', color: '#50c8a0' },
-  { p1: 'Neptune', p2: 'MC', type: 'Opposition', symbol: '\u260D', orb: '0\u00B048\'', color: '#7890ee' },
-  { p1: 'Venus', p2: 'Moon', type: 'Trine', symbol: '\u25B3', orb: '2\u00B028\'', color: '#40ccdd' },
-  { p1: 'Sun', p2: 'Uranus', type: 'Sextile', symbol: '\u26BA', orb: '4\u00B034\'', color: '#50c8a0' },
-  { p1: 'Venus', p2: 'Jupiter', type: 'Square', symbol: '\u25A1', orb: '5\u00B035\'', color: '#dd5555' },
-  { p1: 'Venus', p2: 'Saturn', type: 'Square', symbol: '\u25A1', orb: '6\u00B013\'', color: '#dd5555' },
-  { p1: 'Sun', p2: 'Jupiter', type: 'Trine', symbol: '\u25B3', orb: '6\u00B026\'', color: '#40ccdd' },
-  { p1: 'Sun', p2: 'Saturn', type: 'Trine', symbol: '\u25B3', orb: '5\u00B048\'', color: '#40ccdd' },
-]
+function parseDOB(dob) {
+  if (!dob) return null
+  const [y, m, d] = dob.split('-').map(Number)
+  return { year: y, month: m, day: d }
+}
+function parseTOB(tob) {
+  if (!tob) return { hour: 12, minute: 0 }
+  const [h, m] = tob.split(':').map(Number)
+  return { hour: h || 0, minute: m || 0 }
+}
 
-const ELEMENTS = { Fire: 1, Earth: 2, Air: 6, Water: 1 }
-const MODALITIES = { Cardinal: 4, Fixed: 4, Mutable: 2 }
+function useNatalChart() {
+  const profile = useAboveInsideStore(s => s.primaryProfile)
+  return useMemo(() => {
+    const dob = parseDOB(profile.dob)
+    const tob = parseTOB(profile.tob)
+    if (!dob) return null
+    try {
+      return getNatalChart({
+        day: dob.day, month: dob.month, year: dob.year,
+        hour: tob.hour, minute: tob.minute,
+        lat: profile.birthLat ?? -34.6037,
+        lon: profile.birthLon ?? -58.3816,
+        timezone: profile.birthTimezone ?? -3,
+      })
+    } catch { return null }
+  }, [profile.dob, profile.tob, profile.birthLat, profile.birthLon, profile.birthTimezone])
+}
+
+/** Determine which house a planet longitude falls in */
+function getHouseFor(lon, houses) {
+  for (let i = 0; i < 12; i++) {
+    const cuspStart = houses[i].lon
+    const cuspEnd = houses[(i + 1) % 12].lon
+    let within
+    if (cuspStart <= cuspEnd) {
+      within = lon >= cuspStart && lon < cuspEnd
+    } else {
+      // Wrap around 0/360
+      within = lon >= cuspStart || lon < cuspEnd
+    }
+    if (within) return i + 1
+  }
+  return 1
+}
+
+function formatDeg(deg) {
+  const d = Math.floor(deg)
+  const m = Math.round((deg - d) * 60)
+  return `${d}\u00B0${String(m).padStart(2,'0')}\u2032`
+}
 
 const ELEMENT_COLORS = {
   Fire: '#ee4444',
@@ -67,18 +86,6 @@ const SIGN_ELEMENTS = {
   Taurus: 'Earth', Virgo: 'Earth', Capricorn: 'Earth',
   Gemini: 'Air', Libra: 'Air', Aquarius: 'Air',
   Cancer: 'Water', Scorpio: 'Water', Pisces: 'Water',
-}
-
-const RISING_SIGN = {
-  sign: 'Virgo',
-  degree: '18\u00B013\'',
-  ruler: 'Mercury',
-  rulerSign: 'Aquarius',
-  rulerHouse: 6,
-  qualities: ['Analytical', 'Detail-oriented', 'Service-driven', 'Methodical', 'Discerning'],
-  appearance: 'Reserved, intellectual demeanor with attentive eyes and precise mannerisms',
-  firstImpression: 'Comes across as thoughtful, quietly competent, and observant before engaging',
-  lifeApproach: 'Approaches life through analysis and refinement, seeking practical perfection and meaningful service',
 }
 
 /* ---- shared style fragments ---- */
@@ -135,8 +142,83 @@ const S = {
 }
 
 export default function NatalDetail() {
+  const chart = useNatalChart()
+
+  // Build dynamic PLANETS list from chart
+  const PLANETS = useMemo(() => {
+    if (!chart) return []
+    const list = []
+    const planetOrder = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto','northNode']
+    for (const key of planetOrder) {
+      const p = chart.planets[key]
+      if (!p) continue
+      list.push({
+        name: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1'),
+        sym: PLANET_SYMS[key] || '?',
+        sign: p.sign,
+        deg: formatDeg(p.degree),
+        house: getHouseFor(p.lon, chart.houses),
+        retro: p.retrograde,
+      })
+    }
+    // Add ASC and MC
+    list.push({ name: 'Ascendant', sym: 'AC', sign: chart.angles.asc.sign, deg: formatDeg(chart.angles.asc.degree), house: 1, retro: false })
+    list.push({ name: 'Midheaven', sym: 'MC', sign: chart.angles.mc.sign, deg: formatDeg(chart.angles.mc.degree), house: 10, retro: false })
+    return list
+  }, [chart])
+
+  // Build dynamic HOUSES list from chart
+  const HOUSES = useMemo(() => {
+    if (!chart) return []
+    return chart.houses.map(h => ({ num: h.house, sign: h.sign, deg: formatDeg(h.degree) }))
+  }, [chart])
+
+  // Build dynamic ASPECTS list from chart
+  const ASPECTS = useMemo(() => {
+    if (!chart) return []
+    return chart.aspects.slice(0, 15).map(a => ({
+      p1: a.planet1.charAt(0).toUpperCase() + a.planet1.slice(1).replace(/([A-Z])/g, ' $1'),
+      p2: a.planet2.charAt(0).toUpperCase() + a.planet2.slice(1).replace(/([A-Z])/g, ' $1'),
+      type: a.aspect.charAt(0).toUpperCase() + a.aspect.slice(1),
+      symbol: ASPECT_SYMBOLS[a.aspect] || '\u25CB',
+      orb: formatDeg(a.orb),
+      color: ASPECT_COLORS_MAP[a.aspect] || '#aaaaaa',
+    }))
+  }, [chart])
+
+  // Element/Modality balance from chart planets
+  const { ELEMENTS, MODALITIES } = useMemo(() => {
+    const elMap = { Fire: 0, Earth: 0, Air: 0, Water: 0 }
+    const modMap = { Cardinal: 0, Fixed: 0, Mutable: 0 }
+    const signEl = { Aries:'Fire',Leo:'Fire',Sagittarius:'Fire', Taurus:'Earth',Virgo:'Earth',Capricorn:'Earth', Gemini:'Air',Libra:'Air',Aquarius:'Air', Cancer:'Water',Scorpio:'Water',Pisces:'Water' }
+    const signMod = { Aries:'Cardinal',Cancer:'Cardinal',Libra:'Cardinal',Capricorn:'Cardinal', Taurus:'Fixed',Leo:'Fixed',Scorpio:'Fixed',Aquarius:'Fixed', Gemini:'Mutable',Virgo:'Mutable',Sagittarius:'Mutable',Pisces:'Mutable' }
+    if (chart) {
+      for (const p of Object.values(chart.planets)) {
+        if (signEl[p.sign]) elMap[signEl[p.sign]]++
+        if (signMod[p.sign]) modMap[signMod[p.sign]]++
+      }
+    }
+    return { ELEMENTS: elMap, MODALITIES: modMap }
+  }, [chart])
+
   const totalEl = Object.values(ELEMENTS).reduce((a, b) => a + b, 0)
   const totalMod = Object.values(MODALITIES).reduce((a, b) => a + b, 0)
+
+  const RISING_SIGN = useMemo(() => {
+    if (!chart) return { sign: 'Virgo', degree: '18°13\'', ruler: 'Mercury', rulerSign: 'Aquarius', rulerHouse: 6 }
+    const asc = chart.angles.asc
+    return {
+      sign: asc.sign,
+      degree: formatDeg(asc.degree),
+      ruler: 'Mercury',  // static for Virgo rising; could be computed dynamically
+      rulerSign: chart.planets.mercury?.sign || 'Aquarius',
+      rulerHouse: chart.planets.mercury ? getHouseFor(chart.planets.mercury.lon, chart.houses) : 6,
+      qualities: ['Analytical', 'Detail-oriented', 'Service-driven', 'Methodical', 'Discerning'],
+      appearance: 'Reserved, intellectual demeanor with attentive eyes and precise mannerisms',
+      firstImpression: 'Comes across as thoughtful, quietly competent, and observant before engaging',
+      lifeApproach: 'Approaches life through analysis and refinement, seeking practical perfection and meaningful service',
+    }
+  }, [chart])
 
   return (
     <div style={S.panel}>

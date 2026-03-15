@@ -1,50 +1,129 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
+import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
 
-const nums = [5, 7, 3, 11, 5, 4, 22, 9, 6, 2]
-const labs = ['LP', 'Ex', 'SU', 'M11', 'BD', 'Mt', 'M22', 'Pe', 'P1', 'P2']
-const cols = ['#c9a84c', '#4dccd8', '#c44d7a', '#a060e0', '#88cc55', '#e09040', '#7030b0', '#99ccee', '#ee6644', '#e8cc50']
+const COLORS = [
+  '#c9a84c', // Life Path
+  '#4dccd8', // Expression
+  '#c44d7a', // Soul Urge
+  '#a060e0', // Master (M11 or M22)
+  '#88cc55', // Birthday (reduced)
+  '#e09040', // Maturity
+  '#7030b0', // Pinnacle active
+  '#99ccee', // Personality
+  '#ee6644', // Pinnacle I
+  '#e8cc50', // Pinnacle II
+]
 
 export default function NumerologyBars() {
   const canvasRef = useRef(null)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+
+  const { nums, labs } = useMemo(() => {
+    try {
+      const now = new Date()
+      const dob = primaryProfile?.dob || '1981-01-23'
+      const fullName = primaryProfile?.name
+        ? primaryProfile.name.toUpperCase()
+        : 'GASTON FRYDLEWSKI'
+
+      const p = getNumerologyProfileFromDob(dob, fullName, {
+        currentYear:  now.getFullYear(),
+        currentMonth: now.getMonth() + 1,
+        currentDay:   now.getDate(),
+      })
+
+      const { core, pinnacles, extended } = p
+
+      // Build bar data: value + label pairs
+      const bars = [
+        { n: core.lifePath.val,    l: 'LP'   },
+        { n: core.expression.val,  l: 'Ex'   },
+        { n: core.soulUrge.val,    l: 'SU'   },
+        // Master number in name (or 0)
+        { n: extended.masterNumbers[0] || 0,  l: `M${extended.masterNumbers[0] || '—'}` },
+        { n: core.birthday.reduced, l: 'BD'  },
+        { n: core.maturity.val,    l: 'Mt'   },
+        // Active pinnacle
+        { n: pinnacles[extended.activePhaseIndex]?.num || 0, l: 'Pn'  },
+        { n: core.personality.val, l: 'Pe'   },
+        { n: pinnacles[0]?.num || 0, l: 'P1' },
+        { n: pinnacles[1]?.num || 0, l: 'P2' },
+      ]
+
+      return {
+        nums: bars.map(b => b.n),
+        labs: bars.map(b => b.l),
+      }
+    } catch (e) {
+      console.error('NumerologyBars engine error:', e)
+      // Fallback to hardcoded values
+      return {
+        nums: [7, 1, 3, 22, 5, 8, 6, 7, 6, 6],
+        labs: ['LP', 'Ex', 'SU', 'M22', 'BD', 'Mt', 'Pn', 'Pe', 'P1', 'P2'],
+      }
+    }
+  }, [primaryProfile?.dob, primaryProfile?.name])
 
   useCanvasResize(canvasRef)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    let animId = null
 
     function draw() {
-      const dpr = window.devicePixelRatio
-      const W = canvas.width / dpr, H = canvas.height / dpr
+      const dpr = window.devicePixelRatio || 1
+      const W = canvas.width / dpr
+      const H = canvas.height / dpr
       if (W === 0 || H === 0) return
       const ctx = canvas.getContext('2d')
       ctx.save()
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
-      const bw = W / nums.length, pad = 3
+
+      const bw = W / nums.length
+      const pad = 3
+
       nums.forEach((n, i) => {
-        const maxN = 22, h = (n / maxN) * (H - 14), x = i * bw + pad, bWidth = bw - pad * 2
+        const maxN = 22
+        const h = (n / maxN) * (H - 14)
+        const x = i * bw + pad
+        const bWidth = bw - pad * 2
+        const col = COLORS[i] || '#888'
+
         const g = ctx.createLinearGradient(0, H - h, 0, H)
-        g.addColorStop(0, cols[i] + 'ee'); g.addColorStop(1, cols[i] + '44')
+        g.addColorStop(0, col + 'ee')
+        g.addColorStop(1, col + '44')
+
         ctx.beginPath()
         if (ctx.roundRect) ctx.roundRect(x, H - h, bWidth, h, 2.5)
         else ctx.rect(x, H - h, bWidth, h)
-        ctx.fillStyle = g; ctx.fill()
-        ctx.font = '6.5px Inconsolata,monospace'; ctx.fillStyle = cols[i]
-        ctx.textAlign = 'center'; ctx.fillText(n, i * bw + bw / 2, H - h - 2)
-        ctx.fillStyle = 'rgba(100,110,150,.45)'; ctx.fillText(labs[i], i * bw + bw / 2, H - 1)
+        ctx.fillStyle = g
+        ctx.fill()
+
+        ctx.font = '6.5px Inconsolata,monospace'
+        ctx.fillStyle = col
+        ctx.textAlign = 'center'
+        ctx.fillText(n || '', i * bw + bw / 2, H - h - 2)
+
+        ctx.fillStyle = 'rgba(100,110,150,.45)'
+        ctx.fillText(labs[i], i * bw + bw / 2, H - 1)
       })
+
       ctx.restore()
     }
 
-    // Draw once and on resize
     const ro = new ResizeObserver(() => draw())
     ro.observe(canvas)
     draw()
     return () => { ro.disconnect() }
-  }, [])
+  }, [nums, labs])
 
-  return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '50px', flexShrink: 0, borderRadius: '7px' }} />
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ display: 'block', width: '100%', height: '50px', flexShrink: 0, borderRadius: '7px' }}
+    />
+  )
 }
