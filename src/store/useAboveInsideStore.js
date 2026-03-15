@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { DEFAULT_PRIMARY_PROFILE, DEFAULT_PEOPLE } from '../data/primaryProfile'
 
-const DEFAULT_WIDGET_ORDER = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic']
+const DEFAULT_WIDGET_ORDER = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang']
 
 export const useAboveInsideStore = create(
   persist(
@@ -78,6 +78,18 @@ export const useAboveInsideStore = create(
       // Widget manager visibility
       showWidgetManager: false,
       setShowWidgetManager: (v) => set({ showWidgetManager: v }),
+
+      // Dosha type (Ayurvedic constitution, e.g. 'Vata-Pitta')
+      doshaType: null,
+      setDoshaType: (type) => set({ doshaType: type }),
+
+      // Archetype type (Jungian, e.g. 'The Magician')
+      archetypeType: null,
+      setArchetypeType: (type) => set({ archetypeType: type }),
+
+      // Love Language (e.g. 'Quality Time')
+      loveLanguage: null,
+      setLoveLanguage: (lang) => set({ loveLanguage: lang }),
 
       // Subscription
       subscription: 'free', // 'free' | 'explorer' | 'practitioner'

@@ -42,6 +42,11 @@ import SynastryDetail from '../components/details/SynastryDetail'
 import ProfileDetail from '../components/details/ProfileDetail'
 import SabianDetail from '../components/details/SabianDetail'
 import ArabicPartsDetail from '../components/details/ArabicPartsDetail'
+import TibetanDetail from '../components/details/TibetanDetail'
+import FixedStarsDetail from '../components/details/FixedStarsDetail'
+import DoshaDetail from '../components/details/DoshaDetail'
+import ArchetypeDetail from '../components/details/ArchetypeDetail'
+import LoveLangDetail from '../components/details/LoveLangDetail'
 import PricingPage from './PricingPage'
 import PractitionerPortal from './PractitionerPortal'
 import ClientPortal from './ClientPortal'
@@ -135,6 +140,22 @@ const ROWS = [
     widgets: ['biorhythm', 'tarot', 'celtic'],
     cols: '1.5fr 1fr 1fr',
   },
+  {
+    label: 'TIBETAN & STELLAR',
+    sub: 'Losar Calendar \u00B7 Mewa \u00B7 Fixed Stars \u00B7 Ancient Wisdom',
+    color: '#e8a040',
+    border: 'rgba(232,160,64,.3)',
+    widgets: ['tibetan', 'stars'],
+    cols: '1fr 1fr',
+  },
+  {
+    label: 'SELF KNOWLEDGE',
+    sub: 'Dosha \u00B7 Archetype \u00B7 Love Languages \u00B7 Quizzes',
+    color: '#a878e8',
+    border: 'rgba(168,120,232,.3)',
+    widgets: ['dosha', 'archetype', 'lovelang'],
+    cols: 'repeat(3, 1fr)',
+  },
 ]
 
 const CARD_HEIGHT = 440
@@ -163,6 +184,11 @@ const DETAIL_COMPONENTS = {
   biorhythm: BiorhythmDetail,
   tarot: TarotDetail,
   celtic: CelticTreeDetail,
+  tibetan: TibetanDetail,
+  stars: FixedStarsDetail,
+  dosha: DoshaDetail,
+  archetype: ArchetypeDetail,
+  lovelang: LoveLangDetail,
   synastry: SynastryDetail,
   profile: ProfileDetail,
   sabian: SabianDetail,
@@ -194,6 +220,11 @@ const DETAIL_TITLES = {
   synastry:  'Synastry \u2014 Composite Analysis',
   sabian:    'Sabian Symbols \u2014 360 Degrees',
   arabic:    'Arabic Parts \u2014 Lots & Sensitive Points',
+  tibetan: 'Tibetan Astrology \u2014 Losar Calendar & Mewa',
+  stars: 'Fixed Stars \u2014 Natal Conjunctions',
+  dosha: 'Ayurvedic Dosha \u2014 Mind-Body Constitution',
+  archetype: 'Archetype Assessment \u2014 Jungian Pattern',
+  lovelang: 'Love Languages \u2014 How You Give & Receive Love',
   profile: 'Profiles \u2014 Constellation',
   pricing: 'Choose Your Path \u2014 Pricing',
   practitioner: 'Practitioner Portal \u2014 Practice Management',
@@ -321,6 +352,9 @@ function WidgetContent({ widgetId }) {
   const mbtiType = useAboveInsideStore((s) => s.mbtiType)
   const enneagramType = useAboveInsideStore((s) => s.enneagramType)
   const enneagramWing = useAboveInsideStore((s) => s.enneagramWing)
+  const doshaType = useAboveInsideStore((s) => s.doshaType)
+  const archetypeType = useAboveInsideStore((s) => s.archetypeType)
+  const loveLanguage = useAboveInsideStore((s) => s.loveLanguage)
   switch (widgetId) {
     case 'integral':
       return (
@@ -576,6 +610,56 @@ function WidgetContent({ widgetId }) {
           </div>
         </>
       )
+    case 'tibetan':
+      return (
+        <>
+          <div className="ch"><span className="ct">Tibetan Astrology &middot; Losar &middot; Mewa</span><span className="ci">{'☸'}</span></div>
+          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--gold)', letterSpacing: '.15em' }}>☸</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>TIBETAN BIRTH YEAR</div>
+          </div>
+        </>
+      )
+    case 'stars':
+      return (
+        <>
+          <div className="ch"><span className="ct">Fixed Stars &middot; Natal Conjunctions</span><span className="ci">{'✦'}</span></div>
+          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--gold)', letterSpacing: '.15em' }}>✦</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>FIXED STARS</div>
+          </div>
+        </>
+      )
+    case 'dosha':
+      return (
+        <>
+          <div className="ch"><span className="ct">Ayurvedic Dosha &middot; {doshaType || 'Take Quiz'}</span><span className="ci">{'☯'}</span></div>
+          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--gold)', letterSpacing: '.15em' }}>☯</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>DOSHA</div>
+          </div>
+        </>
+      )
+    case 'archetype':
+      return (
+        <>
+          <div className="ch"><span className="ct">Archetype &middot; {archetypeType || 'Take Quiz'}</span><span className="ci">{'⬡'}</span></div>
+          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: '#a878e8', letterSpacing: '.15em' }}>⬡</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>ARCHETYPE</div>
+          </div>
+        </>
+      )
+    case 'lovelang':
+      return (
+        <>
+          <div className="ch"><span className="ct">Love Language &middot; {loveLanguage || 'Take Quiz'}</span><span className="ci">{'🤗'}</span></div>
+          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, letterSpacing: '.15em' }}>🤗</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>LOVE LANGUAGE</div>
+          </div>
+        </>
+      )
     default:
       return null
   }
@@ -608,6 +692,11 @@ const WIDGET_META = {
   biorhythm:  { icon: '◈', label: 'Biorhythms', sub: 'Physical \u00B7 Emotional \u00B7 Intellectual' },
   tarot:      { icon: '🃏', label: 'Tarot Birth Cards', sub: 'Major Arcana \u00B7 Soul Cards' },
   celtic:     { icon: '🌳', label: 'Celtic Tree Calendar', sub: 'Ogham \u00B7 13 Sacred Trees' },
+  tibetan: { icon: '☸', label: 'Tibetan Astrology', sub: 'Losar \u00B7 Mewa \u00B7 Elements' },
+  stars: { icon: '✦', label: 'Fixed Stars', sub: 'Natal Conjunctions \u00B7 Stellar Influences' },
+  dosha: { icon: '☯', label: 'Ayurvedic Dosha', sub: 'Vata \u00B7 Pitta \u00B7 Kapha' },
+  archetype: { icon: '⬡', label: 'Archetype', sub: 'Jungian Pattern \u00B7 12 Archetypes' },
+  lovelang: { icon: '🤗', label: 'Love Languages', sub: 'Give & Receive \u00B7 5 Languages' },
   practitioner: { icon: '\uD83C\uDFE5', label: 'Practitioner Portal', sub: 'Clients \u00B7 Sessions \u00B7 Revenue' },
   client: { icon: '\uD83D\uDCCB', label: 'Client Portal', sub: 'Sessions \u00B7 Progress \u00B7 Messages' },
 }
@@ -634,6 +723,11 @@ const WIDGET_CATEGORIES = {
   biorhythm:  { label: 'CYCLES',      color: 'rgba(96,200,80,.8)',  bg: 'rgba(96,200,80,.08)',  border: 'rgba(96,200,80,.2)'  },
   tarot:      { label: 'DIVINATION',  color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
   celtic:     { label: 'CELTIC',      color: 'rgba(120,180,80,.8)', bg: 'rgba(120,180,80,.08)', border: 'rgba(120,180,80,.2)' },
+  tibetan:  { label: 'TIBETAN', color: 'rgba(232,160,64,.8)', bg: 'rgba(232,160,64,.08)', border: 'rgba(232,160,64,.2)' },
+  stars:    { label: 'STELLAR', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  dosha:    { label: 'AYURVEDA', color: 'rgba(68,204,136,.8)', bg: 'rgba(68,204,136,.08)', border: 'rgba(68,204,136,.2)' },
+  archetype:{ label: 'JUNGIAN', color: 'rgba(168,120,232,.8)', bg: 'rgba(168,120,232,.08)', border: 'rgba(168,120,232,.2)' },
+  lovelang: { label: 'RELATIONAL', color: 'rgba(238,136,102,.8)', bg: 'rgba(238,136,102,.08)', border: 'rgba(238,136,102,.2)' },
 }
 
 function CategoryBadge({ widgetId }) {
