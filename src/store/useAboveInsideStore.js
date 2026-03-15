@@ -112,6 +112,125 @@ export const useAboveInsideStore = create(
       // User role: 'user' | 'practitioner'
       userRole: 'user',
       setUserRole: (role) => set({ userRole: role }),
+
+      // ─── Practitioner State ───────────────────────────────────────────────
+
+      // Whether the current user is operating in practitioner mode
+      isPractitioner: false,
+      setIsPractitioner: (v) => set({ isPractitioner: v }),
+
+      // Active session: { clientId, startTime, notes, actionItems, frameworks, checkedItems, starredQuestions }
+      activeSession: null,
+
+      startSession: (clientId) => set({
+        activeSession: {
+          clientId,
+          startTime: Date.now(),
+          notes: '',
+          actionItems: [],
+          frameworks: [],
+          checkedItems: {},
+          starredQuestions: {},
+          analysis: null,
+        },
+      }),
+
+      updateSessionNotes: (notes) =>
+        set((s) => ({
+          activeSession: s.activeSession
+            ? { ...s.activeSession, notes }
+            : s.activeSession,
+        })),
+
+      updateSessionAnalysis: (analysis) =>
+        set((s) => ({
+          activeSession: s.activeSession
+            ? { ...s.activeSession, analysis }
+            : s.activeSession,
+        })),
+
+      updateSessionActionItems: (actionItems) =>
+        set((s) => ({
+          activeSession: s.activeSession
+            ? { ...s.activeSession, actionItems }
+            : s.activeSession,
+        })),
+
+      updateSessionCheckedItems: (checkedItems) =>
+        set((s) => ({
+          activeSession: s.activeSession
+            ? { ...s.activeSession, checkedItems }
+            : s.activeSession,
+        })),
+
+      updateSessionFrameworks: (frameworks) =>
+        set((s) => ({
+          activeSession: s.activeSession
+            ? { ...s.activeSession, frameworks }
+            : s.activeSession,
+        })),
+
+      endSession: () =>
+        set((s) => {
+          if (!s.activeSession) return {}
+          const session = { ...s.activeSession, endTime: Date.now() }
+          const clientId = session.clientId
+          const existing = s.sessionHistory[clientId] || []
+          return {
+            sessionHistory: {
+              ...s.sessionHistory,
+              [clientId]: [...existing, session],
+            },
+            activeSession: null,
+          }
+        }),
+
+      // Session history: { [clientId]: [session, ...] }
+      sessionHistory: {},
+
+      // Family constellations: { [clientId]: [member, ...] }
+      familyConstellations: {},
+
+      addFamilyMember: (clientId, member) =>
+        set((s) => ({
+          familyConstellations: {
+            ...s.familyConstellations,
+            [clientId]: [
+              ...(s.familyConstellations[clientId] || []),
+              { ...member, id: member.id || Date.now().toString() },
+            ],
+          },
+        })),
+
+      updateFamilyMember: (clientId, memberId, updates) =>
+        set((s) => ({
+          familyConstellations: {
+            ...s.familyConstellations,
+            [clientId]: (s.familyConstellations[clientId] || []).map((m) =>
+              m.id === memberId ? { ...m, ...updates } : m
+            ),
+          },
+        })),
+
+      removeFamilyMember: (clientId, memberId) =>
+        set((s) => ({
+          familyConstellations: {
+            ...s.familyConstellations,
+            [clientId]: (s.familyConstellations[clientId] || []).filter(
+              (m) => m.id !== memberId
+            ),
+          },
+        })),
+
+      // Practitioner clients list (for future multi-client support)
+      practitionerClients: [],
+      addPractitionerClient: (client) =>
+        set((s) => ({
+          practitionerClients: [
+            ...s.practitionerClients,
+            { ...client, id: client.id || Date.now().toString() },
+          ],
+        })),
     }),
     { name: 'above-inside-store' }
   )
