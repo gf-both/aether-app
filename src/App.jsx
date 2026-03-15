@@ -5,16 +5,69 @@ import Dashboard from './pages/Dashboard'
 import ProfilePanel from './components/overlays/ProfilePanel'
 import SynastryPanel from './components/overlays/SynastryPanel'
 import AIChatPanel from './components/overlays/AIChatPanel'
+import AuthModal from './components/auth/AuthModal'
 import Starfield from './components/ui/Starfield'
 import Cursor from './components/ui/Cursor'
+import { onAuthStateChange, getUser } from './lib/auth'
+import { getPrimaryProfile } from './lib/db'
+
+function mapDbToProfile(dbProfile) {
+  if (!dbProfile) return {}
+  return {
+    name: dbProfile.full_name,
+    dob: dbProfile.birth_date,
+    birthHour: dbProfile.birth_time ? parseInt(dbProfile.birth_time.split(':')[0]) : 12,
+    birthMinute: dbProfile.birth_time ? parseInt(dbProfile.birth_time.split(':')[1]) : 0,
+    birthLat: dbProfile.birth_lat || -34.6037,
+    birthLon: dbProfile.birth_lon || -58.3816,
+    birthTimezone: dbProfile.birth_timezone || -3,
+    birthCity: dbProfile.birth_city || '',
+    enneagramType: dbProfile.enneagram_type,
+    mbtiType: dbProfile.mbti_type,
+  }
+}
+
+function AuthSync() {
+  const { setUser, setUserProfile, setAuthLoading, setPrimaryProfile } = useAboveInsideStore()
+
+  useEffect(() => {
+    // Check initial session
+    getUser().then(user => {
+      setUser(user)
+      if (user) {
+        getPrimaryProfile(user.id).then(({ data }) => {
+          if (data) setPrimaryProfile(mapDbToProfile(data))
+          setUserProfile(data)
+        })
+      }
+      setAuthLoading(false)
+    })
+
+    // Listen for auth changes
+    const { data: { subscription } } = onAuthStateChange((event, session) => {
+      setUser(session?.user || null)
+      if (session?.user) {
+        getPrimaryProfile(session.user.id).then(({ data }) => {
+          if (data) setPrimaryProfile(mapDbToProfile(data))
+          setUserProfile(data)
+        })
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  return null
+}
 
 function OverlayManager() {
-  const { activePanel, setActivePanel } = useAboveInsideStore()
+  const { activePanel, setActivePanel, showAuthModal, setShowAuthModal } = useAboveInsideStore()
   return createPortal(
     <>
       <ProfilePanel open={activePanel === 'profile'} onClose={() => setActivePanel(null)} />
       <SynastryPanel open={activePanel === 'synastry'} onClose={() => setActivePanel(null)} />
       <AIChatPanel open={activePanel === 'aichat'} onClose={() => setActivePanel(null)} />
+      <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>,
     document.body
   )
@@ -45,6 +98,7 @@ function ThemeSync() {
 export default function App() {
   return (
     <>
+      <AuthSync />
       <ThemeSync />
       <Starfield />
       <Dashboard />

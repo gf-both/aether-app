@@ -503,6 +503,95 @@ function WidgetManagerToggle() {
   )
 }
 
+function SignInButton() {
+  const user = useAboveInsideStore((s) => s.user)
+  const setShowAuthModal = useAboveInsideStore((s) => s.setShowAuthModal)
+  const setUser = useAboveInsideStore((s) => s.setUser)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const close = (e) => { if (ref.current && !ref.current.contains(e.target)) setMenuOpen(false) }
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [menuOpen])
+
+  if (!user) {
+    return (
+      <div
+        onClick={() => setShowAuthModal(true)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 5,
+          padding: '4px 12px', borderRadius: 7,
+          background: 'rgba(201,168,76,.1)',
+          border: '1px solid rgba(201,168,76,.35)',
+          cursor: 'pointer', fontSize: 10,
+          fontFamily: "'Cinzel',serif", letterSpacing: '.1em',
+          color: 'var(--gold)', whiteSpace: 'nowrap',
+          transition: 'all .2s', textTransform: 'uppercase',
+        }}
+        title="Sign in to save your data"
+      >
+        ✦ Sign In
+      </div>
+    )
+  }
+
+  // Logged in — show avatar/email with dropdown
+  const initials = (user.email || '?')[0].toUpperCase()
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <div
+        onClick={() => setMenuOpen(!menuOpen)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 28, height: 28, borderRadius: '50%',
+          background: 'linear-gradient(135deg, rgba(201,168,76,.3), rgba(201,168,76,.1))',
+          border: '1px solid rgba(201,168,76,.5)',
+          cursor: 'pointer', fontSize: 11,
+          fontFamily: "'Cinzel',serif", color: 'var(--gold)',
+          flexShrink: 0,
+        }}
+        title={user.email}
+      >
+        {initials}
+      </div>
+      {menuOpen && (
+        <div style={{
+          position: 'absolute', top: '100%', right: 0, marginTop: 4, zIndex: 200,
+          background: 'var(--dropdown-bg)', border: '1px solid var(--dropdown-border)',
+          borderRadius: 8, backdropFilter: 'blur(16px)',
+          minWidth: 180, overflow: 'hidden',
+          boxShadow: 'var(--dropdown-shadow)',
+        }}>
+          <div style={{ padding: '10px 14px', borderBottom: '1px solid rgba(201,168,76,.1)' }}>
+            <div style={{ fontSize: 10, fontFamily: "'Cinzel',serif", color: 'var(--gold)', letterSpacing: '.06em' }}>Signed in as</div>
+            <div style={{ fontSize: 9, color: 'var(--text2)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 150 }}>{user.email}</div>
+          </div>
+          <div
+            onClick={async () => {
+              const { signOut } = await import('../../lib/auth')
+              await signOut()
+              setUser(null)
+              setMenuOpen(false)
+            }}
+            style={{
+              padding: '9px 14px', cursor: 'pointer', fontSize: 10,
+              fontFamily: "'Cinzel',serif", letterSpacing: '.06em',
+              color: 'var(--text2)', transition: 'all .15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,.08)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            Sign Out
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function TopBar() {
   const profile = useAboveInsideStore((s) => s.primaryProfile)
   const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
@@ -533,6 +622,7 @@ export default function TopBar() {
         <div className="chip chip-b" onClick={() => { setActiveDetail('synastry'); setActiveNav('synastry') }}>{'\u2295'} Synastry</div>
         <ThemeToggle />
         <WidgetManagerToggle />
+        <SignInButton />
         <span className="ttime">{time}</span>
       </div>
     </div>

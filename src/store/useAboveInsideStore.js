@@ -7,6 +7,16 @@ const DEFAULT_WIDGET_ORDER = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk
 export const useAboveInsideStore = create(
   persist(
     (set, get) => ({
+      // ── Auth state ─────────────────────────────────────────
+      user: null,
+      userProfile: null,
+      isAuthLoading: true,
+      showAuthModal: false,
+      setUser: (user) => set({ user }),
+      setUserProfile: (profile) => set({ userProfile: profile }),
+      setAuthLoading: (loading) => set({ isAuthLoading: loading }),
+      setShowAuthModal: (show) => set({ showAuthModal: show }),
+
       primaryProfile: { ...DEFAULT_PRIMARY_PROFILE },
       setPrimaryProfile: (updates) =>
         set((s) => ({ primaryProfile: { ...s.primaryProfile, ...updates } })),
