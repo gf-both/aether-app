@@ -40,6 +40,8 @@ import CelticTreeDetail from '../components/details/CelticTreeDetail'
 import IntegralDetail from '../components/details/IntegralDetail'
 import SynastryDetail from '../components/details/SynastryDetail'
 import ProfileDetail from '../components/details/ProfileDetail'
+import SabianDetail from '../components/details/SabianDetail'
+import ArabicPartsDetail from '../components/details/ArabicPartsDetail'
 import PricingPage from './PricingPage'
 import PractitionerPortal from './PractitionerPortal'
 import ClientPortal from './ClientPortal'
@@ -118,6 +120,14 @@ const ROWS = [
     cols: '1fr',
   },
   {
+    label: 'SYMBOLIC ASTROLOGY',
+    sub: 'Sabian Symbols \u00B7 Arabic Parts \u00B7 Lots \u00B7 Sensitive Points',
+    color: 'rgba(201,168,76,1)',
+    border: 'rgba(201,168,76,.3)',
+    widgets: ['sabian', 'arabic'],
+    cols: '1fr 1fr',
+  },
+  {
     label: 'CYCLES & DIVINATION',
     sub: 'Biorhythms \u00B7 Tarot Birth Cards \u00B7 Celtic Tree Calendar',
     color: 'rgba(96,200,80,1)',
@@ -155,6 +165,8 @@ const DETAIL_COMPONENTS = {
   celtic: CelticTreeDetail,
   synastry: SynastryDetail,
   profile: ProfileDetail,
+  sabian: SabianDetail,
+  arabic: ArabicPartsDetail,
   pricing: PricingPage,
   practitioner: PractitionerPortal,
   client: ClientPortal,
@@ -180,6 +192,8 @@ const DETAIL_TITLES = {
   tarot:     'Tarot Birth Cards \u2014 Major Arcana Soul Reading',
   celtic:    'Celtic Tree Calendar \u2014 Ogham Tree Zodiac',
   synastry:  'Synastry \u2014 Composite Analysis',
+  sabian:    'Sabian Symbols \u2014 360 Degrees',
+  arabic:    'Arabic Parts \u2014 Lots & Sensitive Points',
   profile: 'Profiles \u2014 Constellation',
   pricing: 'Choose Your Path \u2014 Pricing',
   practitioner: 'Practitioner Portal \u2014 Practice Management',
@@ -491,6 +505,52 @@ function WidgetContent({ widgetId }) {
           <div className="cb"><VedicChart /></div>
         </>
       )
+    case 'sabian':
+      return (
+        <>
+          <div className="ch"><span className="ct">Sabian Symbols &middot; 360 Degrees</span><span className="ci">{'\u{1F52E}'}</span></div>
+          <div className="cb" style={{ display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto', padding: '8px 12px' }}>
+            {[
+              ['☉','Sun','Aquarius 3°','A deserter from the navy'],
+              ['☽','Moon','Virgo 28°','A bald-headed man who has seized power'],
+              ['♀','Venus','Aries 2°','A comedian entertaining a group'],
+              ['♂','Mars','Scorpio 19°','A parrot listening and talking to a man'],
+              ['ASC','ASC','Virgo 9°','An expressionist painter at her easel'],
+            ].map(([g,n,d,s]) => (
+              <div key={n} style={{ display: 'flex', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--row-bg)', border: '1px solid var(--row-border)', alignItems: 'flex-start' }}>
+                <span style={{ color: 'var(--gold)', fontSize: 14, width: 20, flexShrink: 0 }}>{g}</span>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--text2)', textTransform: 'uppercase' }}>{n} · {d}</div>
+                  <div style={{ fontSize: 12, fontStyle: 'italic', color: 'var(--text)', lineHeight: 1.5, marginTop: 2 }}>"{s}"</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )
+    case 'arabic':
+      return (
+        <>
+          <div className="ch"><span className="ct">Arabic Parts &middot; Lots</span><span className="ci">{'\u2734'}</span></div>
+          <div className="cb" style={{ display: 'flex', flexDirection: 'column', gap: 5, overflowY: 'auto', padding: '8px 12px' }}>
+            {[
+              ['✦','Part of Fortune','Taurus 14°','Material luck, worldly prosperity'],
+              ['✧','Part of Spirit','Scorpio 14°','Soul purpose, inner vocation'],
+              ['♡','Part of Love','Pisces 8°','Romance, heart connections'],
+              ['◉','Part of Career','Capricorn 22°','Vocation, public reputation'],
+              ['⚔','Part of Passion','Leo 6°','Deep desires, creative fire'],
+            ].map(([icon,name,pos,desc]) => (
+              <div key={name} style={{ display: 'flex', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--row-bg)', border: '1px solid var(--row-border)', alignItems: 'flex-start' }}>
+                <span style={{ color: 'var(--gold)', fontSize: 14, width: 20, flexShrink: 0 }}>{icon}</span>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--gold3)', textTransform: 'uppercase' }}>{name} · {pos}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5, marginTop: 2 }}>{desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )
     case 'biorhythm':
       return (
         <>
@@ -543,6 +603,8 @@ const WIDGET_META = {
   mbti: { icon: '\u{1F9E0}', label: 'Myers-Briggs', sub: 'Personality Type \u00B7 Cognitive Functions' },
   egyptian: { icon: '\u{1F3DB}', label: 'Egyptian Astrology', sub: 'Ancient Egypt \u00B7 Zodiac' },
   vedic:      { icon: '🕉️', label: 'Vedic Astrology', sub: 'Jyotish \u00B7 Sidereal \u00B7 Nakshatras' },
+  sabian:     { icon: '\u{1F52E}', label: 'Sabian Symbols', sub: '360 Degrees \u00B7 Symbolic Images' },
+  arabic:     { icon: '\u2734', label: 'Arabic Parts', sub: 'Lots \u00B7 Sensitive Points' },
   biorhythm:  { icon: '◈', label: 'Biorhythms', sub: 'Physical \u00B7 Emotional \u00B7 Intellectual' },
   tarot:      { icon: '🃏', label: 'Tarot Birth Cards', sub: 'Major Arcana \u00B7 Soul Cards' },
   celtic:     { icon: '🌳', label: 'Celtic Tree Calendar', sub: 'Ogham \u00B7 13 Sacred Trees' },
@@ -556,6 +618,8 @@ const WIDGET_CATEGORIES = {
   natal:    { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
   tr:       { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
   vedic:    { label: 'EASTERN', color: 'rgba(160,100,255,.8)', bg: 'rgba(160,100,255,.08)', border: 'rgba(160,100,255,.2)' },
+  sabian:   { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  arabic:   { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
   hd:       { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
   kab:      { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
   gk:       { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
