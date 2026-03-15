@@ -2,6 +2,84 @@ export function isRomantic(rel) {
   return rel === 'partner' || rel === 'spouse'
 }
 
+// ─── computeSynastryFramework ─────────────────────────────────────────────────
+// Converts a getSynastryReport() result into the framework format expected by the UI.
+// Pass the report and whether the relationship is romantic (true) or family (false).
+export function computeSynastryFramework(report, romantic = true) {
+  if (!report) return null
+  const { categoryScores = {}, harmonious = [], challenging = [], insight = '', meta = {} } = report
+  const aName = meta.nameA || 'A'
+  const bName = meta.nameB || 'B'
+
+  function pct(cat, fallback = 50) {
+    return categoryScores[cat] ?? fallback
+  }
+
+  if (romantic) {
+    return {
+      sections: [
+        {
+          headerLabel: 'ROMANTIC COMPATIBILITY',
+          headerColor: 'rgba(240,96,160,.7)',
+          scores: [
+            { label: 'Attraction',         pct: pct('attraction', 72), gradient: 'linear-gradient(90deg,#d43070,#f060a0)' },
+            { label: 'Emotional Resonance', pct: pct('emotional',  68), gradient: 'linear-gradient(90deg,#8844ff,#bb66ff)' },
+            { label: 'Love Harmony',        pct: pct('love',       65), gradient: 'linear-gradient(90deg,#c9a84c,#e8c97a)' },
+            { label: 'Core Identity',       pct: pct('core',       60), gradient: 'linear-gradient(90deg,#ee6644,#ff9966)' },
+            { label: 'Growth Together',     pct: pct('growth',     62), gradient: 'linear-gradient(90deg,#4488ff,#88aaff)' },
+            { label: 'Shared Drive',        pct: pct('drive',      58), gradient: 'linear-gradient(90deg,#f0c040,#f8e070)' },
+          ],
+          insight: () => insight,
+        },
+        {
+          headerLabel: 'SOUL CONNECTION MATRIX',
+          headerColor: 'rgba(64,204,221,.7)',
+          scores: [
+            { label: 'Karmic Bonds',        pct: pct('karmic',  65), gradient: 'linear-gradient(90deg,#1a8899,#40ccdd)' },
+            { label: 'Depth & Intensity',   pct: pct('depth',   62), gradient: 'linear-gradient(90deg,#6820b0,#9050e0)' },
+            { label: 'Healing Potential',   pct: pct('healing', 60), gradient: 'linear-gradient(90deg,#60b030,#88dd44)' },
+            { label: 'Mental Connection',   pct: pct('mental',  65), gradient: 'linear-gradient(90deg,#3355cc,#6688ff)' },
+          ],
+          insight: () => harmonious.slice(0, 2).map(a =>
+            `${a.label}: ${a.name} (${a.orb}° orb)`
+          ).join(' · ') || insight,
+        },
+      ],
+      hdSection: romanticFramework.hdSection,
+      multiSystemSection: romanticFramework.multiSystemSection,
+    }
+  } else {
+    return {
+      karmaSectionData: {
+        headerLabel: 'KARMIC INHERITANCE',
+        headerColor: 'rgba(64,204,221,.7)',
+        scores: [
+          { label: 'Karmic Ties',         pct: pct('karmic',     70), gradient: 'linear-gradient(90deg,#aabb88,#ccddaa)' },
+          { label: 'Emotional Bond',      pct: pct('emotional',  68), gradient: 'linear-gradient(90deg,#8899cc,#aabbee)' },
+          { label: 'Healing Potential',   pct: pct('healing',    62), gradient: 'linear-gradient(90deg,#e09040,#f0b060)' },
+          { label: 'Depth of Connection', pct: pct('depth',      60), gradient: 'linear-gradient(90deg,#60b030,#88dd44)' },
+          { label: 'Core Identity',       pct: pct('core',       65), gradient: 'linear-gradient(90deg,#1a8899,#40ccdd)' },
+          { label: 'Intensity',           pct: pct('growth',     58), gradient: 'linear-gradient(90deg,#6820b0,#9050e0)' },
+        ],
+        insight,
+      },
+      genSectionData: {
+        headerLabel: 'FAMILY CONSTELLATION',
+        headerColor: 'rgba(201,168,76,.6)',
+        scores: [
+          { label: 'Inherited Strengths', pct: pct('attraction', 62), gradient: 'linear-gradient(90deg,#c9a84c,#e8c97a)' },
+          { label: 'Shadow Patterns',     pct: pct('depth',      58), gradient: 'linear-gradient(90deg,#cc2244,#ee4466)' },
+          { label: 'Healing Potential',   pct: pct('healing',    65), gradient: 'linear-gradient(90deg,#60b030,#88dd44)' },
+          { label: 'Ancestral Gifts',     pct: pct('karmic',     68), gradient: 'linear-gradient(90deg,#8844ff,#bb66ff)' },
+        ],
+        insight: challenging.length > 0
+          ? `Growth edge: ${challenging[0].label} (${challenging[0].name}, ${challenging[0].orb}° orb) — the key transformational axis for ${aName} and ${bName}.`
+          : insight,
+      },
+    }
+  }
+}
+
 export function getSynastryFramework(relA, relB) {
   const romantic = isRomantic(relA) || isRomantic(relB)
   return romantic ? romanticFramework : familyFramework

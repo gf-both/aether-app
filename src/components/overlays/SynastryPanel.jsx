@@ -1,6 +1,8 @@
+import { useMemo } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { REL_CONFIG } from '../../data/primaryProfile'
-import { isRomantic, romanticFramework, familyFramework } from '../../data/synastryFrameworks'
+import { isRomantic, romanticFramework, familyFramework, computeSynastryFramework } from '../../data/synastryFrameworks'
+import { getSynastryReport, getBirthParams } from '../../engines/synastryEngine'
 import SynastryWheel from '../canvas/SynastryWheel'
 import ScoreRow from '../ui/ScoreRow'
 
@@ -65,14 +67,16 @@ function CompositeGrid({ items }) {
   )
 }
 
-function RomanticContent({ a, b, aName, bName }) {
-  const fw = romanticFramework
+function RomanticContent({ a, b, aName, bName, report }) {
+  // Use computed framework if report available, fall back to static
+  const computed = report ? computeSynastryFramework(report, true) : null
+  const fw = computed || romanticFramework
   return (
     <>
       {/* Composite Wheel - spans 2 rows */}
       <div className="syn-card" style={{ gridColumn: 1, gridRow: '1/3' }}>
         <div className="syn-ch"><span className="syn-ct">Composite Chart · Midpoint Wheel</span><span>💕</span></div>
-        <div className="syn-cb"><SynastryWheel mode="romantic" nameA={aName} nameB={bName} /></div>
+        <div className="syn-cb"><SynastryWheel mode="romantic" nameA={aName} nameB={bName} chartA={report?.chartA} chartB={report?.chartB} aspects={report?.aspects} /></div>
       </div>
 
       {/* Venus-Mars */}
@@ -128,12 +132,21 @@ function RomanticContent({ a, b, aName, bName }) {
   )
 }
 
-function FamilyContent({ a, b, aName, bName }) {
+function FamilyContent({ a, b, aName, bName, report }) {
   const fw = familyFramework
   const rel = b.rel || 'other'
   const isParentRel = rel === 'father' || rel === 'mother'
-  const karma = fw.getKarmaSection(isParentRel, aName, bName, b.sign)
-  const gen = fw.getGenerationalSection(isParentRel, aName, bName, b.sign)
+
+  // Compute framework from real data if available
+  const computed = report ? computeSynastryFramework(report, false) : null
+
+  const karma = computed
+    ? { ...fw.getKarmaSection(isParentRel, aName, bName, b.sign), ...computed.karmaSectionData }
+    : fw.getKarmaSection(isParentRel, aName, bName, b.sign)
+  const gen = computed
+    ? { ...fw.getGenerationalSection(isParentRel, aName, bName, b.sign), ...computed.genSectionData }
+    : fw.getGenerationalSection(isParentRel, aName, bName, b.sign)
+
   const hdItems = fw.hdSection.items(isParentRel, aName, bName)
   const msScores = fw.multiSystemSection.getScores(isParentRel)
   const msInsight = fw.multiSystemSection.getInsight(isParentRel, aName, bName)
@@ -142,7 +155,7 @@ function FamilyContent({ a, b, aName, bName }) {
     <>
       <div className="syn-card" style={{ gridColumn: 1, gridRow: '1/3' }}>
         <div className="syn-ch"><span className="syn-ct">Family Composite Chart · Karmic Axis</span><span>🧬</span></div>
-        <div className="syn-cb"><SynastryWheel mode="family" nameA={aName} nameB={bName} /></div>
+        <div className="syn-cb"><SynastryWheel mode="family" nameA={aName} nameB={bName} chartA={report?.chartA} chartB={report?.chartB} aspects={report?.aspects} /></div>
       </div>
 
       <div className="syn-card" style={{ gridColumn: 2, gridRow: 1 }}>
@@ -224,6 +237,20 @@ export function SynastryInner({ onClose }) {
   const hasSelection = b && synSelA !== synSelB
   const romantic = hasSelection && (isRomantic(b.rel) || isRomantic(a.rel || ''))
 
+  // Compute real synastry report when two people are selected
+  const synastryReport = useMemo(() => {
+    if (!hasSelection) return null
+    try {
+      const paramsA = getBirthParams(a)
+      const paramsB = getBirthParams(b)
+      if (!paramsA || !paramsB) return null
+      return getSynastryReport(paramsA, paramsB)
+    } catch (err) {
+      console.warn('[SynastryPanel] Engine error:', err)
+      return null
+    }
+  }, [hasSelection, a, b])
+
   return (
     <div className="synastry-panel">
       <div className="syn-header">
@@ -259,6 +286,7 @@ export function SynastryInner({ onClose }) {
             style={!hasSelection ? { opacity: .4 } : {}}
           >
             {hasSelection ? (romantic ? '\u2640 Romantic Synastry' : '\u25C8 Family Synastry') : 'No Selection'}
+            {synastryReport && <span style={{ marginLeft: 8, opacity: 0.85 }}>{synastryReport.overall}%</span>}
           </div>
           <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: '7.5px', color: 'var(--text3)' }}>
             {hasSelection
@@ -274,8 +302,8 @@ export function SynastryInner({ onClose }) {
       <div className="syn-body">
         {hasSelection ? (
           romantic
-            ? <RomanticContent a={a} b={b} aName={aName} bName={bName} />
-            : <FamilyContent a={a} b={b} aName={aName} bName={bName} />
+            ? <RomanticContent a={a} b={b} aName={aName} bName={bName} report={synastryReport} />
+            : <FamilyContent a={a} b={b} aName={aName} bName={bName} report={synastryReport} />
         ) : (
           <div style={{ gridColumn: '1/4', gridRow: '1/3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, opacity: .35 }}>
             <div style={{ fontSize: 48 }}>{'\u2295'}</div>
