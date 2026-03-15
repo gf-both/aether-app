@@ -1,4 +1,7 @@
-import { CHINESE_ANIMALS, FIVE_ELEMENTS, CHINESE_PROFILE } from '../../data/chineseData'
+import { useMemo } from 'react'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { CHINESE_ANIMALS, FIVE_ELEMENTS, CHINESE_PROFILE as STATIC_PROFILE } from '../../data/chineseData'
+import { getChineseProfileFromDob } from '../../engines/chineseEngine'
 
 /* ---- shared styles (matching app conventions) ---- */
 const S = {
@@ -50,10 +53,82 @@ const S = {
 
 const ELEM_COLORS = { Wood: '#4caf50', Fire: '#e53935', Earth: '#d4a017', Metal: '#cfd8dc', Water: '#1e88e5' }
 
-const P = CHINESE_PROFILE
-const animalData = CHINESE_ANIMALS.find(a => a.name === P.animal)
-
 export default function ChineseDetail() {
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+
+  const P = useMemo(() => {
+    try {
+      const dob = primaryProfile?.dob || '1981-01-23'
+      const tob = primaryProfile?.tob || '22:10'
+      const [hour, minute] = (tob || '12:00').split(':').map(Number)
+      const computed = getChineseProfileFromDob(dob, { hour: isNaN(hour) ? 12 : hour, minute: isNaN(minute) ? 0 : minute })
+
+      // Find static animal data for the computed year animal (for compat, lucky, etc.)
+      const staticAnimalEntry = CHINESE_ANIMALS.find(a => a.name === computed.animal)
+
+      // Build a merged profile: computed pillars + static enrichment data
+      return {
+        // From engine
+        ...computed,
+        dob: primaryProfile?.dob || '1981-01-23',
+        // Compatibility & lucky from static animal data
+        compatible:    staticAnimalEntry?.compatible   || STATIC_PROFILE.compatible,
+        incompatible:  staticAnimalEntry?.incompatible || STATIC_PROFILE.incompatible,
+        bestFriend:    staticAnimalEntry?.compatible?.[0] || STATIC_PROFILE.bestFriend,
+        conflictAnimal: staticAnimalEntry?.incompatible?.[0] || STATIC_PROFILE.conflictAnimal,
+        // Lucky attributes
+        lucky: {
+          numbers:    STATIC_PROFILE.lucky.numbers,
+          colors:     computed.luckyColors.length ? computed.luckyColors : STATIC_PROFILE.lucky.colors,
+          flowers:    STATIC_PROFILE.lucky.flowers,
+          directions: computed.luckyDirections.length ? computed.luckyDirections : STATIC_PROFILE.lucky.directions,
+          day:        STATIC_PROFILE.lucky.day,
+        },
+        // Polarity string
+        polarity: `${computed.yinYang} ${computed.element}`,
+        // Branch pinyin from BRANCHES array (engine exposes .branch already)
+        branchPinyin: computed.branch,
+        // Chinese characters
+        stemChinese:    computed.stemCn,
+        elementChinese: computed.yearPillar?.stemCn || computed.stemCn,
+        // fourPillars in the shape the template expects
+        fourPillars: {
+          year:  { stem: computed.yearPillar.stem, branch: computed.yearPillar.branch, label: computed.yearPillar.label, desc: computed.yearPillar.desc },
+          month: { stem: computed.monthPillar.stem, branch: computed.monthPillar.branch, label: computed.monthPillar.label, desc: computed.monthPillar.desc },
+          day:   { stem: computed.dayPillar.stem, branch: computed.dayPillar.branch, label: computed.dayPillar.label, desc: computed.dayPillar.desc },
+          hour:  { stem: computed.hourPillar.stem, branch: computed.hourPillar.branch, label: computed.hourPillar.label, desc: computed.hourPillar.desc },
+        },
+        // Current year influence (enrich static text if same year, else generate)
+        currentYear: (() => {
+          const cy = computed.currentYear
+          const staticCY = STATIC_PROFILE.currentYear
+          // Use static influence text if it matches the computed current year animal
+          const useStatic = staticCY && staticCY.animal === cy.animal && staticCY.year === cy.year
+          return {
+            year:         cy.year,
+            animal:       cy.animal,
+            element:      cy.element,
+            stem:         cy.stem,
+            label:        cy.label,
+            chinese:      cy.chinese_str,
+            ratingColor:  useStatic ? staticCY.ratingColor : '#e57c22',
+            rating:       useStatic ? staticCY.rating : 'Dynamic Year',
+            influence:    useStatic
+              ? staticCY.influence
+              : `The ${cy.label} year brings ${cy.element} energy into your ${computed.element} ${computed.animal} chart. The interplay of these forces shapes career, relationships, and personal growth through the year.`,
+          }
+        })(),
+      }
+    } catch (e) {
+      console.error('ChineseEngine error:', e)
+      return null
+    }
+  }, [primaryProfile?.dob, primaryProfile?.tob])
+
+  if (!P) return <div style={S.panel}>Error computing Chinese profile.</div>
+
+  const animalData = CHINESE_ANIMALS.find(a => a.name === P.animal)
+
   return (
     <div style={S.panel}>
       {/* HEADER */}

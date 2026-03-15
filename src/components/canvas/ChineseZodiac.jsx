@@ -1,11 +1,27 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { CHINESE_ANIMALS, FIVE_ELEMENTS, CHINESE_PROFILE } from '../../data/chineseData'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { CHINESE_ANIMALS, FIVE_ELEMENTS } from '../../data/chineseData'
+import { getChineseProfileFromDob } from '../../engines/chineseEngine'
 
 export default function ChineseZodiac() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const hovRef = useRef(-1)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+
+  const CHINESE_PROFILE = useMemo(() => {
+    try {
+      const dob = primaryProfile?.dob || '1981-01-23'
+      const tob = primaryProfile?.tob || '22:10'
+      const [hour, minute] = (tob || '12:00').split(':').map(Number)
+      return getChineseProfileFromDob(dob, { hour: isNaN(hour) ? 12 : hour, minute: isNaN(minute) ? 0 : minute })
+    } catch (e) {
+      console.error('ChineseEngine error:', e)
+      return { animal: 'Monkey', element: 'Metal', yinYang: 'Yang', stem: 'Gēng', stemCn: '庚', branchCn: '申',
+               currentYear: { label: 'Fire Horse', chinese_str: '丙午' } }
+    }
+  }, [primaryProfile?.dob, primaryProfile?.tob])
 
   useCanvasResize(canvasRef)
 
@@ -14,7 +30,7 @@ export default function ChineseZodiac() {
     if (!canvas) return
     let pulse = 0
 
-    const activeAnimal = CHINESE_PROFILE.animal // 'Rooster'
+    const activeAnimal = CHINESE_PROFILE.animal
     const activeIdx = CHINESE_ANIMALS.findIndex(a => a.name === activeAnimal)
 
     const handleMouseMove = (e) => {
@@ -279,19 +295,22 @@ export default function ChineseZodiac() {
       ctx.fillStyle = `rgba(201,168,76,${.5 + .15 * Math.sin(pulse * .8)})`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.fillText('\u9149', cx, cy + yyR + charCenterSize * .9) // You (Rooster branch)
+      ctx.fillText(CHINESE_PROFILE.branchCn || '申', cx, cy + yyR + charCenterSize * .9)
 
-      // "Metal Rooster" label
+      // "Metal Monkey" (or dynamic label)
       const labelCSize = Math.max(7, yyR * .36)
       ctx.font = `${labelCSize}px 'Cinzel',serif`
       ctx.fillStyle = 'rgba(201,168,76,.65)'
-      ctx.fillText('Metal Rooster', cx, cy + yyR + charCenterSize * .9 + labelCSize * 1.6)
+      ctx.fillText(CHINESE_PROFILE.yearPillar ? CHINESE_PROFILE.yearPillar.label : `${CHINESE_PROFILE.element} ${CHINESE_PROFILE.animal}`, cx, cy + yyR + charCenterSize * .9 + labelCSize * 1.6)
 
-      // Stem label
+      // Stem + branch label
       const stemSize = Math.max(6, yyR * .28)
       ctx.font = `${stemSize}px 'Inconsolata',monospace`
       ctx.fillStyle = 'rgba(170,180,200,.35)'
-      ctx.fillText('\u8F9B\u9149  Xin You', cx, cy + yyR + charCenterSize * .9 + labelCSize * 1.6 + stemSize * 1.8)
+      const stemLabel = CHINESE_PROFILE.stemCn && CHINESE_PROFILE.branchCn
+        ? `${CHINESE_PROFILE.stemCn}${CHINESE_PROFILE.branchCn}  ${CHINESE_PROFILE.stem} ${CHINESE_PROFILE.branch}`
+        : '庚申  Gēng Shēn'
+      ctx.fillText(stemLabel, cx, cy + yyR + charCenterSize * .9 + labelCSize * 1.6 + stemSize * 1.8)
 
       /* ---- Outer ring border ---- */
       ctx.beginPath()
