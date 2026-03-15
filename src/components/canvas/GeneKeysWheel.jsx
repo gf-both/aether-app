@@ -2,9 +2,14 @@ import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { SPHERES } from '../../data/geneKeysData'
 
-export default function GeneKeysWheel() {
+// GeneKeysWheel uses SPHERES derived from the engine (via geneKeysData.js).
+// To render a custom profile, pass a `spheres` prop (array of sphere objects).
+// Default falls back to the statically-computed default profile (Gaston).
+
+export default function GeneKeysWheel({ spheres: spheresProp }) {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
+  const activeSpheres = spheresProp || SPHERES
 
   useCanvasResize(canvasRef)
 
@@ -76,8 +81,8 @@ export default function GeneKeysWheel() {
       })
 
       // Pathways between spheres
-      const outerSpheres = SPHERES.filter(s => !s.center)
-      const centerSphere = SPHERES.find(s => s.center)
+      const outerSpheres = activeSpheres.filter(s => !s.center)
+      const centerSphere = activeSpheres.find(s => s.center)
 
       // Connect all outer spheres to center
       if (centerSphere) {
@@ -105,7 +110,7 @@ export default function GeneKeysWheel() {
 
       // Draw spheres
       const baseSr = R * .13
-      SPHERES.forEach((s, i) => {
+      activeSpheres.forEach((s, i) => {
         const x = s.xf * W, y = s.yf * H
         const sr = s.center ? baseSr * 1.1 : baseSr
         const glow = .3 + .12 * Math.sin(pulse * 1.5 + i * 1.3)
