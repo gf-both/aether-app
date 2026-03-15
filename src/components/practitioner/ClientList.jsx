@@ -150,7 +150,7 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export default function ClientList({ onSelectClient }) {
+export default function ClientList({ onSelectClient, onViewDeepProfile }) {
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
 
@@ -245,7 +245,7 @@ export default function ClientList({ onSelectClient }) {
                 </div>
               </div>
 
-              {/* Status + Arrow */}
+              {/* Status + Actions */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <div style={{ ...s.statusDot, background: STATUS_COLORS[client.status] || 'var(--text3)' }} />
@@ -253,6 +253,29 @@ export default function ClientList({ onSelectClient }) {
                     {client.status}
                   </span>
                 </div>
+                {onViewDeepProfile && (
+                  <div
+                    title="Deep Profile"
+                    style={{
+                      ...s.arrowBtn,
+                      background: 'rgba(144,80,224,.1)',
+                      borderColor: 'rgba(144,80,224,.25)',
+                      color: 'rgba(144,80,224,.8)',
+                      fontSize: '13px',
+                    }}
+                    onClick={e => { e.stopPropagation(); onViewDeepProfile(client) }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = 'rgba(144,80,224,.25)'
+                      e.currentTarget.style.borderColor = 'rgba(144,80,224,.5)'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = 'rgba(144,80,224,.1)'
+                      e.currentTarget.style.borderColor = 'rgba(144,80,224,.25)'
+                    }}
+                  >
+                    🔮
+                  </div>
+                )}
                 <div
                   style={s.arrowBtn}
                   onMouseEnter={e => {
