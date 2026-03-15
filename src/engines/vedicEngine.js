@@ -1,4 +1,4 @@
-import Astronomy from 'astronomy-engine';
+import * as Astronomy from 'astronomy-engine';
 
 // Lahiri Ayanamsa (most common in India): ~23.85° in 2000, increases ~50.3"/year
 function getLahiriAyanamsa(date) {
