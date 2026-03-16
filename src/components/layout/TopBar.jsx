@@ -299,6 +299,22 @@ function ProfileSwitcher() {
           overflow: 'hidden', minWidth: 240, maxHeight: 320, overflowY: 'auto',
           boxShadow: 'var(--dropdown-shadow)',
         }}>
+          {/* Reset to primary */}
+          {activeViewProfile && (
+            <div
+              onClick={() => { setActiveViewProfile(null); localStorage.removeItem('above-inside-store'); window.location.reload(); }}
+              style={{
+                padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid var(--panel-border)',
+                background: 'rgba(201,168,76,0.08)', display: 'flex', alignItems: 'center', gap: 8,
+              }}
+            >
+              <span style={{ fontSize: 14 }}>↩</span>
+              <div>
+                <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", color: 'var(--gold)', letterSpacing: '.04em' }}>Return to My Profile</div>
+                <div style={{ fontSize: 9, color: 'var(--text2)' }}>Clear cache & restore Gaston Frydlewski</div>
+              </div>
+            </div>
+          )}
           {allProfiles.map((p, i) => {
             const isActive = p.name === profile.name
             return (

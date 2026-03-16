@@ -56,6 +56,12 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const npNotesRef = useRef(null)
   const npGenderRef = useRef(null)
 
+  function handleResetProfile() {
+    // Clear all localStorage and reload with defaults
+    localStorage.removeItem('above-inside-store')
+    window.location.reload()
+  }
+
   function handleSavePrimary() {
     setPrimaryProfile({
       name: nameRef.current?.value || profile.name,
@@ -244,6 +250,20 @@ export default function ProfilePanel({ open, onClose, embedded }) {
               style={saveFlash ? { background: 'rgba(96,176,48,.2)', borderColor: 'rgba(96,176,48,.5)', color: 'var(--lime2)' } : {}}
             >
               {saveFlash ? '\u2713 Saved' : 'Save Primary Profile'}
+            </div>
+            <div
+              className="btn"
+              onClick={() => { localStorage.removeItem('above-inside-store'); window.location.reload(); }}
+              style={{
+                marginTop: 8, width: '100%', padding: '8px 0', textAlign: 'center',
+                background: 'transparent', border: '1px solid rgba(220,60,60,0.3)',
+                borderRadius: 8, color: 'rgba(220,80,80,0.7)',
+                fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.1em',
+                cursor: 'pointer',
+              }}
+              title="Clear cached data and reload defaults"
+            >
+              ↺ Reset Cache & Restore Defaults
             </div>
           </div>
         </div>
