@@ -214,14 +214,6 @@ const ROWS = [
     cols: '1.5fr 1fr 1.5fr 1fr',
   },
   {
-    label: 'META SYSTEMS',
-    sub: 'Consciousness Maps \u00B7 Gene Keys \u00B7 Cross-Framework Intelligence',
-    color: 'var(--aqua2)',
-    border: 'rgba(64,204,221,.3)',
-    widgets: ['gk', 'integral', 'pat'],
-    cols: '1fr 1.3fr 1fr',
-  },
-  {
     label: 'ARCHETYPAL SYSTEMS',
     sub: 'Calendars \u00B7 Animals \u00B7 Ancient Wisdom \u00B7 Egyptian',
     color: 'var(--violet2)',
@@ -230,8 +222,16 @@ const ROWS = [
     cols: '1fr 1fr 1fr',
   },
   {
-    label: 'SYMBOLIC LANGUAGE',
-    sub: 'Numbers \u00B7 Letters \u00B7 Sacred Vibration',
+    label: 'META SYSTEMS',
+    sub: 'Consciousness Maps \u00B7 Gene Keys \u00B7 Cross-Framework Intelligence',
+    color: 'var(--aqua2)',
+    border: 'rgba(64,204,221,.3)',
+    widgets: ['gk', 'integral', 'pat'],
+    cols: '1fr 1.3fr 1fr',
+  },
+  {
+    label: 'SACRED MATHEMATICS',
+    sub: 'Numerology \u00B7 Gematria \u00B7 Number Systems \u00B7 Vibrational Codes',
     color: 'rgba(240,160,60,1)',
     border: 'rgba(240,160,60,.3)',
     widgets: ['num', 'gem'],
