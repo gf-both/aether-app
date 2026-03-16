@@ -1273,9 +1273,11 @@ export default function Dashboard() {
   const setOracleOpen = useAboveInsideStore((s) => s.setOracleOpen)
   const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const layoutMode = useAboveInsideStore((s) => s.layoutMode)
+  const sidebarCollapsed = useAboveInsideStore((s) => s.sidebarCollapsed)
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
   const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
   const profile = activeViewProfile || primaryProfile
+  const sbWidth = sidebarCollapsed ? '48px' : '200px'
 
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768)
 
@@ -1317,7 +1319,7 @@ export default function Dashboard() {
     const title = DETAIL_TITLES[activeDetail]
     return (
       <div className="dash-root" style={{
-        display: 'grid', gridTemplateColumns: '52px 1fr', gridTemplateRows: '46px 1fr 42px',
+        display: 'grid', gridTemplateColumns: `${sbWidth} 1fr`, gridTemplateRows: '46px 1fr 42px',
         gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
       }}>
         <Starfield />
@@ -1352,7 +1354,7 @@ export default function Dashboard() {
   if (isGrid) {
     return (
       <div className="dash-root" style={{
-        display: 'grid', gridTemplateColumns: '52px 1fr',
+        display: 'grid', gridTemplateColumns: `${sbWidth} 1fr`,
         gridTemplateRows: '46px 1fr 42px', gap: '7px', padding: '7px 7px 7px 0',
         width: '100%', height: '100vh', position: 'relative', zIndex: 1,
       }}>
@@ -1435,7 +1437,7 @@ export default function Dashboard() {
   // Bento, Focus, Magazine, Cosmic
   return (
     <div className="dash-root" style={{
-      display: 'grid', gridTemplateColumns: '52px 1fr', gridTemplateRows: '46px 1fr 42px',
+      display: 'grid', gridTemplateColumns: `${sbWidth} 1fr`, gridTemplateRows: '46px 1fr 42px',
       gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
     }}>
       <Starfield />

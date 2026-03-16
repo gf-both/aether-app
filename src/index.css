@@ -80,55 +80,170 @@ html.theme-manuscript-day { --accent-color: #8b6820; --accent-color2: #c9a84c; -
    ════════════════════════════════════════════ */
 
 /* ── Sidebar ── */
+:root {
+  --sb-width: 200px;
+}
 .sb {
   grid-column: 1;
   grid-row: 1 / -1;
+  width: var(--sb-width, 200px);
   background-color: var(--sidebar);
   border-right: 1px solid var(--sidebar-border);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 8px 0;
-  gap: 2px;
+  align-items: stretch;
+  padding: 0;
   position: relative;
   z-index: 100;
+  transition: width 0.2s ease;
+  overflow: hidden;
 }
+.sb-expanded { width: 200px; }
+.sb-collapsed { width: 48px; }
+
+/* Sidebar header (logo + brand + toggle) */
+.sb-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 8px 8px;
+  gap: 6px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.sb-brand {
+  flex: 1;
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sb-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  padding: 0;
+}
+.sb-toggle:hover { background: var(--accent); color: var(--accent-foreground); border-color: var(--ring); }
+
+/* Scrollable nav area */
+.sb-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.sb-nav::-webkit-scrollbar { width: 3px; }
+.sb-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* Section label row */
+.sb-section-label {
+  display: flex;
+  align-items: center;
+  padding: 8px 4px 2px;
+  min-height: 20px;
+  flex-shrink: 0;
+}
+.sb-section-label span {
+  font-size: 9px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+.sb-section-line {
+  width: 24px;
+  height: 1px;
+  background: var(--border);
+  margin: 0 auto;
+}
+
+/* Nav items */
 .logo {
   width: 24px;
   height: 24px;
-  margin-bottom: 6px;
   flex-shrink: 0;
   cursor: pointer;
 }
 .ni {
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
-  justify-content: center;
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s;
   color: var(--muted-foreground);
-  font-size: 14px;
   position: relative;
+  flex-shrink: 0;
+}
+.ni-expanded {
+  flex-direction: row;
+  gap: 8px;
+  padding: 6px 8px;
+  width: 100%;
+}
+.ni-collapsed {
+  width: 36px;
+  height: 32px;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 0;
+}
+.ni-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  width: 16px;
+  text-align: center;
+  line-height: 1;
+}
+.ni-label {
+  font-size: 12px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
 }
 .ni:hover { background-color: var(--accent); color: var(--accent-foreground); }
 .ni.on { background-color: var(--accent); color: var(--accent-foreground); }
 .ni.on::after {
   content: '';
   position: absolute;
-  right: -1px;
+  left: -6px;
   top: 50%;
   transform: translateY(-50%);
   width: 2px;
-  height: 12px;
-  background: var(--accent-color);
+  height: 14px;
+  background: var(--accent-color, var(--ring));
   border-radius: 1px;
 }
+.ni-collapsed.on::after {
+  left: -1px;
+}
+
+/* Tooltip (collapsed mode only) */
 .ntip {
   position: absolute;
-  left: 38px;
+  left: 44px;
   background: var(--popover);
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -143,7 +258,25 @@ html.theme-manuscript-day { --accent-color: #8b6820; --accent-color2: #c9a84c; -
   font-family: ui-sans-serif, system-ui, sans-serif;
 }
 .ni:hover .ntip { opacity: 1; }
+
+/* Bottom profile/settings area */
+.sb-bottom {
+  padding: 6px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+/* Legacy sep (keep for backward compat) */
 .sep { width: 18px; height: 1px; background: var(--border); margin: 2px 0; flex-shrink: 0; }
+
+/* Hide hamburger on desktop since sidebar is always visible */
+.hamburger-menu { display: none !important; }
+@media (max-width: 768px) {
+  .hamburger-menu { display: block !important; }
+}
 
 /* ── Top bar ── */
 .tb {

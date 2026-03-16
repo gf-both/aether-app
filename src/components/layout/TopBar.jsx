@@ -76,7 +76,7 @@ function HamburgerMenu() {
   }
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
+    <div ref={ref} style={{ position: 'relative' }} className="hamburger-menu">
       <div
         onClick={() => setOpen(!open)}
         style={{
