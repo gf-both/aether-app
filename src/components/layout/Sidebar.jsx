@@ -143,7 +143,8 @@ export default function Sidebar() {
           {collapsed && <div className="ntip">Profiles</div>}
         </div>
         <div
-          className={`ni${collapsed ? ' ni-collapsed' : ' ni-expanded'}`}
+          className={`ni${(activeDetail === 'settings') ? ' on' : ''}${collapsed ? ' ni-collapsed' : ' ni-expanded'}`}
+          onClick={() => { setActiveDetail(activeDetail === 'settings' ? null : 'settings'); setActiveNav(activeDetail === 'settings' ? 'dashboard' : 'settings') }}
           title={collapsed ? 'Settings' : undefined}
         >
           <span className="ni-icon">⚙</span>
