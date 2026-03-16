@@ -246,6 +246,16 @@ export const useAboveInsideStore = create(
           ],
         })),
     }),
-    { name: 'above-inside-store' }
+    { 
+      name: 'above-inside-store',
+      version: 2,
+      migrate: (persistedState, version) => {
+        if (version < 2) {
+          // Reset primaryProfile to fix stale birth data / wrong signs
+          return { ...persistedState, primaryProfile: undefined }
+        }
+        return persistedState
+      }
+    }
   )
 )
