@@ -101,10 +101,9 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
       const planetKeys = Object.keys(ch.planets)
       const ascLon = ch.angles.asc.lon
       // Standard Western chart: ASC at left (9 o'clock), zodiac counter-clockwise, MC at top
-      const rot = (ascLon + 90 + 360) % 360
       planetKeys.forEach((key, i) => {
         const p = ch.planets[key]
-        const a = (rot - p.lon + 90) * Math.PI / 180
+        const a = (ascLon - p.lon + 180) * Math.PI / 180
         const rp = R * 0.685
         if (Math.hypot(mx - cx - rp * Math.cos(a), my - cy - rp * Math.sin(a)) < 16) hovRef.current = i
       })
@@ -137,9 +136,10 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
       const ascLon = ch.angles.asc.lon
       // Standard Western chart: ASC at left, zodiac counter-clockwise, MC at top
       // Formula: canvas_angle = (ascLon - lon + 180) = (rot + 90 - lon) where rot = ascLon + 90
-      const rot = (ascLon + 90 + 360) % 360
-      // Helper: ecliptic longitude → canvas angle in radians
-      const l2a = (lon) => (rot - lon + 90) * Math.PI / 180
+      // Standard Western chart: ASC at left (180°), zodiac counter-clockwise
+      // l2a maps ecliptic longitude to canvas angle
+      // Verified: l2a(ASC) = 180° (left), l2a(MC) ≈ 270° (top), l2a(DC) = 0° (right)
+      const l2a = (lon) => (ascLon - lon + 180) * Math.PI / 180
 
       const hov = hovRef.current
       const planetKeys = Object.keys(ch.planets)
