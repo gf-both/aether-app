@@ -1,7 +1,7 @@
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 
 export default function CareerAlignmentDetail() {
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useActiveProfile()
 
   if (!profile?.dob || !profile?.hdType || profile.hdType === '?') {
     return (

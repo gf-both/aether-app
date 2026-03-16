@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { ENNEAGRAM_TYPES, ENNEAGRAM_PROFILE, ENNEAGRAM_QUIZ, INSTINCTUAL_VARIANTS, TRIAD_COLORS } from '../../data/enneagramData'
 import EnneagramSymbol from '../canvas/EnneagramSymbol'
 import EnneagramQuizOverlay from '../overlays/EnneagramQuiz'
@@ -189,7 +190,7 @@ function EnneagramQuiz() {
 }
 
 export default function EnneagramDetail() {
-  const activeProfile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
+  const activeProfile = useActiveProfile()
   const storeType = activeProfile?.enneagramType || null
   const storeWing = activeProfile?.enneagramWing || null
   const storeInstinct = activeProfile?.enneagramInstinct || useAboveInsideStore((s) => s.enneagramInstinct)

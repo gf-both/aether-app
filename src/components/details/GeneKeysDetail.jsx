@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { GK_LIST, computeGeneKeysData } from '../../data/geneKeysData'
 import GeneKeysWheel from '../canvas/GeneKeysWheel'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 // computeGeneKeysData can be called with custom birth params to derive a live profile
 
 const GK_DETAIL_STATIC = [
@@ -112,7 +112,7 @@ function SpectrumBar({ shadow, gift, siddhi, color }) {
 }
 
 export default function GeneKeysDetail() {
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useActiveProfile()
 
   const profileData = useMemo(() => {
     if (!profile?.dob) return null

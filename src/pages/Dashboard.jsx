@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useActiveProfile } from '../hooks/useActiveProfile'
 import { DEFAULT_PRIMARY_PROFILE } from '../data/primaryProfile'
 import Sidebar from '../components/layout/Sidebar'
 import TopBar from '../components/layout/TopBar'
@@ -378,7 +379,7 @@ const DETAIL_TITLES = {
 function NatalWidget() {
   const [showAspects, setShowAspects] = useState(true)
   const [showHouses, setShowHouses] = useState(true)
-  const _nwProfile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const _nwProfile = useActiveProfile()
   return (
     <>
       <div className="ch">
@@ -413,9 +414,7 @@ function NatalWidget() {
 }
 
 function TarotWidget() {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
   let result
   if (profile?.dob) {
     const [y, m, d] = profile.dob.split('-').map(Number)
@@ -453,9 +452,7 @@ function TarotWidget() {
 }
 
 function CelticWidget() {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
   let tree
   if (profile?.dob) {
     const [, m, d] = profile.dob.split('-').map(Number)
@@ -498,9 +495,7 @@ function CelticWidget() {
 }
 
 function WidgetContent({ widgetId }) {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
   // quiz-based types: prefer per-profile values, fall back to global store
   const globalDoshaType = useAboveInsideStore((s) => s.doshaType)
   const globalArchetypeType = useAboveInsideStore((s) => s.archetypeType)
@@ -970,9 +965,7 @@ function CategoryBadge({ widgetId }) {
 
 /* ── Demo Mode Banner ── */
 function DemoBanner() {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
   const [dismissed, setDismissed] = useState(false)
@@ -1346,9 +1339,7 @@ export default function Dashboard() {
   const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const layoutMode = useAboveInsideStore((s) => s.layoutMode)
   const sidebarCollapsed = useAboveInsideStore((s) => s.sidebarCollapsed)
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
   const sbWidth = sidebarCollapsed ? '48px' : '200px'
 
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768)
@@ -1608,7 +1599,7 @@ function CosmicIntegralWidget() {
   </>
 }
 function CosmicNatalWidget() {
-  const _cnwProfile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const _cnwProfile = useActiveProfile()
   return <>
     <div className="ch"><span className="ct">Natal{_cnwProfile?.sign ? ` · ${_cnwProfile.sign} Sun` : ''}{_cnwProfile?.asc ? ` · ${_cnwProfile.asc} ASC` : ''}</span></div>
     <div className="cb" style={{ minHeight: 260 }}><NatalWheel showAspects showHouses /></div>
@@ -1643,9 +1634,7 @@ function CosmicKabWidget() {
   </>
 }
 function CosmicNumWidget() {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
   const np = profile?.dob && profile?.name
     ? getNumerologyProfileFromDob(profile.dob, profile.name.toUpperCase(), {})
     : null

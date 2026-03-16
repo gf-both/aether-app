@@ -264,7 +264,7 @@ function TimelineEvent({ ev, isPast, isNear }) {
 // ─── Main component ────────────────────────────────────────────────────────────
 
 export default function TimelineDetail() {
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useActiveProfile()
 
   const result = useMemo(() => {
     try {
