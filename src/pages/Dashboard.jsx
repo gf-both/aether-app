@@ -58,6 +58,7 @@ import AIAgentsPage from './AIAgentsPage'
 import CompanyPage from './CompanyPage'
 import GolemPage from './GolemPage'
 import DatingPage from './DatingPage'
+import SettingsPage from './SettingsPage'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
 import { getBiorhythms } from '../engines/biorhythmEngine'
@@ -330,6 +331,7 @@ const DETAIL_COMPONENTS = {
   company: CompanyPage,
   golem: GolemPage,
   dating: DatingPage,
+  settings: SettingsPage,
 }
 
 const DETAIL_TITLES = {
@@ -366,9 +368,10 @@ const DETAIL_TITLES = {
   practitioner: 'Practitioner Portal \u2014 Practice Management',
   client: 'Client Portal \u2014 Your Journey',
   aether: 'AI Agents \u2014 AETHER Team',
-  company: 'Above + Inside Co. \u2014 Company Dashboard',
+  company: 'AETHER \u2014 Company Dashboard',
   golem: 'Golem \u2014 Talk to Your Clone',
   dating: 'Dating \u2014 Golem Matching',
+  settings: 'Settings',
 }
 
 function NatalWidget() {

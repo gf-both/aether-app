@@ -1,4 +1,4 @@
-// WhatsApp messaging integration for ABOVE + INSIDE
+// WhatsApp messaging integration for AETHER
 // Requires:
 //   - WhatsApp Business API (cloud-hosted by Meta) or Twilio WhatsApp API
 //   - Approved message templates for transactional messages

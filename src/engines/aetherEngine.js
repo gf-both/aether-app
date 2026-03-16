@@ -308,7 +308,7 @@ ${synastryBlock}
 
 ---
 *AETHER v${p.version} — Agent Emergent Through Holistic Esoteric Resonance*
-*Part of the Above + Inside ecosystem*
+*Part of the AETHER ecosystem*
 `
 }
 

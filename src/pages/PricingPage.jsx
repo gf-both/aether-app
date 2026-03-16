@@ -305,7 +305,7 @@ export default function PricingPage() {
         <h1 style={S.title}>Choose Your Path</h1>
         <p style={S.subtitle}>
           From personal exploration to professional practice, unlock the tools
-          that illuminate your journey above and the wisdom that transforms within.
+          that illuminates your journey, transforms from within.
         </p>
       </div>
 

@@ -225,39 +225,53 @@ function RavechartTab({ chart }) {
 
       {/* ── BOTTOM: Core profile info ── */}
       <div style={{ padding: '0 16px 0 16px', borderTop: '1px solid var(--border)', paddingTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {/* Type badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80 }}>Personality Type</span>
-          <span style={{ ...S.badge(tc.bg, tc.border, tc.color), fontSize: 11, padding: '4px 16px', letterSpacing: '.12em' }}>{hd.type}</span>
-        </div>
-
-        {/* Profile, Authority, Definition, Strategy */}
-        {[
-          ['Profile',    hd.profile ? `${hd.profile} — ${hd.profileNames || ''}` : '—'],
-          ['Authority',  hd.authority || '—'],
-          ['Definition', hd.definition || '—'],
-          ['Strategy',   hd.strategy || '—'],
-          ['Not-Self',   hd.notSelf || '—'],
-          ['Signature',  hd.signature || '—'],
-        ].map(([label, val]) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80, paddingTop: 2 }}>{label}</span>
-            <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--foreground)', lineHeight: 1.4 }}>{val}</span>
+        {!chart ? (
+          <div style={{ padding: '16px 0', textAlign: 'center' }}>
+            <div style={{ fontSize: 22, marginBottom: 8 }}>🔮</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 6 }}>
+              Add Birth Data
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
+              Enter your birth date, time &amp; location in your profile to unlock your full Human Design chart — Type, Authority, Profile, Definition and more.
+            </div>
           </div>
-        ))}
+        ) : (
+          <>
+            {/* Type badge */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80 }}>Personality Type</span>
+              <span style={{ ...S.badge(tc.bg, tc.border, tc.color), fontSize: 11, padding: '4px 16px', letterSpacing: '.12em' }}>{hd.type}</span>
+            </div>
 
-        {hd.cross && (
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80, paddingTop: 2 }}>Cross</span>
-            <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 11, color: 'var(--muted-foreground)', lineHeight: 1.4 }}>{hd.cross}</span>
-          </div>
-        )}
+            {/* Profile, Authority, Definition, Strategy */}
+            {[
+              ['Profile',    hd.profile ? `${hd.profile} — ${hd.profileNames || ''}` : '—'],
+              ['Authority',  hd.authority || '—'],
+              ['Definition', hd.definition || '—'],
+              ['Strategy',   hd.strategy || '—'],
+              ['Not-Self',   hd.notSelf || '—'],
+              ['Signature',  hd.signature || '—'],
+            ].map(([label, val]) => (
+              <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80, paddingTop: 2 }}>{label}</span>
+                <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--foreground)', lineHeight: 1.4 }}>{val}</span>
+              </div>
+            ))}
 
-        {chart?.designDate && (
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80, paddingTop: 2 }}>Design Date</span>
-            <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 11, color: DESIGN_COLOR, lineHeight: 1.4 }}>{chart.designDate}</span>
-          </div>
+            {hd.cross && (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80, paddingTop: 2 }}>Cross</span>
+                <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 11, color: 'var(--muted-foreground)', lineHeight: 1.4 }}>{hd.cross}</span>
+              </div>
+            )}
+
+            {chart?.designDate && (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80, paddingTop: 2 }}>Design Date</span>
+                <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 11, color: DESIGN_COLOR, lineHeight: 1.4 }}>{chart.designDate}</span>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

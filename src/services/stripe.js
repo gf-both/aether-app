@@ -1,4 +1,4 @@
-// Stripe integration for ABOVE + INSIDE
+// Stripe integration for AETHER
 // Requires VITE_STRIPE_PUBLISHABLE_KEY environment variable
 
 const PLANS = {
