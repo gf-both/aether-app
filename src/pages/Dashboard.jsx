@@ -76,27 +76,33 @@ function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
   const [dragId, setDragId] = useState(null)
   const [overIdx, setOverIdx] = useState(null)
   const ghostRef = useRef(null)
-  const originRect = useRef(null)
+  const dropTargetRef = useRef(null) // track drop target separately
 
   function startDrag(e, widgetId) {
     e.preventDefault()
     const el = e.currentTarget
     const rect = el.getBoundingClientRect()
-    originRect.current = rect
     setDragId(widgetId)
+    dropTargetRef.current = null
 
-    // Create ghost
-    const ghost = el.cloneNode(true)
+    // Create a simple ghost div (not cloneNode — avoids canvas crashes)
+    const ghost = document.createElement('div')
     ghost.style.cssText = `
-      position:fixed; pointer-events:none; z-index:9999; opacity:0.85;
+      position:fixed; pointer-events:none; z-index:9999; opacity:0;
       width:${rect.width}px; height:${rect.height}px;
-      left:${rect.left}px; top:${rect.top}px;
-      transform: scale(1.04); transition: none;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      border: 1px solid var(--ring);
+      left:0; top:0;
+      transform: translate(${rect.left}px, ${rect.top}px) scale(1.03);
+      will-change: transform;
+      background: rgba(201,168,76,.08);
+      border: 2px solid rgba(201,168,76,.5);
+      border-radius: 8px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,168,76,.3);
+      transition: opacity .1s;
     `
     document.body.appendChild(ghost)
     ghostRef.current = ghost
+    // Fade in
+    requestAnimationFrame(() => { if (ghost) ghost.style.opacity = '1' })
 
     const clientX = e.touches ? e.touches[0].clientX : e.clientX
     const clientY = e.touches ? e.touches[0].clientY : e.clientY
@@ -107,45 +113,48 @@ function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
       const cx = ev.touches ? ev.touches[0].clientX : ev.clientX
       const cy = ev.touches ? ev.touches[0].clientY : ev.clientY
       if (ghostRef.current) {
-        ghostRef.current.style.left = `${cx - offsetX}px`
-        ghostRef.current.style.top = `${cy - offsetY}px`
+        ghostRef.current.style.transform = `translate(${cx - offsetX}px, ${cy - offsetY}px) scale(1.03)`
       }
-      // Find element under cursor (skip ghost)
-      ghostRef.current.style.display = 'none'
+      // Ghost is pointer-events:none so elementFromPoint works without tricks
       const target = document.elementFromPoint(cx, cy)
-      ghostRef.current.style.display = ''
       const card = target?.closest('[data-widget]')
       if (card) {
         const targetId = card.dataset.widget
+        dropTargetRef.current = targetId
         const visibleWidgets = widgetOrder.filter(w => !hiddenWidgets.includes(w))
         const idx = visibleWidgets.indexOf(targetId)
         setOverIdx(idx >= 0 ? idx : null)
+      } else {
+        dropTargetRef.current = null
+        setOverIdx(null)
       }
     }
 
-    function onEnd(ev) {
-      const cx = ev.changedTouches ? ev.changedTouches[0].clientX : ev.clientX
-      const cy = ev.changedTouches ? ev.changedTouches[0].clientY : ev.clientY
-      if (ghostRef.current) { ghostRef.current.remove(); ghostRef.current = null }
-
-      // Find drop target
-      const target = document.elementFromPoint(cx, cy)
-      const card = target?.closest('[data-widget]')
-      if (card) {
-        const dropId = card.dataset.widget
-        if (dropId && dropId !== widgetId) {
-          setWidgetOrder(prev => {
-            const arr = [...prev]
-            const fromIdx = arr.indexOf(widgetId)
-            const toIdx = arr.indexOf(dropId)
-            if (fromIdx !== -1 && toIdx !== -1) {
-              arr.splice(fromIdx, 1)
-              arr.splice(toIdx, 0, widgetId)
-            }
-            return arr
-          })
-        }
+    function onEnd() {
+      // Clean up ghost first
+      if (ghostRef.current) {
+        ghostRef.current.style.opacity = '0'
+        const g = ghostRef.current
+        ghostRef.current = null
+        setTimeout(() => g.remove(), 150)
       }
+
+      // Apply reorder using tracked drop target (avoids elementFromPoint after ghost removal)
+      const dropId = dropTargetRef.current
+      dropTargetRef.current = null
+      if (dropId && dropId !== widgetId) {
+        setWidgetOrder(prev => {
+          const arr = [...prev]
+          const fromIdx = arr.indexOf(widgetId)
+          const toIdx = arr.indexOf(dropId)
+          if (fromIdx !== -1 && toIdx !== -1) {
+            arr.splice(fromIdx, 1)
+            arr.splice(toIdx, 0, widgetId)
+          }
+          return arr
+        })
+      }
+
       setDragId(null)
       setOverIdx(null)
       document.removeEventListener('mousemove', onMove)
