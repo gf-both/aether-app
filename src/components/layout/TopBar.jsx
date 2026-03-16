@@ -1,7 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { useClock } from '../../hooks/useClock'
 import { SEPHIROTH } from '../../data/kabbalahData'
+import { getNatalChart } from '../../engines/natalEngine'
+import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
 
 const HD_PROFILE_LABELS = {
   '1/3': 'Investigator/Martyr', '1/4': 'Investigator/Opportunist',
@@ -648,8 +650,34 @@ export default function TopBar() {
   const setOracleOpen = useAboveInsideStore((s) => s.setOracleOpen)
   const time = useClock()
 
+  // Compute chart live when profile fields are missing (e.g. newly added people)
+  const computedChart = useMemo(() => {
+    if (!profile?.dob) return null
+    if (profile.sign && profile.sign !== '?' && profile.moon && profile.moon !== '?') return null // already computed
+    try {
+      const [y, m, d] = profile.dob.split('-').map(Number)
+      const [h, min] = (profile.tob || '12:00').split(':').map(Number)
+      return getNatalChart({ day: d, month: m, year: y, hour: h||12, minute: min||0, lat: profile.birthLat||0, lon: profile.birthLon||0, timezone: profile.birthTimezone||0 })
+    } catch { return null }
+  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.sign])
+
+  const computedLP = useMemo(() => {
+    if (!profile?.dob || (profile.lifePath && profile.lifePath !== '?')) return null
+    try {
+      const np = getNumerologyProfileFromDob(profile.dob, profile.name || 'Unknown', {})
+      return np?.lifePath
+    } catch { return null }
+  }, [profile?.dob, profile?.name, profile?.lifePath])
+
+  const displaySign = (profile.sign && profile.sign !== '?') ? profile.sign : (computedChart?.planets?.sun?.sign || '?')
+  const displayMoon = (profile.moon && profile.moon !== '?') ? profile.moon : (computedChart?.planets?.moon?.sign || '?')
+  const displayAsc = (profile.asc && profile.asc !== '?') ? profile.asc : (computedChart?.angles?.asc?.sign || '?')
+  const displayLP = (profile.lifePath && profile.lifePath !== '?') ? profile.lifePath : (computedLP || '?')
+  const displayHDType = (profile.hdType && profile.hdType !== '?') ? profile.hdType : '?'
+  const displayHDProfile = (profile.hdProfile && profile.hdProfile !== '?') ? profile.hdProfile : '?'
+
   // Derive dynamic values instead of hardcoding
-  const hdProfileLabel = HD_PROFILE_LABELS[profile.hdProfile] || profile.hdProfile
+  const hdProfileLabel = HD_PROFILE_LABELS[displayHDProfile] || displayHDProfile
   const activeSephira = SEPHIROTH?.find(s => s.active) || null
   const sephiraChip = activeSephira ? `${activeSephira.name} ${activeSephira.ratio}` : null
 
@@ -662,9 +690,9 @@ export default function TopBar() {
         <LayoutSwitcher />
       </div>
       <div className="tb-chips">
-        <div className="chip chip-g">{'\u2609'} {profile.sign} &middot; &uarr; {profile.asc} &middot; {'\u263D'} {profile.moon}</div>
-        <div className="chip chip-b" title={`Human Design: ${hdProfileLabel}`}>{'\u25C8'} {profile.hdType} &middot; {profile.hdProfile} &middot; {hdProfileLabel}</div>
-        <div className="chip chip-r">{'\u221E'} Life Path {profile.lifePath}</div>
+        <div className="chip chip-g">{'\u2609'} {displaySign} &middot; &uarr; {displayAsc} &middot; {'\u263D'} {displayMoon}</div>
+        <div className="chip chip-b" title={`Human Design: ${hdProfileLabel}`}>{'\u25C8'} {displayHDType} &middot; {displayHDProfile} &middot; {hdProfileLabel}</div>
+        <div className="chip chip-r">{'\u221E'} Life Path {displayLP}</div>
         {sephiraChip && (
           <div className="chip chip-v" title="Kabbalah — Active Sephira">{'\u2721'} {sephiraChip}</div>
         )}
