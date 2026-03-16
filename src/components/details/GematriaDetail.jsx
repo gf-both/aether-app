@@ -249,6 +249,28 @@ const METHOD_COLORS = {
   'English Ordinal': '#9050e0',
 }
 
+const NUM_TITLES = {
+  1:'The Initiator', 2:'The Diplomat', 3:'The Communicator', 4:'The Builder',
+  5:'The Adventurer', 6:'The Nurturer', 7:'The Seeker', 8:'The Powerhouse',
+  9:'The Humanitarian', 11:'Master Intuitive', 22:'Master Builder', 33:'Master Teacher',
+}
+const NUM_DESCS = {
+  1:'Independence, originality, leadership, pioneer energy',
+  2:'Cooperation, sensitivity, balance, partnership',
+  3:'Self-expression, creativity, joy, artistic talent',
+  4:'Discipline, stability, hard work, foundation',
+  5:'Freedom, change, versatility, progressive energy',
+  6:'Responsibility, family, love, domestic harmony',
+  7:'Introspection, analysis, wisdom, spiritual seeking',
+  8:'Material mastery, authority, abundance, achievement',
+  9:'Compassion, completion, universal love, service',
+  11:'Spiritual insight, intuition, illumination',
+  22:'Turning dreams into reality, large-scale vision',
+  33:'Healing, compassion, spiritual teacher',
+}
+function numTitle(n) { return NUM_TITLES[n] || NUM_TITLES[n % 9 || 9] || '—' }
+function numDesc(n) { return NUM_DESCS[n] || NUM_DESCS[n % 9 || 9] || '—' }
+
 function NumCircle({ val, color, size = 54, label, sub }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
@@ -491,9 +513,9 @@ export default function GematriaDetail() {
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em',
               color: '#40ccdd',
-            }}>The Initiator</div>
+            }}>{numTitle(P.pythagorean.nameNumber)}</div>
             <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
-              {P.pythagorean.fullValue} {'\u2192'} {P.pythagorean.nameNumber} -- Leadership, independence, original creation
+              {P.pythagorean.fullValue} {'\u2192'} {P.pythagorean.nameNumber} -- {numDesc(P.pythagorean.nameNumber)}
             </div>
           </div>
 
@@ -510,9 +532,9 @@ export default function GematriaDetail() {
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em',
               color: '#d43070',
-            }}>The Communicator</div>
+            }}>{numTitle(P.pythagorean.vowelNumber)}</div>
             <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
-              {P.pythagorean.rawVowelSum} {'\u2192'} {P.pythagorean.vowelNumber} -- Self-expression, creativity, artistic joy
+              {P.pythagorean.rawVowelSum} {'\u2192'} {P.pythagorean.vowelNumber} -- {numDesc(P.pythagorean.vowelNumber)}
             </div>
           </div>
 
@@ -529,9 +551,9 @@ export default function GematriaDetail() {
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em',
               color: 'var(--violet2)',
-            }}>The Seeker</div>
+            }}>{numTitle(P.pythagorean.consonantNumber)}</div>
             <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
-              {P.pythagorean.rawConsonantSum} {'\u2192'} {P.pythagorean.consonantNumber} -- Analysis, depth, spiritual inquiry
+              {P.pythagorean.rawConsonantSum} {'\u2192'} {P.pythagorean.consonantNumber} -- {numDesc(P.pythagorean.consonantNumber)}
             </div>
           </div>
         </div>
