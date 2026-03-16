@@ -53,9 +53,9 @@ function useCurrentTransits() {
       natal = getNatalChart({
         day: dob.day, month: dob.month, year: dob.year,
         hour: tob.hour, minute: tob.minute,
-        lat: profile.birthLat ?? -34.6037,
-        lon: profile.birthLon ?? -58.3816,
-        timezone: profile.birthTimezone ?? -3,
+        lat: profile.birthLat || 0,
+        lon: profile.birthLon || 0,
+        timezone: profile.birthTimezone ?? 0,
       })
     } catch { return [] }
 
@@ -66,8 +66,8 @@ function useCurrentTransits() {
       current = getNatalChart({
         day: now.getDate(), month: now.getMonth() + 1, year: now.getFullYear(),
         hour: now.getUTCHours(), minute: now.getUTCMinutes(),
-        lat: profile.birthLat ?? -34.6037,
-        lon: profile.birthLon ?? -58.3816,
+        lat: profile.birthLat || 0,
+        lon: profile.birthLon || 0,
         timezone: 0,  // already UTC
       })
     } catch { return [] }
@@ -253,8 +253,20 @@ const S = {
 }
 
 export default function TransitsDetail() {
+  const profile = useActiveProfile()
   const liveTransits = useCurrentTransits()
-  const CURRENT_TRANSITS_LIVE = liveTransits.length > 0 ? liveTransits : CURRENT_TRANSITS
+  // Only fall back to static if we have a profile (static data is Gaston's)
+  const hasDob = !!(profile?.dob)
+  const CURRENT_TRANSITS_LIVE = liveTransits.length > 0 ? liveTransits : (hasDob ? CURRENT_TRANSITS : [])
+  const isEmptyState = !hasDob && liveTransits.length === 0
+
+  if (isEmptyState) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:12, opacity:.5 }}>
+      <div style={{ fontSize:40 }}>☽</div>
+      <div style={{ fontFamily:"'Cinzel',serif", fontSize:12, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)' }}>Add birth date to see transits</div>
+      <div style={{ fontSize:11, color:'var(--muted-foreground)' }}>Transit calculations require your natal chart</div>
+    </div>
+  )
 
   return (
     <div style={S.panel}>

@@ -130,7 +130,7 @@ export default function GeneKeysDetail() {
 
   // Dynamic GK data from computed profile (falls back to static for missing keys)
   const GK_DATA = useMemo(() => {
-    if (!profileData?.SPHERES) return GK_DETAIL_STATIC
+    if (!profileData?.SPHERES) return null
 
     // Map computed spheres to the full GK_DETAIL_STATIC lookup
     return profileData.SPHERES
@@ -152,13 +152,20 @@ export default function GeneKeysDetail() {
       })
   }, [profileData])
 
-  const activeGKData = (GK_DATA && GK_DATA.length > 0) ? GK_DATA : GK_DETAIL_STATIC // fallback to static if not computed
+  const activeGKData = (GK_DATA && GK_DATA.length > 0) ? GK_DATA : null
+
+  if (!activeGKData) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:12, opacity:.5 }}>
+      <div style={{ fontSize:40 }}>⬡</div>
+      <div style={{ fontFamily:"'Cinzel',serif", fontSize:12, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)' }}>Add birth date to see your Gene Keys</div>
+    </div>
+  )
 
   const SEQUENCES = useMemo(() => {
     if (!profileData?.SPHERES) return [
-      { label: 'Activation', desc: 'The awakening sequence', keys: GK_DETAIL_STATIC.map(d => d.num) },
-      { label: 'Venus', desc: 'The love sequence revealing your relationship patterns', keys: GK_DETAIL_STATIC.slice(0, 2).map(d => d.num) },
-      { label: 'Pearl', desc: 'The prosperity sequence connecting purpose to abundance', keys: GK_DETAIL_STATIC.slice(2).map(d => d.num) },
+      { label: 'Activation', desc: 'The awakening sequence', keys: (activeGKData ?? []).map(d => d.num) },
+      { label: 'Venus', desc: 'The love sequence', keys: (activeGKData ?? []).slice(0, 2).map(d => d.num) },
+      { label: 'Pearl', desc: 'The prosperity sequence', keys: (activeGKData ?? []).slice(2).map(d => d.num) },
     ]
     const keys = profileData.SPHERES.filter(s => !s.center).map(s => s.key)
     return [
