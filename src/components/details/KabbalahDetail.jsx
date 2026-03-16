@@ -123,7 +123,8 @@ export default function KabbalahDetail() {
   const { SEPHIROTH_DETAIL, PILLARS_LIVE, ACTIVE_PATHS_LIVE } = useMemo(() => {
     let liveResult = null
     try {
-      liveResult = getKabbalahProfile(profileToKabArgs(profile))
+const kabArgs = profileToKabArgs(profile)
+      if (kabArgs) liveResult = getKabbalahProfile(kabArgs)
     } catch (e) {
       // fall back to static data
     }

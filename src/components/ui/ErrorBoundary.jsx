@@ -7,7 +7,7 @@ import { Component } from 'react'
 export default class ErrorBoundary extends Component {
   constructor(props) {
     super(props)
-    this.state = { hasError: false, error: null }
+    this.state = { hasError: false, error: null, componentStack: null }
   }
 
   static getDerivedStateFromError(error) {
@@ -15,7 +15,9 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    console.error('AETHER crashed:', error, info)
+    console.error('AETHER crashed:', error.message)
+    console.error('Component stack:', info?.componentStack?.split('\n').slice(0, 6).join('\n'))
+    this.setState({ componentStack: info?.componentStack?.split('\n').slice(1, 5).join(' → ') })
   }
 
   render() {
@@ -35,6 +37,11 @@ export default class ErrorBoundary extends Component {
           <div style={{ fontSize: 11, color: 'rgba(201,168,76,.5)', fontFamily: 'monospace', background: 'rgba(0,0,0,.3)', padding: '8px 16px', borderRadius: 6, maxWidth: 500, wordBreak: 'break-all' }}>
             {this.state.error?.message || 'Unknown error'}
           </div>
+          {this.state.componentStack && (
+            <div style={{ fontSize: 10, color: 'rgba(201,168,76,.35)', fontFamily: 'monospace', background: 'rgba(0,0,0,.2)', padding: '6px 12px', borderRadius: 4, maxWidth: 500, wordBreak: 'break-all' }}>
+              {this.state.componentStack}
+            </div>
+          )}
           <button
             onClick={() => { localStorage.clear(); window.location.reload() }}
             style={{
