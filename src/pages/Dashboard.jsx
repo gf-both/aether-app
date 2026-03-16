@@ -528,7 +528,7 @@ function WidgetContent({ widgetId }) {
     case 'hd':
       return (
         <>
-          <div className="ch"><span className="ct">Human Design &middot; Rave Chart &middot; Body Graph &middot; 3/5</span><span className="ci">{'\u25C8'}</span></div>
+          <div className="ch"><span className="ct">Human Design &middot; {hdChartLocal ? `${hdChartLocal.profile} ${hdChartLocal.type}` : 'Body Graph'}</span><span className="ci">{'\u25C8'}</span></div>
           <div className="cb">
             <div className="hd-outer">
               <div className="hd-columns">
