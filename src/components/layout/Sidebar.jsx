@@ -4,32 +4,53 @@ import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 const NAV_SECTIONS = [
   { type: 'item', icon: '◎', label: 'Dashboard', id: 'dashboard' },
 
-  { type: 'section', label: 'CHARTS' },
+  { type: 'section', label: 'CORE STRUCTURAL' },
   { type: 'item', icon: '☉', label: 'Natal Chart', id: 'natal', widget: 'natal' },
   { type: 'item', icon: '☽', label: 'Transits', id: 'transits', widget: 'tr' },
-  { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
-
-  { type: 'section', label: 'ENERGY SYSTEMS' },
   { type: 'item', icon: '◈', label: 'Human Design', id: 'hd', widget: 'hd' },
   { type: 'item', icon: '✡', label: 'Kabbalah', id: 'kab', widget: 'kab' },
-  { type: 'item', icon: '⬡', label: 'Gene Keys', id: 'gk', widget: 'gk' },
 
-  { type: 'section', label: 'CYCLES' },
+  { type: 'section', label: 'ARCHETYPAL' },
   { type: 'item', icon: '🌸', label: 'Mayan Calendar', id: 'mayan', widget: 'mayan' },
-  { type: 'item', icon: '☯', label: 'Enneagram', id: 'enn', widget: 'enn' },
   { type: 'item', icon: '🐉', label: 'Chinese Zodiac', id: 'chi', widget: 'chi' },
-  { type: 'item', icon: '∞', label: 'Numerology', id: 'num', widget: 'num' },
-
-  { type: 'section', label: 'PATTERNS' },
-  { type: 'item', icon: '🔠', label: 'Gematria', id: 'gem', widget: 'gem' },
-  { type: 'item', icon: '🕸', label: 'Patterns', id: 'pat', widget: 'pat' },
-  { type: 'item', icon: '🧠', label: 'Myers-Briggs', id: 'mbti', widget: 'mbti' },
   { type: 'item', icon: '🏛', label: 'Egyptian', id: 'egyptian', widget: 'egyptian' },
+
+  { type: 'section', label: 'META SYSTEMS' },
+  { type: 'item', icon: '⬡', label: 'Gene Keys', id: 'gk', widget: 'gk' },
+  { type: 'item', icon: '◎', label: 'Integral Map', id: 'integral', widget: 'integral' },
+  { type: 'item', icon: '🕸', label: 'Patterns', id: 'pat', widget: 'pat' },
+
+  { type: 'section', label: 'SACRED MATHEMATICS' },
+  { type: 'item', icon: '∞', label: 'Numerology', id: 'num', widget: 'num' },
+  { type: 'item', icon: '🔠', label: 'Gematria', id: 'gem', widget: 'gem' },
+
+  { type: 'section', label: 'SELF KNOWLEDGE' },
+  { type: 'item', icon: '☯', label: 'Enneagram', id: 'enn', widget: 'enn' },
+  { type: 'item', icon: '🧠', label: 'Myers-Briggs', id: 'mbti', widget: 'mbti' },
+  { type: 'item', icon: '🌿', label: 'Dosha', id: 'dosha', widget: 'dosha' },
+  { type: 'item', icon: '🎭', label: 'Archetype', id: 'archetype', widget: 'archetype' },
+  { type: 'item', icon: '💗', label: 'Love Language', id: 'lovelang', widget: 'lovelang' },
+
+  { type: 'section', label: 'EASTERN WISDOM' },
+  { type: 'item', icon: '🪷', label: 'Vedic', id: 'vedic', widget: 'vedic' },
+  { type: 'item', icon: '🏔', label: 'Tibetan', id: 'tibetan', widget: 'tibetan' },
+
+  { type: 'section', label: 'SYMBOLIC' },
+  { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
+  { type: 'item', icon: '🌟', label: 'Fixed Stars', id: 'stars', widget: 'stars' },
+  { type: 'item', icon: '🔮', label: 'Sabian', id: 'sabian', widget: 'sabian' },
+  { type: 'item', icon: '☽', label: 'Arabic Parts', id: 'arabic', widget: 'arabic' },
+  { type: 'item', icon: '🃏', label: 'Tarot', id: 'tarot', widget: 'tarot' },
+  { type: 'item', icon: '🌲', label: 'Celtic Tree', id: 'celtic', widget: 'celtic' },
+  { type: 'item', icon: '📊', label: 'Biorhythms', id: 'biorhythm', widget: 'biorhythm' },
+
+  { type: 'section', label: 'LIFE ARC' },
+  { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
+  { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
 
   { type: 'section', label: 'IDENTITY' },
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
   { type: 'item', icon: '💫', label: 'Dating', id: 'dating', widget: 'dating' },
-  { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
   { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aether', widget: 'aether' },
   { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
 
