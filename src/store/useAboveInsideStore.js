@@ -106,6 +106,7 @@ export const useAboveInsideStore = create(
             ? s.hiddenWidgets.filter((w) => w !== id)
             : [...s.hiddenWidgets, id],
         })),
+      setHiddenWidgets: (list) => set({ hiddenWidgets: list }),
 
       // Layout mode: 'grid' | 'bento' | 'focus' | 'magazine'
       layoutMode: 'grid',

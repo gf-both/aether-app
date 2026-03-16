@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
 import { DEFAULT_PRIMARY_PROFILE } from '../data/primaryProfile'
 import Sidebar from '../components/layout/Sidebar'
@@ -62,6 +62,98 @@ import { CHINESE_PROFILE } from '../data/chineseData'
 import { GEMATRIA_PROFILE } from '../data/gematriaData'
 import { CROSS_FRAMEWORK_ALIGNMENTS } from '../data/patternsData'
 import { EGYPTIAN_PROFILE } from '../data/egyptianData'
+
+// ── Drag-to-reorder hook (pointer events, works on mouse + touch) ──
+function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
+  const [dragId, setDragId] = useState(null)
+  const [overIdx, setOverIdx] = useState(null)
+  const ghostRef = useRef(null)
+  const originRect = useRef(null)
+
+  function startDrag(e, widgetId) {
+    e.preventDefault()
+    const el = e.currentTarget
+    const rect = el.getBoundingClientRect()
+    originRect.current = rect
+    setDragId(widgetId)
+
+    // Create ghost
+    const ghost = el.cloneNode(true)
+    ghost.style.cssText = `
+      position:fixed; pointer-events:none; z-index:9999; opacity:0.85;
+      width:${rect.width}px; height:${rect.height}px;
+      left:${rect.left}px; top:${rect.top}px;
+      transform: scale(1.04); transition: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      border: 1px solid rgba(201,168,76,.5);
+    `
+    document.body.appendChild(ghost)
+    ghostRef.current = ghost
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY
+    const offsetX = clientX - rect.left
+    const offsetY = clientY - rect.top
+
+    function onMove(ev) {
+      const cx = ev.touches ? ev.touches[0].clientX : ev.clientX
+      const cy = ev.touches ? ev.touches[0].clientY : ev.clientY
+      if (ghostRef.current) {
+        ghostRef.current.style.left = `${cx - offsetX}px`
+        ghostRef.current.style.top = `${cy - offsetY}px`
+      }
+      // Find element under cursor (skip ghost)
+      ghostRef.current.style.display = 'none'
+      const target = document.elementFromPoint(cx, cy)
+      ghostRef.current.style.display = ''
+      const card = target?.closest('[data-widget]')
+      if (card) {
+        const targetId = card.dataset.widget
+        const visibleWidgets = widgetOrder.filter(w => !hiddenWidgets.includes(w))
+        const idx = visibleWidgets.indexOf(targetId)
+        setOverIdx(idx >= 0 ? idx : null)
+      }
+    }
+
+    function onEnd(ev) {
+      const cx = ev.changedTouches ? ev.changedTouches[0].clientX : ev.clientX
+      const cy = ev.changedTouches ? ev.changedTouches[0].clientY : ev.clientY
+      if (ghostRef.current) { ghostRef.current.remove(); ghostRef.current = null }
+
+      // Find drop target
+      const target = document.elementFromPoint(cx, cy)
+      const card = target?.closest('[data-widget]')
+      if (card) {
+        const dropId = card.dataset.widget
+        if (dropId && dropId !== widgetId) {
+          setWidgetOrder(prev => {
+            const arr = [...prev]
+            const fromIdx = arr.indexOf(widgetId)
+            const toIdx = arr.indexOf(dropId)
+            if (fromIdx !== -1 && toIdx !== -1) {
+              arr.splice(fromIdx, 1)
+              arr.splice(toIdx, 0, widgetId)
+            }
+            return arr
+          })
+        }
+      }
+      setDragId(null)
+      setOverIdx(null)
+      document.removeEventListener('mousemove', onMove)
+      document.removeEventListener('touchmove', onMove)
+      document.removeEventListener('mouseup', onEnd)
+      document.removeEventListener('touchend', onEnd)
+    }
+
+    document.addEventListener('mousemove', onMove)
+    document.addEventListener('touchmove', onMove, { passive: false })
+    document.addEventListener('mouseup', onEnd)
+    document.addEventListener('touchend', onEnd)
+  }
+
+  return { dragId, overIdx, startDrag }
+}
 
 const TRANSITS = [
   { sym: '\u2609', color: '#f0c040', sign: "Pisces 13\u00B047\u2032", aspect: '\u25B3 Natal Moon \u00B7 Trine', aspLabel: 'Trine \u25B3', aspColor: 'rgba(255,200,60,.7)', pct: 78, gradient: 'linear-gradient(90deg,#f0c040,#e8c07a)' },
@@ -812,30 +904,81 @@ function DemoBanner() {
 }
 
 /* ── Widget Manager Bar ── */
+const DEFAULT_WIDGET_ORDER_LIST = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang']
+
 function WidgetManagerBar() {
   const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
   const hiddenWidgets = useAboveInsideStore((s) => s.hiddenWidgets)
   const toggleWidgetVisibility = useAboveInsideStore((s) => s.toggleWidgetVisibility)
+  const setHiddenWidgets = useAboveInsideStore((s) => s.setHiddenWidgets)
+  const setWidgetOrder = useAboveInsideStore((s) => s.setWidgetOrder)
   const showWidgetManager = useAboveInsideStore((s) => s.showWidgetManager)
 
   if (!showWidgetManager) return null
 
+  const hiddenCount = hiddenWidgets.length
+
   return (
-    <div className="widget-manager">
-      {widgetOrder.map((id) => {
-        const meta = WIDGET_META[id]
-        const isHidden = hiddenWidgets.includes(id)
-        return (
+    <div style={{
+      padding: '10px 16px 8px',
+      borderBottom: '1px solid rgba(201,168,76,.1)',
+      background: 'rgba(201,168,76,.03)',
+      flexShrink: 0,
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+        <span style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.15em', color: 'var(--gold)', textTransform: 'uppercase' }}>
+          ⚙ Widget Manager {hiddenCount > 0 ? `· ${hiddenCount} hidden` : '· all visible'}
+        </span>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {hiddenCount > 0 && (
+            <div
+              onClick={() => setHiddenWidgets([])}
+              style={{
+                padding: '3px 10px', borderRadius: 6, cursor: 'pointer',
+                fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
+                color: 'var(--gold)', background: 'rgba(201,168,76,.12)',
+                border: '1px solid rgba(201,168,76,.3)', transition: 'all .15s',
+              }}
+            >Show All</div>
+          )}
           <div
-            key={id}
-            className={`wm-chip${isHidden ? ' hidden' : ' active'}`}
-            onClick={() => toggleWidgetVisibility(id)}
-            title={isHidden ? `Show ${meta?.label}` : `Hide ${meta?.label}`}
-          >
-            {meta?.icon || '\u2726'} {meta?.label || id}
-          </div>
-        )
-      })}
+            onClick={() => { setWidgetOrder([...DEFAULT_WIDGET_ORDER_LIST]); setHiddenWidgets([]) }}
+            style={{
+              padding: '3px 10px', borderRadius: 6, cursor: 'pointer',
+              fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
+              color: 'var(--text2)', background: 'rgba(255,255,255,.04)',
+              border: '1px solid rgba(255,255,255,.08)', transition: 'all .15s',
+            }}
+          >Reset Order</div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+        {widgetOrder.map((id) => {
+          const meta = WIDGET_META[id]
+          const isHidden = hiddenWidgets.includes(id)
+          return (
+            <div
+              key={id}
+              onClick={() => toggleWidgetVisibility(id)}
+              title={isHidden ? `Show ${meta?.label}` : `Hide ${meta?.label}`}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 5,
+                padding: '4px 10px', borderRadius: 20, cursor: 'pointer',
+                fontSize: 10, fontFamily: "'Cinzel',serif", letterSpacing: '.05em',
+                transition: 'all .15s',
+                background: isHidden ? 'rgba(255,255,255,.03)' : 'rgba(201,168,76,.1)',
+                border: `1px solid ${isHidden ? 'rgba(255,255,255,.08)' : 'rgba(201,168,76,.3)'}`,
+                color: isHidden ? 'var(--text3)' : 'var(--gold)',
+                opacity: isHidden ? 0.5 : 1,
+              }}
+            >
+              <span style={{ fontSize: 12 }}>{meta?.icon || '✦'}</span>
+              {meta?.label || id}
+              <span style={{ fontSize: 9, opacity: .6 }}>{isHidden ? '+ show' : '✓'}</span>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
@@ -1092,11 +1235,8 @@ export default function Dashboard() {
     return () => window.removeEventListener('resize', onResize)
   }, [])
 
-  const [dragIdx, setDragIdx] = useState(null)
-  const [overIdx, setOverIdx] = useState(null)
-  const dragStartPos = useRef(null)
-  const scrollRef = useRef(null)
   const wrapperRef = useRef(null)
+  const { dragId, overIdx: dragOverIdx, startDrag } = useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets)
 
   // Compute HD chart from stored profile
   const hdChart = useMemo(() => {
@@ -1120,38 +1260,6 @@ export default function Dashboard() {
 
   // Filter out hidden widgets
   const visibleWidgets = widgetOrder.filter((id) => !hiddenWidgets.includes(id))
-
-  const handleDragStart = useCallback((e, idx) => {
-    e.dataTransfer.effectAllowed = 'move'
-    e.dataTransfer.setData('text/plain', idx.toString())
-    setDragIdx(idx)
-    dragStartPos.current = { x: e.clientX, y: e.clientY }
-    requestAnimationFrame(() => { e.target.style.opacity = '.4' })
-  }, [])
-
-  const handleDragEnd = useCallback((e) => {
-    e.target.style.opacity = ''
-    setDragIdx(null)
-    setOverIdx(null)
-  }, [])
-
-  const handleDragOver = useCallback((e, idx) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-    setOverIdx(idx)
-  }, [])
-
-  const handleDrop = useCallback((e, dropIdx) => {
-    e.preventDefault()
-    const fromIdx = parseInt(e.dataTransfer.getData('text/plain'), 10)
-    if (fromIdx === dropIdx || isNaN(fromIdx)) return
-    const newOrder = [...widgetOrder]
-    const [moved] = newOrder.splice(fromIdx, 1)
-    newOrder.splice(dropIdx, 0, moved)
-    setWidgetOrder(newOrder)
-    setDragIdx(null)
-    setOverIdx(null)
-  }, [widgetOrder, setWidgetOrder])
 
   // Detail view mode (shared across all layouts)
   if (activeDetail) {
@@ -1206,7 +1314,7 @@ export default function Dashboard() {
         }}>
           <DemoBanner />
           <WidgetManagerBar />
-          <div ref={scrollRef} style={{
+          <div style={{
             flex: 1, overflowY: 'auto', overflowX: 'hidden',
           }}>
             <div ref={wrapperRef} style={{ position: 'relative', padding: '4px 20px 40px' }}>
@@ -1239,10 +1347,14 @@ export default function Dashboard() {
                         return (
                           <div key={widgetId} data-widget={widgetId} className="card"
                             onDoubleClick={() => setActiveDetail(widgetId)}
+                            onMouseDown={(e) => startDrag(e, widgetId)}
+                            onTouchStart={(e) => startDrag(e, widgetId)}
                             style={{
                               height: h,
                               animationDelay: `${globalIdx * 0.04}s`,
-                              cursor: 'pointer',
+                              cursor: 'grab',
+                              opacity: dragId === widgetId ? 0.3 : 1,
+                              outline: dragOverIdx === globalIdx && dragId !== widgetId ? '2px solid rgba(201,168,76,.6)' : 'none',
                             }}
                           >
                             <div
