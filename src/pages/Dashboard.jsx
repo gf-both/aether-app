@@ -48,6 +48,8 @@ import DoshaDetail from '../components/details/DoshaDetail'
 import ArchetypeDetail from '../components/details/ArchetypeDetail'
 import LoveLangDetail from '../components/details/LoveLangDetail'
 import TimelineDetail from '../components/details/TimelineDetail'
+import CareerAlignmentDetail from '../components/details/CareerAlignmentDetail'
+import CareerWheel from '../components/canvas/CareerWheel'
 import TimelineWidget from '../components/canvas/TimelineWidget'
 import PricingPage from './PricingPage'
 import PractitionerPortal from './PractitionerPortal'
@@ -293,6 +295,7 @@ const DETAIL_COMPONENTS = {
   archetype: ArchetypeDetail,
   lovelang: LoveLangDetail,
   timeline: TimelineDetail,
+  career: CareerAlignmentDetail,
   synastry: SynastryDetail,
   profile: ProfileDetail,
   sabian: SabianDetail,
@@ -331,6 +334,7 @@ const DETAIL_TITLES = {
   archetype: 'Archetype Assessment \u2014 Jungian Pattern',
   lovelang: 'Love Languages \u2014 How You Give & Receive Love',
   timeline: 'Life Timeline \u2014 Cosmic Arc of Your Journey',
+  career: 'Career Alignment \u2014 Your Cosmic Professional Blueprint',
   profile: 'Profiles \u2014 Constellation',
   pricing: 'Choose Your Path \u2014 Pricing',
   practitioner: 'Practitioner Portal \u2014 Practice Management',
@@ -789,6 +793,14 @@ function WidgetContent({ widgetId }) {
         </>
       )
     case 'timeline': return <TimelineWidget />
+    case 'career': return (
+      <>
+        <div className="ch"><span className="ct">Career Alignment</span><span className="ci">{'◈'}</span></div>
+        <div className="cb" style={{ height: 'calc(100% - 32px)' }}>
+          <CareerWheel />
+        </div>
+      </>
+    )
     default:
       return null
   }
@@ -827,6 +839,7 @@ const WIDGET_META = {
   archetype: { icon: '⬡', label: 'Archetype', sub: 'Jungian Pattern \u00B7 12 Archetypes' },
   lovelang: { icon: '🤗', label: 'Love Languages', sub: 'Give & Receive \u00B7 5 Languages' },
   timeline: { icon: '⟳', label: 'Life Timeline', sub: 'Cosmic Arc \u00B7 Key Life Events' },
+  career: { icon: '◈', label: 'Career Alignment', sub: 'Cosmic Blueprint \u00B7 Role Matching' },
   practitioner: { icon: '\uD83C\uDFE5', label: 'Practitioner Portal', sub: 'Clients \u00B7 Sessions \u00B7 Revenue' },
   client: { icon: '\uD83D\uDCCB', label: 'Client Portal', sub: 'Sessions \u00B7 Progress \u00B7 Messages' },
 }
@@ -859,6 +872,7 @@ const WIDGET_CATEGORIES = {
   archetype:{ label: 'JUNGIAN', color: 'rgba(168,120,232,.8)', bg: 'rgba(168,120,232,.08)', border: 'rgba(168,120,232,.2)' },
   lovelang: { label: 'RELATIONAL', color: 'rgba(238,136,102,.8)', bg: 'rgba(238,136,102,.08)', border: 'rgba(238,136,102,.2)' },
   timeline: { label: 'TIMELINE', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  career:   { label: 'CAREER',   color: 'rgba(96,180,255,.8)', bg: 'rgba(96,180,255,.08)',  border: 'rgba(96,180,255,.2)'  },
 }
 
 function CategoryBadge({ widgetId }) {
@@ -922,7 +936,7 @@ function DemoBanner() {
 }
 
 /* ── Widget Manager Bar ── */
-const ALL_WIDGET_IDS = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang', 'timeline']
+const ALL_WIDGET_IDS = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang', 'timeline', 'career']
 
 function WidgetManagerBar() {
   const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
