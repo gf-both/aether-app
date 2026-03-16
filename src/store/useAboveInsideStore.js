@@ -252,7 +252,7 @@ export const useAboveInsideStore = create(
     }),
     { 
       name: 'above-inside-store',
-      version: 2,
+      version: 3,
       migrate: (persistedState, version) => {
         if (version < 2) {
           // Reset primaryProfile to fix stale birth data / wrong signs
