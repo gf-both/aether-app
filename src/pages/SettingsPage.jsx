@@ -1,17 +1,13 @@
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
 
 export default function SettingsPage() {
-  const { layoutMode, setLayoutMode, themeStyle, setTheme, themeMode, widgetOrder, setWidgetOrder, hiddenWidgets, toggleWidgetVisibility } = useAboveInsideStore(s => ({
-    layoutMode: s.layoutMode,
-    setLayoutMode: s.setLayoutMode,
-    themeStyle: s.themeStyle,
-    setTheme: s.setTheme,
-    themeMode: s.themeMode,
-    widgetOrder: s.widgetOrder,
-    setWidgetOrder: s.setWidgetOrder,
-    hiddenWidgets: s.hiddenWidgets || [],
-    toggleWidgetVisibility: s.toggleWidgetVisibility,
-  }))
+  const layoutMode = useAboveInsideStore(s => s.layoutMode)
+  const setLayoutMode = useAboveInsideStore(s => s.setLayoutMode)
+  const themeStyle = useAboveInsideStore(s => s.themeStyle)
+  const themeMode = useAboveInsideStore(s => s.themeMode)
+  const setTheme = useAboveInsideStore(s => s.setTheme)
+  const hiddenWidgets = useAboveInsideStore(s => s.hiddenWidgets || [])
+  const toggleWidgetVisibility = useAboveInsideStore(s => s.toggleWidgetVisibility)
 
   const ALL_WIDGETS = ['natal', 'tr', 'hd', 'kab', 'gk', 'integral', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'vedic', 'tibetan', 'stars', 'timeline', 'career']
 
