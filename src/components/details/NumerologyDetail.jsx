@@ -105,7 +105,13 @@ export default function NumerologyDetail() {
     }
   }, [activeProfile?.dob, fullName])
 
-  if (!profile) return <div style={S.panel}>{(!activeProfile?.dob || !fullName) ? 'No profile data. Please set your birth date and name in settings.' : 'Error computing profile.'}</div>
+  if (!profile) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:12, opacity:.5 }}>
+      <div style={{ fontSize:40 }}>∞</div>
+      <div style={{ fontFamily:"'Cinzel',serif", fontSize:12, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)' }}>Add name & birth date</div>
+      <div style={{ fontSize:11, color:'var(--muted-foreground)' }}>Open Profile to activate Numerology</div>
+    </div>
+  )
 
   const { core, pinnacles, challenges, personal, extended, derivations } = profile
 

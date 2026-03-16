@@ -308,7 +308,13 @@ export default function GematriaDetail() {
   // Use engine-computed profile (dynamic, reads from active profile)
   const P = useMemo(() => buildComputedProfile(activeProfile), [activeProfile?.name, activeProfile?.dob])
 
-  if (!P) return <div style={S.panel}>No profile data. Please set your name and birth date in settings.</div>
+  if (!P) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:12, opacity:.5 }}>
+      <div style={{ fontSize:40 }}>🔠</div>
+      <div style={{ fontFamily:"'Cinzel',serif", fontSize:12, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)' }}>Add name & birth date</div>
+      <div style={{ fontSize:11, color:'var(--muted-foreground)' }}>Open Profile to activate Gematria</div>
+    </div>
+  )
 
   return (
     <div style={S.panel}>

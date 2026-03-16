@@ -466,7 +466,7 @@ export default function HDDetail() {
       console.error('HDDetail chart error:', e)
       return null
     }
-  }, [profile])
+  }, [profile?.dob, profile?.tob, profile?.birthTimezone])
 
   const TABS = [
     { id: 'ravechart',   label: 'Ravechart' },

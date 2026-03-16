@@ -173,7 +173,7 @@ export default function KabbalahDetail() {
     })) ?? ACTIVE_PATHS
 
     return { SEPHIROTH_DETAIL: detail, PILLARS_LIVE: pillars, ACTIVE_PATHS_LIVE: activePaths }
-  }, [profile])
+  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone])
 
   const activeCount = SEPHIROTH_DETAIL.filter(s => s.active).length
 
