@@ -447,14 +447,33 @@ export default function ProfilePanel({ open, onClose, embedded }) {
               <div className="pp-field">
                 <div className="pp-label">Relationship</div>
                 <select ref={npRelRef} className="pp-input">
-                  <option value="father">Father</option>
-                  <option value="mother">Mother</option>
-                  <option value="partner">Romantic Partner</option>
-                  <option value="spouse">Spouse</option>
-                  <option value="sibling">Sibling</option>
-                  <option value="child">Child</option>
-                  <option value="friend">Close Friend</option>
-                  <option value="other">Other</option>
+                  <optgroup label="Family">
+                    <option value="father">Father</option>
+                    <option value="mother">Mother</option>
+                    <option value="sibling">Sibling</option>
+                    <option value="child">Child</option>
+                    <option value="grandparent">Grandparent</option>
+                  </optgroup>
+                  <optgroup label="Romantic">
+                    <option value="partner">Partner</option>
+                    <option value="spouse">Spouse</option>
+                    <option value="ex-spouse">Ex-Spouse</option>
+                    <option value="ex-partner">Ex-Partner</option>
+                  </optgroup>
+                  <optgroup label="Professional">
+                    <option value="business-partner">Business Partner</option>
+                    <option value="ex-business-partner">Ex-Business Partner</option>
+                    <option value="colleague">Colleague</option>
+                    <option value="mentor">Mentor</option>
+                  </optgroup>
+                  <optgroup label="Social">
+                    <option value="close-friend">Close Friend</option>
+                    <option value="friend">Friend</option>
+                    <option value="ex-friend">Ex-Friend</option>
+                  </optgroup>
+                  <optgroup label="Other">
+                    <option value="other">Other</option>
+                  </optgroup>
                 </select>
               </div>
               <div className="pp-field">
