@@ -4,13 +4,13 @@ import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
 // Zone definitions mapped to body regions
 const ZONES = [
-  { id: 'crown',   label: 'Crown',       yf: .08, systems: ['Kether', 'Life Path', 'Crown Chakra'] },
-  { id: 'third',   label: 'Third Eye',    yf: .16, systems: ['Enneagram', 'MBTI', 'Ajna'] },
-  { id: 'throat',  label: 'Throat',       yf: .26, systems: ['Mercury', 'HD Authority', 'Vishuddha'] },
-  { id: 'heart',   label: 'Heart',        yf: .37, systems: ['Sun Sign', 'Tiphareth', 'Gene Keys'] },
-  { id: 'solar',   label: 'Solar Plexus', yf: .48, systems: ['Mars', 'HD Definition', 'Emotional'] },
-  { id: 'sacral',  label: 'Sacral',       yf: .58, systems: ['Moon Sign', 'HD Type', 'Mayan Kin'] },
-  { id: 'root',    label: 'Root',         yf: .70, systems: ['Saturn', 'Malkuth', 'Chinese Zodiac'] },
+  { id: 'crown',   label: 'Crown',       yf: .11, systems: ['Kether', 'Life Path', 'Crown Chakra'] },
+  { id: 'third',   label: 'Third Eye',    yf: .18, systems: ['Enneagram', 'MBTI', 'Ajna'] },
+  { id: 'throat',  label: 'Throat',       yf: .22, systems: ['Mercury', 'HD Authority', 'Vishuddha'] },
+  { id: 'heart',   label: 'Heart',        yf: .32, systems: ['Sun Sign', 'Tiphareth', 'Gene Keys'] },
+  { id: 'solar',   label: 'Solar Plexus', yf: .40, systems: ['Mars', 'HD Definition', 'Emotional'] },
+  { id: 'sacral',  label: 'Sacral',       yf: .47, systems: ['Moon Sign', 'HD Type', 'Mayan Kin'] },
+  { id: 'root',    label: 'Root',         yf: .60, systems: ['Saturn', 'Malkuth', 'Chinese Zodiac'] },
 ]
 
 const ZONE_COLORS = {

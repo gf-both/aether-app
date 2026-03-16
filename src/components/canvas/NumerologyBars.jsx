@@ -65,11 +65,18 @@ export default function NumerologyBars() {
 
   useCanvasResize(canvasRef)
 
+  // Use ref so draw() always reads latest nums/labs without stale closure
+  const numsRef = useRef(nums)
+  const labsRef = useRef(labs)
+  useEffect(() => { numsRef.current = nums; labsRef.current = labs }, [nums, labs])
+
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
 
     function draw() {
+      const nums = numsRef.current
+      const labs = labsRef.current
       const dpr = window.devicePixelRatio || 1
       const W = canvas.width / dpr
       const H = canvas.height / dpr
@@ -116,6 +123,46 @@ export default function NumerologyBars() {
     ro.observe(canvas)
     draw()
     return () => { ro.disconnect() }
+  }, []) // ResizeObserver + numsRef handles updates without re-binding
+
+  // Trigger redraw when data changes (numsRef is updated above, just need to call draw)
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const dpr = window.devicePixelRatio || 1
+    const W = canvas.width / dpr, H = canvas.height / dpr
+    if (W === 0 || H === 0) return
+    ctx.save()
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.clearRect(0, 0, W, H)
+    const currentNums = numsRef.current
+    const currentLabs = labsRef.current
+    if (!currentNums || !currentLabs) { ctx.restore(); return }
+    const bw = W / currentNums.length
+    const pad = 3
+    currentNums.forEach((n, i) => {
+      const maxN = 22
+      const h = (n / maxN) * (H - 14)
+      const x = i * bw + pad
+      const bWidth = bw - pad * 2
+      const col = COLORS[i] || '#888'
+      const g = ctx.createLinearGradient(0, H - h, 0, H)
+      g.addColorStop(0, col + 'ee')
+      g.addColorStop(1, col + '44')
+      ctx.beginPath()
+      if (ctx.roundRect) ctx.roundRect(x, H - h, bWidth, h, 2.5)
+      else ctx.rect(x, H - h, bWidth, h)
+      ctx.fillStyle = g
+      ctx.fill()
+      ctx.font = '6.5px Inconsolata,monospace'
+      ctx.fillStyle = col
+      ctx.textAlign = 'center'
+      ctx.fillText(n || '', i * bw + bw / 2, H - h - 2)
+      ctx.fillStyle = 'rgba(100,110,150,.45)'
+      ctx.fillText(currentLabs[i], i * bw + bw / 2, H - 1)
+    })
+    ctx.restore()
   }, [nums, labs])
 
   if (!nums) {
