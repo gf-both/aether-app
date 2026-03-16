@@ -82,15 +82,34 @@ export default function GolemPage() {
 
   const activeProfile = editProfile || selectedGolem.profile
 
+  // Resolve lat/lon from pob if not set
+  function resolvePob(p) {
+    if (p?.birthLat && p.birthLat !== 0) return { lat: p.birthLat, lon: p.birthLon || 0, tz: p.birthTimezone ?? 0 }
+    const pob = (p?.pob || '').toLowerCase()
+    if (pob.includes('buenos aires')) return { lat:-34.6037, lon:-58.3816, tz:-3 }
+    if (pob.includes('montevideo')) return { lat:-34.9011, lon:-56.1645, tz:-3 }
+    if (pob.includes('new york')) return { lat:40.7128, lon:-74.0060, tz:-5 }
+    if (pob.includes('london')) return { lat:51.5074, lon:-0.1278, tz:0 }
+    if (pob.includes('paris')) return { lat:48.8566, lon:2.3522, tz:1 }
+    if (pob.includes('madrid')) return { lat:40.4168, lon:-3.7038, tz:1 }
+    if (pob.includes('bogota')) return { lat:4.7110, lon:-74.0721, tz:-5 }
+    if (pob.includes('lima')) return { lat:-12.0464, lon:-77.0428, tz:-5 }
+    if (pob.includes('santiago')) return { lat:-33.4489, lon:-70.6693, tz:-3 }
+    if (pob.includes('mexico')) return { lat:19.4326, lon:-99.1332, tz:-6 }
+    if (pob.includes('sao paulo') || pob.includes('são paulo')) return { lat:-23.5505, lon:-46.6333, tz:-3 }
+    return { lat: 0, lon: 0, tz: p?.birthTimezone ?? 0 }
+  }
+
   const computedChart = useMemo(() => {
     const p = profile
     if (!p?.dob) return null
     try {
       const [y,m,d] = p.dob.split('-').map(Number)
       const [h,min] = (p.tob||'12:00').split(':').map(Number)
-      return getNatalChart({ day:d, month:m, year:y, hour:h||12, minute:min||0, lat:p.birthLat||0, lon:p.birthLon||0, timezone:p.birthTimezone||0 })
+      const { lat, lon, tz } = resolvePob(p)
+      return getNatalChart({ day:d, month:m, year:y, hour:h||12, minute:min||0, lat, lon, timezone: tz })
     } catch { return null }
-  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone])
+  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.pob])
 
   const computedNumerology = useMemo(() => {
     if (!profile?.dob || !profile?.name) return null
@@ -98,11 +117,16 @@ export default function GolemPage() {
     catch { return null }
   }, [profile?.dob, profile?.name])
 
-  const displaySign = profile?.sign && profile.sign !== '?' ? profile.sign : computedChart?.planets?.sun?.sign || '?'
-  const displayMoon = profile?.moon && profile.moon !== '?' ? profile.moon : computedChart?.planets?.moon?.sign || '?'
-  const displayAsc = profile?.asc && profile.asc !== '?' ? profile.asc : computedChart?.angles?.asc?.sign || '?'
-  const displayLP = profile?.lifePath && profile.lifePath !== '?' ? profile.lifePath : computedNumerology?.lifePath?.val || '?'
-  const displayHDType = profile?.hdType && profile.hdType !== '?' ? profile.hdType : '?'
+  const val = (v) => (v && v !== '?' && v !== '??' ? v : null)
+  const displaySign = val(profile?.sign) || computedChart?.planets?.sun?.sign || '?'
+  const displayMoon = val(profile?.moon) || computedChart?.planets?.moon?.sign || '?'
+  const displayAsc  = val(profile?.asc)  || computedChart?.angles?.asc?.sign  || '?'
+  const displayLP   = val(profile?.lifePath) || computedNumerology?.lifePath?.val || '?'
+  const displayExpr = val(profile?.expression) || computedNumerology?.expression?.val || '?'
+  const displayHDType    = val(profile?.hdType) || '—'
+  const displayHDProfile = val(profile?.hdProfile) || '—'
+  const displayHDAuth    = val(profile?.hdAuth) || '—'
+  const displayCrossGK   = val(profile?.crossGK) || '—'
 
   const bottomRef = useRef(null)
   const chatMessages = messages[selectedId] || [{ role: 'golem', text: getWelcome(activeProfile, selectedGolem.label) }]
@@ -308,11 +332,11 @@ Keep responses 2-4 sentences. Be direct.`
           ['☽ Moon', displayMoon],
           ['↑ Rising', displayAsc],
           ['◈ HD Type', displayHDType],
-          ['◈ HD Profile', activeProfile?.hdProfile || '?'],
-          ['◈ Authority', activeProfile?.hdAuth || '?'],
+          ['◈ HD Profile', displayHDProfile],
+          ['◈ Authority', displayHDAuth],
           ['∞ Life Path', String(displayLP)],
-          ['Expression', activeProfile?.expression || '?'],
-          ['Gene Keys', activeProfile?.crossGK || '?'],
+          ['Expression', String(displayExpr)],
+          ['Gene Keys', displayCrossGK],
           ['Dosha', activeProfile?.doshaType || '—'],
           ['Archetype', activeProfile?.archetypeType || '—'],
           ['Love Lang', activeProfile?.loveLanguage || '—'],
