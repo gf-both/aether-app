@@ -46,6 +46,9 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const enneagramRef = useRef(null)
   const enneagramWingRef = useRef(null)
   const enneagramInstinctRef = useRef(null)
+  const doshaRef = useRef(null)
+  const archetypeRef = useRef(null)
+  const loveLanguageRef = useRef(null)
 
   // Add person form refs
   const npNameRef = useRef(null)
@@ -87,6 +90,9 @@ export default function ProfilePanel({ open, onClose, embedded }) {
       mbtiType: mbtiVal || null,
       enneagramType: ennVal ? parseInt(ennVal, 10) : null,
       enneagramWing: ennWingVal ? parseInt(ennWingVal, 10) : null,
+      doshaType: doshaRef.current?.value || null,
+      archetypeType: archetypeRef.current?.value || null,
+      loveLanguage: loveLanguageRef.current?.value || null,
     })
     setEnneagramInstinct(ennInstVal || null)
     setSaveFlash(true)
@@ -255,6 +261,48 @@ export default function ProfilePanel({ open, onClose, embedded }) {
                 <option value="sp">Self-Preservation (SP)</option>
                 <option value="sx">Sexual / One-to-One (SX)</option>
                 <option value="so">Social (SO)</option>
+              </select>
+            </div>
+            <div className="pp-field">
+              <div className="pp-label">Dosha Type</div>
+              <select ref={doshaRef} className="pp-input" defaultValue={profile?.doshaType || ''}>
+                <option value="">{'\u2014'} Take Quiz {'\u2014'}</option>
+                <option value="vata">Vata (Air &amp; Ether)</option>
+                <option value="pitta">Pitta (Fire &amp; Water)</option>
+                <option value="kapha">Kapha (Earth &amp; Water)</option>
+                <option value="vata-pitta">Vata-Pitta</option>
+                <option value="pitta-kapha">Pitta-Kapha</option>
+                <option value="vata-kapha">Vata-Kapha</option>
+                <option value="tridoshic">Tridoshic (Balanced)</option>
+              </select>
+            </div>
+            <div className="pp-field">
+              <div className="pp-label">Jungian Archetype</div>
+              <select ref={archetypeRef} className="pp-input" defaultValue={profile?.archetypeType || ''}>
+                <option value="">{'\u2014'} Take Quiz {'\u2014'}</option>
+                <option value="hero">The Hero</option>
+                <option value="sage">The Sage</option>
+                <option value="explorer">The Explorer</option>
+                <option value="creator">The Creator</option>
+                <option value="ruler">The Ruler</option>
+                <option value="magician">The Magician</option>
+                <option value="lover">The Lover</option>
+                <option value="caregiver">The Caregiver</option>
+                <option value="innocent">The Innocent</option>
+                <option value="jester">The Jester</option>
+                <option value="outlaw">The Outlaw</option>
+                <option value="everyman">The Everyman</option>
+              </select>
+            </div>
+            <div className="pp-field">
+              <div className="pp-label">Love Language</div>
+              <select ref={loveLanguageRef} className="pp-input" defaultValue={profile?.loveLanguage || ''}>
+                <option value="">{'\u2014'} Take Quiz {'\u2014'}</option>
+                <option value="words">Words of Affirmation</option>
+                <option value="acts">Acts of Service</option>
+                <option value="gifts">Receiving Gifts</option>
+                <option value="time">Quality Time</option>
+                <option value="touch">Physical Touch</option>
               </select>
             </div>
           </div>
