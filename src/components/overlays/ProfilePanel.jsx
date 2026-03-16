@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { REL_CONFIG } from '../../data/primaryProfile'
+import PlaceAutocomplete from '../ui/PlaceAutocomplete'
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
@@ -35,6 +36,18 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [saveFlash, setSaveFlash] = useState(false)
+
+  // Primary profile — place of birth autocomplete state
+  const [pobCity, setPobCity] = useState(profile?.pob || '')
+  const [pobLat, setPobLat] = useState(profile?.birthLat || 0)
+  const [pobLon, setPobLon] = useState(profile?.birthLon || 0)
+  const [pobTz, setPobTz] = useState(profile?.birthTimezone ?? 0)
+
+  // Add/edit person — place of birth autocomplete state
+  const [npPobCity, setNpPobCity] = useState('')
+  const [npPobLat, setNpPobLat] = useState(0)
+  const [npPobLon, setNpPobLon] = useState(0)
+  const [npPobTz, setNpPobTz] = useState(0)
 
   // Form refs for primary profile
   const nameRef = useRef(null)
@@ -76,8 +89,11 @@ export default function ProfilePanel({ open, onClose, embedded }) {
       name: nameRef.current?.value || profile.name,
       dob: dobRef.current?.value || profile.dob,
       tob: tobRef.current?.value || profile.tob,
-      pob: pobRef.current?.value || profile.pob,
+      pob: pobCity || profile.pob,
       gender: genderRef.current?.value || '',
+      birthLat: pobLat || profile.birthLat || 0,
+      birthLon: pobLon || profile.birthLon || 0,
+      birthTimezone: pobTz ?? profile.birthTimezone ?? 0,
     }
     setPrimaryProfile(updates)
 
@@ -117,7 +133,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
         rel,
         dob: npDobRef.current?.value || '',
         tob: npTobRef.current?.value || '',
-        pob: npPobRef.current?.value || '',
+        pob: npPobCity || '',
         notes: npNotesRef.current?.value || '',
         gender: npGenderRef.current?.value || '',
         emoji: cfg.emoji,
@@ -127,6 +143,9 @@ export default function ProfilePanel({ open, onClose, embedded }) {
         doshaType: npDoshaRef.current?.value || null,
         archetypeType: npArchetypeRef.current?.value || null,
         loveLanguage: npLoveLanguageRef.current?.value || null,
+        birthLat: npPobLat || 0,
+        birthLon: npPobLon || 0,
+        birthTimezone: npPobTz ?? 0,
       })
       setEditingId(null)
     } else {
@@ -135,7 +154,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
         rel,
         dob: npDobRef.current?.value || '',
         tob: npTobRef.current?.value || '',
-        pob: npPobRef.current?.value || '',
+        pob: npPobCity || '',
         notes: npNotesRef.current?.value || '',
         gender: npGenderRef.current?.value || '',
         emoji: cfg.emoji,
@@ -146,13 +165,15 @@ export default function ProfilePanel({ open, onClose, embedded }) {
         doshaType: npDoshaRef.current?.value || null,
         archetypeType: npArchetypeRef.current?.value || null,
         loveLanguage: npLoveLanguageRef.current?.value || null,
+        birthLat: npPobLat || 0,
+        birthLon: npPobLon || 0,
+        birthTimezone: npPobTz ?? 0,
       })
     }
     // Clear form
     if (npNameRef.current) npNameRef.current.value = ''
     if (npDobRef.current) npDobRef.current.value = ''
     if (npTobRef.current) npTobRef.current.value = ''
-    if (npPobRef.current) npPobRef.current.value = ''
     if (npNotesRef.current) npNotesRef.current.value = ''
     if (npGenderRef.current) npGenderRef.current.value = ''
     if (npMbtiRef.current) npMbtiRef.current.value = ''
@@ -161,18 +182,25 @@ export default function ProfilePanel({ open, onClose, embedded }) {
     if (npDoshaRef.current) npDoshaRef.current.value = ''
     if (npArchetypeRef.current) npArchetypeRef.current.value = ''
     if (npLoveLanguageRef.current) npLoveLanguageRef.current.value = ''
+    setNpPobCity('')
+    setNpPobLat(0)
+    setNpPobLon(0)
+    setNpPobTz(0)
     setShowAddForm(false)
   }
 
   function handleEditPerson(p) {
     setEditingId(p.id)
     setShowAddForm(true)
+    setNpPobCity(p.pob || '')
+    setNpPobLat(p.birthLat || 0)
+    setNpPobLon(p.birthLon || 0)
+    setNpPobTz(p.birthTimezone ?? 0)
     setTimeout(() => {
       if (npNameRef.current) npNameRef.current.value = p.name || ''
       if (npRelRef.current) npRelRef.current.value = p.rel || 'other'
       if (npDobRef.current) npDobRef.current.value = p.dob || ''
       if (npTobRef.current) npTobRef.current.value = p.tob || ''
-      if (npPobRef.current) npPobRef.current.value = p.pob || ''
       if (npNotesRef.current) npNotesRef.current.value = p.notes || ''
       if (npGenderRef.current) npGenderRef.current.value = p.gender || ''
       if (npMbtiRef.current) npMbtiRef.current.value = p.mbtiType || ''
@@ -220,7 +248,17 @@ export default function ProfilePanel({ open, onClose, embedded }) {
             </div>
             <div className="pp-field">
               <div className="pp-label">Place of Birth</div>
-              <input ref={pobRef} className="pp-input" placeholder="City, Country" defaultValue={profile.pob} />
+              <PlaceAutocomplete
+                value={pobCity}
+                onChange={({ city, lat, lon, timezone }) => {
+                  setPobCity(city)
+                  setPobLat(lat)
+                  setPobLon(lon)
+                  setPobTz(timezone)
+                }}
+                className="pp-input"
+                placeholder="City, Country"
+              />
             </div>
             <div className="pp-field">
               <div className="pp-label">Gender</div>
@@ -431,7 +469,17 @@ export default function ProfilePanel({ open, onClose, embedded }) {
               </div>
               <div className="pp-field">
                 <div className="pp-label">Place of Birth</div>
-                <input ref={npPobRef} className="pp-input" placeholder="City, Country" />
+                <PlaceAutocomplete
+                  value={npPobCity}
+                  onChange={({ city, lat, lon, timezone }) => {
+                    setNpPobCity(city)
+                    setNpPobLat(lat)
+                    setNpPobLon(lon)
+                    setNpPobTz(timezone)
+                  }}
+                  className="pp-input"
+                  placeholder="City, Country"
+                />
               </div>
               <div className="pp-field">
                 <div className="pp-label">Gender</div>
