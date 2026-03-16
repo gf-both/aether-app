@@ -115,32 +115,56 @@ Keep responses 2-4 sentences. Be direct.`
     setMessages(m => ({ ...m, [selectedId]: newMessages }))
     setLoading(true)
     try {
-      const response = await simulateResponse(activeProfile, selectedGolem.label, userMsg, newMessages.length)
+      const systemPrompt = buildSystemPrompt(activeProfile, selectedGolem.label)
+      const response = await callGolem(systemPrompt, userMsg, chatMessages)
       setMessages(m => ({ ...m, [selectedId]: [...(m[selectedId] || newMessages), { role: 'golem', text: response }] }))
-    } catch {
-      setMessages(m => ({ ...m, [selectedId]: [...(m[selectedId] || []), { role: 'golem', text: "I couldn't respond. Try again." }] }))
+    } catch (err) {
+      console.error('Golem error:', err)
+      const fallback = err?.message?.includes('API key')
+        ? "I'm dormant — no key to animate me. Set VITE_ANTHROPIC_API_KEY to wake me."
+        : "I'm having trouble connecting right now. My essence is here — try again in a moment."
+      setMessages(m => ({ ...m, [selectedId]: [...(m[selectedId] || []), { role: 'golem', text: fallback }] }))
     }
     setLoading(false)
   }
 
-  async function simulateResponse(p, label, msg, count) {
-    const cloneResponses = [
-      `My instinct is to go deeper before acting. That's classic Life Path ${p?.lifePath || '?'} — I need to understand before I move.`,
-      `I notice I tend to overthink this. The ${p?.sign || '?'} in me wants to see all angles; sometimes that stalls me when I should just go.`,
-      `Honestly? My blind spot here is perfectionism. I want the conditions to be perfect before committing. What would I tell someone else in this situation? Ship it.`,
+  async function callGolem(systemPrompt, userMessage, history) {
+    const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
+    if (!apiKey || apiKey.startsWith('sk-ant-REPLACE')) {
+      throw new Error('No Anthropic API key configured')
+    }
+
+    // Build messages array from history + new user message
+    const messagesForClaude = [
+      ...history
+        .filter(m => m.role !== 'system')
+        .map(m => ({ role: m.role === 'golem' ? 'assistant' : 'user', content: m.text })),
+      { role: 'user', content: userMessage },
     ]
-    const compResponses = [
-      `Where you see one path, I see two. That's the gift of the complement — I can hold what you can't.`,
-      `Your ${p?.sign || '?'} energy pushes toward certainty. I offer you the value of not-knowing. Sit with the question longer.`,
-      `I complete what you start. The work you can't finish alone becomes possible in partnership. What part are you avoiding?`,
-    ]
-    const antagonistResponses = [
-      `Are you sure about that? Because from where I stand, you're justifying what you want to do anyway.`,
-      `That reasoning has a hole in it. The assumption you're making is that conditions will cooperate. They rarely do. What's your plan B?`,
-      `You're asking the wrong question. The real question is: what are you afraid of if this works?`,
-    ]
-    const responses = label === 'Complement' ? compResponses : label === 'Antagonist' ? antagonistResponses : cloneResponses
-    return responses[count % responses.length]
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 300,
+        system: systemPrompt,
+        messages: messagesForClaude,
+      }),
+    })
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}))
+      throw new Error(err?.error?.message || `API error ${response.status}`)
+    }
+
+    const data = await response.json()
+    return data.content[0].text
   }
 
   function createCustomGolem() {
