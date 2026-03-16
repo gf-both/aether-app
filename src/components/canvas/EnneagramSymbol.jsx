@@ -14,14 +14,14 @@ export default function EnneagramSymbol({ typeOverride, wingOverride } = {}) {
     if (!canvas) return
     let pulse = 0
 
-    // Use typeOverride from store, or fall back to static ENNEAGRAM_PROFILE
-    const activeType = typeOverride || ENNEAGRAM_PROFILE.type
-    const typeInfo = ENNEAGRAM_TYPES[activeType - 1]
-    // Show BOTH wings — primary wing from override or profile, both wings from type data
-    const primaryWing = wingOverride || (typeOverride ? typeInfo.wings[0] : ENNEAGRAM_PROFILE.wing)
-    const secondaryWing = typeInfo.wings.find(w => w !== primaryWing) || typeInfo.wings[1]
-    const integrationTo = typeOverride ? typeInfo.growth : ENNEAGRAM_PROFILE.integration.direction
-    const disintegrationTo = typeOverride ? typeInfo.stress : ENNEAGRAM_PROFILE.disintegration.direction
+    // Only compute type data when typeOverride is set — no fallback to static profile
+    const activeType = typeOverride || null
+    const typeInfo = activeType ? ENNEAGRAM_TYPES[activeType - 1] : null
+    // Show BOTH wings — primary wing from override only
+    const primaryWing = typeInfo ? (wingOverride || typeInfo.wings[0]) : null
+    const secondaryWing = typeInfo ? (typeInfo.wings.find(w => w !== primaryWing) || typeInfo.wings[1]) : null
+    const integrationTo = typeInfo ? typeInfo.growth : null
+    const disintegrationTo = typeInfo ? typeInfo.stress : null
 
     // Triangle: 3-6-9 and Hexad: 1-4-2-8-5-7-1
     const triangleIndices = [3, 6, 9]
@@ -311,7 +311,7 @@ export default function EnneagramSymbol({ typeOverride, wingOverride } = {}) {
       // Subtitle
       ctx.font = `${Math.max(8, R * .06)}px 'Cormorant Garamond',serif`
       ctx.fillStyle = 'rgba(170,180,200,.45)'
-      const subtitle = typeOverride ? typeInfo.name : ENNEAGRAM_PROFILE.name
+      const subtitle = typeInfo ? typeInfo.name : ''
       ctx.fillText(subtitle, cx, cy + centerLabelSize * .8)
 
       // Legend

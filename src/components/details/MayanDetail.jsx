@@ -239,7 +239,16 @@ function OracleCard({ entry, label, desc, col, isCenter }) {
 export default function MayanDetail() {
   const profile = useActiveProfile()
 
-  let P = MAYAN_PROFILE
+  if (!profile?.dob) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 8, opacity: 0.5, padding: 32 }}>
+        <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--gold)' }}>Add birth date to activate</div>
+        <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Open Profile to add your birth data</div>
+      </div>
+    )
+  }
+
+  let P = null
   let classicalProfile = null
   if (profile?.dob) {
     const [y, m, d] = profile.dob.split('-').map(Number)
@@ -247,6 +256,16 @@ export default function MayanDetail() {
       P = computeFullProfile(y, m, d)
       classicalProfile = getMayanProfile(d, m, y)
     }
+  }
+
+  if (!P) {
+    return (
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:12, opacity:.5, padding:40, textAlign:'center' }}>
+        <div style={{ fontSize:40 }}>🌸</div>
+        <div style={{ fontFamily:"'Cinzel',serif", fontSize:12, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)' }}>Add birth date to see your Mayan Calendar</div>
+        <div style={{ fontSize:11, color:'var(--muted-foreground)' }}>Open Profile to add your birth data</div>
+      </div>
+    )
   }
 
   const seal = P.seal

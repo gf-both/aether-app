@@ -28,19 +28,22 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
     if (!canvas) return
     let pulse = 0
 
-    // Compute Dreamspell profile
-    let P = MAYAN_PROFILE
-    if (profile?.dob) {
+    const hasDob = !!(profile?.dob)
+    const hasClassical = !!(classicalDaySign)
+
+    // Only compute if we have real data — never fall back to static profile
+    let P = null
+    if (hasDob) {
       const [y, m, d] = profile.dob.split('-').map(Number)
       if (y && m && d) P = computeFullProfile(y, m, d)
     }
-    const activeSealIdx = P.sealNum - 1
-    const activeToneIdx = P.toneNum - 1
+    const activeSealIdx = P ? P.sealNum - 1 : -1
+    const activeToneIdx = P ? P.toneNum - 1 : -1
 
     // Use classical data if provided, else fall back to Dreamspell
-    const centerDaySign = classicalDaySign || P.seal.name
-    const centerTone = classicalTone || P.toneNum
-    const centerKin = classicalKin || P.kin
+    const centerDaySign = classicalDaySign || P?.seal?.name || ''
+    const centerTone = classicalTone || P?.toneNum || 1
+    const centerKin = classicalKin || P?.kin || 0
     const centerEmoji = DAY_SIGN_EMOJI[centerDaySign] || '✨'
     const centerToneName = TONE_NAMES[centerTone] || ''
 
@@ -56,6 +59,21 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
 
       const cx = W / 2, cy = H / 2
       const R = Math.min(W, H) * .44
+
+      // Empty state when no profile dob and no explicit data
+      if (!hasDob && !hasClassical) {
+        ctx.font = `bold ${Math.max(11, R * .06)}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('Add birth date to activate', cx, cy - R * .07)
+        ctx.font = `${Math.max(9, R * .04)}px ui-sans-serif, system-ui`
+        ctx.fillStyle = 'rgba(201,168,76,0.2)'
+        ctx.fillText('Open Profile to add data', cx, cy + R * .07)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(draw)
+        return
+      }
 
       // Background radial glow
       const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.1)

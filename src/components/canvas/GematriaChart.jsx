@@ -5,16 +5,19 @@ import { DEFAULT_PRIMARY_PROFILE } from '../../data/primaryProfile'
 import { useActiveProfile } from '../../hooks/useActiveProfile'
 
 // Compute chart data from engine (dynamic, reads profile)
+// Returns null when name or dob is missing
 function getChartData(activeProfile) {
-  const { name, dob } = activeProfile || DEFAULT_PRIMARY_PROFILE
-  let day = 23, month = 1, year = 1981
+  const name = activeProfile?.name
+  const dob = activeProfile?.dob
+  if (!name || !dob) return null
+  let day = 1, month = 1, year = 2000
   if (dob) {
     const parts = dob.split('-')
     year = parseInt(parts[0], 10)
     month = parseInt(parts[1], 10)
     day = parseInt(parts[2], 10)
   }
-  const fullName = name || 'GASTON FRYDLEWSKI'
+  const fullName = name.toUpperCase()
   const eng = getGematriaProfile({ fullName, day, month, year })
 
   // Build a letterBreakdown compatible with the canvas drawing code:
@@ -52,6 +55,34 @@ export default function GematriaChart() {
     let pulse = 0
 
     const chartData = getChartData(profile)
+
+    // No name/dob — show empty state in canvas
+    if (!chartData) {
+      function drawEmpty() {
+        const dpr = window.devicePixelRatio || 1
+        const W = canvas.width / dpr, H = canvas.height / dpr
+        if (W < 10 || H < 10) { animRef.current = requestAnimationFrame(drawEmpty); return }
+        const ctx = canvas.getContext('2d')
+        ctx.save()
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        ctx.clearRect(0, 0, W, H)
+        const cx = W / 2, cy = H / 2
+        const R = Math.min(W, H) * .38
+        ctx.font = `bold ${Math.max(11, R * .06)}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('Add name & birth date', cx, cy - R * .07)
+        ctx.font = `${Math.max(9, R * .04)}px ui-sans-serif, system-ui`
+        ctx.fillStyle = 'rgba(201,168,76,0.2)'
+        ctx.fillText('Open Profile to activate', cx, cy + R * .07)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(drawEmpty)
+      }
+      drawEmpty()
+      return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
+    }
+
     const name = chartData.fullName.toUpperCase().replace(/\s/g, '')
     const breakdown = chartData.breakdown
     const totalHebrew = chartData.totalHebrew

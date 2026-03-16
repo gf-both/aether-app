@@ -196,43 +196,51 @@ export default function EnneagramDetail() {
   const storeInstinct = activeProfile?.enneagramInstinct || useAboveInsideStore((s) => s.enneagramInstinct)
   const [showQuizOverlay, setShowQuizOverlay] = useState(false)
 
-  // Resolve active type — store override or static default
-  const typeNum = storeType || ENNEAGRAM_PROFILE.type
+  // No enneagram type — show empty state
+  if (!storeType) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 8, opacity: 0.5, padding: 32 }}>
+        <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--gold)' }}>Take the Enneagram Quiz to activate</div>
+        <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Complete the quiz to see your type</div>
+      </div>
+    )
+  }
+
+  // Resolve active type from store only (no static fallback)
+  const typeNum = storeType
   const activeType = ENNEAGRAM_TYPES.find(t => t.number === typeNum)
 
-  // Resolve wings — primary from store or static, secondary is the other wing
-  const primaryWing = storeWing || (storeType ? activeType.wings[0] : ENNEAGRAM_PROFILE.wing)
+  // Resolve wings — primary from store or type default, secondary is the other wing
+  const primaryWing = storeWing || activeType.wings[0]
   const secondaryWing = activeType.wings.find(w => w !== primaryWing) || activeType.wings[1]
   const primaryWingType = ENNEAGRAM_TYPES.find(t => t.number === primaryWing)
   const secondaryWingType = ENNEAGRAM_TYPES.find(t => t.number === secondaryWing)
 
   // Resolve growth/stress arrows
-  const integrationTo = storeType ? activeType.growth : ENNEAGRAM_PROFILE.integration.direction
-  const disintegrationTo = storeType ? activeType.stress : ENNEAGRAM_PROFILE.disintegration.direction
+  const integrationTo = activeType.growth
+  const disintegrationTo = activeType.stress
   const integType = ENNEAGRAM_TYPES.find(t => t.number === integrationTo)
   const disintType = ENNEAGRAM_TYPES.find(t => t.number === disintegrationTo)
 
   // Resolve instinctual stacking
-  const instinct = storeInstinct || ENNEAGRAM_PROFILE.instinctual.dominant
+  const instinct = storeInstinct || 'sp'
   // Build stacking info
   const instVariants = ['sp', 'sx', 'so']
   const dominant = instinct
   const remaining = instVariants.filter(v => v !== dominant)
-  // Use static stacking if no store override and type matches default
-  const useStaticInstinct = !storeInstinct && !storeType
-  const stacking = useStaticInstinct ? ENNEAGRAM_PROFILE.instinctual : {
+  const stacking = storeInstinct ? {
     dominant,
     secondary: remaining[0],
     blind: remaining[1],
     stacking: `${dominant}/${remaining[0]}`,
-  }
+  } : { dominant: 'sp', secondary: 'sx', blind: 'so', stacking: 'sp/sx' }
 
   // Label
   const label = `${typeNum}w${primaryWing}`
   const fullName = `${activeType.name} with ${primaryWingType.name} Wing`
 
-  // Tritype (static, only applicable when using default profile)
-  const tritype = ENNEAGRAM_PROFILE.tritype
+  // Tritype — only show if user has set one
+  const tritype = null
 
   const tc = TRIAD_COLORS[activeType.triad]
 
@@ -401,7 +409,7 @@ export default function EnneagramDetail() {
       </div>
 
       {/* TRITYPE */}
-      <div>
+      {tritype && <div>
         <div style={S.sectionTitle}>Tritype</div>
         <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>

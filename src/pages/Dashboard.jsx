@@ -612,10 +612,18 @@ function WidgetContent({ widgetId }) {
         { val: np.birthday?.val || '?', label: 'Birthday' },
         { val: np.personality?.val || '?', label: 'Personality' },
         { val: np.maturity?.val || '?', label: 'Maturity' },
-      ] : NUM_CELLS
-      const lpVal = np?.lifePath?.val ?? 7
-      const lpLabel = np?.lifePath?.title || 'The Seeker'
-      const masterNums = dynamicCells.filter(c => [11,22,33].includes(Number(c.val))).map(c => c.val)
+      ] : null
+      if (!dynamicCells) return (
+        <>
+          <div className="ch"><span className="ct">Numerology &middot; Core Numbers</span><span className="ci">{'\u221E'}</span></div>
+          <div className="cb" style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', opacity:.4 }}>
+            <div style={{ fontFamily:"'Cinzel',serif", fontSize:11, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)', textAlign:'center' }}>Add name &amp; birth date</div>
+          </div>
+        </>
+      )
+      const lpVal = np?.lifePath?.val ?? '?'
+      const lpLabel = np?.lifePath?.title || ''
+      const masterNums = (dynamicCells ?? []).filter(c => [11,22,33].includes(Number(c.val))).map(c => c.val)
       return (
         <>
           <div className="ch"><span className="ct">Numerology &middot; Core Numbers</span><span className="ci">{'\u221E'}</span></div>
@@ -1651,7 +1659,13 @@ function CosmicNumWidget() {
     { val: np.birthday?.val || '?', label: 'Birthday' },
     { val: np.personality?.val || '?', label: 'Personality' },
     { val: np.maturity?.val || '?', label: 'Maturity' },
-  ] : NUM_CELLS
+  ] : null
+  if (!cells) return <>
+    <div className="ch"><span className="ct">Numerology</span></div>
+    <div className="cb" style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', opacity:.4 }}>
+      <div style={{ fontFamily:"'Cinzel',serif", fontSize:11, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)' }}>Add name &amp; birth date</div>
+    </div>
+  </>
   return <>
     <div className="ch"><span className="ct">Numerology</span></div>
     <div className="cb">
