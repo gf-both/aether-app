@@ -58,11 +58,12 @@ export default function GematriaChart() {
     const breakdown = chartData.breakdown
     const totalHebrew = chartData.totalHebrew
 
-    // Build letter frequency map
+    // Build letter frequency map (for bar heights)
     const freq = {}
     breakdown.forEach(b => { freq[b.letter] = (freq[b.letter] || 0) + 1 })
-    const freqEntries = Object.entries(freq).sort((a, b) => b[1] - a[1])
-    const maxFreq = Math.max(...freqEntries.map(e => e[1]))
+    // Display letters in NAME ORDER (not frequency order) so name reads correctly
+    const freqEntries = breakdown.map(b => [b.letter, freq[b.letter]])
+    const maxFreq = Math.max(...Object.values(freq))
 
     // Map each name letter to its closest Hebrew letter index
     const hebrewNames = HEBREW_ALPHABET.map(h => h.letter)
@@ -297,7 +298,7 @@ export default function GematriaChart() {
       ctx.font = "6px 'Cinzel',serif"
       ctx.fillStyle = 'rgba(201,168,76,.3)'
       ctx.textAlign = 'center'
-      ctx.fillText('LETTER FREQUENCY', W / 2, barArea.y - 6)
+      ctx.fillText(name, W / 2, barArea.y - 6)
 
       freqEntries.forEach(([letter, count], i) => {
         const bx = barStartX + i * (barW + 2)
