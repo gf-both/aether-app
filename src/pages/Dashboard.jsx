@@ -1037,6 +1037,29 @@ function ConstellationLines({ wrapperRef }) {
   )
 }
 
+/* ── Mobile Bottom Navigation ── */
+function MobileBottomNav({ activeNav, setActiveNav, setActiveDetail, setOracleOpen, setActivePanel }) {
+  return (
+    <div className="mobile-bottom-nav">
+      <button
+        className={activeNav === 'dashboard' ? 'active' : ''}
+        onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }}
+      >🏠<span>Home</span></button>
+      <button
+        className={activeNav === 'profile' ? 'active' : ''}
+        onClick={() => { setActiveDetail('profile'); setActiveNav('profile') }}
+      >👤<span>Profile</span></button>
+      <button
+        onClick={() => setOracleOpen(true)}
+      >◈<span>Oracle</span></button>
+      <button
+        className={activeNav === 'practitioner' ? 'active' : ''}
+        onClick={() => { setActiveDetail('practitioner'); setActiveNav('practitioner') }}
+      >👥<span>Practice</span></button>
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
   const setWidgetOrder = useAboveInsideStore((s) => s.setWidgetOrder)
@@ -1044,8 +1067,20 @@ export default function Dashboard() {
   const toggleWidgetVisibility = useAboveInsideStore((s) => s.toggleWidgetVisibility)
   const activeDetail = useAboveInsideStore((s) => s.activeDetail)
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
+  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const activeNav = useAboveInsideStore((s) => s.activeNav)
+  const setOracleOpen = useAboveInsideStore((s) => s.setOracleOpen)
+  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const layoutMode = useAboveInsideStore((s) => s.layoutMode)
   const profile = useAboveInsideStore((s) => s.primaryProfile)
+
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768)
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   const [dragIdx, setDragIdx] = useState(null)
   const [overIdx, setOverIdx] = useState(null)
@@ -1113,14 +1148,14 @@ export default function Dashboard() {
     const DetailComponent = DETAIL_COMPONENTS[activeDetail]
     const title = DETAIL_TITLES[activeDetail]
     return (
-      <div style={{
+      <div className="dash-root" style={{
         display: 'grid', gridTemplateColumns: '52px 1fr', gridTemplateRows: '46px 1fr 42px',
         gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
       }}>
         <Starfield />
         <Sidebar />
         <TopBar />
-        <div style={{
+        <div className="dash-content" style={{
           gridColumn: 2, gridRow: 2, ...CARD_BASE,
           display: 'flex', flexDirection: 'column', animation: 'fadeUp .35s ease backwards',
         }}>
@@ -1139,6 +1174,7 @@ export default function Dashboard() {
           </div>
         </div>
         <StatusBar />
+        {isMobile && <MobileBottomNav activeNav={activeNav} setActiveNav={setActiveNav} setActiveDetail={setActiveDetail} setOracleOpen={setOracleOpen} setActivePanel={setActivePanel} />}
       </div>
     )
   }
@@ -1147,7 +1183,7 @@ export default function Dashboard() {
   const isGrid = layoutMode === 'grid'
   if (isGrid) {
     return (
-      <div style={{
+      <div className="dash-root" style={{
         display: 'grid', gridTemplateColumns: '52px 1fr',
         gridTemplateRows: '46px 1fr 42px', gap: '7px', padding: '7px 7px 7px 0',
         width: '100%', height: '100vh', position: 'relative', zIndex: 1,
@@ -1155,7 +1191,7 @@ export default function Dashboard() {
         <Starfield />
         <Sidebar />
         <TopBar />
-        <div style={{
+        <div className="dash-content" style={{
           gridColumn: 2, gridRow: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
           <DemoBanner />
@@ -1219,13 +1255,14 @@ export default function Dashboard() {
           </div>
         </div>
         <StatusBar />
+        {isMobile && <MobileBottomNav activeNav={activeNav} setActiveNav={setActiveNav} setActiveDetail={setActiveDetail} setOracleOpen={setOracleOpen} setActivePanel={setActivePanel} />}
       </div>
     )
   }
 
   // Bento, Focus, Magazine, Cosmic
   return (
-    <div style={{
+    <div className="dash-root" style={{
       display: 'grid', gridTemplateColumns: '52px 1fr', gridTemplateRows: '46px 1fr 42px',
       gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
     }}>
@@ -1237,6 +1274,7 @@ export default function Dashboard() {
       {layoutMode === 'magazine' && <MagazineLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} profile={profile} />}
       {layoutMode === 'cosmic' && <CosmicLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       <StatusBar />
+      {isMobile && <MobileBottomNav activeNav={activeNav} setActiveNav={setActiveNav} setActiveDetail={setActiveDetail} setOracleOpen={setOracleOpen} setActivePanel={setActivePanel} />}
     </div>
   )
 }

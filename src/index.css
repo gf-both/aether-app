@@ -1275,3 +1275,128 @@ html[data-theme="manuscript-day"] body,
   .apb-name{font-size:9px}
   .apb-detail{display:none}
 }
+
+/* ══════════════════════════════════════════
+   MOBILE LAYOUT FIXES (max-width: 768px)
+   ══════════════════════════════════════════ */
+
+/* 1. Hide sidebar on mobile */
+@media (max-width: 768px) {
+  .sb {
+    display: none !important;
+  }
+}
+
+/* 2. Fix main layout grid — sidebar col gone, use full width */
+@media (max-width: 768px) {
+  .dash-root {
+    grid-template-columns: 1fr !important;
+    padding-left: 7px !important;
+  }
+  .dash-root > .sb {
+    display: none !important;
+  }
+  /* TopBar spans col 1 now */
+  .tb {
+    grid-column: 1 !important;
+  }
+  /* Detail / main content spans col 1 */
+  .dash-content {
+    grid-column: 1 !important;
+  }
+}
+
+/* 3. TopBar — hide chips, truncate name on mobile */
+@media (max-width: 768px) {
+  .tb-chips {
+    display: none !important;
+  }
+  .apb-detail {
+    display: none !important;
+  }
+  .apb-name {
+    font-size: 10px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px !important;
+  }
+  .tb-brand {
+    font-size: 9px !important;
+    letter-spacing: .08em !important;
+  }
+  .ttime {
+    display: none !important;
+  }
+}
+
+/* 4. Widget cards — full width on mobile */
+@media (max-width: 768px) {
+  .constellation-row {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    height: 340px !important;
+  }
+  /* Cosmic layout — stack columns */
+  .cosmic-layout {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 5. Bottom navigation — mobile only */
+.mobile-bottom-nav {
+  display: none;
+}
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: var(--topbar-bg, rgba(3,3,18,.95));
+    border-top: 1px solid var(--glass-border, rgba(201,168,76,.15));
+    z-index: 200;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 8px;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .mobile-bottom-nav button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    background: none;
+    border: none;
+    color: var(--text2);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: color .2s;
+  }
+  .mobile-bottom-nav button span {
+    font-family: 'Cinzel', serif;
+    font-size: 7px;
+    letter-spacing: .05em;
+    color: var(--text3);
+  }
+  .mobile-bottom-nav button.active {
+    color: var(--gold);
+  }
+  .mobile-bottom-nav button.active span {
+    color: var(--gold2);
+  }
+  /* Prevent content hiding behind bottom nav */
+  .dash-root {
+    padding-bottom: 72px !important;
+  }
+}
