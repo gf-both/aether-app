@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@supabase/supabase-js": "^2.99.1",
     "astronomia": "^4.2.0",
     "astronomy-engine": "^2.1.19",
