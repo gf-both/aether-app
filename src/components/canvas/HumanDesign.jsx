@@ -92,13 +92,34 @@ export default function HumanDesign() {
     if (!canvas) return
     let pulse = 0
 
+    // Empty state when no profile
+    if (!chart) {
+      function drawEmpty() {
+        const dpr = window.devicePixelRatio || 1
+        const W = canvas.width / dpr, H = canvas.height / dpr
+        const ctx = canvas.getContext('2d')
+        ctx.save(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H)
+        const R = Math.min(W, H) * .4
+        ctx.font = `bold ${Math.max(11, R * .12)}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+        ctx.fillText('◈', W/2, H/2 - R * .15)
+        ctx.font = `${Math.max(9, R * .07)}px 'Cinzel',serif`
+        ctx.fillText('Add birth date to activate', W/2, H/2 + R * .1)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(drawEmpty)
+      }
+      drawEmpty()
+      return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
+    }
+
     // Build center defined states from engine output
     const centersDefined = chart
       ? CENTERS.map(c => {
           const engineKey = c.name === 'G/SELF' ? 'G_SELF' : c.name
           return chart.centers[engineKey]?.defined ?? c.defined
         })
-      : CENTERS.map(c => c.defined)
+      : CENTERS.map(c => false) // no chart = nothing defined
 
     // Build channel defined states
     const channelsDefined = chart
