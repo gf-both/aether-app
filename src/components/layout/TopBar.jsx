@@ -24,7 +24,7 @@ const NAV_SECTIONS = [
   { icon: '\u221E', label: 'Numerology', widget: 'num' },
   { icon: '\u2B21', label: 'Gene Keys', widget: 'gk' },
   null,
-  { icon: '\uD83D\uDCAE', label: 'Mayan Calendar', widget: 'mayan' },
+  { icon: '\uD83C\uDF38', label: 'Mayan Calendar', widget: 'mayan' },
   { icon: '\u262F', label: 'Enneagram', widget: 'enn' },
   { icon: '\uD83D\uDC09', label: 'Chinese Zodiac', widget: 'chi' },
   null,
@@ -38,9 +38,16 @@ const NAV_SECTIONS = [
   { icon: '\uD83D\uDC64', label: 'Profiles', widget: 'profile' },
   null,
   { icon: '\uD83D\uDC8E', label: 'Pricing', widget: 'pricing' },
+  null,
+  { icon: '\uD83E\uDEEC', label: 'Golem', widget: 'golem' },
+  { icon: '\uD83E\uDDED', label: 'Career', widget: 'career' },
+  null,
   { icon: '\uD83D\uDCAC', label: 'AI Guide', panel: 'aichat' },
   { icon: '\uD83C\uDFE5', label: 'Practitioner', widget: 'practitioner' },
   { icon: '\uD83D\uDCCB', label: 'Client Portal', widget: 'client' },
+  null,
+  { icon: '\u2728', label: 'AETHER', widget: 'aether' },
+  { icon: '\uD83C\uDFDB\uFE0F', label: 'Company', widget: 'company' },
 ]
 
 function HamburgerMenu() {
@@ -650,7 +657,7 @@ export default function TopBar() {
     <div className="tb">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
         <HamburgerMenu />
-        <span className="tb-brand" style={{ cursor: 'pointer' }} onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }}>ABOVE + INSIDE</span>
+        <span className="tb-brand" style={{ cursor: 'pointer' }} onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }}>AETHER</span>
         <ProfileSwitcher />
         <LayoutSwitcher />
       </div>
