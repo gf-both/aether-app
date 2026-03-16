@@ -29,6 +29,8 @@ const NAV_ITEMS = [
   { icon: '\uD83D\uDCAC', label: 'AI Guide', id: 'aichat', panel: 'aichat' },
   { icon: '\uD83C\uDFE5', label: 'Practitioner', id: 'practitioner', widget: 'practitioner' },
   { icon: '\uD83D\uDCCB', label: 'Client Portal', id: 'client', widget: 'client' },
+  'sep',
+  { icon: '\u2728', label: 'AETHER', id: 'aether', widget: 'aether' },
 ]
 
 export default function Sidebar() {
