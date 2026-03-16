@@ -229,6 +229,60 @@ function calcPersonality(fullName) {
   }
 }
 
+/** Birthday meanings by day (1-31) */
+function getBirthdayMeaning(day, reduced) {
+  const titles = {
+    1: 'The Originator', 2: 'The Peacemaker', 3: 'The Communicator',
+    4: 'The Builder', 5: 'The Freedom Seeker', 6: 'The Nurturer',
+    7: 'The Seeker', 8: 'The Powerhouse', 9: 'The Humanitarian',
+    10: 'The Innovator', 11: 'The Visionary', 12: 'The Creative',
+    13: 'The Transformer', 14: 'The Explorer', 15: 'The Healer',
+    16: 'The Mystic', 17: 'The Strategist', 18: 'The Fighter',
+    19: 'The Independent', 20: 'The Diplomat', 21: 'The Performer',
+    22: 'The Master Builder', 23: 'The Royal Star', 24: 'The Harmonizer',
+    25: 'The Analyst', 26: 'The Executive', 27: 'The Counselor',
+    28: 'The Pioneer', 29: 'The Idealist', 30: 'The Artist',
+    31: 'The Architect',
+  }
+  const descs = {
+    1: 'Independent, original, driven to lead and create from scratch',
+    2: 'Cooperative, sensitive, gifted in harmony and diplomacy',
+    3: 'Expressive, creative, brings joy and communication everywhere',
+    4: 'Disciplined, methodical, builds lasting foundations',
+    5: 'Versatile, adventurous, thrives on freedom and change',
+    6: 'Responsible, caring, devoted to family and community',
+    7: 'Introspective, analytical, seeks deep truth and wisdom',
+    8: 'Ambitious, authoritative, manifests material and spiritual power',
+    9: 'Compassionate, wise, serves humanity at large',
+    10: 'Leadership through innovation — the pioneer who reinvents',
+    11: 'Master intuitive — channels inspiration, illuminates others',
+    12: 'Imaginative, uplifting, expresses through art and words',
+    13: 'Pragmatic and transformative — rebuilds what others abandon',
+    14: 'Adaptable, curious, connects ideas across domains',
+    15: 'Loving and magnetic — heals through presence and beauty',
+    16: 'Spiritual seeker — dissolves illusions to find higher truth',
+    17: 'Business acumen meets spiritual depth — the master planner',
+    18: 'Courageous and intense — fights for what matters most',
+    19: 'Self-reliant pioneer — learns through independence',
+    20: 'Sensitive mediator — bridges opposing forces with grace',
+    21: 'Radiant communicator — life is a stage and a gift',
+    22: 'Master Builder — turns grand visions into concrete reality',
+    23: 'Versatile, communicative, adventurous, progressive',
+    24: 'Devoted and artistic — creates beauty through service and love',
+    25: 'Penetrating intellect — seeks knowledge beyond surface level',
+    26: 'Practical visionary — builds empires through organized effort',
+    27: 'Compassionate advisor — synthesizes wisdom for others',
+    28: 'Bold initiator — leads with heart and breaks new ground',
+    29: 'Idealistic and intuitive — inspires through vision and art',
+    30: 'Creative expression — brings originality to everything touched',
+    31: 'Practical architect — builds systems that stand the test of time',
+  }
+  return {
+    title: titles[day] || titles[reduced] || 'The Seeker',
+    desc: `Born on the ${day}${day > 20 ? 'th' : day === 1 ? 'st' : day === 2 ? 'nd' : day === 3 ? 'rd' : 'th'} — ${descs[day] || descs[reduced] || 'a unique combination of energies'}`,
+  }
+}
+
 /** Birthday: raw day + reduced form */
 function calcBirthday(day) {
   const reduced = reduce(day)
@@ -502,8 +556,7 @@ export function getNumerologyProfile({
       birthday: {
         val: bday.val,
         reduced: bday.reduced,
-        title: 'The Royal Star',
-        desc: `Born on the ${day}th — versatile, communicative, adventurous, progressive`,
+        ...getBirthdayMeaning(day, bday.reduced),
       },
       personality: {
         val: pers.val,
