@@ -31,6 +31,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '💫', label: 'Dating', id: 'dating', widget: 'dating' },
   { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
   { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aether', widget: 'aether' },
+  { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
 
   { type: 'section', label: 'TOOLS' },
   { type: 'item', icon: '💬', label: 'AI Guide', id: 'aichat', panel: 'aichat' },

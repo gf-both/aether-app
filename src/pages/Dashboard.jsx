@@ -58,6 +58,7 @@ import ClientPortal from './ClientPortal'
 import AIAgentsPage from './AIAgentsPage'
 import CompanyPage from './CompanyPage'
 import GolemPage from './GolemPage'
+import WendyPage from './WendyPage'
 import DatingPage from './DatingPage'
 import SettingsPage from './SettingsPage'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
@@ -332,6 +333,7 @@ const DETAIL_COMPONENTS = {
   aether: AIAgentsPage,
   company: CompanyPage,
   golem: GolemPage,
+  wendy: WendyPage,
   dating: DatingPage,
   settings: SettingsPage,
 }
@@ -372,6 +374,7 @@ const DETAIL_TITLES = {
   aether: 'AI Agents \u2014 AETHER Team',
   company: 'AETHER \u2014 Company Dashboard',
   golem: 'Golem \u2014 Talk to Your Clone',
+  wendy: 'Wendy \u2014 Org Intelligence',
   dating: 'Dating \u2014 Golem Matching',
   settings: 'Settings',
 }
