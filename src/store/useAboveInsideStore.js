@@ -21,6 +21,10 @@ export const useAboveInsideStore = create(
       setPrimaryProfile: (updates) =>
         set((s) => ({ primaryProfile: { ...s.primaryProfile, ...updates } })),
 
+      // View another person's chart without overwriting primary
+      activeViewProfile: null,
+      setActiveViewProfile: (profile) => set({ activeViewProfile: profile }),
+
       people: [...DEFAULT_PEOPLE],
       addPerson: (person) =>
         set((s) => ({ people: [...s.people, { ...person, id: Date.now() }] })),

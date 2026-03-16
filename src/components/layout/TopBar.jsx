@@ -232,6 +232,8 @@ function ProfileSwitcher() {
   const profile = useAboveInsideStore((s) => s.primaryProfile)
   const people = useAboveInsideStore((s) => s.people)
   const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const setActiveViewProfile = useAboveInsideStore((s) => s.setActiveViewProfile)
   const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
@@ -253,32 +255,39 @@ function ProfileSwitcher() {
   ]
 
   function switchTo(p) {
+    // NEVER overwrite primaryProfile — it's permanent user data
+    // Instead, use setActiveViewProfile to temporarily view another person
     if (p._isPrimary) {
-      setPrimaryProfile(originalPrimary)
+      setActiveViewProfile(null) // reset to primary
     } else {
-      setPrimaryProfile({
+      setActiveViewProfile({
         name: p.name, dob: p.dob, tob: p.tob || '', pob: p.pob || '',
         emoji: p.emoji || '\u2726', sign: p.sign || '?',
         asc: p.asc || '?', moon: p.moon || '?',
         hdType: p.hdType || '?', hdProfile: p.hdProfile || '?',
         hdAuth: p.hdAuth || '?', hdDef: p.hdDef || '?',
         lifePath: p.lifePath || '?', crossGK: p.crossGK || '?',
+        _isPerson: true,
       })
     }
     setOpen(false)
   }
 
+  const displayProfile = activeViewProfile || profile
   return (
     <div ref={ref} style={{ position: 'relative', minWidth: 0 }}>
+      {activeViewProfile && (
+        <div style={{ position: 'absolute', top: -2, right: -2, width: 8, height: 8, borderRadius: '50%', background: 'var(--gold)', border: '1px solid var(--bg)' }} title="Viewing secondary profile" />
+      )}
       <div className="active-profile-bar" onClick={() => setOpen(!open)} style={{ cursor: 'pointer' }}>
-        <div className="apb-avatar">{profile.emoji}</div>
+        <div className="apb-avatar">{displayProfile.emoji}</div>
         <div style={{ minWidth: 0 }}>
           <div className="apb-name" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {profile.name}
+            {displayProfile.name}
             <span style={{ fontSize: 7, opacity: .5 }}>{open ? '\u25B2' : '\u25BC'}</span>
           </div>
           <div className="apb-detail">
-            {profile.hdType} {profile.hdProfile} &middot; {formatDOB(profile.dob)} &middot; {profile.tob || '?'} &middot; {profile.pob}
+            {displayProfile.hdType} {displayProfile.hdProfile} &middot; {formatDOB(profile.dob)} &middot; {profile.tob || '?'} &middot; {profile.pob}
           </div>
         </div>
       </div>
