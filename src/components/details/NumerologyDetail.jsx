@@ -72,12 +72,12 @@ function NumCircle({ val, color, size = 54, label }) {
 
 /** Parse profile DOB and name, return {day,month,year,fullName} */
 function parseProfileInputs(profile) {
-  const dob = profile?.dob || '1981-01-23'
-  const [y, m, d] = dob.split('-').map(Number)
-  // Build full name from profile or fall back to default
+  const dob = profile?.dob || ''
+  const [y, m, d] = dob ? dob.split('-').map(Number) : [0, 0, 0]
+  // Build full name from profile
   const fullName = profile?.name
     ? profile.name.toUpperCase()
-    : 'GASTON FRYDLEWSKI'
+    : ''
   return { day: d, month: m, year: y, fullName }
 }
 
@@ -90,9 +90,10 @@ export default function NumerologyDetail() {
   const { day, month, year, fullName } = parseProfileInputs(activeProfile)
 
   const profile = useMemo(() => {
+    if (!activeProfile?.dob || !fullName) return null
     try {
       return getNumerologyProfileFromDob(
-        activeProfile?.dob || '1981-01-23',
+        activeProfile.dob,
         fullName,
         {
           currentYear:  now.getFullYear(),
@@ -106,7 +107,7 @@ export default function NumerologyDetail() {
     }
   }, [activeProfile?.dob, fullName])
 
-  if (!profile) return <div style={S.panel}>Error computing profile.</div>
+  if (!profile) return <div style={S.panel}>{(!activeProfile?.dob || !fullName) ? 'No profile data. Please set your birth date and name in settings.' : 'Error computing profile.'}</div>
 
   const { core, pinnacles, challenges, personal, extended, derivations } = profile
 

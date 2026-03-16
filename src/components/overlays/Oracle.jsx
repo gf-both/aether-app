@@ -5,12 +5,20 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
-const ORACLE_RESPONSES = {
-  default: "I sense your question carries the weight of your 3/5 Projector nature — always the one who must understand before being understood. What specifically calls to you in your chart today?",
-  natal: "Your Sun at 4° Aquarius speaks of the revolutionary who belongs to the future. With Virgo rising, you bring precision to your vision — a rare combination of idealism and methodology.",
-  hd: "As a Projector with Emotional Authority, your gift is to see and guide. But you must wait for the wave to settle before any significant decision. What invitation are you currently holding?",
-  geneKeys: "Gate 41 — the Fantasist awakening into Anticipation. Your life's work is to transform creative fantasy into grounded vision. Where do you feel the most contracted right now?",
-  general: "The patterns in your chart form a consistent theme: The Wisdom Seeker who holds knowledge until invited to share. Your Life Path 7 and Projector type both point toward mastery through depth, not breadth.",
+function buildOracleResponses(profile) {
+  const hdType = profile?.hdType || 'Projector'
+  const hdProfile = profile?.hdProfile || ''
+  const hdAuth = profile?.hdAuth || 'Emotional'
+  const sign = profile?.sign || 'Sun'
+  const asc = profile?.asc || ''
+  const lifePath = profile?.lifePath || ''
+  return {
+    default: `I sense your question carries the weight of your${hdProfile ? ` ${hdProfile}` : ''} ${hdType} nature — always the one who must understand before being understood. What specifically calls to you in your chart today?`,
+    natal: `Your ${sign} Sun speaks of unique solar consciousness${asc ? ` — and with ${asc} rising, you bring that distinct quality to every encounter` : ''}. What aspect of your chart calls to you?`,
+    hd: `As a ${hdType} with ${hdAuth} Authority, your strategy shapes every significant decision. ${hdType === 'Projector' ? 'Wait for the invitation and let recognition guide you.' : hdType === 'Generator' ? 'Trust your sacral response.' : hdType === 'Manifesting Generator' ? 'Respond, then inform.' : 'Your aura leads the way.'} What invitation are you currently holding?`,
+    geneKeys: `Your Gene Keys profile holds the map of your evolution — from Shadow to Gift to Siddhi. Where do you feel the most contracted right now?`,
+    general: `The patterns in your chart form a consistent theme of depth and mastery.${lifePath ? ` Your Life Path ${lifePath} and ${hdType} type both point toward mastery through authenticity.` : ''} What wisdom are you seeking today?`,
+  }
 }
 
 const QUICK_PROMPTS_BY_THEME = {
@@ -20,13 +28,13 @@ const QUICK_PROMPTS_BY_THEME = {
   default: ['My soul purpose', 'Key shadow work', 'What to focus now', 'Highest expression'],
 }
 
-function getQuickResponse(text) {
+function getQuickResponse(text, responses) {
   const t = text.toLowerCase()
-  if (t.includes('natal') || t.includes('sun') || t.includes('moon') || t.includes('rising') || t.includes('ascend')) return ORACLE_RESPONSES.natal
-  if (t.includes('human design') || t.includes('projector') || t.includes('authority') || t.includes('strategy') || t.includes(' hd ')) return ORACLE_RESPONSES.hd
-  if (t.includes('gene key') || t.includes('gate') || t.includes('shadow') || t.includes('gift')) return ORACLE_RESPONSES.geneKeys
-  if (t.includes('life path') || t.includes('numerology') || t.includes('purpose') || t.includes('soul')) return ORACLE_RESPONSES.general
-  return ORACLE_RESPONSES.default
+  if (t.includes('natal') || t.includes('sun') || t.includes('moon') || t.includes('rising') || t.includes('ascend')) return responses.natal
+  if (t.includes('human design') || t.includes('projector') || t.includes('authority') || t.includes('strategy') || t.includes(' hd ')) return responses.hd
+  if (t.includes('gene key') || t.includes('gate') || t.includes('shadow') || t.includes('gift')) return responses.geneKeys
+  if (t.includes('life path') || t.includes('numerology') || t.includes('purpose') || t.includes('soul')) return responses.general
+  return responses.default
 }
 
 export default function Oracle({ open, onClose }) {
@@ -36,14 +44,16 @@ export default function Oracle({ open, onClose }) {
   const activeDetail = useAboveInsideStore(s => s.activeDetail)
 
   const hdType = profile?.hdType || 'Projector'
-  const hdProfile = profile?.hdProfile || '3/5'
+  const hdProfile = profile?.hdProfile || ''
   const hdAuth = profile?.hdAuth || 'Emotional'
+
+  const oracleResponses = buildOracleResponses(profile)
 
   const [messages, setMessages] = useState([
     {
       id: 1,
       role: 'ai',
-      text: `Welcome, ${profile?.name || 'seeker'}. I am Oracle — your cosmic intelligence guide. I hold the map of your ${hdType} nature, your ${profile?.sign || 'Sun'} solar light, and the keys to your deepest patterns. What calls to you today?`,
+      text: `Welcome, ${profile?.name || 'seeker'}. I am Oracle — your cosmic intelligence guide. I hold the map of your ${hdType} nature, your ${profile?.sign ? `${profile.sign} solar light` : 'solar light'}, and the keys to your deepest patterns. What calls to you today?`,
     }
   ])
   const [input, setInput] = useState('')
@@ -81,7 +91,7 @@ export default function Oracle({ open, onClose }) {
     const delay = 500 + Math.random() * 1000
     await new Promise(r => setTimeout(r, delay))
 
-    const aiText = getQuickResponse(trimmed)
+    const aiText = getQuickResponse(trimmed, oracleResponses)
     setTyping(false)
     setMessages(prev => [...prev, { id: Date.now() + 1, role: 'ai', text: aiText }])
   }, [typing])

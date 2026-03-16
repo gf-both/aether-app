@@ -162,6 +162,7 @@ function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
   return { dragId, overIdx, startDrag }
 }
 
+// TODO: compute from profile using transitsEngine — currently static demo data
 const TRANSITS = [
   { sym: '\u2609', color: '#f0c040', sign: "Pisces 13\u00B047\u2032", aspect: '\u25B3 Natal Moon \u00B7 Trine', aspLabel: 'Trine \u25B3', aspColor: 'rgba(255,200,60,.7)', pct: 78, gradient: 'linear-gradient(90deg,#f0c040,#e8c07a)' },
   { sym: '\u263D', color: '#ccd5f0', sign: "Virgo 28\u00B012\u2032", aspect: '\u260D Natal Sun \u00B7 Opposition', aspLabel: 'Oppos \u260D', aspColor: 'rgba(200,80,80,.8)', pct: 92, gradient: 'linear-gradient(90deg,#8899cc,#aabbee)' },
@@ -351,10 +352,11 @@ const DETAIL_TITLES = {
 function NatalWidget() {
   const [showAspects, setShowAspects] = useState(true)
   const [showHouses, setShowHouses] = useState(true)
+  const _nwProfile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
   return (
     <>
       <div className="ch">
-        <span className="ct">Natal &middot; Aquarius Sun &middot; Virgo ASC</span>
+        <span className="ct">Natal{_nwProfile?.sign ? ` \u00B7 ${_nwProfile.sign} Sun` : ''}{_nwProfile?.asc ? ` \u00B7 ${_nwProfile.asc} ASC` : ''}</span>
         <span style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           <button
             onClick={(e) => { e.stopPropagation(); setShowAspects(a => !a) }}
@@ -393,7 +395,7 @@ function TarotWidget() {
     const [y, m, d] = profile.dob.split('-').map(Number)
     result = getTarotBirthCards({ day: d, month: m, year: y })
   } else {
-    result = getTarotBirthCards({ day: 23, month: 1, year: 1981 })
+    return <div style={{ padding: 16, color: 'var(--muted-foreground)', fontStyle: 'italic', fontSize: 12 }}>Set your birth date in settings to see your Tarot birth cards.</div>
   }
   const { primaryCard, pairCard, birthNumber } = result
   const ROMAN = { 1:'I',2:'II',3:'III',4:'IV',5:'V',6:'VI',7:'VII',8:'VIII',9:'IX',10:'X',11:'XI',12:'XII',13:'XIII',14:'XIV',15:'XV',16:'XVI',17:'XVII',18:'XVIII',19:'XIX',20:'XX',21:'XXI',22:'0' }
@@ -1532,8 +1534,9 @@ function CosmicIntegralWidget() {
   </>
 }
 function CosmicNatalWidget() {
+  const _cnwProfile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
   return <>
-    <div className="ch"><span className="ct">Natal · Aquarius Sun · Virgo ASC</span></div>
+    <div className="ch"><span className="ct">Natal{_cnwProfile?.sign ? ` · ${_cnwProfile.sign} Sun` : ''}{_cnwProfile?.asc ? ` · ${_cnwProfile.asc} ASC` : ''}</span></div>
     <div className="cb" style={{ minHeight: 260 }}><NatalWheel showAspects showHouses /></div>
   </>
 }

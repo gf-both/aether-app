@@ -129,6 +129,10 @@ export const useAboveInsideStore = create(
       oracleOpen: false,
       setOracleOpen: (v) => set({ oracleOpen: v }),
 
+      // Sidebar collapse state
+      sidebarCollapsed: false,
+      setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
+
       // Active nav highlight
       activeNav: 'dashboard',
       setActiveNav: (id) => set({ activeNav: id }),

@@ -8,12 +8,13 @@ export default function ChineseZodiac() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const hovRef = useRef(-1)
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const profile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
 
   const CHINESE_PROFILE = useMemo(() => {
     try {
-      const dob = primaryProfile?.dob || '1981-01-23'
-      const tob = primaryProfile?.tob || '22:10'
+      const dob = profile?.dob || ''
+      const tob = profile?.tob || '12:00'
+      if (!dob) return { animal: '', element: '', yinYang: '', stem: '', stemCn: '', branchCn: '', currentYear: { label: '', chinese_str: '' } }
       const [hour, minute] = (tob || '12:00').split(':').map(Number)
       return getChineseProfileFromDob(dob, { hour: isNaN(hour) ? 12 : hour, minute: isNaN(minute) ? 0 : minute })
     } catch (e) {
@@ -21,7 +22,7 @@ export default function ChineseZodiac() {
       return { animal: 'Monkey', element: 'Metal', yinYang: 'Yang', stem: 'Gēng', stemCn: '庚', branchCn: '申',
                currentYear: { label: 'Fire Horse', chinese_str: '丙午' } }
     }
-  }, [primaryProfile?.dob, primaryProfile?.tob])
+  }, [profile?.dob, profile?.tob])
 
   useCanvasResize(canvasRef)
 

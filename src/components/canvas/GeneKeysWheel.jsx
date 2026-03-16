@@ -1,15 +1,34 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { SPHERES } from '../../data/geneKeysData'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { SPHERES, computeGeneKeysData } from '../../data/geneKeysData'
 
 // GeneKeysWheel uses SPHERES derived from the engine (via geneKeysData.js).
 // To render a custom profile, pass a `spheres` prop (array of sphere objects).
-// Default falls back to the statically-computed default profile (Gaston).
+// Default falls back to the statically-computed default profile.
 
 export default function GeneKeysWheel({ spheres: spheresProp }) {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
-  const activeSpheres = spheresProp || SPHERES
+  const profile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
+
+  const computedSpheres = useMemo(() => {
+    if (spheresProp) return spheresProp
+    if (!profile?.dob) return SPHERES
+    try {
+      const [year, month, day] = (profile.dob || '').split('-').map(Number)
+      const tob = profile.tob || '00:00'
+      const [hour, minute] = tob.split(':').map(Number)
+      const timezone = profile.birthTimezone ?? -3
+      const { SPHERES: computed } = computeGeneKeysData({ day, month, year, hour: hour || 0, minute: minute || 0, timezone })
+      return computed
+    } catch (e) {
+      console.error('GeneKeysWheel compute error:', e)
+      return SPHERES
+    }
+  }, [spheresProp, profile?.dob, profile?.tob, profile?.birthTimezone])
+
+  const activeSpheres = computedSpheres
 
   useCanvasResize(canvasRef)
 

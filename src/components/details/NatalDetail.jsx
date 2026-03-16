@@ -245,18 +245,27 @@ export default function NatalDetail() {
   const totalMod = Object.values(MODALITIES).reduce((a, b) => a + b, 0)
 
   const RISING_SIGN = useMemo(() => {
-    if (!chart) return { sign: 'Virgo', degree: '18°13\'', ruler: 'Mercury', rulerSign: 'Aquarius', rulerHouse: 6 }
+    if (!chart) return null
     const asc = chart.angles.asc
+    // Determine the ruler of the rising sign dynamically
+    const SIGN_RULERS = {
+      Aries: 'mars', Taurus: 'venus', Gemini: 'mercury', Cancer: 'moon', Leo: 'sun',
+      Virgo: 'mercury', Libra: 'venus', Scorpio: 'mars', Sagittarius: 'jupiter',
+      Capricorn: 'saturn', Aquarius: 'saturn', Pisces: 'jupiter',
+    }
+    const rulerKey = SIGN_RULERS[asc.sign] || 'sun'
+    const rulerPlanet = chart.planets[rulerKey]
+    const rulerName = rulerKey.charAt(0).toUpperCase() + rulerKey.slice(1)
     return {
       sign: asc.sign,
       degree: formatDeg(asc.degree),
-      ruler: 'Mercury',  // static for Virgo rising; could be computed dynamically
-      rulerSign: chart.planets.mercury?.sign || 'Aquarius',
-      rulerHouse: chart.planets.mercury ? getHouseFor(chart.planets.mercury.lon, chart.houses) : 6,
-      qualities: ['Analytical', 'Detail-oriented', 'Service-driven', 'Methodical', 'Discerning'],
-      appearance: 'Reserved, intellectual demeanor with attentive eyes and precise mannerisms',
-      firstImpression: 'Comes across as thoughtful, quietly competent, and observant before engaging',
-      lifeApproach: 'Approaches life through analysis and refinement, seeking practical perfection and meaningful service',
+      ruler: rulerName,
+      rulerSign: rulerPlanet?.sign || '',
+      rulerHouse: rulerPlanet ? getHouseFor(rulerPlanet.lon, chart.houses) : null,
+      qualities: [],
+      appearance: '',
+      firstImpression: '',
+      lifeApproach: '',
     }
   }, [chart])
 
@@ -282,7 +291,7 @@ export default function NatalDetail() {
       </div>
 
       {/* RISING SIGN / ASCENDANT */}
-      <div>
+      {RISING_SIGN && <div>
         <div style={S.sectionTitle}>Rising Sign (Ascendant)</div>
         <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -297,24 +306,11 @@ export default function NatalDetail() {
                 {RISING_SIGN.sign} Rising
               </div>
               <div style={{ ...S.monoSm, color: 'var(--muted-foreground)', marginTop: 2 }}>
-                {RISING_SIGN.degree} {'\u00B7'} Ruler: {RISING_SIGN.ruler} in {RISING_SIGN.rulerSign} (House {RISING_SIGN.rulerHouse})
+                {RISING_SIGN.degree} {'\u00B7'} Ruler: {RISING_SIGN.ruler}{RISING_SIGN.rulerSign ? ` in ${RISING_SIGN.rulerSign}` : ''}{RISING_SIGN.rulerHouse ? ` (House ${RISING_SIGN.rulerHouse})` : ''}
               </div>
             </div>
           </div>
-          {[
-            ['First Impression', RISING_SIGN.firstImpression],
-            ['Life Approach', RISING_SIGN.lifeApproach],
-            ['Physical Impression', RISING_SIGN.appearance],
-          ].map(([label, val], i) => (
-            <div key={i} style={S.keyVal}>
-              <span style={{
-                fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-                textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 140,
-              }}>{label}</span>
-              <span style={{ ...S.mono, color: 'var(--foreground)', textAlign: 'right', maxWidth: '60%' }}>{val}</span>
-            </div>
-          ))}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
+          {RISING_SIGN.qualities.length > 0 && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
             {RISING_SIGN.qualities.map((q, i) => (
               <span key={i} style={{
                 padding: '3px 10px', borderRadius: 12, fontSize: 10,
@@ -322,9 +318,9 @@ export default function NatalDetail() {
                 color: '#60b030', fontFamily: "'Cinzel', serif", letterSpacing: '.06em',
               }}>{q}</span>
             ))}
-          </div>
+          </div>}
         </div>
-      </div>
+      </div>}
 
       {/* PLANETS TABLE — astro.com style */}
       <div>
@@ -537,30 +533,20 @@ export default function NatalDetail() {
       </div>
 
       {/* SUMMARY */}
-      <div>
+      {chart && <div>
         <div style={S.sectionTitle}>Chart Interpretation</div>
         <div style={S.interpretation}>
-          <span style={{ color: 'var(--foreground)' }}>Aquarius Sun in the 5th House</span> with a{' '}
-          <span style={{ color: '#60b030' }}>Virgo Moon and Virgo Rising</span> creates an individual
-          who is intellectually progressive yet emotionally grounded in practical analysis and service.
-          The Moon conjunct the Ascendant (0{'\u00B0'}13' orb) means the emotional nature is immediately
-          visible to the world {'\u2014'} you <em>are</em> your feelings in the eyes of others.
-          The 1st house is heavily populated with{' '}
-          <span style={{ color: '#f0c040' }}>Jupiter and Saturn conjunct in Libra</span> (0{'\u00B0'}38' orb),
-          plus Pluto at 24{'\u00B0'} Libra {'\u2014'} themes of relational power, justice, and
-          transformative partnerships define your public persona.
-          The exact <span style={{ color: '#f0c040' }}>Mercury-Mars conjunction in Aquarius</span> (0{'\u00B0'}01' orb)
-          in the 6th house gives sharp, incisive mental energy and rapid, decisive communication {'\u2014'}
-          the mind acts with martial precision.{' '}
-          <span style={{ color: '#40ccdd' }}>Venus in Capricorn trines the Moon</span> (2{'\u00B0'}28'),
-          grounding romantic and aesthetic sensibility in practical emotional intelligence.
-          With a dominant 6 planets in Air signs, the mind is the primary vehicle of experience {'\u2014'} ideas,
-          communication, and social architecture are natural domains. Venus squaring the Jupiter-Saturn
-          conjunction creates productive tension between personal values and relational ideals.
-          Mercury ruling both your Sun sign and Rising ensures the mind is the integrating force
-          of the entire chart.
+          <span style={{ color: 'var(--foreground)' }}>{chart.planets.sun?.sign} Sun</span>
+          {RISING_SIGN && <> with a{' '}
+          <span style={{ color: '#60b030' }}>{chart.planets.moon?.sign} Moon and {RISING_SIGN.sign} Rising</span></>}
+          {' '}— a unique configuration of solar consciousness, emotional nature, and outward presentation.
+          {ASPECTS.length > 0 && <> The {ASPECTS[0].p1}–{ASPECTS[0].p2} {ASPECTS[0].type.toLowerCase()} shapes
+          your energy in significant ways.</>}
+          {' '}The element balance ({Object.entries(ELEMENTS).map(([el, n]) => `${n} ${el}`).join(', ')}) reveals
+          the dominant energies in the chart. Each planet, house, and aspect tells a chapter of your soul's
+          story — encoded in the precise moment and place of your birth.
         </div>
-      </div>
+      </div>}
     </div>
   )
 }

@@ -60,8 +60,9 @@ export default function ChineseDetail() {
 
   const P = useMemo(() => {
     try {
-      const dob = profile?.dob || '1981-01-23'
-      const tob = profile?.tob || '22:10'
+      const dob = profile?.dob || ''
+      const tob = profile?.tob || '12:00'
+      if (!dob) return null
       const [hour, minute] = (tob || '12:00').split(':').map(Number)
       const computed = getChineseProfileFromDob(dob, { hour: isNaN(hour) ? 12 : hour, minute: isNaN(minute) ? 0 : minute })
 
@@ -72,7 +73,7 @@ export default function ChineseDetail() {
       return {
         // From engine
         ...computed,
-        dob: profile?.dob || '1981-01-23',
+        dob: profile?.dob || '',
         // Compatibility & lucky from static animal data
         compatible:    staticAnimalEntry?.compatible   || STATIC_PROFILE.compatible,
         incompatible:  staticAnimalEntry?.incompatible || STATIC_PROFILE.incompatible,

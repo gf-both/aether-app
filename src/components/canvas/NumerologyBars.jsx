@@ -18,15 +18,16 @@ const COLORS = [
 
 export default function NumerologyBars() {
   const canvasRef = useRef(null)
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const profile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
 
   const { nums, labs } = useMemo(() => {
     try {
       const now = new Date()
-      const dob = primaryProfile?.dob || '1981-01-23'
-      const fullName = primaryProfile?.name
-        ? primaryProfile.name.toUpperCase()
-        : 'GASTON FRYDLEWSKI'
+      const dob = profile?.dob || ''
+      const fullName = profile?.name
+        ? profile.name.toUpperCase()
+        : ''
+      if (!dob || !fullName) return { nums: new Array(10).fill(0), labs: ['LP','Ex','SU','M—','BD','Mt','Pn','Pe','P1','P2'] }
 
       const p = getNumerologyProfileFromDob(dob, fullName, {
         currentYear:  now.getFullYear(),
@@ -64,7 +65,7 @@ export default function NumerologyBars() {
         labs: ['LP', 'Ex', 'SU', 'M22', 'BD', 'Mt', 'Pn', 'Pe', 'P1', 'P2'],
       }
     }
-  }, [primaryProfile?.dob, primaryProfile?.name])
+  }, [profile?.dob, profile?.name])
 
   useCanvasResize(canvasRef)
 

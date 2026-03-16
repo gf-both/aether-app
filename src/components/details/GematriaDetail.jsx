@@ -1,18 +1,20 @@
+import { useMemo } from 'react'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { HEBREW_ALPHABET, GEMATRIA_METHODS, GEMATRIA_PROFILE, getGematriaProfile } from '../../data/gematriaData'
-import { DEFAULT_PRIMARY_PROFILE } from '../../data/primaryProfile'
 
 // Build a dynamically-computed profile from the engine, merged with the rich
 // static content (interpretations, kabbalistic paths) that is editorial in nature.
-function buildComputedProfile() {
-  const { name, dob } = DEFAULT_PRIMARY_PROFILE
-  let day = 23, month = 1, year = 1981
+function buildComputedProfile(profileData) {
+  const { name, dob } = profileData || {}
+  if (!name || !dob) return null
+  let day = 1, month = 1, year = 2000
   if (dob) {
     const parts = dob.split('-')
     year = parseInt(parts[0], 10)
     month = parseInt(parts[1], 10)
     day = parseInt(parts[2], 10)
   }
-  const fullName = name || 'GASTON FRYDLEWSKI'
+  const fullName = name.toUpperCase()
   const eng = getGematriaProfile({ fullName, day, month, year })
 
   // Map engine output to the shape expected by the existing template
@@ -178,8 +180,14 @@ function NumCircle({ val, color, size = 54, label, sub }) {
 }
 
 export default function GematriaDetail() {
-  // Use engine-computed profile (dynamic, reads from primaryProfile)
-  const P = buildComputedProfile()
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const activeProfile = activeViewProfile || primaryProfile
+
+  // Use engine-computed profile (dynamic, reads from active profile)
+  const P = useMemo(() => buildComputedProfile(activeProfile), [activeProfile?.name, activeProfile?.dob])
+
+  if (!P) return <div style={S.panel}>No profile data. Please set your name and birth date in settings.</div>
 
   return (
     <div style={S.panel}>
@@ -626,34 +634,27 @@ export default function GematriaDetail() {
       <div>
         <div style={S.sectionTitle}>Gematria Reading</div>
         <div style={S.interpretation}>
-          The name <span style={{ color: 'var(--foreground)' }}>Gaston Frydlewski</span> carries a Hebrew gematria
+          The name <span style={{ color: 'var(--foreground)' }}>{P.fullName}</span> carries a Hebrew gematria
           value of <span style={{ color: '#f0c040' }}>{P.hebrew.fullValue}</span>, which reduces to{' '}
-          <span style={{ color: '#f0c040' }}>{P.hebrew.reducedValue}</span> -- the number of{' '}
-          <span style={{ color: 'var(--foreground)' }}>new beginnings and singular purpose</span>. This
-          is the frequency of Aleph, the first letter, the breath of creation before the word is spoken.
+          <span style={{ color: '#f0c040' }}>{P.hebrew.reducedValue}</span> — a number carrying the vibrational
+          essence of its bearer, encoded in the ancient alphabet of creation.
           <br /><br />
-          The most striking feature is the first name "<span style={{ color: '#40ccdd' }}>Gaston</span>"
-          summing to <span style={{ color: '#40ccdd' }}>22</span> in Pythagorean gematria -- a{' '}
-          <span style={{ color: 'var(--foreground)' }}>Master Number</span> never reduced. Twenty-two is the number of
-          the Master Builder: the 22 Hebrew letters through which creation was spoken, the 22 paths of the
-          Tree of Life, the 22 Major Arcana of the Tarot. A name that vibrates at 22 carries the blueprint
-          of sacred architecture -- the capacity to build structures that bridge heaven and earth.
+          {P.pythagorean.firstNameValue === 22 && (
+            <>The most striking feature is the first name "<span style={{ color: '#40ccdd' }}>{P.firstName}</span>"
+            summing to <span style={{ color: '#40ccdd' }}>22</span> in Pythagorean gematria — a{' '}
+            <span style={{ color: 'var(--foreground)' }}>Master Number</span> never reduced. Twenty-two is the number of
+            the Master Builder: the 22 Hebrew letters through which creation was spoken, the 22 paths of the
+            Tree of Life, the 22 Major Arcana of the Tarot.<br /><br /></>
+          )}
+          The <span style={{ color: '#d43070' }}>Soul Urge of {P.pythagorean.vowelNumber}</span> (from the vowels) reveals the heart's deepest longing.
+          The{' '}
+          <span style={{ color: 'var(--violet2)' }}>Personality Number {P.pythagorean.consonantNumber}</span> (from the consonants) shows
+          the face presented to the world. Together, name and number tell a story of purpose written before birth —
+          encoded in the very letters chosen to identify the soul in this lifetime.
           <br /><br />
-          The <span style={{ color: '#d43070' }}>Soul Urge of 3</span> (from the vowels) reveals that beneath
-          the builder's discipline lies a heart that yearns to{' '}
-          <span style={{ color: '#d43070' }}>create, express, and communicate</span>. Three is Gimel, the camel
-          crossing the desert -- the movement of meaning from the internal to the external. The{' '}
-          <span style={{ color: 'var(--violet2)' }}>Personality Number 7</span> (from the consonants) shows the
-          world a figure of deep inquiry, spiritual intensity, and analytical precision -- Zayin, the sword that
-          cuts through illusion to reach the marrow of truth.
-          <br /><br />
-          The Hebrew letter composition of the name is dominated by high-value letters:{' '}
-          <span style={{ color: 'var(--foreground)' }}>Tav (400)</span>,{' '}
-          <span style={{ color: 'var(--foreground)' }}>Resh (200)</span>, and{' '}
-          <span style={{ color: 'var(--foreground)' }}>Pe (80)</span> -- together representing completion,
-          solar consciousness, and transformative speech. This name is not quiet; it is a name that speaks
-          worlds into existence and then has the discipline to build them, brick by brick, letter by letter,
-          from the crown of Kether to the kingdom of Malkuth.
+          The Hebrew letter composition of <span style={{ color: 'var(--foreground)' }}>{P.fullName}</span> contains
+          keys to kabbalistic paths on the Tree of Life. Each letter carries a numerical weight, a planetary
+          correspondence, and a path between the sefirot — from the crown of Kether to the kingdom of Malkuth.
         </div>
       </div>
     </div>

@@ -69,12 +69,12 @@ function isChannelDefined(activeChs, c1, c2) {
 export default function HumanDesign() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
 
   // Compute HD chart from stored birth data
   const chart = useMemo(() => {
     try {
-      const { dob, tob } = primaryProfile
+      const { dob, tob } = profile || {}
       if (!dob) return null
       // Determine UTC offset from pob (default to -3 for Buenos Aires)
       const utcOffset = -3
@@ -83,7 +83,7 @@ export default function HumanDesign() {
       console.error('HD chart computation error:', e)
       return null
     }
-  }, [primaryProfile])
+  }, [profile])
 
   useCanvasResize(canvasRef)
 
