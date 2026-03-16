@@ -449,6 +449,8 @@ html.theme-manuscript-day { --accent-color: #8b6820; --accent-color2: #c9a84c; -
 .pp-input::placeholder { color: var(--muted-foreground); }
 select.pp-input { cursor: pointer; }
 option { background: var(--background); color: var(--foreground); }
+optgroup { background: var(--background); color: var(--muted-foreground); font-size: 10px; font-weight: 600; letter-spacing: .08em; }
+optgroup option { color: var(--foreground); font-size: 12px; font-weight: normal; }
 
 /* ── Person cards ── */
 .person-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }

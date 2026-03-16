@@ -270,6 +270,22 @@ Keep responses 2-4 sentences. Be direct.`
     if (selectedId === id) setSelectedId('clone')
   }
 
+  // Gate: require profile before activating Golems
+  if (!profile?.dob || !profile?.name) {
+    return (
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100%', gap:20, padding:40, textAlign:'center' }}>
+        <div style={{ fontSize:56 }}>🪬</div>
+        <div style={{ fontFamily:"'Cinzel',serif", fontSize:14, letterSpacing:'.2em', textTransform:'uppercase', color:'var(--gold)' }}>Activate Your Golems</div>
+        <div style={{ fontSize:12, color:'var(--muted-foreground)', maxWidth:360, lineHeight:1.8 }}>
+          Your Golems are built from your birth data. Add your name and date of birth in your Profile to activate your Clone, Complement, and Antagonist.
+        </div>
+        <div style={{ padding:'10px 24px', borderRadius:8, background:'rgba(201,168,76,.1)', border:'1px solid rgba(201,168,76,.3)', fontSize:11, color:'var(--gold)', fontFamily:"'Cinzel',serif", letterSpacing:'.1em', textTransform:'uppercase', cursor:'default' }}>
+          Open Profile → Add Birth Data
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={{ display:'flex', height:'100%', overflow:'hidden' }}>
 
