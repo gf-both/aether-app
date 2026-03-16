@@ -288,7 +288,7 @@ export default function TimelineDetail() {
         textAlign: 'center', padding: 32,
       }}>
         <div style={{ fontSize: 32, opacity: 0.4 }}>⏳</div>
-        <div style={{ fontSize: 11 }}>Add your birth date to see your Cosmic Timeline</div>
+        <div style={{ fontSize: 11 }}>Add your birth date to see your Timeline</div>
       </div>
     )
   }
@@ -322,7 +322,7 @@ export default function TimelineDetail() {
           fontFamily: "'Cinzel', serif", fontSize: 18, letterSpacing: '.25em',
           textTransform: 'uppercase', color: 'var(--foreground)', fontWeight: 600, marginBottom: 6,
         }}>
-          Cosmic Timeline
+          Timeline
         </div>
         <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Your life arc across Vedic, astrological & numerological cycles

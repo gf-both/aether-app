@@ -120,7 +120,7 @@ export default function TimelineWidget() {
         fontSize: 11, color: 'var(--muted-foreground)',
         fontFamily: "'Cinzel', serif", letterSpacing: '.1em', textTransform: 'uppercase',
       }}>
-        Add your birth date to see your Cosmic Timeline
+        Add your birth date to see your Timeline
       </div>
     )
   }
@@ -143,7 +143,7 @@ export default function TimelineWidget() {
         fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
         textTransform: 'uppercase', color: 'var(--muted-foreground)', marginBottom: 2,
       }}>
-        Cosmic Timeline
+        Timeline
       </div>
 
       {/* Current Dasha */}
