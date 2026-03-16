@@ -189,9 +189,10 @@ function EnneagramQuiz() {
 }
 
 export default function EnneagramDetail() {
-  const storeType = useAboveInsideStore((s) => s.enneagramType)
-  const storeWing = useAboveInsideStore((s) => s.enneagramWing)
-  const storeInstinct = useAboveInsideStore((s) => s.enneagramInstinct)
+  const activeProfile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
+  const storeType = activeProfile?.enneagramType || null
+  const storeWing = activeProfile?.enneagramWing || null
+  const storeInstinct = activeProfile?.enneagramInstinct || useAboveInsideStore((s) => s.enneagramInstinct)
   const [showQuizOverlay, setShowQuizOverlay] = useState(false)
 
   // Resolve active type — store override or static default

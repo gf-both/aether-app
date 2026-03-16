@@ -430,7 +430,7 @@ function MBTIResults({ typeCode, onRetake }) {
 
 /* ============ MAIN DETAIL COMPONENT ============ */
 export default function MBTIDetail() {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
   const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
   const storeType = primaryProfile?.mbtiType || null
   const [quizType, setQuizType] = useState(null)
