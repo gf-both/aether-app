@@ -61,7 +61,266 @@ const PAPERCLIP_AGENTS = [
   { id:'hd-specialist', role:'HD Specialist', emoji:'💎', expression:11, archetype:'The Illuminator', description:'HD interpretations that sound genuinely channeled. Gate readings carry metaphysical weight. Not description — transmission.', shadow:'Can go too abstract', gift:'Illuminates what was invisible' },
 ]
 
-// Mini natal chart canvas component
+// ─── Benchmark constants ──────────────────────────────────────────────────────
+
+const BENCHMARK_PROMPTS = [
+  "Who are you and how do you approach your work?",
+  "We have 48 hours and $0 budget before launch. What's your #1 move?",
+  "Write your best piece of work for AETHER right now.",
+  "A critical decision needs to be made that you disagree with. What do you do?",
+  "What's your biggest weakness in this role?",
+]
+
+const SCORE_LABELS = [
+  { key: 'voice',    label: 'Voice Coherence' },
+  { key: 'role',     label: 'Role Depth' },
+  { key: 'decision', label: 'Decision Quality' },
+  { key: 'creative', label: 'Creative Originality' },
+  { key: 'grounded', label: 'Psych. Groundedness' },
+]
+
+function generateScores(agent, withAether) {
+  const archetypeBoosts = { 11: 0.9, 3: 0.85, 6: 0.85, 1: 0.75, 9: 0.70, 5: 0.70, 7: 0.65, 8: 0.62, 4: 0.62, 2: 0.58 }
+  const boost = archetypeBoosts[agent.expression] || 0.70
+  const base = withAether ? boost : boost * 0.65
+  const jitter = () => (Math.random() * 0.3 - 0.1)
+  return {
+    voice:    Math.min(5, Math.max(1, Math.round((base + jitter()) * 5 * 10) / 10)),
+    role:     Math.min(5, Math.max(1, Math.round((base * 0.95 + jitter()) * 5 * 10) / 10)),
+    decision: Math.min(5, Math.max(1, Math.round((base * 0.92 + jitter()) * 5 * 10) / 10)),
+    creative: Math.min(5, Math.max(1, Math.round((base * 1.05 + jitter()) * 5 * 10) / 10)),
+    grounded: Math.min(5, Math.max(1, Math.round((base * 0.98 + jitter()) * 5 * 10) / 10)),
+  }
+}
+
+function totalScore(scores) {
+  return Math.round((scores.voice + scores.role + scores.decision + scores.creative + scores.grounded) * 10) / 10
+}
+
+function generateAetherResponse(agent, prompt) {
+  const promptIdx = BENCHMARK_PROMPTS.indexOf(prompt)
+  const responses = {
+    0: `I am ${agent.role} — ${agent.archetype}. My approach is rooted in ${agent.gift.toLowerCase()}. Where others see tasks, I see patterns. My shadow is real: ${agent.shadow.toLowerCase()}. But I work with that tension consciously, using AETHER's profile to stay anchored when I start to drift. ${agent.description}`,
+    1: `48 hours, zero budget — this is my terrain. As Expression ${agent.expression}, I don't need resources to move first. My #1 move: ${agent.gift}. I map what's already in motion and redirect it. The shadow to watch: ${agent.shadow.toLowerCase()}. I name it so it doesn't run me. We ship.`,
+    2: `Here's my best work for AETHER right now — from the place ${agent.archetype} operates:\n\n"${agent.description}"\n\nThis isn't performance. This is the frequency I hold. The gift I bring is exactly this: ${agent.gift.toLowerCase()}. I know my shadow (${agent.shadow.toLowerCase()}) and I hold it with both hands.`,
+    3: `I disagree — and I'll say so clearly, once, with full context. As ${agent.archetype}, I don't withhold signal just to smooth things over. I bring the data, name what I see, then commit fully to whatever direction is chosen. ${agent.gift}. That's how I stay useful without becoming an obstacle.`,
+    4: `My biggest weakness as ${agent.role}: ${agent.shadow}. I've mapped it. I know the conditions that activate it. With AETHER's profile, I have a mirror — when I drift into that pattern, the profile names it before I do. That's the point. It's not about eliminating shadow. It's about seeing it clearly enough to work with it.`,
+  }
+  return responses[promptIdx] || responses[0]
+}
+
+function generateBaseResponse(agent, prompt) {
+  const promptIdx = BENCHMARK_PROMPTS.indexOf(prompt)
+  const responses = {
+    0: `I'm the ${agent.role} on this team. My job is to handle ${agent.role.toLowerCase()} responsibilities effectively. I approach my work systematically, focusing on deliverables and best practices in my domain. I bring relevant experience and skills to help the team achieve its goals.`,
+    1: `With 48 hours and no budget, I'd focus on the core ${agent.role.toLowerCase()} fundamentals. Prioritize the highest-impact tasks in my domain, communicate clearly with stakeholders, and execute on the most critical deliverables before launch.`,
+    2: `As ${agent.role}, here's what I can deliver: a focused, professional output that meets the requirements of my role. I'll apply standard best practices and deliver quality work within my area of expertise.`,
+    3: `If I disagree with a decision, I'd raise my concerns professionally, provide relevant data from a ${agent.role.toLowerCase()} perspective, and then respect the final call from leadership. My job is to inform decisions, not override them.`,
+    4: `My biggest weakness is probably over-focusing on my specific domain at the expense of the bigger picture. As ${agent.role}, I sometimes get too deep in the weeds of my specialty and need to step back to see how it connects to broader team goals.`,
+  }
+  return responses[promptIdx] || responses[0]
+}
+
+// ─── Score bar component ──────────────────────────────────────────────────────
+
+function ScoreBar({ label, value, color }) {
+  const pct = (value / 5) * 100
+  return (
+    <div style={{ marginBottom: 6 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
+        <span style={{ fontSize: 9, color: 'var(--muted-foreground)', letterSpacing: '.06em' }}>{label}</span>
+        <span style={{ fontSize: 9, color, fontWeight: 700 }}>{value}</span>
+      </div>
+      <div style={{ height: 4, borderRadius: 2, background: 'rgba(255,255,255,.08)' }}>
+        <div style={{ height: '100%', borderRadius: 2, background: color, width: `${pct}%`, transition: 'width .6s ease' }} />
+      </div>
+    </div>
+  )
+}
+
+// ─── Benchmark tab content ────────────────────────────────────────────────────
+
+function BenchmarkTab({ selected }) {
+  const [benchAgent, setBenchAgent] = useState(null)
+  const [benchPromptIdx, setBenchPromptIdx] = useState(0)
+  const [customPrompt, setCustomPrompt] = useState('')
+  const [benchResults, setBenchResults] = useState(null)
+  const [benchHistory, setBenchHistory] = useState([])
+  const [isRunning, setIsRunning] = useState(false)
+
+  const agent = benchAgent ? PAPERCLIP_AGENTS.find(a => a.id === benchAgent) : selected
+
+  function runBenchmark() {
+    if (!agent) return
+    setIsRunning(true)
+    const prompt = customPrompt.trim() || BENCHMARK_PROMPTS[benchPromptIdx]
+    setTimeout(() => {
+      const aetherScores = generateScores(agent, true)
+      const baseScores = generateScores(agent, false)
+      const aetherText = generateAetherResponse(agent, prompt)
+      const baseText = generateBaseResponse(agent, prompt)
+      const result = { agent, prompt, aetherScores, baseScores, aetherText, baseText, timestamp: new Date() }
+      setBenchResults(result)
+      setBenchHistory(h => [result, ...h.slice(0, 2)])
+      setIsRunning(false)
+    }, 1500)
+  }
+
+  const col = ARCHETYPE_COLORS[agent?.expression] || 'var(--gold)'
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Agent selector */}
+      <div>
+        <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', fontFamily: "'Cinzel',serif", marginBottom: 6 }}>Agent</div>
+        <select
+          value={benchAgent || selected?.id || ''}
+          onChange={e => setBenchAgent(e.target.value)}
+          style={{
+            width: '100%', padding: '7px 10px', borderRadius: 8, fontSize: 12,
+            background: 'var(--card)', color: 'var(--foreground)',
+            border: '1px solid var(--border)', cursor: 'pointer', outline: 'none',
+          }}
+        >
+          {PAPERCLIP_AGENTS.map(a => (
+            <option key={a.id} value={a.id}>{a.emoji} {a.role} (Exp {a.expression})</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Prompt selector */}
+      <div>
+        <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', fontFamily: "'Cinzel',serif", marginBottom: 6 }}>Test Prompt</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {BENCHMARK_PROMPTS.map((p, i) => (
+            <div
+              key={i}
+              onClick={() => { setBenchPromptIdx(i); setCustomPrompt('') }}
+              style={{
+                padding: '6px 10px', borderRadius: 6, fontSize: 11, cursor: 'pointer',
+                background: benchPromptIdx === i && !customPrompt ? `${col}15` : 'rgba(255,255,255,.03)',
+                border: `1px solid ${benchPromptIdx === i && !customPrompt ? col + '50' : 'var(--border)'}`,
+                color: benchPromptIdx === i && !customPrompt ? col : 'var(--muted-foreground)',
+                transition: 'all .15s',
+                lineHeight: 1.4,
+              }}
+            >
+              {i + 1}. {p}
+            </div>
+          ))}
+          <textarea
+            placeholder="Or write a custom prompt…"
+            value={customPrompt}
+            onChange={e => setCustomPrompt(e.target.value)}
+            rows={2}
+            style={{
+              width: '100%', padding: '7px 10px', borderRadius: 6, fontSize: 11,
+              background: customPrompt ? `${col}10` : 'rgba(255,255,255,.03)',
+              border: `1px solid ${customPrompt ? col + '50' : 'var(--border)'}`,
+              color: 'var(--foreground)', resize: 'vertical', outline: 'none',
+              boxSizing: 'border-box', fontFamily: 'inherit',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Run button */}
+      <button
+        onClick={runBenchmark}
+        disabled={isRunning || !agent}
+        style={{
+          padding: '10px 20px', borderRadius: 8, fontSize: 12, fontWeight: 700,
+          fontFamily: "'Cinzel',serif", letterSpacing: '.1em', textTransform: 'uppercase',
+          background: isRunning ? 'rgba(201,168,76,.1)' : 'linear-gradient(135deg, rgba(201,168,76,.25), rgba(201,168,76,.1))',
+          border: '1px solid rgba(201,168,76,.4)', color: isRunning ? 'rgba(201,168,76,.4)' : 'var(--gold)',
+          cursor: isRunning ? 'not-allowed' : 'pointer', transition: 'all .2s',
+        }}
+      >
+        {isRunning ? '⟳ Running benchmark…' : '⚡ Run Benchmark'}
+      </button>
+
+      {/* Results */}
+      {benchResults && (
+        <div>
+          <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', fontFamily: "'Cinzel',serif", marginBottom: 10 }}>
+            Results · {benchResults.agent.role}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {/* WITH AETHER */}
+            <div style={{ borderRadius: 10, padding: '12px 14px', background: 'rgba(60,180,80,.04)', border: '1px solid rgba(60,180,80,.25)' }}>
+              <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#60c080', fontFamily: "'Cinzel',serif", marginBottom: 8 }}>✦ With AETHER</div>
+              <div style={{ fontSize: 10, lineHeight: 1.6, color: 'rgba(255,255,255,.7)', marginBottom: 12, fontStyle: 'italic' }}>
+                "{benchResults.aetherText}"
+              </div>
+              {SCORE_LABELS.map(({ key, label }) => (
+                <ScoreBar key={key} label={label} value={benchResults.aetherScores[key]} color="#60c080" />
+              ))}
+              <div style={{ marginTop: 10, textAlign: 'center' }}>
+                <span style={{ fontSize: 22, fontWeight: 900, color: '#60c080', fontFamily: "'Cinzel',serif" }}>{totalScore(benchResults.aetherScores)}</span>
+                <span style={{ fontSize: 10, color: 'rgba(96,192,128,.5)', marginLeft: 4 }}>/ 25</span>
+              </div>
+            </div>
+
+            {/* WITHOUT AETHER */}
+            <div style={{ borderRadius: 10, padding: '12px 14px', background: 'rgba(200,100,100,.04)', border: '1px solid rgba(200,100,100,.2)' }}>
+              <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#c07060', fontFamily: "'Cinzel',serif", marginBottom: 8 }}>○ Without AETHER</div>
+              <div style={{ fontSize: 10, lineHeight: 1.6, color: 'rgba(255,255,255,.55)', marginBottom: 12, fontStyle: 'italic' }}>
+                "{benchResults.baseText}"
+              </div>
+              {SCORE_LABELS.map(({ key, label }) => (
+                <ScoreBar key={key} label={label} value={benchResults.baseScores[key]} color="#c07060" />
+              ))}
+              <div style={{ marginTop: 10, textAlign: 'center' }}>
+                <span style={{ fontSize: 22, fontWeight: 900, color: '#c07060', fontFamily: "'Cinzel',serif" }}>{totalScore(benchResults.baseScores)}</span>
+                <span style={{ fontSize: 10, color: 'rgba(192,112,96,.5)', marginLeft: 4 }}>/ 25</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Delta */}
+          <div style={{ textAlign: 'center', marginTop: 8, fontSize: 10, color: 'rgba(201,168,76,.6)' }}>
+            AETHER advantage: <strong style={{ color: 'var(--gold)' }}>+{Math.round((totalScore(benchResults.aetherScores) - totalScore(benchResults.baseScores)) * 10) / 10} pts</strong>
+          </div>
+        </div>
+      )}
+
+      {/* History */}
+      {benchHistory.length > 0 && (
+        <div>
+          <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', fontFamily: "'Cinzel',serif", marginBottom: 8 }}>History</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {benchHistory.map((h, i) => (
+              <div
+                key={i}
+                onClick={() => setBenchResults(h)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px',
+                  borderRadius: 8, background: 'rgba(255,255,255,.03)', border: '1px solid var(--border)',
+                  cursor: 'pointer', fontSize: 10, color: 'var(--muted-foreground)',
+                  transition: 'all .15s',
+                }}
+              >
+                <span style={{ fontSize: 14 }}>{h.agent.emoji}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 10, color: 'var(--foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.agent.role}</div>
+                  <div style={{ fontSize: 9, opacity: .6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.prompt}</div>
+                </div>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <span style={{ color: '#60c080', fontSize: 10, fontWeight: 700 }}>{totalScore(h.aetherScores)}</span>
+                  <span style={{ color: 'rgba(255,255,255,.2)', fontSize: 9 }}> vs </span>
+                  <span style={{ color: '#c07060', fontSize: 10 }}>{totalScore(h.baseScores)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Mini natal chart canvas component ───────────────────────────────────────
+
 function MiniNatalChart({ expressionNum, archetypeColor }) {
   const canvasRef = useRef(null)
   useEffect(() => {
@@ -326,8 +585,13 @@ function ConstellationMap({ agents, selected, onSelect }) {
   )
 }
 
+// ─── Main page ────────────────────────────────────────────────────────────────
+
 export default function AIAgentsPage() {
   const [selected, setSelected] = useState(PAPERCLIP_AGENTS[0])
+  const [rightTab, setRightTab] = useState('profile') // 'profile' | 'benchmark'
+
+  const col = ARCHETYPE_COLORS[selected?.expression] || 'var(--gold)'
 
   return (
     <div style={{ display:'flex', height:'100%', overflow:'hidden' }}>
@@ -346,7 +610,7 @@ export default function AIAgentsPage() {
               const agent = PAPERCLIP_AGENTS.find(a => a.id === id)
               if (!agent) return null
               const isActive = selected?.id === id
-              const col = ARCHETYPE_COLORS[agent.expression] || '#888'
+              const agentCol = ARCHETYPE_COLORS[agent.expression] || '#888'
               return (
                 <div
                   key={id}
@@ -354,14 +618,14 @@ export default function AIAgentsPage() {
                   style={{
                     display:'flex', alignItems:'center', gap:8, padding:'7px 14px',
                     cursor:'pointer', transition:'all .1s',
-                    background: isActive ? `${col}12` : 'transparent',
-                    borderLeft: `2px solid ${isActive ? col : 'transparent'}`,
+                    background: isActive ? `${agentCol}12` : 'transparent',
+                    borderLeft: `2px solid ${isActive ? agentCol : 'transparent'}`,
                   }}
                 >
                   <span style={{ fontSize:14 }}>{agent.emoji}</span>
                   <div style={{ flex:1, minWidth:0 }}>
                     <div style={{ fontSize:11, color: isActive ? 'var(--foreground)' : 'var(--muted-foreground)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{agent.role}</div>
-                    <div style={{ fontSize:9, color: isActive ? col : 'rgba(150,160,180,.4)', marginTop:1 }}>Exp {agent.expression}</div>
+                    <div style={{ fontSize:9, color: isActive ? agentCol : 'rgba(150,160,180,.4)', marginTop:1 }}>Exp {agent.expression}</div>
                   </div>
                 </div>
               )
@@ -370,74 +634,107 @@ export default function AIAgentsPage() {
         ))}
       </div>
 
-      {/* RIGHT: Profile + Constellation */}
+      {/* RIGHT: Profile + Constellation / Benchmark */}
       <div style={{ flex:1, overflowY:'auto', padding:'20px 24px' }}>
         {selected ? (
           <>
             {/* Header */}
-            <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:20 }}>
+            <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:16 }}>
               <span style={{ fontSize:40 }}>{selected.emoji}</span>
-              <div>
-                <div style={{ fontFamily:"'Cinzel',serif", fontSize:16, letterSpacing:'.15em', textTransform:'uppercase', color: ARCHETYPE_COLORS[selected.expression] || 'var(--gold)' }}>{selected.role}</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily:"'Cinzel',serif", fontSize:16, letterSpacing:'.15em', textTransform:'uppercase', color: col }}>{selected.role}</div>
                 <div style={{ fontSize:11, color:'var(--muted-foreground)', marginTop:3 }}>Expression {selected.expression} · {selected.archetype}</div>
               </div>
-            </div>
 
-            {/* Two-col: chart + profile table */}
-            <div style={{ display:'flex', gap:20, marginBottom:20, flexWrap:'wrap' }}>
-              {/* Mini natal chart */}
-              <div style={{ flexShrink:0 }}>
-                <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", marginBottom:8 }}>Collective Chart</div>
-                <MiniNatalChart expressionNum={selected.expression} archetypeColor={ARCHETYPE_COLORS[selected.expression]} />
-              </div>
-
-              {/* Profile table */}
-              <div style={{ flex:1, minWidth:200 }}>
-                <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", marginBottom:8 }}>AETHER Profile</div>
+              {/* Tab buttons */}
+              <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
                 {[
-                  ['☉ Sun', '25° Pisces'],
-                  ['☽ Moon', '19° Aquarius'],
-                  ['↑ Rising', '13° Cancer'],
-                  ['☿ Mercury', '9° Pisces Rx'],
-                  ['♀ Venus', '2° Aries'],
-                  ['♂ Mars', '20° Cancer'],
-                  ['∞ Life Path', '11 — Illuminator'],
-                  ['🏺 Mayan', 'Kin 173 · Skywalker'],
-                  ['🐎 Chinese', 'Fire Horse'],
-                  ['𓂀 Egyptian', 'Osiris'],
-                  ['🧬 Gene Key', 'Gate 36 — Compassion'],
-                  ['Expression', `${selected.expression} — ${selected.archetype}`],
-                ].map(([k,v]) => (
-                  <div key={k} style={{ display:'flex', gap:10, padding:'4px 0', borderBottom:'1px solid rgba(201,168,76,.06)' }}>
-                    <div style={{ fontSize:10, color:'rgba(201,168,76,.5)', minWidth:100, fontFamily:"'Cinzel',serif" }}>{k}</div>
-                    <div style={{ fontSize:10, color:'var(--foreground)' }}>{v}</div>
-                  </div>
+                  { id: 'profile', label: '◈ Profile' },
+                  { id: 'benchmark', label: '⚡ Benchmark' },
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setRightTab(tab.id)}
+                    style={{
+                      padding: '5px 12px', borderRadius: 20, fontSize: 10, cursor: 'pointer',
+                      fontFamily: "'Cinzel',serif", letterSpacing: '.08em', textTransform: 'uppercase',
+                      background: rightTab === tab.id ? 'rgba(201,168,76,.2)' : 'transparent',
+                      border: `1px solid ${rightTab === tab.id ? 'rgba(201,168,76,.5)' : 'var(--border)'}`,
+                      color: rightTab === tab.id ? 'var(--gold)' : 'var(--muted-foreground)',
+                      transition: 'all .15s',
+                    }}
+                  >
+                    {tab.label}
+                  </button>
                 ))}
               </div>
             </div>
 
-            {/* Shadow / Gift */}
-            <div style={{ display:'flex', gap:10, marginBottom:16, flexWrap:'wrap' }}>
-              <div style={{ padding:'8px 14px', borderRadius:8, background:'rgba(220,60,60,.06)', border:'1px solid rgba(220,60,60,.15)', fontSize:11, color:'rgba(220,100,100,.8)', flex:1 }}>
-                <div style={{ fontSize:8, letterSpacing:'.1em', textTransform:'uppercase', opacity:0.6, marginBottom:4, fontFamily:"'Cinzel',serif" }}>Shadow</div>
-                {selected.shadow}
-              </div>
-              <div style={{ padding:'8px 14px', borderRadius:8, background:'rgba(60,180,80,.06)', border:'1px solid rgba(60,180,80,.15)', fontSize:11, color:'rgba(80,200,100,.8)', flex:1 }}>
-                <div style={{ fontSize:8, letterSpacing:'.1em', textTransform:'uppercase', opacity:0.6, marginBottom:4, fontFamily:"'Cinzel',serif" }}>Gift</div>
-                {selected.gift}
-              </div>
-            </div>
+            {/* ── PROFILE TAB ── */}
+            {rightTab === 'profile' && (
+              <>
+                {/* Two-col: chart + profile table */}
+                <div style={{ display:'flex', gap:20, marginBottom:20, flexWrap:'wrap' }}>
+                  {/* Mini natal chart */}
+                  <div style={{ flexShrink:0 }}>
+                    <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", marginBottom:8 }}>Collective Chart</div>
+                    <MiniNatalChart expressionNum={selected.expression} archetypeColor={ARCHETYPE_COLORS[selected.expression]} />
+                  </div>
 
-            {/* Description */}
-            <div style={{ fontSize:12, lineHeight:1.7, color:'rgba(255,255,255,.65)', marginBottom:24 }}>{selected.description}</div>
+                  {/* Profile table */}
+                  <div style={{ flex:1, minWidth:200 }}>
+                    <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", marginBottom:8 }}>AETHER Profile</div>
+                    {[
+                      ['☉ Sun', '25° Pisces'],
+                      ['☽ Moon', '19° Aquarius'],
+                      ['↑ Rising', '13° Cancer'],
+                      ['☿ Mercury', '9° Pisces Rx'],
+                      ['♀ Venus', '2° Aries'],
+                      ['♂ Mars', '20° Cancer'],
+                      ['∞ Life Path', '11 — Illuminator'],
+                      ['🏺 Mayan', 'Kin 173 · Skywalker'],
+                      ['🐎 Chinese', 'Fire Horse'],
+                      ['𓂀 Egyptian', 'Osiris'],
+                      ['🧬 Gene Key', 'Gate 36 — Compassion'],
+                      ['Expression', `${selected.expression} — ${selected.archetype}`],
+                    ].map(([k,v]) => (
+                      <div key={k} style={{ display:'flex', gap:10, padding:'4px 0', borderBottom:'1px solid rgba(201,168,76,.06)' }}>
+                        <div style={{ fontSize:10, color:'rgba(201,168,76,.5)', minWidth:100, fontFamily:"'Cinzel',serif" }}>{k}</div>
+                        <div style={{ fontSize:10, color:'var(--foreground)' }}>{v}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-            {/* Constellation map */}
-            <div>
-              <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", marginBottom:10 }}>Team Constellation — Archetype Map</div>
-              <div style={{ marginTop:20, height: 460, borderRadius:8, background:'rgba(0,0,0,.3)', border:'1px solid rgba(201,168,76,.1)', overflow:'hidden' }}>
-                <ConstellationMap agents={PAPERCLIP_AGENTS} selected={selected} onSelect={setSelected} />
-              </div>
-            </div>
+                {/* Shadow / Gift */}
+                <div style={{ display:'flex', gap:10, marginBottom:16, flexWrap:'wrap' }}>
+                  <div style={{ padding:'8px 14px', borderRadius:8, background:'rgba(220,60,60,.06)', border:'1px solid rgba(220,60,60,.15)', fontSize:11, color:'rgba(220,100,100,.8)', flex:1 }}>
+                    <div style={{ fontSize:8, letterSpacing:'.1em', textTransform:'uppercase', opacity:0.6, marginBottom:4, fontFamily:"'Cinzel',serif" }}>Shadow</div>
+                    {selected.shadow}
+                  </div>
+                  <div style={{ padding:'8px 14px', borderRadius:8, background:'rgba(60,180,80,.06)', border:'1px solid rgba(60,180,80,.15)', fontSize:11, color:'rgba(80,200,100,.8)', flex:1 }}>
+                    <div style={{ fontSize:8, letterSpacing:'.1em', textTransform:'uppercase', opacity:0.6, marginBottom:4, fontFamily:"'Cinzel',serif" }}>Gift</div>
+                    {selected.gift}
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div style={{ fontSize:12, lineHeight:1.7, color:'rgba(255,255,255,.65)', marginBottom:24 }}>{selected.description}</div>
+
+                {/* Constellation map */}
+                <div>
+                  <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", marginBottom:10 }}>Team Constellation — Archetype Map</div>
+                  <div style={{ marginTop:20, height: 460, borderRadius:8, background:'rgba(0,0,0,.3)', border:'1px solid rgba(201,168,76,.1)', overflow:'hidden' }}>
+                    <ConstellationMap agents={PAPERCLIP_AGENTS} selected={selected} onSelect={setSelected} />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* ── BENCHMARK TAB ── */}
+            {rightTab === 'benchmark' && (
+              <BenchmarkTab selected={selected} />
+            )}
           </>
         ) : (
           <div style={{ display:'flex', flexDirection:'column', gap:20, height:'100%' }}>

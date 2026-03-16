@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { getVedicChart } from '../../engines/vedicEngine'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
@@ -24,6 +24,8 @@ const COLORS = {
   numchg:  '#c0d060',  // lime
   challenge: '#e05050', // red
   today:   '#ffffff',
+  hd:      '#e080ff',  // lavender
+  mayan:   '#ff9f40',  // amber-orange
 }
 
 const DASHA_GLYPHS = {
@@ -36,6 +38,53 @@ const PERSONAL_YEAR_LABEL = {
   4: 'Foundation',      5: 'Major Change', 6: 'Harmony',
   7: 'Reflection',      8: 'Abundance',    9: 'Completion',
 }
+
+// HD Gate Key themes for 7-year cycles (simplified, based on Rave cycle)
+const HD_GATE_CYCLES = [
+  { offset: 0,  gate: 1,  theme: 'Self-Expression',    desc: '7-year gate cycle opens: Gate 1 — The Creative Self initiates its arc' },
+  { offset: 7,  gate: 13, theme: 'Fellowship & Memory', desc: 'Gate 13 — The Listener. Gathering the stories that will shape the next phase' },
+  { offset: 14, gate: 2,  theme: 'Direction & Drive',   desc: 'Gate 2 — The Receptive. Receiving new direction from Higher Self' },
+  { offset: 21, gate: 7,  theme: 'Leadership & Role',   desc: 'Gate 7 — The Alpha. Stepping into or releasing leadership position' },
+  { offset: 28, gate: 28, theme: 'Struggle & Purpose',  desc: 'Gate 28 — The Game Player. Finding what is worth fighting for' },
+  { offset: 35, gate: 35, theme: 'Change & Experience', desc: 'Gate 35 — Change. A hunger for new experience drives transformation' },
+  { offset: 42, gate: 3,  theme: 'Ordering Chaos',      desc: 'Gate 3 — Difficulty at the Beginning. New order emerging from disorder' },
+  { offset: 49, gate: 49, theme: 'Revolution',          desc: 'Gate 49 — Revolution. Old agreements end; new ones form' },
+  { offset: 56, gate: 56, theme: 'Stimulation & Story', desc: 'Gate 56 — The Storyteller. Transmitting the arc of this life cycle' },
+]
+
+// Mayan Wavespell themes (13-day, simplified to annual markers for lifespan)
+const MAYAN_WAVESPELLS = [
+  { id: 'dragon',   icon: '🐉', name: 'Red Dragon',    theme: 'Nurturing primordial birth energy' },
+  { id: 'wind',     icon: '🌬️', name: 'White Wind',    theme: 'Spirit communication; divine breath' },
+  { id: 'night',    icon: '🌑', name: 'Blue Night',    theme: 'Dreaming into the abyss; abundance' },
+  { id: 'seed',     icon: '🌱', name: 'Yellow Seed',   theme: 'Targeting awareness; flowering' },
+  { id: 'serpent',  icon: '🐍', name: 'Red Serpent',   theme: 'Life force, instinct, survival' },
+  { id: 'worldbridger', icon: '⚖️', name: 'White Worldbridger', theme: 'Death, change, opportunity' },
+  { id: 'hand',     icon: '✋', name: 'Blue Hand',     theme: 'Accomplishment, knowing, healing' },
+  { id: 'star',     icon: '⭐', name: 'Yellow Star',   theme: 'Art, elegance, beauty frequency' },
+  { id: 'moon',     icon: '🌙', name: 'Red Moon',      theme: 'Universal water; purification' },
+  { id: 'dog',      icon: '🐕', name: 'White Dog',     theme: 'Heart, loyalty, unconditional love' },
+  { id: 'monkey',   icon: '🐒', name: 'Blue Monkey',   theme: 'Magic, illusion, divine child' },
+  { id: 'human',    icon: '🧑', name: 'Yellow Human',  theme: 'Free will, wisdom, influence' },
+  { id: 'skywalker',icon: '🌸', name: 'Red Skywalker', theme: 'Space, wakefulness, angelic prophecy' },
+  { id: 'wizard',   icon: '🧙', name: 'White Wizard',  theme: 'Timelessness, receptivity, enchantment' },
+  { id: 'eagle',    icon: '🦅', name: 'Blue Eagle',    theme: 'Vision, mind, planetary consciousness' },
+  { id: 'warrior',  icon: '⚔️', name: 'Yellow Warrior', theme: 'Intelligence, fearlessness, questioning' },
+  { id: 'earth',    icon: '🌍', name: 'Red Earth',     theme: 'Evolution, synchronicity, navigation' },
+  { id: 'mirror',   icon: '🪞', name: 'White Mirror',  theme: 'Reflection, order, endlessness' },
+  { id: 'storm',    icon: '⛈️', name: 'Blue Storm',   theme: 'Self-generation, energy, catalysis' },
+  { id: 'sun',      icon: '☀️', name: 'Yellow Sun',    theme: 'Universal fire, life, enlightenment' },
+]
+
+// ─── Overlay definitions ──────────────────────────────────────────────────────
+
+const OVERLAYS = [
+  { id: 'astrology',  label: 'Astrology',  icon: '☉', desc: 'Saturn, Jupiter, Chiron cycles' },
+  { id: 'numerology', label: 'Numerology', icon: '∞', desc: 'Personal Year peaks' },
+  { id: 'genekeys',   label: 'Gene Keys',  icon: '⬡', desc: 'Dasha × Gene Key correlations' },
+  { id: 'hd',         label: 'Human Design', icon: '◈', desc: '7-year gate cycles' },
+  { id: 'mayan',      label: 'Mayan',      icon: '🌸', desc: 'Wavespell 13-day cycles' },
+]
 
 // ─── Build timeline events ────────────────────────────────────────────────────
 
@@ -51,7 +100,7 @@ function buildEvents(profile) {
 
   const events = []
 
-  // ── 1. Vedic Dasha periods ──────────────────────────────────────────────────
+  // ── 1. Vedic Dasha periods (→ genekeys overlay) ─────────────────────────────
   try {
     const tob = profile?.tob || '12:00'
     const [bh, bm] = tob.split(':').map(n => +n || 0)
@@ -72,13 +121,14 @@ function buildEvents(profile) {
           desc: `Vimshottari period governed by ${d.lord} — ${Math.round(d.years)} years (until ${d.end.slice(0,7)})`,
           color: COLORS.dasha,
           type: 'dasha',
+          overlay: 'genekeys',
           endYear: endYr,
         })
       }
     }
   } catch (e) { /* skip dasha if birth time unknown */ }
 
-  // ── 2. Saturn milestones ────────────────────────────────────────────────────
+  // ── 2. Saturn milestones (→ astrology overlay) ──────────────────────────────
   const saturnEvents = [
     { offset: 7.4,  label: 'Saturn Square I',      desc: 'First major test of character; childhood pressure and structure emerge', color: COLORS.challenge, icon: '♄' },
     { offset: 14.75,label: 'Saturn Opposition I',   desc: 'Awareness of external authority; tension between self and others', color: COLORS.challenge, icon: '♄' },
@@ -92,10 +142,10 @@ function buildEvents(profile) {
   for (const { offset, label, desc, color, icon } of saturnEvents) {
     const yr = birthYear + offset
     if (yr < rangeStart || yr > rangeEnd) continue
-    events.push({ year: yr, yearDisplay: String(Math.round(yr)), icon, label, desc, color, type: 'saturn' })
+    events.push({ year: yr, yearDisplay: String(Math.round(yr)), icon, label, desc, color, type: 'saturn', overlay: 'astrology' })
   }
 
-  // ── 3. Jupiter Returns ──────────────────────────────────────────────────────
+  // ── 3. Jupiter Returns (→ astrology overlay) ────────────────────────────────
   for (let i = 1; birthYear + i * 12 <= rangeEnd; i++) {
     const yr = birthYear + i * 12
     if (yr < rangeStart) continue
@@ -103,22 +153,22 @@ function buildEvents(profile) {
       year: yr, yearDisplay: String(yr), icon: '♃',
       label: `Jupiter Return #${i}`,
       desc: `12-year Jupiter cycle peak — expansion, luck, and philosophical awakening`,
-      color: COLORS.jupret, type: 'jupiter',
+      color: COLORS.jupret, type: 'jupiter', overlay: 'astrology',
     })
   }
 
-  // ── 4. Chiron Return ────────────────────────────────────────────────────────
+  // ── 4. Chiron Return (→ astrology overlay) ──────────────────────────────────
   const chironYr = birthYear + 50
   if (chironYr >= rangeStart && chironYr <= rangeEnd) {
     events.push({
       year: chironYr, yearDisplay: String(chironYr), icon: '⚷',
       label: 'Chiron Return',
       desc: 'Healing the core wound; integration of vulnerability becomes profound wisdom',
-      color: COLORS.chiron, type: 'chiron',
+      color: COLORS.chiron, type: 'chiron', overlay: 'astrology',
     })
   }
 
-  // ── 5. Numerology cycles ────────────────────────────────────────────────────
+  // ── 5. Numerology cycles (→ numerology overlay) ─────────────────────────────
   try {
     const name = profile?.name || 'Unknown'
     const numProfile = getNumerologyProfileFromDob(dob, name, {
@@ -142,7 +192,7 @@ function buildEvents(profile) {
         year: yr, yearDisplay: String(yr), icon: `${p.num}`,
         label: `Pinnacle ${['I','II','III','IV'][i + 1] || i + 2} begins`,
         desc: `${p.title} (${p.num}) — ${p.desc}`,
-        color: COLORS.numchg, type: 'numerology',
+        color: COLORS.numchg, type: 'numerology', overlay: 'numerology',
       })
     })
 
@@ -154,7 +204,7 @@ function buildEvents(profile) {
           year: yr, yearDisplay: String(yr), icon: '1',
           label: 'Personal Year 1 — New Cycle',
           desc: 'A fresh 9-year chapter begins: initiation, independence, planting seeds',
-          color: COLORS.numcyc, type: 'numerology',
+          color: COLORS.numcyc, type: 'numerology', overlay: 'numerology',
         })
       }
       // Life Path year (when PY = lifePath number) — significant integration year
@@ -163,11 +213,40 @@ function buildEvents(profile) {
           year: yr + 0.1, yearDisplay: String(yr), icon: `${lifePath}★`,
           label: `Life Path Year (PY ${lifePath})`,
           desc: `Personal year matches Life Path ${lifePath} — peak alignment with your core mission`,
-          color: '#f0a040', type: 'numerology',
+          color: '#f0a040', type: 'numerology', overlay: 'numerology',
         })
       }
     }
   } catch (e) { /* skip numerology if engine fails */ }
+
+  // ── 6. Human Design 7-year gate cycles (→ hd overlay) ──────────────────────
+  for (const cycle of HD_GATE_CYCLES) {
+    const yr = birthYear + cycle.offset
+    if (yr < rangeStart || yr > rangeEnd) continue
+    events.push({
+      year: yr, yearDisplay: String(yr), icon: '◈',
+      label: `HD Gate ${cycle.gate} — ${cycle.theme}`,
+      desc: cycle.desc,
+      color: COLORS.hd, type: 'hd', overlay: 'hd',
+    })
+  }
+
+  // ── 7. Mayan Wavespell cycles (→ mayan overlay) ─────────────────────────────
+  // Approximate: 20-wavespell Tzolkin repeats every 260 days (~0.71 years)
+  // We mark year-level wavespell entry points across the lifespan
+  const tzolkinYear = 260 / 365.25
+  for (let i = 0; i <= Math.ceil((rangeEnd - birthYear) / tzolkinYear); i++) {
+    const yr = birthYear + i * tzolkinYear
+    if (yr < rangeStart || yr > rangeEnd) continue
+    const wavespell = MAYAN_WAVESPELLS[i % MAYAN_WAVESPELLS.length]
+    events.push({
+      year: yr, yearDisplay: yr.toFixed(1),
+      icon: wavespell.icon,
+      label: `Wavespell: ${wavespell.name}`,
+      desc: wavespell.theme,
+      color: COLORS.mayan, type: 'mayan', overlay: 'mayan',
+    })
+  }
 
   // Sort by year
   events.sort((a, b) => a.year - b.year)
@@ -196,6 +275,7 @@ function TypeBadge({ type, color }) {
   const labels = {
     dasha: 'Vedic', saturn: 'Saturn', jupiter: 'Jupiter',
     chiron: 'Chiron', numerology: 'Numerology',
+    hd: 'Human Design', mayan: 'Mayan',
   }
   return (
     <span style={{
@@ -261,10 +341,49 @@ function TimelineEvent({ ev, isPast, isNear }) {
   )
 }
 
+// ─── Overlay toggle pill ──────────────────────────────────────────────────────
+
+function OverlayPill({ overlay, active, onToggle }) {
+  const overlayColors = {
+    astrology:  '#f0c040',
+    numerology: '#50c060',
+    genekeys:   '#9b59e0',
+    hd:         '#e080ff',
+    mayan:      '#ff9f40',
+  }
+  const col = overlayColors[overlay.id] || '#888'
+  return (
+    <button
+      onClick={() => onToggle(overlay.id)}
+      title={overlay.desc}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 5,
+        padding: '4px 10px', borderRadius: 20, fontSize: 10, cursor: 'pointer',
+        fontFamily: "'Cinzel', serif", letterSpacing: '.06em',
+        background: active ? col + '20' : 'rgba(255,255,255,.04)',
+        border: `1px solid ${active ? col + '70' : 'rgba(255,255,255,.1)'}`,
+        color: active ? col : 'rgba(255,255,255,.3)',
+        transition: 'all .15s',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      <span style={{ fontSize: 11 }}>{overlay.icon}</span>
+      {overlay.label}
+    </button>
+  )
+}
+
 // ─── Main component ────────────────────────────────────────────────────────────
 
 export default function TimelineDetail() {
   const profile = useActiveProfile()
+  const [activeOverlays, setActiveOverlays] = useState(['astrology'])
+
+  function toggleOverlay(id) {
+    setActiveOverlays(prev =>
+      prev.includes(id) ? prev.filter(o => o !== id) : [...prev, id]
+    )
+  }
 
   const result = useMemo(() => {
     try {
@@ -297,17 +416,22 @@ export default function TimelineDetail() {
   const now = new Date()
   const nowDecimal = currentYear + (now.getMonth() / 12)
 
-  // Legend items
+  // Filter events by active overlays
+  const filteredEvents = events.filter(ev => activeOverlays.includes(ev.overlay))
+
+  // Legend items — only show active
   const legendItems = [
-    { color: COLORS.dasha,     label: 'Vedic Dasha' },
-    { color: COLORS.saturn,    label: 'Saturn Return' },
-    { color: COLORS.challenge, label: 'Saturn Square/Opp' },
-    { color: COLORS.jupret,    label: 'Jupiter Return' },
-    { color: COLORS.chiron,    label: 'Chiron' },
-    { color: COLORS.numcyc,    label: 'New Cycle (PY1)' },
-    { color: COLORS.numchg,    label: 'Pinnacle Shift' },
-    { color: '#f0a040',        label: 'Life Path Year' },
-  ]
+    { color: COLORS.dasha,     label: 'Vedic Dasha',        overlay: 'genekeys' },
+    { color: COLORS.saturn,    label: 'Saturn Return',       overlay: 'astrology' },
+    { color: COLORS.challenge, label: 'Saturn Square/Opp',   overlay: 'astrology' },
+    { color: COLORS.jupret,    label: 'Jupiter Return',      overlay: 'astrology' },
+    { color: COLORS.chiron,    label: 'Chiron',              overlay: 'astrology' },
+    { color: COLORS.numcyc,    label: 'New Cycle (PY1)',     overlay: 'numerology' },
+    { color: COLORS.numchg,    label: 'Pinnacle Shift',      overlay: 'numerology' },
+    { color: '#f0a040',        label: 'Life Path Year',      overlay: 'numerology' },
+    { color: COLORS.hd,        label: 'HD Gate Cycle',       overlay: 'hd' },
+    { color: COLORS.mayan,     label: 'Mayan Wavespell',     overlay: 'mayan' },
+  ].filter(item => activeOverlays.includes(item.overlay))
 
   return (
     <div style={{
@@ -317,7 +441,7 @@ export default function TimelineDetail() {
       fontFamily: "'Cormorant Garamond', Georgia, serif",
     }}>
       {/* Header */}
-      <div style={{ marginBottom: 24, textAlign: 'center' }}>
+      <div style={{ marginBottom: 16, textAlign: 'center' }}>
         <div style={{
           fontFamily: "'Cinzel', serif", fontSize: 18, letterSpacing: '.25em',
           textTransform: 'uppercase', color: 'var(--foreground)', fontWeight: 600, marginBottom: 6,
@@ -332,99 +456,138 @@ export default function TimelineDetail() {
         </div>
       </div>
 
-      {/* Legend */}
+      {/* ── Overlay toggle bar ── */}
       <div style={{
         display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center',
-        marginBottom: 28, padding: '10px 14px',
-        background: 'var(--accent)', borderRadius: 10,
+        marginBottom: 16, padding: '10px 14px',
+        background: 'rgba(0,0,0,.2)', borderRadius: 12,
         border: '1px solid var(--border)',
       }}>
-        {legendItems.map(({ color, label }) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
-            <span style={{ fontSize: 9, color: 'var(--muted-foreground)', letterSpacing: '.05em' }}>{label}</span>
-          </div>
+        <div style={{
+          width: '100%', textAlign: 'center', fontSize: 8, letterSpacing: '.12em',
+          textTransform: 'uppercase', color: 'rgba(201,168,76,.4)',
+          fontFamily: "'Cinzel', serif", marginBottom: 4,
+        }}>
+          System Overlays
+        </div>
+        {OVERLAYS.map(overlay => (
+          <OverlayPill
+            key={overlay.id}
+            overlay={overlay}
+            active={activeOverlays.includes(overlay.id)}
+            onToggle={toggleOverlay}
+          />
         ))}
       </div>
 
-      {/* Timeline */}
-      <div style={{ position: 'relative' }}>
-        {/* Spine */}
+      {/* Legend (filtered) */}
+      {legendItems.length > 0 && (
         <div style={{
-          position: 'absolute',
-          left: '50%', top: 0, bottom: 0,
-          width: 2,
-          background: 'linear-gradient(to bottom, transparent, var(--border) 5%, var(--border) 95%, transparent)',
-          transform: 'translateX(-50%)',
-          zIndex: 0,
-        }} />
-
-        {/* Birth marker */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          position: 'relative', zIndex: 1, marginBottom: 16,
+          display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center',
+          marginBottom: 28, padding: '10px 14px',
+          background: 'var(--accent)', borderRadius: 10,
+          border: '1px solid var(--border)',
         }}>
-          <div style={{
-            background: 'var(--card)', padding: '4px 16px', borderRadius: 20,
-            border: '1px solid var(--border)', fontSize: 10,
-            fontFamily: "'Cinzel', serif", letterSpacing: '.15em',
-            textTransform: 'uppercase', color: 'var(--muted-foreground)',
-          }}>
-            ✦ Born {birthYear}
-          </div>
-        </div>
-
-        {/* Events */}
-        {events.map((ev, i) => {
-          const isPast = ev.year < nowDecimal
-          const isNear = !isPast && (ev.year - nowDecimal) < 2
-
-          // TODAY marker: insert before first future event
-          const prevEv = events[i - 1]
-          const showToday = !isPast && (i === 0 || (prevEv && prevEv.year < nowDecimal))
-
-          return (
-            <div key={`${ev.label}-${ev.year}-${i}`}>
-              {showToday && (
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  position: 'relative', zIndex: 2, margin: '8px 0 16px',
-                }}>
-                  <div style={{
-                    background: 'rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(8px)',
-                    padding: '5px 20px', borderRadius: 20,
-                    border: '1px solid rgba(255,255,255,0.3)',
-                    fontSize: 10, fontFamily: "'Cinzel', serif", letterSpacing: '.2em',
-                    textTransform: 'uppercase', color: '#ffffff', fontWeight: 700,
-                    boxShadow: '0 0 16px rgba(255,255,255,0.1)',
-                  }}>
-                    ◈ Today {currentYear}
-                  </div>
-                </div>
-              )}
-              <div style={{ position: 'relative', zIndex: 1 }}>
-                <TimelineEvent ev={ev} isPast={isPast} isNear={isNear} />
-              </div>
+          {legendItems.map(({ color, label }) => (
+            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
+              <span style={{ fontSize: 9, color: 'var(--muted-foreground)', letterSpacing: '.05em' }}>{label}</span>
             </div>
-          )
-        })}
+          ))}
+        </div>
+      )}
 
-        {/* Future horizon */}
+      {/* Empty overlay state */}
+      {filteredEvents.length === 0 && (
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          position: 'relative', zIndex: 1, marginTop: 16,
+          textAlign: 'center', padding: '40px 20px',
+          color: 'var(--muted-foreground)', fontFamily: "'Cinzel', serif",
+          fontSize: 11, letterSpacing: '.1em', textTransform: 'uppercase', opacity: 0.5,
         }}>
+          ◇ No systems active — enable an overlay above
+        </div>
+      )}
+
+      {/* Timeline */}
+      {filteredEvents.length > 0 && (
+        <div style={{ position: 'relative' }}>
+          {/* Spine */}
           <div style={{
-            background: 'var(--card)', padding: '4px 16px', borderRadius: 20,
-            border: '1px solid var(--border)', fontSize: 10,
-            fontFamily: "'Cinzel', serif", letterSpacing: '.15em',
-            textTransform: 'uppercase', color: 'var(--muted-foreground)', opacity: 0.5,
+            position: 'absolute',
+            left: '50%', top: 0, bottom: 0,
+            width: 2,
+            background: 'linear-gradient(to bottom, transparent, var(--border) 5%, var(--border) 95%, transparent)',
+            transform: 'translateX(-50%)',
+            zIndex: 0,
+          }} />
+
+          {/* Birth marker */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'relative', zIndex: 1, marginBottom: 16,
           }}>
-            ∞ Horizon {currentYear + 20}
+            <div style={{
+              background: 'var(--card)', padding: '4px 16px', borderRadius: 20,
+              border: '1px solid var(--border)', fontSize: 10,
+              fontFamily: "'Cinzel', serif", letterSpacing: '.15em',
+              textTransform: 'uppercase', color: 'var(--muted-foreground)',
+            }}>
+              ✦ Born {birthYear}
+            </div>
+          </div>
+
+          {/* Events */}
+          {filteredEvents.map((ev, i) => {
+            const isPast = ev.year < nowDecimal
+            const isNear = !isPast && (ev.year - nowDecimal) < 2
+
+            // TODAY marker: insert before first future event
+            const prevEv = filteredEvents[i - 1]
+            const showToday = !isPast && (i === 0 || (prevEv && prevEv.year < nowDecimal))
+
+            return (
+              <div key={`${ev.label}-${ev.year}-${i}`}>
+                {showToday && (
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    position: 'relative', zIndex: 2, margin: '8px 0 16px',
+                  }}>
+                    <div style={{
+                      background: 'rgba(255,255,255,0.1)',
+                      backdropFilter: 'blur(8px)',
+                      padding: '5px 20px', borderRadius: 20,
+                      border: '1px solid rgba(255,255,255,0.3)',
+                      fontSize: 10, fontFamily: "'Cinzel', serif", letterSpacing: '.2em',
+                      textTransform: 'uppercase', color: '#ffffff', fontWeight: 700,
+                      boxShadow: '0 0 16px rgba(255,255,255,0.1)',
+                    }}>
+                      ◈ Today {currentYear}
+                    </div>
+                  </div>
+                )}
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <TimelineEvent ev={ev} isPast={isPast} isNear={isNear} />
+                </div>
+              </div>
+            )
+          })}
+
+          {/* Future horizon */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            position: 'relative', zIndex: 1, marginTop: 16,
+          }}>
+            <div style={{
+              background: 'var(--card)', padding: '4px 16px', borderRadius: 20,
+              border: '1px solid var(--border)', fontSize: 10,
+              fontFamily: "'Cinzel', serif", letterSpacing: '.15em',
+              textTransform: 'uppercase', color: 'var(--muted-foreground)', opacity: 0.5,
+            }}>
+              ∞ Horizon {currentYear + 20}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
