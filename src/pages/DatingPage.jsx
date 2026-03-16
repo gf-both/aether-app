@@ -307,6 +307,32 @@ export default function DatingPage() {
   )
 }
 
+function PrefSection({ title, children }) {
+  return (
+    <div style={{ marginBottom:20 }}>
+      <div style={{ fontFamily:"'Cinzel',serif", fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.6)', marginBottom:10 }}>{title}</div>
+      {children}
+    </div>
+  )
+}
+
+function PrefChip({ label, active, onClick }) {
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        padding:'5px 12px', borderRadius:16, fontSize:11, cursor:'pointer',
+        background: active ? 'rgba(201,168,76,.15)' : 'var(--secondary)',
+        border:`1px solid ${active ? 'rgba(201,168,76,.5)' : 'var(--border)'}`,
+        color: active ? 'var(--gold)' : 'var(--foreground)',
+        transition:'all .15s', userSelect:'none',
+      }}
+    >
+      {label}
+    </div>
+  )
+}
+
 function getDemoMatches(profile) {
   const sign = profile.sign || 'Aquarius'
   return [
