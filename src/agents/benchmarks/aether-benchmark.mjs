@@ -13,11 +13,19 @@
 import Anthropic from '@anthropic-ai/sdk';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const ANTHROPIC_KEY = "process.env.ANTHROPIC_API_KEY";
+// Load API key dynamically from auth file
+function loadAnthropicKey() {
+  const authPath = path.join(os.homedir(), '.openclaw/agents/main/agent/auth-profiles.json');
+  const authData = JSON.parse(fs.readFileSync(authPath, 'utf8'));
+  return authData.profiles['anthropic:default'].key;
+}
+
+const ANTHROPIC_KEY = loadAnthropicKey();
 const client = new Anthropic({ apiKey: ANTHROPIC_KEY });
 
 // ─── AGENT DEFINITIONS ────────────────────────────────────────────────────────
@@ -526,6 +534,10 @@ async function main() {
     }
 
     allResults.push({ agent, taskResults });
+
+    // Save partial results after each agent (in case of timeout)
+    const partialPath = path.resolve(__dirname, '../../../docs/aether-benchmark-partial.json');
+    fs.writeFileSync(partialPath, JSON.stringify({ partial: true, agents: allResults.length, results: allResults }, null, 2));
   }
 
   console.log(`\n✓ ${callCount} API calls complete. Building report...\n`);
