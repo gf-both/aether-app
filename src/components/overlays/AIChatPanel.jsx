@@ -58,7 +58,7 @@ function buildWelcomeMessage(profile) {
   const lifePath = profile?.lifePath || '?'
   return {
     role: 'assistant',
-    content: `Welcome, ${name}. As a ${sign} Sun with ${moon} Moon and ${asc} Rising, your cosmic blueprint runs deep.\n\nYou are a ${hdType} (${hdProfile} profile) in Human Design, with Life Path ${lifePath} — a rare combination that speaks to a life of ${hdType === 'Projector' ? 'guiding others with wisdom and discernment' : hdType === 'Generator' ? 'building and responding with sacral energy' : hdType === 'Manifesting Generator' ? 'initiating and pivoting with multi-passionate drive' : hdType === 'Manifestor' ? 'initiating and creating impact' : 'reflection and sampling life experiences'}.\n\nI have access to your full multi-framework profile. Ask me anything about your chart, current transits, life purpose, or how your different systems interconnect.`,
+    content: `Welcome, ${name}. As a ${sign} Sun with ${moon} Moon and ${asc} Rising, your profile runs deep.\n\nYou are a ${hdType} (${hdProfile} profile) in Human Design, with Life Path ${lifePath} — a rare combination that speaks to a life of ${hdType === 'Projector' ? 'guiding others with wisdom and discernment' : hdType === 'Generator' ? 'building and responding with sacral energy' : hdType === 'Manifesting Generator' ? 'initiating and pivoting with multi-passionate drive' : hdType === 'Manifestor' ? 'initiating and creating impact' : 'reflection and sampling life experiences'}.\n\nI have access to your full multi-framework profile. Ask me anything about your chart, current transits, life purpose, or how your different systems interconnect.`,
   }
 }
 
@@ -289,7 +289,7 @@ export default function AIChatPanel({ open, onClose }) {
               Unlock personalized AI-powered insights about your astrological profile,
               Human Design, Gene Keys, and cross-framework patterns. Your AI guide has
               full access to your consciousness map and can answer any question about
-              your cosmic blueprint.
+              your profile.
             </div>
             <div style={{ ...styles.paywallText, fontSize: '12px', marginTop: '-4px' }}>
               This feature requires the <span style={{ color: 'var(--foreground)' }}>Explorer plan ($1.99/mo)</span>

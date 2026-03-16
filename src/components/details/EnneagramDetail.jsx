@@ -57,7 +57,7 @@ const S = {
 }
 
 function EnneagramQuiz() {
-  const setEnneagramType = useAboveInsideStore((s) => s.setEnneagramType)
+  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState({})
   const [result, setResult] = useState(null)
@@ -85,7 +85,7 @@ function EnneagramQuiz() {
       wingScores.sort((a, b) => b.s - a.s)
       const suggestedWing = wingScores[0]?.w || wings[0]
       // Save to store
-      setEnneagramType(topType, suggestedWing)
+      setPrimaryProfile({ enneagramType: topType, enneagramWing: suggestedWing })
       setSaved(true)
       setResult({ type: topType, name: typeData?.name, scores: sorted.slice(0, 3) })
     }

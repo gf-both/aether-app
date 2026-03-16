@@ -338,7 +338,7 @@ const DETAIL_TITLES = {
   dosha: 'Ayurvedic Dosha \u2014 Mind-Body Constitution',
   archetype: 'Archetype Assessment \u2014 Jungian Pattern',
   lovelang: 'Love Languages \u2014 How You Give & Receive Love',
-  timeline: 'Life Timeline \u2014 Cosmic Arc of Your Journey',
+  timeline: 'Life Timeline \u2014 Life Arc of Your Journey',
   career: 'Career Alignment \u2014 Your Cosmic Professional Blueprint',
   profile: 'Profiles \u2014 Constellation',
   pricing: 'Choose Your Path \u2014 Pricing',
@@ -472,15 +472,15 @@ function CelticWidget() {
 }
 
 function WidgetContent({ widgetId }) {
-  const mbtiType = useAboveInsideStore((s) => s.mbtiType)
-  const enneagramType = useAboveInsideStore((s) => s.enneagramType)
-  const enneagramWing = useAboveInsideStore((s) => s.enneagramWing)
   const doshaType = useAboveInsideStore((s) => s.doshaType)
   const archetypeType = useAboveInsideStore((s) => s.archetypeType)
   const loveLanguage = useAboveInsideStore((s) => s.loveLanguage)
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
   const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
   const profile = activeViewProfile || primaryProfile
+  const mbtiType = profile?.mbtiType || null
+  const enneagramType = profile?.enneagramType || null
+  const enneagramWing = profile?.enneagramWing || null
   const hdChartLocal = useMemo(() => {
     try {
       const { dob, tob } = profile || {}
@@ -846,8 +846,8 @@ const WIDGET_META = {
   dosha: { icon: '☯', label: 'Ayurvedic Dosha', sub: 'Vata \u00B7 Pitta \u00B7 Kapha' },
   archetype: { icon: '⬡', label: 'Archetype', sub: 'Jungian Pattern \u00B7 12 Archetypes' },
   lovelang: { icon: '🤗', label: 'Love Languages', sub: 'Give & Receive \u00B7 5 Languages' },
-  timeline: { icon: '⟳', label: 'Life Timeline', sub: 'Cosmic Arc \u00B7 Key Life Events' },
-  career: { icon: '◈', label: 'Career Alignment', sub: 'Cosmic Blueprint \u00B7 Role Matching' },
+  timeline: { icon: '⟳', label: 'Life Timeline', sub: 'Life Arc \u00B7 Key Life Events' },
+  career: { icon: '◈', label: 'Career Alignment', sub: 'profile \u00B7 Role Matching' },
   practitioner: { icon: '\uD83C\uDFE5', label: 'Practitioner Portal', sub: 'Clients \u00B7 Sessions \u00B7 Revenue' },
   client: { icon: '\uD83D\uDCCB', label: 'Client Portal', sub: 'Sessions \u00B7 Progress \u00B7 Messages' },
 }
@@ -922,7 +922,7 @@ function DemoBanner() {
         <span style={{ color: 'var(--foreground)', fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', marginRight: '8px' }}>
           ✦ DEMO MODE
         </span>
-        You're viewing a sample profile. Add your birth data to see your cosmic blueprint.
+        You're viewing a sample profile. Add your birth data to see your profile.
       </span>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexShrink: 0 }}>
         <span
@@ -1117,7 +1117,7 @@ function MagazineLayout({ visibleWidgets, setActiveDetail, profile }) {
         border: '1px solid var(--border)', marginBottom: 16,
       }}>
         <div style={{ padding: '32px 28px', background: 'linear-gradient(135deg, rgba(120,80,200,.08), var(--secondary))' }}>
-          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 24, color: 'var(--foreground)', lineHeight: 1.2, marginBottom: 8 }}>Your Cosmic Blueprint</h2>
+          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 24, color: 'var(--foreground)', lineHeight: 1.2, marginBottom: 8 }}>Your profile</h2>
           <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, color: 'var(--muted-foreground)', lineHeight: 1.5, marginBottom: 16 }}>
             {profile.sign} Sun with {profile.moon} Moon and {profile.asc} Rising. A {profile.hdProfile} {profile.hdType} walking Life Path {profile.lifePath}.
           </p>

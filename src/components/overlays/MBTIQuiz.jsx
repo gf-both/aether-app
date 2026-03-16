@@ -232,7 +232,7 @@ function QuizResult({ code, scores, onSave, onRetake, onClose }) {
 
 /* ── Main quiz component ─────────────────────────────────── */
 export default function MBTIQuiz({ onClose }) {
-  const setMbtiType = useAboveInsideStore((s) => s.setMbtiType)
+  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
 
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState({})
@@ -263,7 +263,7 @@ export default function MBTIQuiz({ onClose }) {
 
   function handleSave() {
     if (!result) return
-    setMbtiType(result.code)
+    setPrimaryProfile({ mbtiType: result.code })
     setSaved(true)
   }
 

@@ -1,6 +1,6 @@
 /**
  * ClientDeepProfile.jsx
- * Comprehensive deep-profile view of a client's full cosmic blueprint.
+ * Comprehensive deep-profile view of a client's full profile.
  * Designed for practitioners to use during sessions or preparation.
  */
 

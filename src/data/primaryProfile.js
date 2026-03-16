@@ -17,6 +17,9 @@ export const DEFAULT_PRIMARY_PROFILE = {
   birthLat: 0,
   birthLon: 0,
   birthTimezone: 0,
+  enneagramType: null,
+  enneagramWing: null,
+  mbtiType: null,
 }
 
 export const DEFAULT_PEOPLE = []

@@ -231,7 +231,7 @@ function QuizResult({ result, onSave, onRetake, onClose }) {
 
 /* ── Main quiz component ─────────────────────────────────── */
 export default function EnneagramQuiz({ onClose }) {
-  const setEnneagramType = useAboveInsideStore((s) => s.setEnneagramType)
+  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
 
   const [step, setStep] = useState(0)
   const [ratings, setRatings] = useState({}) // index → 0|1|2
@@ -269,7 +269,7 @@ export default function EnneagramQuiz({ onClose }) {
 
   function handleSave() {
     if (!result) return
-    setEnneagramType(result.type, result.wing)
+    setPrimaryProfile({ enneagramType: result.type, enneagramWing: result.wing })
     setSaved(true)
   }
 

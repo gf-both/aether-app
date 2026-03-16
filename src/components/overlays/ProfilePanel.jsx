@@ -25,14 +25,12 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const user = useAboveInsideStore((s) => s.user)
   const loadProfilesFromDB = useAboveInsideStore((s) => s.loadProfilesFromDB)
   const updatePerson = useAboveInsideStore((s) => s.updatePerson)
-  const mbtiType = useAboveInsideStore((s) => s.mbtiType)
-  const setMbtiType = useAboveInsideStore((s) => s.setMbtiType)
-  const enneagramType = useAboveInsideStore((s) => s.enneagramType)
-  const setEnneagramType = useAboveInsideStore((s) => s.setEnneagramType)
-  const enneagramWing = useAboveInsideStore((s) => s.enneagramWing)
-  const setEnneagramWing = useAboveInsideStore((s) => s.setEnneagramWing)
   const enneagramInstinct = useAboveInsideStore((s) => s.enneagramInstinct)
   const setEnneagramInstinct = useAboveInsideStore((s) => s.setEnneagramInstinct)
+  // Read enneagram/mbti from primaryProfile (per-profile storage)
+  const mbtiType = profile?.mbtiType || null
+  const enneagramType = profile?.enneagramType || null
+  const enneagramWing = profile?.enneagramWing || null
 
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
@@ -80,14 +78,16 @@ export default function ProfilePanel({ open, onClose, embedded }) {
       await loadProfilesFromDB(user.id)
     }
 
-    // Save MBTI and Enneagram types to store
+    // Save MBTI and Enneagram types to profile
     const mbtiVal = mbtiRef.current?.value || ''
-    setMbtiType(mbtiVal || null)
     const ennVal = enneagramRef.current?.value || ''
-    setEnneagramType(ennVal ? parseInt(ennVal, 10) : null)
     const ennWingVal = enneagramWingRef.current?.value || ''
-    setEnneagramWing(ennWingVal ? parseInt(ennWingVal, 10) : null)
     const ennInstVal = enneagramInstinctRef.current?.value || ''
+    setPrimaryProfile({
+      mbtiType: mbtiVal || null,
+      enneagramType: ennVal ? parseInt(ennVal, 10) : null,
+      enneagramWing: ennWingVal ? parseInt(ennWingVal, 10) : null,
+    })
     setEnneagramInstinct(ennInstVal || null)
     setSaveFlash(true)
     setTimeout(() => setSaveFlash(false), 1800)

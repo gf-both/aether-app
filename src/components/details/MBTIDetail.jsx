@@ -430,8 +430,9 @@ function MBTIResults({ typeCode, onRetake }) {
 
 /* ============ MAIN DETAIL COMPONENT ============ */
 export default function MBTIDetail() {
-  const storeType = useAboveInsideStore((s) => s.mbtiType)
-  const setMbtiType = useAboveInsideStore((s) => s.setMbtiType)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
+  const storeType = primaryProfile?.mbtiType || null
   const [quizType, setQuizType] = useState(null)
   const [showQuiz, setShowQuiz] = useState(true)
   const [showQuizOverlay, setShowQuizOverlay] = useState(false)
@@ -441,7 +442,7 @@ export default function MBTIDetail() {
 
   function handleQuizComplete(code) {
     // Save to store immediately on completion
-    setMbtiType(code)
+    setPrimaryProfile({ mbtiType: code })
     setQuizType(code)
     setShowQuiz(false)
   }

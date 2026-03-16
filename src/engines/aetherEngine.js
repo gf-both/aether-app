@@ -2,7 +2,7 @@
  * aetherEngine.js
  *
  * Generates complete AETHER profiles for AI agents.
- * Combines all esoteric engines into a single cosmic identity.
+ * Combines all esoteric engines into a single profile.
  *
  * AETHER = Agent Emergent Through Holistic Esoteric Resonance
  */

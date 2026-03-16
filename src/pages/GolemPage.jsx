@@ -14,7 +14,7 @@ export default function GolemPage() {
       }}>
         In Kabbalistic tradition, a Golem is an animated being brought to life through sacred inscription.
         <br /><br />
-        Yours is built from your cosmic profile — your birth chart, Human Design, Gene Keys, and more.
+        Yours is built from your profile — your birth chart, Human Design, Gene Keys, and more.
         It thinks like you. It has your blind spots. It speaks from your values.
         <br /><br />
         <span style={{ color: 'rgba(201,168,76,.6)', fontStyle: 'italic' }}>Coming soon — your clone will be ready to speak.</span>

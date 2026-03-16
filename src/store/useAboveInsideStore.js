@@ -29,7 +29,13 @@ export const useAboveInsideStore = create(
 
       people: [...DEFAULT_PEOPLE],
       addPerson: (person) =>
-        set((s) => ({ people: [...s.people, { ...person, id: Date.now() }] })),
+        set((s) => ({ people: [...s.people, {
+          ...person,
+          id: Date.now(),
+          enneagramType: person.enneagramType || null,
+          enneagramWing: person.enneagramWing || null,
+          mbtiType: person.mbtiType || null,
+        }] })),
       removePerson: (id) =>
         set((s) => ({ people: s.people.filter((p) => p.id !== id) })),
       updatePerson: (id, updates) =>
