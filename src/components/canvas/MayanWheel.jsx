@@ -20,6 +20,8 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   useCanvasResize(canvasRef)
 
@@ -30,8 +32,8 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
 
     // Compute Dreamspell profile
     let P = MAYAN_PROFILE
-    if (primaryProfile?.dob) {
-      const [y, m, d] = primaryProfile.dob.split('-').map(Number)
+    if (profile?.dob) {
+      const [y, m, d] = profile.dob.split('-').map(Number)
       if (y && m && d) P = computeFullProfile(y, m, d)
     }
     const activeSealIdx = P.sealNum - 1
@@ -355,7 +357,7 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
     }
     draw()
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
-  }, [classicalDaySign, classicalTone, classicalKin])
+  }, [classicalDaySign, classicalTone, classicalKin, profile])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }

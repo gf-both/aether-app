@@ -145,10 +145,10 @@ html.theme-manuscript-day { --accent-color: #8b6820; --accent-color2: #c9a84c; -
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 6px;
+  padding: 0 6px 4px;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 0px;
 }
 .sb-nav::-webkit-scrollbar { width: 3px; }
 .sb-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
@@ -157,8 +157,8 @@ html.theme-manuscript-day { --accent-color: #8b6820; --accent-color2: #c9a84c; -
 .sb-section-label {
   display: flex;
   align-items: center;
-  padding: 8px 4px 2px;
-  min-height: 20px;
+  padding: 5px 4px 1px;
+  min-height: 16px;
   flex-shrink: 0;
 }
 .sb-section-label span {
@@ -196,26 +196,26 @@ html.theme-manuscript-day { --accent-color: #8b6820; --accent-color2: #c9a84c; -
 }
 .ni-expanded {
   flex-direction: row;
-  gap: 8px;
-  padding: 6px 8px;
+  gap: 6px;
+  padding: 4px 8px;
   width: 100%;
 }
 .ni-collapsed {
   width: 36px;
-  height: 32px;
+  height: 28px;
   justify-content: center;
   margin: 0 auto;
   padding: 0;
 }
 .ni-icon {
-  font-size: 14px;
+  font-size: 13px;
   flex-shrink: 0;
-  width: 16px;
+  width: 15px;
   text-align: center;
   line-height: 1;
 }
 .ni-label {
-  font-size: 12px;
+  font-size: 11px;
   font-family: ui-sans-serif, system-ui, sans-serif;
   letter-spacing: .02em;
   white-space: nowrap;

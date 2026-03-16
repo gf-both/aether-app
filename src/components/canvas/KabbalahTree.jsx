@@ -10,11 +10,13 @@ export default function KabbalahTree() {
   const hovRef = useRef(-1)
 
   const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   // Compute live active states from birth data; fall back to static SEPHIROTH if engine throws
   const sephirothLive = useMemo(() => {
     try {
-      const args = profileToKabArgs(primaryProfile)
+      const args = profileToKabArgs(profile)
       const result = getKabbalahProfile(args)
       // Merge computed active states into the static visual SEPHIROTH array
       return SEPHIROTH.map(s => {
@@ -24,7 +26,7 @@ export default function KabbalahTree() {
     } catch (e) {
       return SEPHIROTH
     }
-  }, [primaryProfile])
+  }, [profile])
 
   useCanvasResize(canvasRef)
 
