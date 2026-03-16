@@ -730,7 +730,7 @@ export default function TopBar() {
         {sephiraChip && (
           <div className="chip chip-v" title="Kabbalah — Active Sephira">{'\u2721'} {sephiraChip}</div>
         )}
-        <div className="chip chip-b" onClick={() => { setActiveDetail('synastry'); setActiveNav('synastry') }}>{'\u2295'} Synastry</div>
+
         <ThemeToggle />
         <button
           className={`oracle-toggle-btn${oracleOpen ? ' active' : ''}`}
