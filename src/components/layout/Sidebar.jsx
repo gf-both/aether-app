@@ -26,6 +26,8 @@ const NAV_ITEMS = [
   'sep',
   { icon: '💎', label: 'Pricing', id: 'pricing', widget: 'pricing' },
   'sep',
+  { icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
+  'sep',
   { icon: '💬', label: 'AI Guide', id: 'aichat', panel: 'aichat' },
   { icon: '🏥', label: 'Practitioner', id: 'practitioner', widget: 'practitioner' },
   { icon: '📋', label: 'Client Portal', id: 'client', widget: 'client' },

@@ -56,6 +56,7 @@ import PractitionerPortal from './PractitionerPortal'
 import ClientPortal from './ClientPortal'
 import AetherProfileDesigner from './AetherProfileDesigner'
 import CompanyPage from './CompanyPage'
+import GolemPage from './GolemPage'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
 import { getBiorhythms } from '../engines/biorhythmEngine'
@@ -306,6 +307,7 @@ const DETAIL_COMPONENTS = {
   client: ClientPortal,
   aether: AetherProfileDesigner,
   company: CompanyPage,
+  golem: GolemPage,
 }
 
 const DETAIL_TITLES = {
@@ -343,6 +345,7 @@ const DETAIL_TITLES = {
   client: 'Client Portal \u2014 Your Journey',
   aether: 'AETHER \u2014 Cosmic Agent Identity',
   company: 'Above + Inside Co. \u2014 Company Dashboard',
+  golem: 'Golem \u2014 Talk to Your Clone',
 }
 
 function NatalWidget() {

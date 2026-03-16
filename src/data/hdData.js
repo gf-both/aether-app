@@ -68,3 +68,4 @@ export const PLANET_ORDER = [
   'sun','earth','moon','northNode','southNode',
   'mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto',
 ]
+export const PLANET_SYMBOLS = {}; export const PLANET_ORDER = [];
