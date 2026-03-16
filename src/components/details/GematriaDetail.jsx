@@ -644,7 +644,7 @@ export default function GematriaDetail() {
                     </span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {s.matches.map((m, j) => (
+                    {(s?.matches ?? []).map((m, j) => (
                       <div key={j} style={{
                         fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4,
                         paddingLeft: 10, borderLeft: `2px solid ${color}22`,

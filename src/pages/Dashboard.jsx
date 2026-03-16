@@ -570,14 +570,14 @@ function WidgetContent({ widgetId }) {
               <div className="hd-columns">
                 <div className="hd-design">
                   <div className="hd-cl">Design</div>
-                  {hdDesignPlanets.map((p, i) => (
+                  {(hdDesignPlanets ?? []).map((p, i) => (
                     <div key={i} className="hd-pr d"><span className="hd-ps">{p.sym}</span><span className="hd-pv">{p.val}</span></div>
                   ))}
                 </div>
                 <div className="hd-graph"><HumanDesign /></div>
                 <div className="hd-pers" style={{ alignItems: 'flex-end' }}>
                   <div className="hd-cl" style={{ textAlign: 'right' }}>Personality</div>
-                  {hdPersonalityPlanets.map((p, i) => (
+                  {(hdPersonalityPlanets ?? []).map((p, i) => (
                     <div key={i} className="hd-pr p" style={{ flexDirection: 'row-reverse' }}>
                       <span className="hd-ps">{p.sym}</span>
                       <span className="hd-pv" style={{ textAlign: 'right' }}>{p.val}</span>
@@ -586,7 +586,7 @@ function WidgetContent({ widgetId }) {
                 </div>
               </div>
               <div className="hd-meta">
-                {hdTags.map((tag, i) => (
+                {(hdTags ?? []).map((tag, i) => (
                   <span key={i} className="hd-tag" style={{ background: tag.bg, borderColor: tag.border, color: tag.color }}>{tag.label}</span>
                 ))}
               </div>

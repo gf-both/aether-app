@@ -312,7 +312,7 @@ export default function AINoteTaker({ clientProfile = {} }) {
 
           <CollapsibleSection icon="❓" title="Follow-up Questions">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {analysis.followUpQuestions.map((q, i) => (
+              {(analysis?.followUpQuestions ?? []).map((q, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                   <button
                     onClick={() => toggleStar(i)}

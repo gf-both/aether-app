@@ -408,7 +408,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
         <div className="pp-section">
           <div className="pp-sec-title">Family &amp; Relationship Constellation</div>
           <div className="person-cards">
-            {people.map((p) => {
+            {(people ?? []).map((p) => {
               const cfg = REL_CONFIG[p.rel] || REL_CONFIG.other
               return (
                 <div key={p.id} className="person-card">

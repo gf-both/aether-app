@@ -214,7 +214,7 @@ export default function NatalDetail() {
   // Build dynamic ASPECTS list from chart
   const ASPECTS = useMemo(() => {
     if (!chart) return []
-    return chart.aspects.slice(0, 15).map(a => ({
+    return (chart?.aspects ?? []).slice(0, 15).map(a => ({
       p1: a.planet1.charAt(0).toUpperCase() + a.planet1.slice(1).replace(/([A-Z])/g, ' $1'),
       p2: a.planet2.charAt(0).toUpperCase() + a.planet2.slice(1).replace(/([A-Z])/g, ' $1'),
       type: a.aspect.charAt(0).toUpperCase() + a.aspect.slice(1),

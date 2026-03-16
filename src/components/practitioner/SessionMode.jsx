@@ -506,8 +506,8 @@ export default function SessionMode({ client, onBack }) {
   const [framework, setFramework] = useState('hd')
   const [notes, setNotes] = useState('')
   const [actionItems, setActionItems] = useState(
-    client.sessions.length > 0
-      ? client.sessions[0].actionItems.map(a => ({ ...a, id: Math.random() }))
+    (client?.sessions ?? []).length > 0
+      ? (client.sessions[0]?.actionItems ?? []).map(a => ({ ...a, id: Math.random() }))
       : []
   )
   const [newAction, setNewAction] = useState('')

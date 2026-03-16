@@ -130,7 +130,7 @@ export default function GeneKeysDetail() {
 
   // Dynamic GK data from computed profile (falls back to static for missing keys)
   const GK_DATA = useMemo(() => {
-    if (!profileData?.SPHERES) return null
+    if (!profileData?.SPHERES) return GK_DETAIL_STATIC
 
     // Map computed spheres to the full GK_DETAIL_STATIC lookup
     return profileData.SPHERES
@@ -152,7 +152,7 @@ export default function GeneKeysDetail() {
       })
   }, [profileData])
 
-  const activeGKData = GK_DATA || GK_DETAIL_STATIC // fallback to static if not computed
+  const activeGKData = (GK_DATA && GK_DATA.length > 0) ? GK_DATA : GK_DETAIL_STATIC // fallback to static if not computed
 
   const SEQUENCES = useMemo(() => {
     if (!profileData?.SPHERES) return [
@@ -203,7 +203,7 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>Hologenetic Profile</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-          {activeGKData.map((gk, i) => {
+          {(activeGKData ?? []).map((gk, i) => {
             const color = SPHERE_COLORS[gk.sphere] || '#40ccdd'
             return (
               <div key={i} style={{
@@ -246,7 +246,7 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>Gene Key Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {activeGKData.map((gk, i) => {
+          {(activeGKData ?? []).map((gk, i) => {
             const color = SPHERE_COLORS[gk.sphere] || '#40ccdd'
             return (
               <div key={i} style={{
@@ -368,7 +368,7 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>The Activation Sequence</div>
         <div style={{ display: 'flex', alignItems: 'stretch', gap: 0 }}>
-          {activeGKData.map((gk, i) => {
+          {(activeGKData ?? []).map((gk, i) => {
             const color = SPHERE_COLORS[gk.sphere] || '#40ccdd'
             return (
               <div key={i} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>

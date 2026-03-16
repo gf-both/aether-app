@@ -112,7 +112,7 @@ export default function DatingPage() {
             </div>
 
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              {demoMatches.map((match, i) => (
+              {(demoMatches ?? []).map((match, i) => (
                 <div
                   key={i}
                   onClick={() => setSelectedMatch(selectedMatch?.name === match.name ? null : match)}
