@@ -64,7 +64,7 @@ import { getBiorhythms } from '../engines/biorhythmEngine'
 import { getTarotBirthCards } from '../engines/tarotEngine'
 import { getCelticTree } from '../engines/celticTreeEngine'
 import { GK_LIST } from '../data/geneKeysData'
-import { MAYAN_PROFILE } from '../data/mayanData'
+import { MAYAN_PROFILE, computeFullProfile as computeMayanProfile } from '../data/mayanData'
 import { ENNEAGRAM_PROFILE, ENNEAGRAM_TYPES } from '../data/enneagramData'
 import { CHINESE_PROFILE } from '../data/chineseData'
 import { GEMATRIA_PROFILE } from '../data/gematriaData'
@@ -215,7 +215,7 @@ const ROWS = [
     sub: 'Consciousness Maps \u00B7 Gene Keys \u00B7 Cross-Framework Intelligence',
     color: 'var(--aqua2)',
     border: 'rgba(64,204,221,.3)',
-    widgets: ['integral', 'gk', 'pat'],
+    widgets: ['gk', 'integral', 'pat'],
     cols: '1fr 1.3fr 1fr',
   },
   {
@@ -623,7 +623,7 @@ function WidgetContent({ widgetId }) {
     case 'tr':
       return (
         <>
-          <div className="ch"><span className="ct">Transits &middot; Mar 5 2026 &middot; Natal Aspects</span><span className="ci">{'\u263F'}</span></div>
+          <div className="ch"><span className="ct">Transits &middot; {new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})} &middot; Natal Aspects</span><span className="ci">{'\u263F'}</span></div>
           <div className="cb">
             <div className="tr-outer">
               {TRANSITS.map((t, i) => (
@@ -667,7 +667,7 @@ function WidgetContent({ widgetId }) {
     case 'gem':
       return (
         <>
-          <div className="ch"><span className="ct">Gematria &middot; {GEMATRIA_PROFILE.name} &middot; {GEMATRIA_PROFILE.hebrew.fullValue}</span><span className="ci">{'\u{1F520}'}</span></div>
+          <div className="ch"><span className="ct">Gematria &middot; {profile?.name || GEMATRIA_PROFILE.name} &middot; {GEMATRIA_PROFILE.hebrew.fullValue}</span><span className="ci">{'\u{1F520}'}</span></div>
           <div className="cb"><GematriaChart /></div>
         </>
       )

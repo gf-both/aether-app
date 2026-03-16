@@ -128,7 +128,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
       }
 
       // Draw spheres
-      const baseSr = R * .13
+      const baseSr = R * .155
       activeSpheres.forEach((s, i) => {
         const x = s.xf * W, y = s.yf * H
         const sr = s.center ? baseSr * 1.1 : baseSr
@@ -166,21 +166,23 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
 
         // Role label outside sphere
         if (!s.center) {
-          const labelSize = Math.max(7, sr * .48)
+          const labelSize = Math.max(8, sr * .44)
           ctx.font = `${labelSize}px 'Cinzel',serif`
-          ctx.fillStyle = s.col + '0.75)'
-          // Position labels relative to sphere location
-          const labelY = s.yf < .4 ? y - sr - labelSize * 1.2
-            : s.yf > .6 ? y + sr + labelSize * 1.4
-            : y - sr - labelSize * 1.1
+          ctx.fillStyle = s.col + '0.85)'
+          // Position labels: above sphere if in top half, below if bottom half
+          const above = s.yf <= .5
+          const rawLabelY = above ? y - sr - labelSize * 1.4 : y + sr + labelSize * 1.6
+          // Clamp to canvas bounds
+          const labelY = Math.max(labelSize * 1.5, Math.min(H - labelSize, rawLabelY))
           ctx.fillText(s.role, x, labelY)
 
           // Line number
-          const lineSize = Math.max(6, sr * .38)
+          const lineSize = Math.max(7, sr * .36)
           ctx.font = `${lineSize}px 'Inconsolata',monospace`
-          ctx.fillStyle = 'rgba(201,168,76,.4)'
-          const lineY = s.yf < .4 ? labelY - lineSize * 1.5 : labelY + lineSize * 1.6
-          ctx.fillText('Line ' + s.line, x, lineY)
+          ctx.fillStyle = 'rgba(201,168,76,.5)'
+          const lineY = above ? labelY - lineSize * 1.6 : labelY + lineSize * 1.8
+          const clampedLineY = Math.max(lineSize, Math.min(H - 2, lineY))
+          ctx.fillText('Line ' + s.line, x, clampedLineY)
         }
       })
 

@@ -4,13 +4,13 @@ import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { computeHDChart } from '../../engines/hdEngine'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../../data/hdData'
 
-/* ─── Fallback static profile ────────────────────────────────────────────── */
+/* ─── Fallback static profile (generic — shown only when no birth data is available) ── */
 const FALLBACK = {
-  type: 'Projector', strategy: 'Wait for the Invitation',
-  authority: 'Emotional - Solar Plexus', profile: '3/5',
-  profileNames: 'Martyr / Heretic', definition: 'Split Definition',
-  cross: 'Right Angle Cross of the Unexpected (41/31 | 28/27)',
-  notSelf: 'Bitterness', signature: 'Success',
+  type: '—', strategy: '—',
+  authority: '—', profile: '—',
+  profileNames: '', definition: '—',
+  cross: '—',
+  notSelf: '—', signature: '—',
   personality: {
     sun: { gate: 41, line: 3 }, earth: { gate: 31, line: 3 },
     moon: { gate: 47, line: 2 }, northNode: { gate: 33, line: 4 },
@@ -449,7 +449,7 @@ export default function HDDetail() {
     try {
       const { dob, tob } = profile
       if (!dob) return null
-      return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: -3 })
+      return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: profile.birthTimezone ?? -3 })
     } catch (e) {
       console.error('HDDetail chart error:', e)
       return null

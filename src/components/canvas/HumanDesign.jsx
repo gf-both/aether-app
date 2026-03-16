@@ -107,7 +107,7 @@ export default function HumanDesign() {
 
     const profileLabel = chart
       ? `${chart.profile} · ${chart.type.toUpperCase()}`
-      : '3/5 · PROJECTOR'
+      : 'Body Graph'
 
     function drawCenter(ctx, name, xf, yf, shape, defined, cB, W, H, sz, pulse) {
       const x = xf * W, y = yf * H, r = sz

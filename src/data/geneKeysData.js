@@ -65,7 +65,7 @@ export function computeGeneKeysData(birthData = DEFAULT_BIRTH) {
       ...purpose,
     },
     {
-      key: `${lifesWork.gate}.${lifesWork.line}`,
+      key: lifesWork.gate,
       role: 'Gene Key',
       line: lifesWork.line,
       xf: .50, yf: .52,
