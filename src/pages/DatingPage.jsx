@@ -6,7 +6,27 @@ export default function DatingPage() {
   const [geoEnabled, setGeoEnabled] = useState(true)
   const [geoRange, setGeoRange] = useState(100)
   const [selectedMatch, setSelectedMatch] = useState(null)
-  const [activeTab, setActiveTab] = useState('matches') // 'matches' | 'golem' | 'settings'
+  const [activeTab, setActiveTab] = useState('matches') // 'matches' | 'golem' | 'preferences'
+
+  // Preferences state
+  const [relType, setRelType] = useState([])
+  const [ageRange, setAgeRange] = useState('')
+  const [openToKids, setOpenToKids] = useState('')
+  const [hasKids, setHasKids] = useState('')
+  const [religion, setReligion] = useState([])
+  const [igHandle, setIgHandle] = useState('')
+  const [linkedinUrl, setLinkedinUrl] = useState('')
+  const [prefSaved, setPrefSaved] = useState(false)
+
+  function toggleMulti(arr, setArr, val) {
+    setArr(prev => prev.includes(val) ? prev.filter(v => v !== val) : [...prev, val])
+  }
+
+  function savePreferences() {
+    // In production: persist to Supabase profile
+    setPrefSaved(true)
+    setTimeout(() => setPrefSaved(false), 2000)
+  }
 
   // Demo matches — in production these would come from the compatibility engine
   const demoMatches = profile?.dob ? getDemoMatches(profile) : []
@@ -30,7 +50,7 @@ export default function DatingPage() {
         {[
           { id:'matches', label:'Matches', icon:'💫' },
           { id:'golem', label:'Your Golem', icon:'🪬' },
-          { id:'settings', label:'Settings', icon:'⚙' },
+          { id:'preferences', label:'Preferences', icon:'⚙' },
         ].map(tab => (
           <div
             key={tab.id}
@@ -169,68 +189,117 @@ export default function DatingPage() {
         )}
 
         {/* SETTINGS TAB */}
-        {activeTab === 'settings' && (
-          <div style={{ maxWidth:400 }}>
-            <div style={{ fontFamily:"'Cinzel',serif", fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'var(--foreground)', opacity:.6, marginBottom:12 }}>Location</div>
+        {activeTab === 'preferences' && (
+          <div style={{ maxWidth:480 }}>
 
-            <div style={{ padding:'14px 16px', borderRadius:8, background:'var(--secondary)', border:'1px solid var(--border)', marginBottom:16 }}>
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:geoEnabled ? 12 : 0 }}>
-                <div>
-                  <div style={{ fontSize:12, color:'var(--foreground)' }}>Location filter</div>
-                  <div style={{ fontSize:10, color:'var(--muted-foreground)', marginTop:2 }}>{geoEnabled ? `Within ${geoRange}km` : 'Matching globally'}</div>
-                </div>
-                <div
-                  onClick={() => setGeoEnabled(!geoEnabled)}
-                  style={{
-                    width:40, height:22, borderRadius:11, cursor:'pointer',
-                    background: geoEnabled ? 'rgba(201,168,76,.4)' : 'var(--border)',
-                    border:'1px solid rgba(201,168,76,.3)', position:'relative', transition:'all .2s',
-                  }}
-                >
-                  <div style={{
-                    position:'absolute', top:2, left: geoEnabled ? 20 : 2,
-                    width:16, height:16, borderRadius:'50%', background:'var(--foreground)',
-                    transition:'left .2s',
-                  }} />
+            {/* Social handles */}
+            <PrefSection title="Social Profiles">
+              <div style={{ marginBottom:10 }}>
+                <div style={{ fontSize:10, color:'var(--muted-foreground)', marginBottom:5 }}>Instagram handle</div>
+                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <span style={{ fontSize:12, color:'var(--muted-foreground)' }}>@</span>
+                  <input
+                    value={igHandle}
+                    onChange={e => setIgHandle(e.target.value)}
+                    placeholder="yourhandle"
+                    style={{ flex:1, padding:'8px 12px', borderRadius:7, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:12, outline:'none', fontFamily:'inherit' }}
+                  />
                 </div>
               </div>
-              {geoEnabled && (
-                <div>
-                  <input
-                    type="range" min={10} max={500} value={geoRange}
-                    onChange={e => setGeoRange(Number(e.target.value))}
-                    style={{ width:'100%', accentColor:'var(--gold)' }}
-                  />
-                  <div style={{ display:'flex', justifyContent:'space-between', fontSize:9, color:'var(--muted-foreground)' }}>
-                    <span>10km</span><span style={{ color:'var(--gold)' }}>{geoRange}km</span><span>500km</span>
+              <div>
+                <div style={{ fontSize:10, color:'var(--muted-foreground)', marginBottom:5 }}>LinkedIn URL</div>
+                <input
+                  value={linkedinUrl}
+                  onChange={e => setLinkedinUrl(e.target.value)}
+                  placeholder="linkedin.com/in/yourprofile"
+                  style={{ width:'100%', boxSizing:'border-box', padding:'8px 12px', borderRadius:7, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:12, outline:'none', fontFamily:'inherit' }}
+                />
+              </div>
+            </PrefSection>
+
+            {/* Location */}
+            <PrefSection title="Location">
+              <div style={{ padding:'12px 14px', borderRadius:8, background:'var(--secondary)', border:'1px solid var(--border)' }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom: geoEnabled ? 12 : 0 }}>
+                  <div>
+                    <div style={{ fontSize:12, color:'var(--foreground)' }}>Distance filter</div>
+                    <div style={{ fontSize:10, color:'var(--muted-foreground)', marginTop:2 }}>{geoEnabled ? `Within ${geoRange}km` : 'Matching globally'}</div>
+                  </div>
+                  <div onClick={() => setGeoEnabled(!geoEnabled)} style={{ width:40, height:22, borderRadius:11, cursor:'pointer', background: geoEnabled ? 'rgba(201,168,76,.4)' : 'var(--border)', position:'relative', transition:'all .2s' }}>
+                    <div style={{ position:'absolute', top:2, left: geoEnabled ? 20 : 2, width:16, height:16, borderRadius:'50%', background:'var(--foreground)', transition:'left .2s' }} />
                   </div>
                 </div>
-              )}
-            </div>
-
-            <div style={{ fontFamily:"'Cinzel',serif", fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'var(--foreground)', opacity:.6, marginBottom:12 }}>Looking For</div>
-            {[
-              { label:'Relationship type', options:['Serious', 'Casual', 'Friendship', 'Open', 'Still figuring out'] },
-              { label:'Age range', options:['18-25', '25-35', '35-45', '45+', 'Open to all'] },
-            ].map((field, i) => (
-              <div key={i} style={{ marginBottom:10 }}>
-                <div style={{ fontSize:11, color:'var(--muted-foreground)', marginBottom:6 }}>{field.label}</div>
-                <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-                  {field.options.map((opt, j) => (
-                    <div key={j} style={{
-                      padding:'4px 10px', borderRadius:16, fontSize:10, cursor:'pointer',
-                      background:'var(--secondary)', border:'1px solid var(--border)',
-                      color:'var(--foreground)', transition:'all .15s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.4)'; e.currentTarget.style.color = 'var(--gold)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--foreground)' }}
-                    >
-                      {opt}
+                {geoEnabled && (
+                  <div>
+                    <input type="range" min={10} max={500} value={geoRange} onChange={e => setGeoRange(Number(e.target.value))} style={{ width:'100%', accentColor:'var(--gold)' }} />
+                    <div style={{ display:'flex', justifyContent:'space-between', fontSize:9, color:'var(--muted-foreground)' }}>
+                      <span>10km</span><span style={{ color:'var(--gold)' }}>{geoRange}km</span><span>500km</span>
                     </div>
+                  </div>
+                )}
+              </div>
+            </PrefSection>
+
+            {/* Relationship type — multi-select, stateful */}
+            <PrefSection title="Looking For">
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                {['Serious', 'Casual', 'Friendship', 'Open relationship', 'Still figuring out'].map(opt => (
+                  <PrefChip key={opt} label={opt} active={relType.includes(opt)} onClick={() => toggleMulti(relType, setRelType, opt)} />
+                ))}
+              </div>
+            </PrefSection>
+
+            {/* Age range — single select */}
+            <PrefSection title="Age Range">
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                {['18–24', '25–34', '35–44', '45–54', '55+', 'Open'].map(opt => (
+                  <PrefChip key={opt} label={opt} active={ageRange === opt} onClick={() => setAgeRange(ageRange === opt ? '' : opt)} />
+                ))}
+              </div>
+            </PrefSection>
+
+            {/* Kids */}
+            <PrefSection title="Children">
+              <div style={{ marginBottom:8 }}>
+                <div style={{ fontSize:10, color:'var(--muted-foreground)', marginBottom:5 }}>I have kids</div>
+                <div style={{ display:'flex', gap:6 }}>
+                  {['Yes', 'No', 'Prefer not to say'].map(opt => (
+                    <PrefChip key={opt} label={opt} active={hasKids === opt} onClick={() => setHasKids(hasKids === opt ? '' : opt)} />
                   ))}
                 </div>
               </div>
-            ))}
+              <div>
+                <div style={{ fontSize:10, color:'var(--muted-foreground)', marginBottom:5 }}>Open to partner with kids</div>
+                <div style={{ display:'flex', gap:6 }}>
+                  {['Yes', 'No', 'Depends'].map(opt => (
+                    <PrefChip key={opt} label={opt} active={openToKids === opt} onClick={() => setOpenToKids(openToKids === opt ? '' : opt)} />
+                  ))}
+                </div>
+              </div>
+            </PrefSection>
+
+            {/* Spiritual / religious */}
+            <PrefSection title="Spiritual Inclination">
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                {['Spiritual (non-religious)', 'Religious', 'Agnostic', 'Atheist', 'Open to all'].map(opt => (
+                  <PrefChip key={opt} label={opt} active={religion.includes(opt)} onClick={() => toggleMulti(religion, setReligion, opt)} />
+                ))}
+              </div>
+            </PrefSection>
+
+            {/* Save */}
+            <button
+              onClick={savePreferences}
+              style={{
+                marginTop:20, width:'100%', padding:'11px', borderRadius:8, cursor:'pointer',
+                background: prefSaved ? 'rgba(96,176,48,.15)' : 'rgba(201,168,76,.1)',
+                border:`1px solid ${prefSaved ? 'rgba(96,176,48,.4)' : 'rgba(201,168,76,.3)'}`,
+                color: prefSaved ? 'rgba(96,176,48,.9)' : 'var(--gold)',
+                fontSize:11, fontFamily:"'Cinzel',serif", letterSpacing:'.1em', textTransform:'uppercase', transition:'all .2s',
+              }}
+            >
+              {prefSaved ? '✓ Preferences Saved' : 'Save Preferences'}
+            </button>
           </div>
         )}
       </div>
