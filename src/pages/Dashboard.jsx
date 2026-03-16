@@ -352,7 +352,7 @@ const DETAIL_TITLES = {
   pricing: 'Choose Your Path \u2014 Pricing',
   practitioner: 'Practitioner Portal \u2014 Practice Management',
   client: 'Client Portal \u2014 Your Journey',
-  aether: 'AETHER \u2014 Cosmic Agent Identity',
+  aether: 'AI Agents \u2014 AETHER Team',
   company: 'Above + Inside Co. \u2014 Company Dashboard',
   golem: 'Golem \u2014 Talk to Your Clone',
 }
