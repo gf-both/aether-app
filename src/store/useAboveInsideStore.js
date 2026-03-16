@@ -303,11 +303,18 @@ export const useAboveInsideStore = create(
     }),
     { 
       name: 'above-inside-store',
-      version: 3,
+      version: 4,
       migrate: (persistedState, version) => {
         if (version < 2) {
-          // Reset primaryProfile to fix stale birth data / wrong signs
           return { ...persistedState, primaryProfile: undefined }
+        }
+        if (version < 4) {
+          // Reset hidden widgets and widget order so all widgets are visible
+          return { 
+            ...persistedState, 
+            hiddenWidgets: [],
+            widgetOrder: ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang']
+          }
         }
         return persistedState
       }

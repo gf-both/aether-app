@@ -250,7 +250,7 @@ const ROWS = [
   },
 ]
 
-const CARD_HEIGHT = 440
+const CARD_HEIGHT = 520
 
 const CONSTELLATION_LINKS = [
   ['gk', 'hd'], ['natal', 'tr'], ['num', 'gem'], ['enn', 'mbti'],
@@ -904,7 +904,7 @@ function DemoBanner() {
 }
 
 /* ── Widget Manager Bar ── */
-const DEFAULT_WIDGET_ORDER_LIST = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang']
+const ALL_WIDGET_IDS = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang']
 
 function WidgetManagerBar() {
   const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
@@ -917,64 +917,74 @@ function WidgetManagerBar() {
   if (!showWidgetManager) return null
 
   const hiddenCount = hiddenWidgets.length
+  // Ensure all widget IDs are in the order list
+  const fullOrder = [...new Set([...widgetOrder, ...ALL_WIDGET_IDS])]
 
   return (
     <div style={{
-      padding: '10px 16px 8px',
-      borderBottom: '1px solid rgba(201,168,76,.1)',
-      background: 'rgba(201,168,76,.03)',
+      padding: '14px 20px 12px',
+      borderBottom: '1px solid rgba(201,168,76,.15)',
+      background: 'rgba(0,0,0,.3)',
       flexShrink: 0,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <span style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.15em', color: 'var(--gold)', textTransform: 'uppercase' }}>
-          ⚙ Widget Manager {hiddenCount > 0 ? `· ${hiddenCount} hidden` : '· all visible'}
-        </span>
-        <div style={{ display: 'flex', gap: 6 }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+        <div>
+          <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', color: 'var(--gold)', textTransform: 'uppercase' }}>
+            ⚙ Widget Manager
+          </span>
+          <span style={{ fontSize: 10, color: 'var(--text2)', marginLeft: 10 }}>
+            {hiddenCount > 0 ? `${hiddenCount} hidden · click to toggle` : 'All widgets visible · click to hide'}
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
           {hiddenCount > 0 && (
-            <div
+            <button
               onClick={() => setHiddenWidgets([])}
               style={{
-                padding: '3px 10px', borderRadius: 6, cursor: 'pointer',
-                fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
-                color: 'var(--gold)', background: 'rgba(201,168,76,.12)',
-                border: '1px solid rgba(201,168,76,.3)', transition: 'all .15s',
+                padding: '5px 14px', borderRadius: 7, cursor: 'pointer', border: '1px solid rgba(201,168,76,.4)',
+                fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.06em',
+                color: 'var(--gold)', background: 'rgba(201,168,76,.12)', transition: 'all .15s',
               }}
-            >Show All</div>
+            >Show All</button>
           )}
-          <div
-            onClick={() => { setWidgetOrder([...DEFAULT_WIDGET_ORDER_LIST]); setHiddenWidgets([]) }}
+          <button
+            onClick={() => { setWidgetOrder([...ALL_WIDGET_IDS]); setHiddenWidgets([]) }}
             style={{
-              padding: '3px 10px', borderRadius: 6, cursor: 'pointer',
-              fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
-              color: 'var(--text2)', background: 'rgba(255,255,255,.04)',
-              border: '1px solid rgba(255,255,255,.08)', transition: 'all .15s',
+              padding: '5px 14px', borderRadius: 7, cursor: 'pointer', border: '1px solid rgba(255,255,255,.12)',
+              fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.06em',
+              color: 'var(--text2)', background: 'rgba(255,255,255,.04)', transition: 'all .15s',
             }}
-          >Reset Order</div>
+          >Reset All</button>
         </div>
       </div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-        {widgetOrder.map((id) => {
+
+      {/* Widget toggle grid */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {fullOrder.map((id) => {
           const meta = WIDGET_META[id]
           const isHidden = hiddenWidgets.includes(id)
+          if (!meta) return null
           return (
             <div
               key={id}
               onClick={() => toggleWidgetVisibility(id)}
-              title={isHidden ? `Show ${meta?.label}` : `Hide ${meta?.label}`}
               style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                padding: '4px 10px', borderRadius: 20, cursor: 'pointer',
-                fontSize: 10, fontFamily: "'Cinzel',serif", letterSpacing: '.05em',
-                transition: 'all .15s',
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '7px 14px', borderRadius: 10, cursor: 'pointer',
+                transition: 'all .15s', userSelect: 'none',
                 background: isHidden ? 'rgba(255,255,255,.03)' : 'rgba(201,168,76,.1)',
-                border: `1px solid ${isHidden ? 'rgba(255,255,255,.08)' : 'rgba(201,168,76,.3)'}`,
-                color: isHidden ? 'var(--text3)' : 'var(--gold)',
-                opacity: isHidden ? 0.5 : 1,
+                border: `1px solid ${isHidden ? 'rgba(255,255,255,.08)' : 'rgba(201,168,76,.35)'}`,
+                color: isHidden ? 'rgba(255,255,255,.3)' : 'var(--gold)',
               }}
             >
-              <span style={{ fontSize: 12 }}>{meta?.icon || '✦'}</span>
-              {meta?.label || id}
-              <span style={{ fontSize: 9, opacity: .6 }}>{isHidden ? '+ show' : '✓'}</span>
+              <span style={{ fontSize: 16 }}>{meta.icon || '✦'}</span>
+              <div>
+                <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.04em' }}>{meta.label}</div>
+                <div style={{ fontSize: 9, color: isHidden ? 'rgba(255,255,255,.2)' : 'var(--text2)', marginTop: 1 }}>
+                  {isHidden ? 'hidden · click to show' : 'visible · click to hide'}
+                </div>
+              </div>
             </div>
           )
         })}
@@ -1360,8 +1370,8 @@ export default function Dashboard() {
                             <div
                               className="widget-close"
                               onClick={(e) => { e.stopPropagation(); toggleWidgetVisibility(widgetId) }}
-                              title="Hide widget"
-                            >{'\u2715'}</div>
+                              title="Hide widget (re-enable in ⚙ Widget Manager)"
+                            >{'−'}</div>
                             <div style={{ position: 'absolute', top: '8px', right: '28px', zIndex: 5, pointerEvents: 'none' }}>
                               <CategoryBadge widgetId={widgetId} />
                             </div>

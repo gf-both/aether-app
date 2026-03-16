@@ -70,13 +70,13 @@ input,select{font-family:'Cormorant Garamond',serif;font-weight:500}
 .col-header-title{font-family:'Cinzel',serif;font-size:11px;font-weight:700;
   letter-spacing:.3em;text-transform:uppercase;
   text-shadow:0 0 16px currentColor}
-.col-header-sub{font-family:'Inconsolata',monospace;font-size:8px;
+.col-header-sub{font-family:'Inconsolata',monospace;font-size:11px;
   color:var(--text3);margin-top:2px;letter-spacing:.08em}
 
 /* ── Widget close button ── */
-.widget-close{position:absolute;top:6px;right:6px;width:20px;height:20px;
+.widget-close{position:absolute;top:6px;right:6px;width:26px;height:26px;
   background:rgba(212,48,112,.1);border:1px solid rgba(212,48,112,.2);border-radius:5px;
-  display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--rose);
+  display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--rose);
   cursor:pointer;opacity:0;transition:opacity .2s;z-index:10}
 .card:hover .widget-close{opacity:.7}
 .widget-close:hover{opacity:1 !important;background:rgba(212,48,112,.2)}
@@ -109,7 +109,7 @@ input,select{font-family:'Cormorant Garamond',serif;font-weight:500}
 .tb-brand{font-family:'Cinzel',serif;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.2em;white-space:nowrap;
   text-shadow:0 0 20px rgba(201,168,76,.2)}
 .tb-chips{display:flex;gap:5px;align-items:center}
-.chip{padding:3px 9px;border-radius:14px;font-family:'Cinzel',serif;font-size:8px;
+.chip{padding:4px 12px;border-radius:14px;font-family:'Cinzel',serif;font-size:10px;
   letter-spacing:.08em;cursor:pointer;transition:all .25s;border:1px solid}
 .chip-g{background:rgba(201,168,76,.07);border-color:rgba(201,168,76,.2);color:var(--gold2)}
 .chip-b{background:rgba(26,136,153,.07);border-color:rgba(64,204,221,.2);color:var(--aqua2)}
@@ -121,7 +121,7 @@ input,select{font-family:'Cormorant Garamond',serif;font-weight:500}
 .apb-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   font-size:14px;border:1px solid rgba(201,168,76,.3);flex-shrink:0}
 .apb-name{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.12em;color:var(--gold2)}
-.apb-detail{font-size:9px;color:var(--text3);font-style:italic}
+.apb-detail{font-size:11px;color:var(--text3);font-style:italic}
 
 /* ── Status bar ── */
 .statusbar{grid-column:2/-1;grid-row:3;background:rgba(3,3,18,.85);
@@ -130,8 +130,8 @@ input,select{font-family:'Cormorant Garamond',serif;font-weight:500}
   box-shadow:0 -2px 12px rgba(0,0,0,.2)}
 .sb-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2);flex-shrink:0}
 .sb-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.sb-label{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
-.sb-val{font-family:'Inconsolata',monospace;font-size:9px}
+.sb-label{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.sb-val{font-family:'Inconsolata',monospace;font-size:11px}
 
 .c-wheel{grid-column:2/4;grid-row:2/4;animation-delay:.04s}
 .c-hd{grid-column:4/6;grid-row:2/4;animation-delay:.08s}
@@ -148,15 +148,15 @@ input,select{font-family:'Cormorant Garamond',serif;font-weight:500}
 .hd-pr{display:flex;align-items:center;gap:2px;padding:1px 3px;border-radius:3px;cursor:pointer;transition:background .2s}
 .hd-pr:hover{background:rgba(201,168,76,.05)}
 .hd-ps{font-size:10px;min-width:13px;text-align:center}
-.hd-pv{font-family:'Inconsolata',monospace;font-size:8.5px}
+.hd-pv{font-family:'Inconsolata',monospace;font-size:11px}
 .hd-pr.d .hd-ps,.hd-pr.d .hd-pv{color:var(--design)}
 .hd-pr.p .hd-ps,.hd-pr.p .hd-pv{color:var(--personality)}
-.hd-cl{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.15em;text-transform:uppercase;
+.hd-cl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.15em;text-transform:uppercase;
   padding:2px 2px 3px;border-bottom:1px solid rgba(201,168,76,.08);margin-bottom:2px}
 .hd-design .hd-cl{color:var(--design)}
 .hd-pers .hd-cl{color:var(--personality);text-align:right}
 .hd-meta{padding:3px 7px;border-top:1px solid rgba(201,168,76,.06);display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0}
-.hd-tag{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.06em;padding:2px 6px;border-radius:9px;border:1px solid}
+.hd-tag{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.06em;padding:2px 6px;border-radius:9px;border:1px solid}
 
 /* ── Numerology widget ── */
 .num-outer{padding:7px 9px;height:100%;display:flex;flex-direction:column;gap:5px}
@@ -169,7 +169,7 @@ input,select{font-family:'Cormorant Garamond',serif;font-weight:500}
 .nc.master{background:rgba(104,32,176,.09);border-color:rgba(144,80,224,.22)}
 .nv{font-family:'Cinzel',serif;font-size:18px;color:var(--gold);font-weight:600;line-height:1}
 .nc.master .nv{color:var(--violet2)}
-.nl{font-size:7px;letter-spacing:.04em;text-transform:uppercase;color:var(--text2);margin-top:1px;text-align:center}
+.nl{font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--text2);margin-top:1px;text-align:center}
 
 /* ── Gene Keys widget ── */
 .gk-outer{height:100%;display:flex;flex-direction:column}
@@ -180,7 +180,7 @@ input,select{font-family:'Cormorant Garamond',serif;font-weight:500}
 .gk-item:hover{background:rgba(212,48,112,.05);border-color:rgba(240,96,160,.18)}
 .gk-num{font-family:'Cinzel',serif;font-size:15px;color:var(--gold);min-width:20px;line-height:1}
 .gk-info{flex:1;min-width:0}
-.gk-role{font-size:9px;color:var(--text2)}
+.gk-role{font-size:11px;color:var(--text2)}
 .gk-gift{font-size:8px;color:var(--rose2);font-style:italic}
 .gk-shadow{font-size:7.5px;color:var(--text3)}
 .fbars{display:flex;gap:2px;align-items:flex-end;flex-shrink:0}
