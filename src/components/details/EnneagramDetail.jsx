@@ -450,7 +450,7 @@ export default function EnneagramDetail() {
             {tritype.description}
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* INSTINCTUAL STACKING */}
       <div>
@@ -603,28 +603,16 @@ export default function EnneagramDetail() {
       <div>
         <div style={S.sectionTitle}>Levels of Development</div>
         <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-            <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)' }}>
-              Current Level
-            </span>
-            <span style={{
-              fontFamily: "'Inconsolata', monospace", fontSize: 18, color: 'var(--foreground)', fontWeight: 700,
-            }}>{ENNEAGRAM_PROFILE.level.current}</span>
-            <span style={{ ...S.mono, color: 'var(--foreground)' }}>{ENNEAGRAM_PROFILE.level.name}</span>
-          </div>
-          {/* Level bar */}
+          {/* Level bar — generic, no current level indicator */}
           <div style={{ display: 'flex', gap: 3, height: 8, borderRadius: 4, overflow: 'hidden' }}>
             {Array.from({ length: 9 }, (_, i) => {
-              const lvl = i + 1
-              const isCurrent = lvl === ENNEAGRAM_PROFILE.level.current
-              const isHealthy = lvl <= 3
-              const isAverage = lvl >= 4 && lvl <= 6
+              const isHealthy = i < 3
+              const isAverage = i >= 3 && i < 6
               const color = isHealthy ? 'rgba(96,200,80,' : isAverage ? 'rgba(240,200,40,' : 'rgba(220,60,60,'
               return (
                 <div key={i} style={{
                   flex: 1, borderRadius: 2,
-                  background: color + (isCurrent ? '0.8)' : '0.15)'),
-                  border: isCurrent ? `1px solid ${color}1)` : 'none',
+                  background: color + '0.25)',
                 }} />
               )
             })}
@@ -635,9 +623,9 @@ export default function EnneagramDetail() {
             <span style={{ fontSize: 9, color: '#ee5544', fontFamily: "'Inconsolata', monospace" }}>Unhealthy</span>
           </div>
           {[
-            ['Healthy (1\u20133)', ENNEAGRAM_PROFILE.level.healthy, '#88dd44'],
-            ['Average (4\u20136)', ENNEAGRAM_PROFILE.level.average, '#f0c828'],
-            ['Unhealthy (7\u20139)', ENNEAGRAM_PROFILE.level.unhealthy, '#ee5544'],
+            ['Healthy (1\u20133)', `The ${activeType.name} at their best — ${activeType.virtue.toLowerCase()} expressed fully, free from ${activeType.vice.toLowerCase()}`, '#88dd44'],
+            ['Average (4\u20136)', `The ${activeType.name} in ordinary function — ${activeType.keywords[2]?.toLowerCase() || 'caught in patterns'}, managing core fear of ${activeType.fear.toLowerCase()}`, '#f0c828'],
+            ['Unhealthy (7\u20139)', `The ${activeType.name} under stress — ${activeType.keywords[3]?.toLowerCase() || 'reactive patterns'}, ${activeType.vice.toLowerCase()} overwhelms`, '#ee5544'],
           ].map(([lbl, desc, color], i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <span style={{
@@ -656,7 +644,14 @@ export default function EnneagramDetail() {
       <div>
         <div style={S.sectionTitle}>Growth Recommendations</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          {ENNEAGRAM_PROFILE.growth.map((rec, i) => (
+          {[
+            `Practice moving toward ${activeType.virtue.toLowerCase()} — the antidote to ${activeType.vice.toLowerCase()}`,
+            `Notice when ${activeType.fear.toLowerCase()} is driving behavior — and pause`,
+            `Lean into your growth arrow toward Type ${integrationTo} (${integType.name}) — take on ${integType.keywords.slice(0, 2).join(', ').toLowerCase()} qualities`,
+            `Watch the stress arrow to Type ${disintegrationTo} (${disintType.name}) — notice ${disintType.keywords.slice(0, 2).join(', ').toLowerCase()} tendencies emerging`,
+            `Your core desire (${activeType.desire.toLowerCase()}) is healthy — pursue it without ${activeType.vice.toLowerCase()}`,
+            `Work with your ${primaryWingType.name} wing for ${primaryWingType.keywords[0].toLowerCase()} and ${primaryWingType.keywords[1].toLowerCase()}`,
+          ].map((rec, i) => (
             <div key={i} style={{
               ...S.row, padding: '10px 14px',
             }}>
@@ -678,8 +673,7 @@ export default function EnneagramDetail() {
       <div>
         <div style={S.sectionTitle}>Profile Reading</div>
         <div style={S.interpretation}>
-          As a <span style={{ color: 'var(--foreground)' }}>Type {label} ({stacking.stacking})</span> with the{' '}
-          <span style={{ color: 'var(--aqua2)' }}>{tritype.label} tritype</span>, you lead with the {activeType.triad}{' '}
+          As a <span style={{ color: 'var(--foreground)' }}>Type {label}</span>, you lead with the {activeType.triad}{' '}
           center's core fear of {activeType.fear.toLowerCase()}, colored by the {primaryWingType.name}'s{' '}
           {primaryWingType.keywords[0].toLowerCase()} qualities. The{' '}
           <span style={{ color: 'var(--foreground)' }}>{INSTINCTUAL_VARIANTS.find(v => v.code === stacking.dominant)?.name} dominant</span>{' '}

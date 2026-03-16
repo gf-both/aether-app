@@ -77,8 +77,19 @@ export default function EgyptianDetail() {
     return getEgyptianSign(d, m)
   }, [profile.dob])
 
-  // Use computed sign's name to look up full sign data; fall back to static profile
-  const activeSignName = computedSign?.name || EGYPTIAN_PROFILE.sign
+  // No birth date — show empty state
+  if (!profile.dob) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12, opacity: 0.5, padding: 32 }}>
+        <div style={{ fontSize: 40 }}>𓅭</div>
+        <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--gold)' }}>Add birth date to activate</div>
+        <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Open Profile to unlock your Egyptian sign</div>
+      </div>
+    )
+  }
+
+  // Use computed sign's name to look up full sign data
+  const activeSignName = computedSign?.name || 'Mut'
   const activeSignData = EGYPTIAN_SIGNS.find(s => s.name === activeSignName) || EGYPTIAN_SIGNS.find(s => s.name === 'Mut')
 
   // Merge: use static EGYPTIAN_PROFILE for rich data (description, compatibility etc.)

@@ -24,7 +24,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
       return computed
     } catch (e) {
       console.error('GeneKeysWheel compute error:', e)
-      return SPHERES
+      return null
     }
   }, [spheresProp, profile?.dob, profile?.tob, profile?.birthTimezone])
 

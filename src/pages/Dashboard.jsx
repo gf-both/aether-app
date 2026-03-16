@@ -529,27 +529,27 @@ function WidgetContent({ widgetId }) {
   const mayanLocal = useMemo(() => {
     try {
       const dob = profile?.dob
-      if (!dob) return MAYAN_PROFILE
+      if (!dob) return null
       const [y, m, d] = dob.split('-').map(Number)
-      if (!y || !m || !d) return MAYAN_PROFILE
+      if (!y || !m || !d) return null
       return computeMayanProfile(y, m, d)
-    } catch (e) { return MAYAN_PROFILE }
+    } catch (e) { return null }
   }, [profile?.dob])
   const chineseLocal = useMemo(() => {
     try {
       const dob = profile?.dob
-      if (!dob) return CHINESE_PROFILE
-      return getChineseProfileFromDob(dob) || CHINESE_PROFILE
-    } catch (e) { return CHINESE_PROFILE }
+      if (!dob) return null
+      return getChineseProfileFromDob(dob) || null
+    } catch (e) { return null }
   }, [profile?.dob, profile?.tob])
   const egyptianLocal = useMemo(() => {
     try {
       const dob = profile?.dob
-      if (!dob) return EGYPTIAN_PROFILE
+      if (!dob) return null
       const [, m, d] = dob.split('-').map(Number)
-      if (!m || !d) return EGYPTIAN_PROFILE
-      return getEgyptianSign(d, m) || EGYPTIAN_PROFILE
-    } catch (e) { return EGYPTIAN_PROFILE }
+      if (!m || !d) return null
+      return getEgyptianSign(d, m) || null
+    } catch (e) { return null }
   }, [profile?.dob])
   switch (widgetId) {
     case 'integral':
@@ -707,28 +707,28 @@ function WidgetContent({ widgetId }) {
     case 'mayan':
       return (
         <>
-          <div className="ch"><span className="ct">Mayan Dreamspell &middot; Kin {mayanLocal.kin} &middot; {mayanLocal.signature}</span><span className="ci">{'\u{1F4AE}'}</span></div>
+          <div className="ch"><span className="ct">Mayan Dreamspell{mayanLocal ? ` \u00B7 Kin ${mayanLocal.kin} \u00B7 ${mayanLocal.signature}` : ''}</span><span className="ci">{'\u{1F4AE}'}</span></div>
           <div className="cb"><MayanWheel /></div>
         </>
       )
     case 'enn':
       return (
         <>
-          <div className="ch"><span className="ct">Enneagram &middot; Type {enneagramType || ENNEAGRAM_PROFILE.type}w{enneagramWing || (enneagramType ? ENNEAGRAM_TYPES[enneagramType - 1]?.wings[0] : ENNEAGRAM_PROFILE.wing)} &middot; {ENNEAGRAM_PROFILE.tritype.label}</span><span className="ci">{'\u262F'}</span></div>
+          <div className="ch"><span className="ct">Enneagram{enneagramType ? ` \u00B7 Type ${enneagramType}w${enneagramWing || ENNEAGRAM_TYPES[enneagramType - 1]?.wings[0]}` : ' \u00B7 Take Quiz'}</span><span className="ci">{'\u262F'}</span></div>
           <div className="cb"><EnneagramSymbol typeOverride={enneagramType} wingOverride={enneagramWing} /></div>
         </>
       )
     case 'chi':
       return (
         <>
-          <div className="ch"><span className="ct">Chinese Zodiac &middot; {chineseLocal.element} {chineseLocal.animal}</span><span className="ci">{'\u{1F409}'}</span></div>
+          <div className="ch"><span className="ct">Chinese Zodiac{chineseLocal?.element ? ` \u00B7 ${chineseLocal.element} ${chineseLocal.animal}` : ''}</span><span className="ci">{'\u{1F409}'}</span></div>
           <div className="cb"><ChineseZodiac /></div>
         </>
       )
     case 'gem':
       return (
         <>
-          <div className="ch"><span className="ct">Gematria &middot; {profile?.name || GEMATRIA_PROFILE.name} &middot; {GEMATRIA_PROFILE.hebrew.fullValue}</span><span className="ci">{'\u{1F520}'}</span></div>
+          <div className="ch"><span className="ct">Gematria{profile?.name ? ` \u00B7 ${profile.name}` : ''}</span><span className="ci">{'\u{1F520}'}</span></div>
           <div className="cb"><GematriaChart /></div>
         </>
       )
@@ -749,7 +749,7 @@ function WidgetContent({ widgetId }) {
     case 'egyptian':
       return (
         <>
-          <div className="ch"><span className="ct">Egyptian &middot; {egyptianLocal.sign} &middot; {egyptianLocal.symbol}</span><span className="ci">{'\u{1F3DB}'}</span></div>
+          <div className="ch"><span className="ct">Egyptian{egyptianLocal?.sign ? ` \u00B7 ${egyptianLocal.sign} \u00B7 ${egyptianLocal.symbol || ''}` : ''}</span><span className="ci">{'\u{1F3DB}'}</span></div>
           <div className="cb"><EgyptianChart /></div>
         </>
       )

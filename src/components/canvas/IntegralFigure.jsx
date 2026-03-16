@@ -193,6 +193,22 @@ export default function IntegralFigure() {
       if (W === 0 || H === 0) { animRef.current = requestAnimationFrame(draw); return }
       const ctx = canvas.getContext('2d')
       ctx.save()
+
+      // Empty state: no birth date and no meaningful sign
+      if (!profile?.dob && (!profile?.sign || profile.sign === '?')) {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        ctx.clearRect(0, 0, W, H)
+        const cx = W / 2, cy = H / 2
+        const R = Math.min(W, H) * .38
+        ctx.font = `bold ${R * .06}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('Add birth date to activate', cx, cy)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(draw)
+        return
+      }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
       pulse += .015
