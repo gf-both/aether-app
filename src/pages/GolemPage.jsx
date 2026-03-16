@@ -1,5 +1,7 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { getNatalChart } from '../engines/natalEngine'
+import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 
 // Build complement profile (opposite of primary profile — what completes you)
 function buildComplementProfile(p) {
@@ -79,6 +81,29 @@ export default function GolemPage() {
   }, [selectedId])
 
   const activeProfile = editProfile || selectedGolem.profile
+
+  const computedChart = useMemo(() => {
+    const p = profile
+    if (!p?.dob) return null
+    try {
+      const [y,m,d] = p.dob.split('-').map(Number)
+      const [h,min] = (p.tob||'12:00').split(':').map(Number)
+      return getNatalChart({ day:d, month:m, year:y, hour:h||12, minute:min||0, lat:p.birthLat||0, lon:p.birthLon||0, timezone:p.birthTimezone||0 })
+    } catch { return null }
+  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone])
+
+  const computedNumerology = useMemo(() => {
+    if (!profile?.dob || !profile?.name) return null
+    try { return getNumerologyProfileFromDob(profile.dob, profile.name.toUpperCase(), {}) }
+    catch { return null }
+  }, [profile?.dob, profile?.name])
+
+  const displaySign = profile?.sign && profile.sign !== '?' ? profile.sign : computedChart?.planets?.sun?.sign || '?'
+  const displayMoon = profile?.moon && profile.moon !== '?' ? profile.moon : computedChart?.planets?.moon?.sign || '?'
+  const displayAsc = profile?.asc && profile.asc !== '?' ? profile.asc : computedChart?.angles?.asc?.sign || '?'
+  const displayLP = profile?.lifePath && profile.lifePath !== '?' ? profile.lifePath : computedNumerology?.lifePath?.val || '?'
+  const displayHDType = profile?.hdType && profile.hdType !== '?' ? profile.hdType : '?'
+
   const bottomRef = useRef(null)
   const chatMessages = messages[selectedId] || [{ role: 'golem', text: getWelcome(activeProfile, selectedGolem.label) }]
 
@@ -239,7 +264,7 @@ Keep responses 2-4 sentences. Be direct.`
       </div>
 
       {/* CENTER: Chat */}
-      <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', borderRight: !selectedGolem.readonly ? '1px solid var(--border)' : 'none' }}>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', overflow:'hidden', borderRight:'1px solid var(--border)' }}>
         {/* Chat header */}
         <div style={{ padding:'10px 16px', borderBottom:'1px solid var(--border)', flexShrink:0, display:'flex', alignItems:'center', gap:8 }}>
           <span style={{ fontSize:18 }}>{selectedGolem.emoji}</span>
@@ -265,6 +290,45 @@ Keep responses 2-4 sentences. Be direct.`
         <div style={{ padding:'10px 14px 12px', borderTop:'1px solid var(--border)', display:'flex', gap:8, flexShrink:0 }}>
           <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key==='Enter' && !e.shiftKey && send()} placeholder={`Talk to ${selectedGolem.label}...`} style={{ flex:1, padding:'9px 13px', borderRadius:8, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:13, outline:'none', fontFamily:'inherit' }} />
           <button onClick={send} disabled={!input.trim()||loading} style={{ padding:'9px 16px', borderRadius:8, cursor:'pointer', background: input.trim() ? 'rgba(201,168,76,.15)' : 'var(--secondary)', border:'1px solid rgba(201,168,76,.2)', color:'var(--gold)', fontSize:13, fontFamily:'inherit', transition:'all .15s' }}>Send</button>
+        </div>
+      </div>
+
+      {/* RIGHT: Golem Profile */}
+      <div style={{
+        width: 240, flexShrink: 0, borderLeft: '1px solid var(--border)',
+        overflowY: 'auto', padding: '16px 14px', background: 'rgba(0,0,0,.12)',
+      }}>
+        <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.6)', marginBottom:14, fontFamily:"'Cinzel',serif" }}>
+          {selectedGolem.label} Profile
+        </div>
+        <div style={{ textAlign:'center', fontSize:48, marginBottom:12 }}>{selectedGolem.emoji}</div>
+        {[
+          ['Name', activeProfile?.name || '—'],
+          ['☉ Sun', displaySign],
+          ['☽ Moon', displayMoon],
+          ['↑ Rising', displayAsc],
+          ['◈ HD Type', displayHDType],
+          ['◈ HD Profile', activeProfile?.hdProfile || '?'],
+          ['◈ Authority', activeProfile?.hdAuth || '?'],
+          ['∞ Life Path', String(displayLP)],
+          ['Expression', activeProfile?.expression || '?'],
+          ['Gene Keys', activeProfile?.crossGK || '?'],
+          ['Dosha', activeProfile?.doshaType || '—'],
+          ['Archetype', activeProfile?.archetypeType || '—'],
+          ['Love Lang', activeProfile?.loveLanguage || '—'],
+          ['MBTI', activeProfile?.mbtiType || '—'],
+          ['Enneagram', activeProfile?.enneagramType ? `Type ${activeProfile.enneagramType}` : '—'],
+        ].map(([label, value]) => (
+          <div key={label} style={{ display:'flex', justifyContent:'space-between', padding:'4px 0', borderBottom:'1px solid rgba(201,168,76,.05)', fontSize:10 }}>
+            <div style={{ color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", fontSize:9 }}>{label}</div>
+            <div style={{ color:'var(--foreground)', textAlign:'right', maxWidth:120, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{String(value)}</div>
+          </div>
+        ))}
+        <div style={{ marginTop:16, padding:'10px', borderRadius:7, background:'rgba(201,168,76,.05)', border:'1px solid rgba(201,168,76,.1)', fontSize:10, color:'rgba(255,255,255,.55)', lineHeight:1.6 }}>
+          {selectedGolem.label === 'Your Clone' && 'Exact mirror of your profile. Speaks as you.'}
+          {selectedGolem.label === 'Complement' && 'Your energetic opposite. Completes what you lack.'}
+          {selectedGolem.label === 'Antagonist' && 'The force that challenges you. Pushes back.'}
+          {!['Your Clone','Complement','Antagonist'].includes(selectedGolem.label) && 'Custom golem. Edit profile to shape this voice.'}
         </div>
       </div>
 

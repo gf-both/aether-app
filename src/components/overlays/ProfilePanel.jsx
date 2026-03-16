@@ -58,6 +58,12 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const npPobRef = useRef(null)
   const npNotesRef = useRef(null)
   const npGenderRef = useRef(null)
+  const npMbtiRef = useRef(null)
+  const npEnneagramRef = useRef(null)
+  const npEnneagramWingRef = useRef(null)
+  const npDoshaRef = useRef(null)
+  const npArchetypeRef = useRef(null)
+  const npLoveLanguageRef = useRef(null)
 
   function handleResetProfile() {
     // Clear all localStorage and reload with defaults
@@ -115,6 +121,12 @@ export default function ProfilePanel({ open, onClose, embedded }) {
         notes: npNotesRef.current?.value || '',
         gender: npGenderRef.current?.value || '',
         emoji: cfg.emoji,
+        mbtiType: npMbtiRef.current?.value || null,
+        enneagramType: npEnneagramRef.current?.value ? parseInt(npEnneagramRef.current.value, 10) : null,
+        enneagramWing: npEnneagramWingRef.current?.value ? parseInt(npEnneagramWingRef.current.value, 10) : null,
+        doshaType: npDoshaRef.current?.value || null,
+        archetypeType: npArchetypeRef.current?.value || null,
+        loveLanguage: npLoveLanguageRef.current?.value || null,
       })
       setEditingId(null)
     } else {
@@ -128,6 +140,12 @@ export default function ProfilePanel({ open, onClose, embedded }) {
         gender: npGenderRef.current?.value || '',
         emoji: cfg.emoji,
         sign: '?',
+        mbtiType: npMbtiRef.current?.value || null,
+        enneagramType: npEnneagramRef.current?.value ? parseInt(npEnneagramRef.current.value, 10) : null,
+        enneagramWing: npEnneagramWingRef.current?.value ? parseInt(npEnneagramWingRef.current.value, 10) : null,
+        doshaType: npDoshaRef.current?.value || null,
+        archetypeType: npArchetypeRef.current?.value || null,
+        loveLanguage: npLoveLanguageRef.current?.value || null,
       })
     }
     // Clear form
@@ -137,6 +155,12 @@ export default function ProfilePanel({ open, onClose, embedded }) {
     if (npPobRef.current) npPobRef.current.value = ''
     if (npNotesRef.current) npNotesRef.current.value = ''
     if (npGenderRef.current) npGenderRef.current.value = ''
+    if (npMbtiRef.current) npMbtiRef.current.value = ''
+    if (npEnneagramRef.current) npEnneagramRef.current.value = ''
+    if (npEnneagramWingRef.current) npEnneagramWingRef.current.value = ''
+    if (npDoshaRef.current) npDoshaRef.current.value = ''
+    if (npArchetypeRef.current) npArchetypeRef.current.value = ''
+    if (npLoveLanguageRef.current) npLoveLanguageRef.current.value = ''
     setShowAddForm(false)
   }
 
@@ -151,6 +175,12 @@ export default function ProfilePanel({ open, onClose, embedded }) {
       if (npPobRef.current) npPobRef.current.value = p.pob || ''
       if (npNotesRef.current) npNotesRef.current.value = p.notes || ''
       if (npGenderRef.current) npGenderRef.current.value = p.gender || ''
+      if (npMbtiRef.current) npMbtiRef.current.value = p.mbtiType || ''
+      if (npEnneagramRef.current) npEnneagramRef.current.value = p.enneagramType ? String(p.enneagramType) : ''
+      if (npEnneagramWingRef.current) npEnneagramWingRef.current.value = p.enneagramWing ? String(p.enneagramWing) : ''
+      if (npDoshaRef.current) npDoshaRef.current.value = p.doshaType || ''
+      if (npArchetypeRef.current) npArchetypeRef.current.value = p.archetypeType || ''
+      if (npLoveLanguageRef.current) npLoveLanguageRef.current.value = p.loveLanguage || ''
       npNameRef.current?.focus()
     }, 50)
   }
@@ -411,6 +441,96 @@ export default function ProfilePanel({ open, onClose, embedded }) {
                   <option value="female">Female</option>
                   <option value="non-binary">Non-binary</option>
                   <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div className="pp-row">
+              <div className="pp-field">
+                <div className="pp-label">MBTI Type</div>
+                <select ref={npMbtiRef} className="pp-input">
+                  <option value="">— Take Quiz —</option>
+                  <option value="INTJ">INTJ — Architect</option>
+                  <option value="INTP">INTP — Logician</option>
+                  <option value="ENTJ">ENTJ — Commander</option>
+                  <option value="ENTP">ENTP — Debater</option>
+                  <option value="INFJ">INFJ — Advocate</option>
+                  <option value="INFP">INFP — Mediator</option>
+                  <option value="ENFJ">ENFJ — Protagonist</option>
+                  <option value="ENFP">ENFP — Campaigner</option>
+                  <option value="ISTJ">ISTJ — Logistician</option>
+                  <option value="ISFJ">ISFJ — Defender</option>
+                  <option value="ESTJ">ESTJ — Executive</option>
+                  <option value="ESFJ">ESFJ — Consul</option>
+                  <option value="ISTP">ISTP — Virtuoso</option>
+                  <option value="ISFP">ISFP — Adventurer</option>
+                  <option value="ESTP">ESTP — Entrepreneur</option>
+                  <option value="ESFP">ESFP — Entertainer</option>
+                </select>
+              </div>
+              <div className="pp-field">
+                <div className="pp-label">Enneagram Type</div>
+                <select ref={npEnneagramRef} className="pp-input">
+                  <option value="">— Take Quiz —</option>
+                  <option value="1">Type 1 — The Reformer</option>
+                  <option value="2">Type 2 — The Helper</option>
+                  <option value="3">Type 3 — The Achiever</option>
+                  <option value="4">Type 4 — The Individualist</option>
+                  <option value="5">Type 5 — The Investigator</option>
+                  <option value="6">Type 6 — The Loyalist</option>
+                  <option value="7">Type 7 — The Enthusiast</option>
+                  <option value="8">Type 8 — The Challenger</option>
+                  <option value="9">Type 9 — The Peacemaker</option>
+                </select>
+              </div>
+              <div className="pp-field">
+                <div className="pp-label">Enneagram Wing</div>
+                <select ref={npEnneagramWingRef} className="pp-input">
+                  <option value="">— Auto —</option>
+                  {[1,2,3,4,5,6,7,8,9].map(n => <option key={n} value={n}>Wing {n}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className="pp-row">
+              <div className="pp-field">
+                <div className="pp-label">Dosha</div>
+                <select ref={npDoshaRef} className="pp-input">
+                  <option value="">— Take Quiz —</option>
+                  <option value="vata">Vata</option>
+                  <option value="pitta">Pitta</option>
+                  <option value="kapha">Kapha</option>
+                  <option value="vata-pitta">Vata-Pitta</option>
+                  <option value="pitta-kapha">Pitta-Kapha</option>
+                  <option value="vata-kapha">Vata-Kapha</option>
+                  <option value="tridoshic">Tridoshic</option>
+                </select>
+              </div>
+              <div className="pp-field">
+                <div className="pp-label">Archetype</div>
+                <select ref={npArchetypeRef} className="pp-input">
+                  <option value="">— Take Quiz —</option>
+                  <option value="hero">The Hero</option>
+                  <option value="sage">The Sage</option>
+                  <option value="explorer">The Explorer</option>
+                  <option value="creator">The Creator</option>
+                  <option value="ruler">The Ruler</option>
+                  <option value="magician">The Magician</option>
+                  <option value="lover">The Lover</option>
+                  <option value="caregiver">The Caregiver</option>
+                  <option value="innocent">The Innocent</option>
+                  <option value="jester">The Jester</option>
+                  <option value="outlaw">The Outlaw</option>
+                  <option value="everyman">The Everyman</option>
+                </select>
+              </div>
+              <div className="pp-field">
+                <div className="pp-label">Love Language</div>
+                <select ref={npLoveLanguageRef} className="pp-input">
+                  <option value="">— Take Quiz —</option>
+                  <option value="words">Words of Affirmation</option>
+                  <option value="acts">Acts of Service</option>
+                  <option value="gifts">Receiving Gifts</option>
+                  <option value="time">Quality Time</option>
+                  <option value="touch">Physical Touch</option>
                 </select>
               </div>
             </div>
