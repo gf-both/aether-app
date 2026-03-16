@@ -83,7 +83,7 @@ export default function HumanDesign() {
       console.error('HD chart computation error:', e)
       return null
     }
-  }, [profile])
+  }, [profile?.dob, profile?.tob, profile?.birthTimezone])
 
   useCanvasResize(canvasRef)
 

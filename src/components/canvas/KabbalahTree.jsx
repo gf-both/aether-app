@@ -24,7 +24,7 @@ export default function KabbalahTree() {
     } catch (e) {
       return SEPHIROTH
     }
-  }, [profile])
+  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone])
 
   useCanvasResize(canvasRef)
 
@@ -136,7 +136,7 @@ export default function KabbalahTree() {
       canvas.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [sephirothLive])
+  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }

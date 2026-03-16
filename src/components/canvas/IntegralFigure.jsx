@@ -349,7 +349,7 @@ export default function IntegralFigure() {
       canvas.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [profile])
+  }, [profile?.sign, profile?.moon, profile?.asc, profile?.hdType, profile?.hdProfile, profile?.hdAuth, profile?.hdDef, profile?.lifePath, profile?.crossGK, profile?.mbtiType, profile?.name])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }
