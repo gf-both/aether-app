@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { computeCompatibility, getCompatibilityDescription } from '../engines/compatibilityEngine'
 
 export default function DatingPage() {
   const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
@@ -28,8 +29,36 @@ export default function DatingPage() {
     setTimeout(() => setPrefSaved(false), 2000)
   }
 
-  // Demo matches — in production these would come from the compatibility engine
-  const demoMatches = profile?.dob ? getDemoMatches(profile) : []
+  // Real matches computed from the people in the store
+  const people = useAboveInsideStore(s => s.people)
+
+  const realMatches = useMemo(() => {
+    if (!profile?.dob || !people?.length) return []
+    return people
+      .filter(p => p.dob && p.dob !== profile.dob) // exclude self
+      .map(person => {
+        const result = computeCompatibility(profile, person)
+        if (!result) return null
+        return {
+          name: person.name || 'Unknown',
+          emoji: person.emoji || '✨',
+          color: '201,168,76',
+          sign: person.sign || '?',
+          hdType: person.hdType || '?',
+          lifePath: person.lifePath || '?',
+          score: result.score,
+          topReasons: result.topReasons.map(r => r.label),
+          story: result.matchStory,
+          tension: result.tensionPoints[0] || null,
+          soulmate: result.soulmate,
+        }
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.score - a.score)
+  }, [profile, people])
+
+  // Use realMatches if available, fallback to demo data
+  const demoMatches = realMatches.length > 0 ? realMatches : (profile?.dob ? getDemoMatches(profile) : [])
 
   if (!profile?.dob) {
     return (
