@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import TransitWheel from '../canvas/TransitWheel'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { getNatalChart } from '../../engines/natalEngine'
 
 const PLANET_ORDER = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto']
@@ -43,9 +43,7 @@ function findAspect(transitLon, natalLon) {
 
 /** Compute live transits against natal chart */
 function useCurrentTransits() {
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
   return useMemo(() => {
     const dob = parseDOB(profile.dob)
     const tob = parseTOB(profile.tob)

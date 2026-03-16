@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { EGYPTIAN_SIGNS, EGYPTIAN_PROFILE, getEgyptianSign } from '../../data/egyptianData'
 
 export default function EgyptianChart() {
@@ -8,9 +8,7 @@ export default function EgyptianChart() {
   const animRef = useRef(null)
   const hovRef = useRef(-1)
 
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   // Compute active sign dynamically from birth data
   const activeSign = useMemo(() => {

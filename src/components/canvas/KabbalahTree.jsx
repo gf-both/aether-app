@@ -2,16 +2,14 @@ import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { SEPHIROTH, PATHS, PATH_COLORS } from '../../data/kabbalahData'
 import { getKabbalahProfile, profileToKabArgs } from '../../engines/kabbalahEngine'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 
 export default function KabbalahTree() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const hovRef = useRef(-1)
 
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   // Compute live active states from birth data; fall back to static SEPHIROTH if engine throws
   const sephirothLive = useMemo(() => {

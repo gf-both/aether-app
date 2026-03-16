@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { SEPHIROTH, PATHS } from '../../data/kabbalahData'
 import { getKabbalahProfile, profileToKabArgs } from '../../engines/kabbalahEngine'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import KabbalahTree from '../canvas/KabbalahTree'
 
 const SEPHIROTH_INTERP = [
@@ -117,9 +117,7 @@ const S = {
 }
 
 export default function KabbalahDetail() {
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   // Compute live active states from birth data
   const { SEPHIROTH_DETAIL, PILLARS_LIVE, ACTIVE_PATHS_LIVE } = useMemo(() => {

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, SEAL_COLORS, computeFullProfile } from '../../data/mayanData'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 
 const DAY_SIGN_EMOJI = {
   'Imix': '🐊', 'Ik': '💨', 'Akbal': '🌙', 'Kan': '🌱', 'Chicchan': '🐍',
@@ -19,9 +19,7 @@ const TONE_NAMES = {
 export default function MayanWheel({ classicalDaySign, classicalTone, classicalKin }) {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   useCanvasResize(canvasRef)
 

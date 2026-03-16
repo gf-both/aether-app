@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { CHINESE_ANIMALS, FIVE_ELEMENTS, CHINESE_PROFILE as STATIC_PROFILE } from '../../data/chineseData'
 import { getChineseProfileFromDob } from '../../engines/chineseEngine'
 
@@ -54,9 +54,7 @@ const S = {
 const ELEM_COLORS = { Wood: '#4caf50', Fire: '#e53935', Earth: '#d4a017', Metal: '#cfd8dc', Water: '#1e88e5' }
 
 export default function ChineseDetail() {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   const P = useMemo(() => {
     try {

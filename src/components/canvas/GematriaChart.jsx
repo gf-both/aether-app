@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { HEBREW_ALPHABET, GEMATRIA_PROFILE, getGematriaProfile } from '../../data/gematriaData'
 import { DEFAULT_PRIMARY_PROFILE } from '../../data/primaryProfile'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 
 // Compute chart data from engine (dynamic, reads profile)
 function getChartData(activeProfile) {
@@ -42,9 +42,7 @@ export default function GematriaChart() {
   const animRef = useRef(null)
   const hovRef = useRef(-1)
 
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   useCanvasResize(canvasRef)
 

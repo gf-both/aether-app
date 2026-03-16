@@ -73,6 +73,7 @@ import { GEMATRIA_PROFILE } from '../data/gematriaData'
 import { CROSS_FRAMEWORK_ALIGNMENTS } from '../data/patternsData'
 import { EGYPTIAN_PROFILE } from '../data/egyptianData'
 import { getEgyptianSign } from '../engines/egyptianEngine'
+import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 
 // ── Drag-to-reorder hook (pointer events, works on mouse + touch) ──
 function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
@@ -497,12 +498,16 @@ function CelticWidget() {
 }
 
 function WidgetContent({ widgetId }) {
-  const doshaType = useAboveInsideStore((s) => s.doshaType)
-  const archetypeType = useAboveInsideStore((s) => s.archetypeType)
-  const loveLanguage = useAboveInsideStore((s) => s.loveLanguage)
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
   const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
   const profile = activeViewProfile || primaryProfile
+  // quiz-based types: prefer per-profile values, fall back to global store
+  const globalDoshaType = useAboveInsideStore((s) => s.doshaType)
+  const globalArchetypeType = useAboveInsideStore((s) => s.archetypeType)
+  const globalLoveLanguage = useAboveInsideStore((s) => s.loveLanguage)
+  const doshaType = profile?.doshaType ?? globalDoshaType
+  const archetypeType = profile?.archetypeType ?? globalArchetypeType
+  const loveLanguage = profile?.loveLanguage ?? globalLoveLanguage
   const mbtiType = profile?.mbtiType || null
   const enneagramType = profile?.enneagramType || null
   const enneagramWing = profile?.enneagramWing || null
@@ -595,15 +600,29 @@ function WidgetContent({ widgetId }) {
           <div className="cb"><KabbalahTree /></div>
         </>
       )
-    case 'num':
+    case 'num': {
+      const np = profile?.dob && profile?.name
+        ? getNumerologyProfileFromDob(profile.dob, profile.name.toUpperCase(), {})
+        : null
+      const dynamicCells = np ? [
+        { val: np.lifePath?.val || '?', label: 'Life Path', hl: true },
+        { val: np.expression?.val || '?', label: 'Expression' },
+        { val: np.soulUrge?.val || '?', label: 'Soul Urge' },
+        { val: np.birthday?.val || '?', label: 'Birthday' },
+        { val: np.personality?.val || '?', label: 'Personality' },
+        { val: np.maturity?.val || '?', label: 'Maturity' },
+      ] : NUM_CELLS
+      const lpVal = np?.lifePath?.val ?? 7
+      const lpLabel = np?.lifePath?.title || 'The Seeker'
+      const masterNums = dynamicCells.filter(c => [11,22,33].includes(Number(c.val))).map(c => c.val)
       return (
         <>
           <div className="ch"><span className="ct">Numerology &middot; Core Numbers</span><span className="ci">{'\u221E'}</span></div>
           <div className="cb">
             <div className="num-outer">
               <div className="num-grid">
-                {NUM_CELLS.map((cell, i) => (
-                  <div key={i} className={`nc${cell.hl ? ' hl' : ''}${cell.master ? ' master' : ''}`}>
+                {dynamicCells.map((cell, i) => (
+                  <div key={i} className={`nc${cell.hl ? ' hl' : ''}${[11,22,33].includes(Number(cell.val)) ? ' master' : ''}`}>
                     <div className="nv">{cell.val}</div>
                     <div className="nl">{cell.label}</div>
                   </div>
@@ -615,13 +634,16 @@ function WidgetContent({ widgetId }) {
                 padding: '5px 7px', background: 'var(--secondary)', borderRadius: '6px',
                 border: '1px solid var(--secondary)'
               }}>
-                <span style={{ color: 'var(--foreground)' }}>Life Path 7</span> — The Seeker. Introspection &amp; spiritual wisdom.{' '}
-                <span style={{ color: 'var(--violet2)' }}>Master 11/22</span> anchors intuition into form.
+                <span style={{ color: 'var(--foreground)' }}>Life Path {lpVal}</span> — {lpLabel}.{' '}
+                {masterNums.length > 0 && (
+                  <><span style={{ color: 'var(--violet2)' }}>Master {masterNums.join('/')}</span> present in profile.</>
+                )}
               </div>
             </div>
           </div>
         </>
       )
+    }
     case 'gk':
       return (
         <>
@@ -1621,13 +1643,27 @@ function CosmicKabWidget() {
   </>
 }
 function CosmicNumWidget() {
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
+  const np = profile?.dob && profile?.name
+    ? getNumerologyProfileFromDob(profile.dob, profile.name.toUpperCase(), {})
+    : null
+  const cells = np ? [
+    { val: np.lifePath?.val || '?', label: 'Life Path', hl: true },
+    { val: np.expression?.val || '?', label: 'Expression' },
+    { val: np.soulUrge?.val || '?', label: 'Soul Urge' },
+    { val: np.birthday?.val || '?', label: 'Birthday' },
+    { val: np.personality?.val || '?', label: 'Personality' },
+    { val: np.maturity?.val || '?', label: 'Maturity' },
+  ] : NUM_CELLS
   return <>
     <div className="ch"><span className="ct">Numerology</span></div>
     <div className="cb">
       <div className="num-outer">
         <div className="num-grid">
-          {NUM_CELLS.map((c, i) => (
-            <div key={i} className={`nc${c.hl ? ' hl' : ''}${c.master ? ' master' : ''}`}>
+          {cells.map((c, i) => (
+            <div key={i} className={`nc${c.hl ? ' hl' : ''}${[11,22,33].includes(Number(c.val)) ? ' master' : ''}`}>
               <span className="nv">{c.val}</span>
               <span className="nl">{c.label}</span>
             </div>

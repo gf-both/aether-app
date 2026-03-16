@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import HumanDesign from '../canvas/HumanDesign'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { computeHDChart } from '../../engines/hdEngine'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../../data/hdData'
 
@@ -455,9 +455,7 @@ function VariablesTab({ chart }) {
 /* ─── Main component ─────────────────────────────────────────────────────── */
 export default function HDDetail() {
   const [activeTab, setActiveTab] = useState('ravechart')
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   const chart = useMemo(() => {
     try {

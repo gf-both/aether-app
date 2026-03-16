@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { getVedicChart } from '../../engines/vedicEngine'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
 

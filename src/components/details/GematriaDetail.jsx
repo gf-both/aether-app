@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { HEBREW_ALPHABET, GEMATRIA_METHODS, GEMATRIA_PROFILE, getGematriaProfile } from '../../data/gematriaData'
 
 // Build a dynamically-computed profile from the engine, merged with the rich
@@ -303,9 +303,7 @@ function NumCircle({ val, color, size = 54, label, sub }) {
 }
 
 export default function GematriaDetail() {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const activeProfile = activeViewProfile || primaryProfile
+  const activeProfile = useActiveProfile()
 
   // Use engine-computed profile (dynamic, reads from active profile)
   const P = useMemo(() => buildComputedProfile(activeProfile), [activeProfile?.name, activeProfile?.dob])

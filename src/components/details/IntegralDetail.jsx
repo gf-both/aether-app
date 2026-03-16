@@ -1,4 +1,4 @@
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import IntegralFigure from '../canvas/IntegralFigure'
 
 const ZONES = [
@@ -116,9 +116,7 @@ const S = {
 }
 
 export default function IntegralDetail() {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   // Fill in dynamic values
   const filledZones = ZONES.map(z => {

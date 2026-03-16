@@ -1,6 +1,6 @@
 import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, CASTLES, EARTH_FAMILIES, COLOR_FAMILIES, SEAL_COLORS, computeFullProfile, getMayanProfile } from '../../data/mayanData'
 import MayanWheel from '../canvas/MayanWheel'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 
 /* ---- Day Sign data with emoji & element ---- */
 const DAY_SIGNS = {
@@ -237,9 +237,7 @@ function OracleCard({ entry, label, desc, col, isCenter }) {
 }
 
 export default function MayanDetail() {
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   let P = MAYAN_PROFILE
   let classicalProfile = null

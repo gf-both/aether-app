@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { EGYPTIAN_SIGNS, EGYPTIAN_PROFILE, getEgyptianSign } from '../../data/egyptianData'
 
 /* ---- shared styles (matching app conventions) ---- */
@@ -68,9 +68,7 @@ const SIGN_GLYPHS = {
 }
 
 export default function EgyptianDetail() {
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const profile = useActiveProfile()
 
   // Compute Egyptian sign dynamically from birth data
   const computedSign = useMemo(() => {

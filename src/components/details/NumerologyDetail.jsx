@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
 
 const CORE_COLORS = {
@@ -82,9 +82,7 @@ function parseProfileInputs(profile) {
 }
 
 export default function NumerologyDetail() {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const activeProfile = activeViewProfile || primaryProfile
+  const activeProfile = useActiveProfile()
 
   const now = new Date()
   const { day, month, year, fullName } = parseProfileInputs(activeProfile)
