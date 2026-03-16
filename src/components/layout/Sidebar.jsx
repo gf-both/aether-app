@@ -31,6 +31,8 @@ const NAV_ITEMS = [
   { icon: '\uD83D\uDCCB', label: 'Client Portal', id: 'client', widget: 'client' },
   'sep',
   { icon: '\u2728', label: 'AETHER', id: 'aether', widget: 'aether' },
+  'sep',
+  { icon: '\uD83C\uDFDB\uFE0F', label: 'Company', id: 'company', widget: 'company' },
 ]
 
 export default function Sidebar() {
