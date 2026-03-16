@@ -4,9 +4,43 @@ import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { getNatalChart } from '../../engines/natalEngine'
 
 const PLANET_SYMS = {
-  sun: '\u2609', moon: '\u263D', mercury: '\u263F', venus: '\u2640', mars: '\u2642',
-  jupiter: '\u2643', saturn: '\u2644', uranus: '\u2645', neptune: '\u2646', pluto: '\u2647',
-  northNode: '\u260A', chiron: '\u26B7',
+  sun: '☉', moon: '☽', mercury: '☿', venus: '♀', mars: '♂',
+  jupiter: '♃', saturn: '♄', uranus: '♅', neptune: '♆', pluto: '♇',
+  northNode: '☊', chiron: '⚷',
+}
+
+// Dignities table: [sign] → { planet: 'detriment'|'exaltation'|'fall'|'domicile' }
+const DIGNITIES = {
+  Aries:       { mars: 'domicile', sun: 'exaltation', venus: 'detriment', saturn: 'fall' },
+  Taurus:      { venus: 'domicile', moon: 'exaltation', mars: 'detriment', uranus: 'detriment', pluto: 'fall' },
+  Gemini:      { mercury: 'domicile', jupiter: 'detriment' },
+  Cancer:      { moon: 'domicile', jupiter: 'exaltation', saturn: 'detriment', mars: 'fall' },
+  Leo:         { sun: 'domicile', saturn: 'detriment', uranus: 'detriment', neptune: 'fall' },
+  Virgo:       { mercury: 'domicile', mercury2: 'exaltation', jupiter: 'detriment', venus: 'fall', neptune: 'detriment' },
+  Libra:       { venus: 'domicile', saturn: 'exaltation', mars: 'detriment', sun: 'fall' },
+  Scorpio:     { mars: 'domicile', pluto: 'domicile', moon: 'fall', venus: 'detriment', uranus: 'exaltation' },
+  Sagittarius: { jupiter: 'domicile', mercury: 'detriment', neptune: 'domicile' },
+  Capricorn:   { saturn: 'domicile', mars: 'exaltation', moon: 'detriment', jupiter: 'fall' },
+  Aquarius:    { saturn: 'domicile', uranus: 'domicile', sun: 'detriment', neptune: 'exaltation' },
+  Pisces:      { jupiter: 'domicile', neptune: 'domicile', venus: 'exaltation', mercury: 'detriment', mercury2: 'fall' },
+}
+
+function getPlanetDignity(planetKey, sign) {
+  const signData = DIGNITIES[sign]
+  if (!signData) return null
+  const status = signData[planetKey]
+  if (!status) return null
+  if (status === 'exaltation') return 'Exalt'
+  if (status === 'detriment') return 'Detr'
+  if (status === 'fall') return 'Fall'
+  if (status === 'domicile') return 'Dom'
+  return null
+}
+
+const PLANET_COLORS_TABLE = {
+  sun: '#b87800', moon: '#4455aa', mercury: '#2277aa', venus: '#993322',
+  mars: '#bb2222', jupiter: '#997700', saturn: '#5a6645', uranus: '#2288aa',
+  neptune: '#3355cc', pluto: '#774488', northNode: '#886633', chiron: '#885544',
 }
 
 const ASPECT_SYMBOLS = {
@@ -148,22 +182,26 @@ export default function NatalDetail() {
   const PLANETS = useMemo(() => {
     if (!chart) return []
     const list = []
-    const planetOrder = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto','northNode']
+    const planetOrder = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto','northNode','chiron']
     for (const key of planetOrder) {
       const p = chart.planets[key]
       if (!p) continue
+      const shortName = key === 'northNode' ? 'Node' : key === 'chiron' ? 'Chiron'
+        : key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1')
       list.push({
-        name: key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, ' $1'),
+        name: shortName,
+        key,
         sym: PLANET_SYMS[key] || '?',
         sign: p.sign,
         deg: formatDeg(p.degree),
         house: getHouseFor(p.lon, chart.houses),
         retro: p.retrograde,
+        dignity: getPlanetDignity(key, p.sign),
       })
     }
     // Add ASC and MC
-    list.push({ name: 'Ascendant', sym: 'AC', sign: chart.angles.asc.sign, deg: formatDeg(chart.angles.asc.degree), house: 1, retro: false })
-    list.push({ name: 'Midheaven', sym: 'MC', sign: chart.angles.mc.sign, deg: formatDeg(chart.angles.mc.degree), house: 10, retro: false })
+    list.push({ name: 'ASC', key: 'asc', sym: 'AC', sign: chart.angles.asc.sign, deg: formatDeg(chart.angles.asc.degree), house: 1, retro: false, dignity: null })
+    list.push({ name: 'MC', key: 'mc', sym: 'MC', sign: chart.angles.mc.sign, deg: formatDeg(chart.angles.mc.degree), house: 10, retro: false, dignity: null })
     return list
   }, [chart])
 
@@ -286,45 +324,95 @@ export default function NatalDetail() {
         </div>
       </div>
 
-      {/* PLANETS TABLE */}
+      {/* PLANETS TABLE — astro.com style */}
       <div>
         <div style={S.sectionTitle}>Planetary Placements</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {/* table header */}
-          <div style={{ display: 'grid', gridTemplateColumns: '32px 100px 100px 70px 60px 60px', gap: 8, padding: '4px 12px' }}>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}></span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>PLANET</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>SIGN</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>DEGREE</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>HOUSE</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>STATUS</span>
+        <div style={{
+          borderRadius: 10,
+          border: '1px solid rgba(201,168,76,.18)',
+          overflow: 'hidden',
+          background: 'var(--glass-bg)',
+        }}>
+          {/* Header row */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '36px 28px 90px 90px 90px 52px 46px',
+            gap: 0,
+            padding: '6px 12px',
+            background: 'rgba(201,168,76,.06)',
+            borderBottom: '1px solid rgba(201,168,76,.18)',
+          }}>
+            {['', '', 'PLANET', 'DEGREE', 'SIGN', 'HSE', ''].map((h, i) => (
+              <span key={i} style={{
+                fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.12em',
+                textTransform: 'uppercase', color: 'var(--text3)', paddingLeft: i > 1 ? 4 : 0,
+              }}>{h}</span>
+            ))}
           </div>
+
+          {/* Data rows */}
           {PLANETS.map((p, i) => {
             const elColor = SIGN_ELEMENTS[p.sign] ? ELEMENT_COLORS[SIGN_ELEMENTS[p.sign]] : 'var(--text2)'
+            const planetColor = PLANET_COLORS_TABLE[p.key] || 'var(--gold2)'
+            const isEven = i % 2 === 0
+            const dignityColor = p.dignity === 'Exalt' ? '#2a8040'
+              : p.dignity === 'Dom' ? '#2266aa'
+              : p.dignity === 'Detr' ? '#aa3322'
+              : p.dignity === 'Fall' ? '#996622' : null
             return (
               <div key={i} style={{
-                ...S.row,
-                display: 'grid', gridTemplateColumns: '32px 100px 100px 70px 60px 60px', gap: 8,
-                animationDelay: `${i * 0.04}s`,
+                display: 'grid',
+                gridTemplateColumns: '36px 28px 90px 90px 90px 52px 46px',
+                gap: 0,
+                padding: '5px 12px',
+                alignItems: 'center',
+                background: isEven ? 'rgba(0,0,0,0)' : 'rgba(201,168,76,.025)',
+                borderBottom: i < PLANETS.length - 1 ? '1px solid rgba(201,168,76,.07)' : 'none',
+                transition: 'background .15s',
               }}>
-                <span style={{ fontSize: 18, textAlign: 'center', color: elColor }}>{p.sym}</span>
-                <span style={{ ...S.mono, color: 'var(--gold2)' }}>{p.name}</span>
-                <span style={{ ...S.mono, color: elColor }}>{p.sign}</span>
-                <span style={S.monoSm}>{p.deg}</span>
-                <span style={{ ...S.monoSm, textAlign: 'center' }}>
+                {/* Planet glyph (colored by planet) */}
+                <span style={{
+                  fontSize: 18, textAlign: 'center', lineHeight: 1,
+                  color: planetColor, fontFamily: 'serif',
+                }}>{p.sym}</span>
+                {/* Retrograde marker */}
+                <span style={{ fontSize: 10, color: 'var(--rose)', fontWeight: 600, textAlign: 'center' }}>
+                  {p.retro ? 'Rx' : ''}
+                </span>
+                {/* Planet name */}
+                <span style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 11, color: planetColor,
+                  letterSpacing: '.04em', paddingLeft: 4,
+                }}>{p.name}</span>
+                {/* Degree (monospace) */}
+                <span style={{
+                  fontFamily: "'Inconsolata', monospace", fontSize: 13, fontWeight: 600,
+                  color: 'var(--text)', letterSpacing: '.02em', paddingLeft: 4,
+                }}>{p.deg}</span>
+                {/* Sign glyph + name (colored by element) */}
+                <span style={{
+                  fontFamily: 'serif', fontSize: 14, color: elColor, paddingLeft: 4,
+                }}>
+                  <span style={{ fontSize: 16, marginRight: 5 }}>
+                    {['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'][
+                      ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces'].indexOf(p.sign)
+                    ] || ''}
+                  </span>
                   <span style={{
-                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    width: 24, height: 24, borderRadius: '50%',
-                    background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.12)',
-                    fontFamily: "'Cinzel', serif", fontSize: 11, color: 'var(--gold)',
-                  }}>{p.house}</span>
+                    fontFamily: "'Cinzel', serif", fontSize: 10, color: elColor, letterSpacing: '.03em',
+                  }}>{p.sign}</span>
                 </span>
-                <span style={{ ...S.monoSm, fontSize: 10, textAlign: 'center' }}>
-                  {p.retro
-                    ? <span style={{ color: 'var(--rose)', fontWeight: 600 }}>{'\u211E'} Rx</span>
-                    : <span style={{ color: 'var(--text3)' }}>Direct</span>
-                  }
-                </span>
+                {/* House number */}
+                <span style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 11, color: 'var(--gold)',
+                  textAlign: 'center', paddingLeft: 4,
+                }}>{p.key !== 'mc' ? p.house : '—'}</span>
+                {/* Dignity badge */}
+                <span style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.05em',
+                  color: dignityColor || 'transparent',
+                  fontWeight: 700,
+                }}>{p.dignity || ''}</span>
               </div>
             )
           })}
