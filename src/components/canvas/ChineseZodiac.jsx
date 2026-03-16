@@ -357,7 +357,7 @@ export default function ChineseZodiac() {
       canvas.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [])
+  }, [CHINESE_PROFILE])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }

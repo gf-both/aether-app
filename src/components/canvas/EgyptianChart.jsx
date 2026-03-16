@@ -417,7 +417,7 @@ export default function EgyptianChart() {
       canvas.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [])
+  }, [activeSign])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }
