@@ -6,7 +6,7 @@
    from any Gregorian date.
    ============================================================ */
 
-const GMT = 584283 // Julian Day Number correlation constant
+const GMT = 584344 // Julian Day Number correlation constant (Dreamspell/13-Moon, matches mymayansign.com)
 
 // ---- Tzolkin: 20 Day Signs ----
 export const TZOLKIN_DAY_SIGNS = [
@@ -204,8 +204,8 @@ export function getMayanProfile(day, month, year) {
 
   // Trecena lord: the day sign that started the current 13-day trecena
   // Step back (tone-1) days to reach the Magnetic (tone 1) start of this trecena
-  const trecenaStartMdn = mdn - (tone - 1)
-  const trecenaLordIndex = ((trecenaStartMdn + 19) % 20 + 20) % 20
+  // Trecena lord = day sign at tone 1 of current trecena = step back (tone-1) signs
+  const trecenaLordIndex = ((daySignIndex - (tone - 1)) % 20 + 20) % 20
   const trecenaLord = TZOLKIN_DAY_SIGNS[trecenaLordIndex].name
 
   // ---- Haab ----
