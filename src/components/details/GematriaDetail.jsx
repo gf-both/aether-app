@@ -87,10 +87,111 @@ function buildComputedProfile(profileData) {
     // Engine extras
     engineProfile: eng,
 
-    // Rich editorial content — kept from static profile
-    significantMatches: GEMATRIA_PROFILE.significantMatches,
-    kabbalisticCorrespondences: GEMATRIA_PROFILE.kabbalisticCorrespondences,
+    // Rich editorial content — dynamically generated from computed values
+    significantMatches: buildSignificantMatches(eng, pyt, heb, ord, cha),
+    kabbalisticCorrespondences: buildKabbalisticCorrespondences(pyt, fullName),
   }
+}
+
+function buildSignificantMatches(eng, pyt, heb, ord, cha) {
+  const matches = []
+  const hebrewTotal = heb.fullName.total
+  const pytTotal = pyt.fullName.total
+  const pytReduced = pyt.fullName.reduced
+  const soulUrge = eng.soulNumber?.reduced || eng.vowelSum?.reduced
+  const personality = eng.personalityNumber?.reduced
+
+  // Hebrew total significance
+  matches.push({
+    value: hebrewTotal,
+    system: 'Hebrew',
+    meaning: `Full name in Hebrew gematria sums to ${hebrewTotal}`,
+    detail: hebrewTotal > 999
+      ? `Numerical range ${Math.floor(hebrewTotal/10)*10}–${Math.ceil(hebrewTotal/10)*10} carries elevated spiritual significance`
+      : `This value resonates with the Hebrew letter ${hebrewTotal <= 22 ? 'archetype' : 'composite'} system`,
+  })
+
+  // Master number in Pythagorean
+  if (pytReduced === 11 || pytReduced === 22 || pytReduced === 33) {
+    matches.push({
+      value: pytReduced,
+      system: 'Pythagorean',
+      meaning: `${pytReduced} is a Master Number — ${pytReduced === 11 ? 'The Illuminator' : pytReduced === 22 ? 'The Master Builder' : 'The Master Teacher'}`,
+      detail: pytReduced === 22
+        ? '22 Hebrew letters, 22 paths on the Tree of Life, 22 Major Arcana'
+        : pytReduced === 11
+        ? 'The highest spiritual messenger — bridges the visible and invisible'
+        : '33 — the Christ Consciousness frequency, total compassion',
+    })
+  } else if (pytReduced) {
+    matches.push({
+      value: pytReduced,
+      system: 'Pythagorean',
+      meaning: `Name Number ${pytReduced} — ${['','The Initiator','The Peacemaker','The Communicator','The Builder','The Freedom Seeker','The Nurturer','The Seeker','The Powerhouse','The Humanitarian'][pytReduced] || 'The Seeker'}`,
+      detail: `Aleph energy: ${pytReduced === 1 ? 'independence, originality, leadership' : pytReduced === 7 ? 'analytical depth, spiritual intensity' : pytReduced === 9 ? 'compassion, global consciousness, completion' : 'unique vibrational signature'}`,
+    })
+  }
+
+  // Soul Urge
+  if (soulUrge) {
+    const hebrewLetterMap = {1:'Aleph',2:'Beth',3:'Gimel',4:'Daleth',5:'He',6:'Vav',7:'Zayin',8:'Cheth',9:'Teth'}
+    matches.push({
+      value: soulUrge,
+      system: 'Soul Urge',
+      meaning: `Soul Urge ${soulUrge} — ${['','independence and will','harmony and cooperation','Gimel, the camel, the communicator','foundation and order','freedom and change','love and responsibility','Zayin, the sword, the seeker','power and mastery','universal service'][soulUrge] || 'inner drive'}`,
+      detail: `Inner desire for ${soulUrge === 3 ? 'self-expression, creativity, and joy' : soulUrge === 7 ? 'depth, truth, and solitude' : soulUrge === 1 ? 'independence and pioneering' : 'authentic expression of self'}`,
+    })
+  }
+
+  // Personality
+  if (personality) {
+    matches.push({
+      value: personality,
+      system: 'Personality',
+      meaning: `Personality ${personality} — ${['','The Pioneer','The Diplomat','The Creator','The Organizer','The Adventurer','The Caregiver','The Analyst','The Executive','The Humanitarian'][personality] || 'The Seeker'}`,
+      detail: `The world perceives ${personality === 7 ? 'analytical depth, spiritual intensity' : personality === 8 ? 'authority, ambition, and executive presence' : personality === 1 ? 'confidence, leadership, originality' : 'a distinct energetic signature'}`,
+    })
+  }
+
+  return matches
+}
+
+function buildKabbalisticCorrespondences(pyt, fullName) {
+  const reduced = pyt.fullName.reduced
+  const sephirothMap = {
+    1: { name: 'Kether', desc: 'Crown — pure divine will, the source of all' },
+    2: { name: 'Chokmah', desc: 'Wisdom — primordial flash of insight' },
+    3: { name: 'Binah', desc: 'Understanding — the great mother, form from chaos' },
+    4: { name: 'Chesed', desc: 'Mercy — expansion, grace, and abundance' },
+    5: { name: 'Geburah', desc: 'Severity — strength, discipline, sacred boundaries' },
+    6: { name: 'Tiphareth', desc: 'Beauty — balance, harmony, the heart of the Tree' },
+    7: { name: 'Netzach', desc: 'Victory — feeling, desire, the creative force' },
+    8: { name: 'Hod', desc: 'Splendor — intellect, communication, mercurial' },
+    9: { name: 'Yesod', desc: 'Foundation — the astral, dreams, the unconscious' },
+    11: { name: 'Daath', desc: 'Knowledge — the hidden sephirah, the abyss and bridge' },
+    22: { name: 'Malkuth → Kether', desc: 'The full Tree — all 22 paths activated' },
+  }
+  const seph = sephirothMap[reduced] || sephirothMap[7]
+
+  // First letter path
+  const firstLetter = fullName.replace(/[^A-Z]/g, '')[0]
+  const letterPaths = { A:1, B:12, G:3, D:4, H:15, V:16, Z:17, Ch:18, T:9, I:20, K:11, L:22, M:13, N:14, S:21, O:16, P:17, Q:19, R:30, Sh:31, Th:32 }
+  const pathNum = letterPaths[firstLetter] || Math.floor(Math.random() * 22) + 1
+
+  return [
+    {
+      system: 'Tree of Life',
+      sephirah: seph.name,
+      path: `${seph.name} — ${seph.desc}`,
+      meaning: `Name number ${reduced} resonates with ${seph.name} on the Kabbalistic Tree of Life`,
+    },
+    {
+      system: 'Hebrew Letter Path',
+      sephirah: `Path ${pathNum}`,
+      path: `First letter ${firstLetter} initiates the consciousness journey`,
+      meaning: `Each letter in the name traces a specific path on the Tree, encoding a unique spiritual curriculum`,
+    },
+  ]
 }
 
 /* ---- shared styles ---- */
