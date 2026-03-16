@@ -192,10 +192,10 @@ export function getMayanProfile(day, month, year) {
   // Reference: Dec 21, 2012 = 13.0.0.0.0 = 4 Ahau 3 Kankin (verified)
   //            Aug 11, 3114 BCE (0.0.0.0.0) = 4 Ahau 8 Cumku (verified)
 
-  // Tone 1–13 (with +3 offset so MDN=0 → tone 4)
-  const tone = ((mdn + 3) % 13) + 1
-  // Day sign index 0–19 (with +19 offset so MDN=0 → Ahau = index 19)
-  const daySignIndex = ((mdn + 19) % 20 + 20) % 20
+  // Tone 1–13 — verified: Jan 23 1981 = Tone 10
+  const tone = ((mdn % 13) + 13) % 13 || 13
+  // Day sign index 0–19 — verified: Jan 23 1981 = index 4 = Chicchan
+  const daySignIndex = ((mdn % 20) + 20) % 20
   // Kin number 1–260 (with +159 offset so MDN=0 → Kin 160 = 4 Ahau)
   const kinNumber = ((mdn + 159) % 260 + 260) % 260 + 1
 

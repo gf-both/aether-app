@@ -4,6 +4,9 @@ import { useClock } from '../../hooks/useClock'
 import { SEPHIROTH } from '../../data/kabbalahData'
 import { getNatalChart } from '../../engines/natalEngine'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
+import { getMayanProfile } from '../../engines/mayanEngine'
+import { getChineseProfileFromDob } from '../../engines/chineseEngine'
+import { computeHDChart } from '../../engines/hdEngine'
 import { resolvePob } from '../../utils/profileUtils'
 
 const HD_PROFILE_LABELS = {
@@ -663,20 +666,47 @@ export default function TopBar() {
     } catch { return null }
   }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.sign, profile?.pob])
 
-  const computedLP = useMemo(() => {
-    if (!profile?.dob || (profile.lifePath && profile.lifePath !== '?')) return null
-    try {
-      const np = getNumerologyProfileFromDob(profile.dob, profile.name || 'Unknown', {})
-      return np?.lifePath
-    } catch { return null }
-  }, [profile?.dob, profile?.name, profile?.lifePath])
+  const computedNumerology = useMemo(() => {
+    if (!profile?.dob || !profile?.name) return null
+    try { return getNumerologyProfileFromDob(profile.dob, profile.name.toUpperCase(), {}) }
+    catch { return null }
+  }, [profile?.dob, profile?.name])
 
-  const displaySign = (profile.sign && profile.sign !== '?') ? profile.sign : (computedChart?.planets?.sun?.sign || '?')
-  const displayMoon = (profile.moon && profile.moon !== '?') ? profile.moon : (computedChart?.planets?.moon?.sign || '?')
-  const displayAsc = (profile.asc && profile.asc !== '?') ? profile.asc : (computedChart?.angles?.asc?.sign || '?')
-  const displayLP = (profile.lifePath && profile.lifePath !== '?') ? profile.lifePath : (computedLP || '?')
-  const displayHDType = (profile.hdType && profile.hdType !== '?') ? profile.hdType : '?'
-  const displayHDProfile = (profile.hdProfile && profile.hdProfile !== '?') ? profile.hdProfile : '?'
+  const computedHD = useMemo(() => {
+    if (!profile?.dob || (profile.hdType && profile.hdType !== '?')) return null
+    try { return computeHDChart({ dateOfBirth: profile.dob, timeOfBirth: profile.tob || '12:00', utcOffset: profile.birthTimezone ?? -3 }) }
+    catch { return null }
+  }, [profile?.dob, profile?.tob, profile?.birthTimezone, profile?.hdType])
+
+  const computedMayan = useMemo(() => {
+    if (!profile?.dob) return null
+    try {
+      const [y, m, d] = profile.dob.split('-').map(Number)
+      return getMayanProfile(d, m, y)
+    } catch { return null }
+  }, [profile?.dob])
+
+  const computedChinese = useMemo(() => {
+    if (!profile?.dob) return null
+    try {
+      const [,, ] = profile.dob.split('-').map(Number)
+      const [h, min] = (profile.tob || '12:00').split(':').map(Number)
+      return getChineseProfileFromDob(profile.dob, { hour: h||12, minute: min||0 })
+    } catch { return null }
+  }, [profile?.dob, profile?.tob])
+
+  const v = (x) => (x && x !== '?' && x !== '??' ? x : null)
+  const displaySign = v(profile?.sign) || computedChart?.planets?.sun?.sign || '?'
+  const displayMoon = v(profile?.moon) || computedChart?.planets?.moon?.sign || '?'
+  const displayAsc  = v(profile?.asc)  || computedChart?.angles?.asc?.sign  || '?'
+  const displayLP   = v(profile?.lifePath) || computedNumerology?.core?.lifePath?.val || '?'
+  const displayHDType    = v(profile?.hdType)    || computedHD?.type    || '?'
+  const displayHDProfile = v(profile?.hdProfile) || (computedHD?.profile ? `${computedHD.profile}` : '?')
+  const displayHDAuth    = v(profile?.hdAuth)    || computedHD?.authority || '?'
+  const displayMayanSign = computedMayan?.tzolkin?.daySign || '?'
+  const displayMayanTone = computedMayan?.tzolkin?.toneName || '?'
+  const displayMayanKin  = computedMayan?.tzolkin?.kinNumber || '?'
+  const displayChinese   = computedChinese ? `${computedChinese.element} ${computedChinese.animal}` : '?'
 
   // Derive dynamic values instead of hardcoding
   const hdProfileLabel = HD_PROFILE_LABELS[displayHDProfile] || displayHDProfile
@@ -693,8 +723,10 @@ export default function TopBar() {
       </div>
       <div className="tb-chips">
         <div className="chip chip-g">{'\u2609'} {displaySign} &middot; &uarr; {displayAsc} &middot; {'\u263D'} {displayMoon}</div>
-        <div className="chip chip-b" title={`Human Design: ${hdProfileLabel}`}>{'\u25C8'} {displayHDType} &middot; {displayHDProfile} &middot; {hdProfileLabel}</div>
-        <div className="chip chip-r">{'\u221E'} Life Path {displayLP}</div>
+        <div className="chip chip-b" title={`Human Design: ${displayHDType} · ${displayHDProfile} · ${displayHDAuth}`}>{'\u25C8'} {displayHDType} &middot; {displayHDProfile}</div>
+        <div className="chip chip-r">{'\u221E'} LP {displayLP}</div>
+        {displayMayanSign !== '?' && <div className="chip chip-v" title="Mayan Calendar">🌸 {displayMayanSign} &middot; {displayMayanTone} &middot; Kin {displayMayanKin}</div>}
+        {displayChinese !== '?' && <div className="chip chip-g" title="Chinese Zodiac">🐉 {displayChinese}</div>}
         {sephiraChip && (
           <div className="chip chip-v" title="Kabbalah — Active Sephira">{'\u2721'} {sephiraChip}</div>
         )}
