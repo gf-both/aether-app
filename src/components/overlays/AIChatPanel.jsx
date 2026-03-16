@@ -84,31 +84,31 @@ const styles = {
   panel: {
     width: '680px', maxWidth: '94vw', height: '82vh', maxHeight: '82vh',
     background: 'linear-gradient(170deg, rgba(8,8,32,.97), rgba(4,4,20,.99))',
-    border: '1px solid rgba(201,168,76,.15)',
+    border: '1px solid var(--accent)',
     borderRadius: '16px', display: 'flex', flexDirection: 'column',
     overflow: 'hidden', boxShadow: '0 24px 80px rgba(0,0,0,.6), inset 0 1px 0 rgba(201,168,76,.06)',
     animation: 'fadeUp .35s ease backwards',
   },
   header: {
     padding: '14px 20px', display: 'flex', alignItems: 'center',
-    justifyContent: 'space-between', borderBottom: '1px solid rgba(201,168,76,.1)',
+    justifyContent: 'space-between', borderBottom: '1px solid var(--accent)',
     flexShrink: 0,
   },
   title: {
-    fontFamily: "'Cinzel',serif", fontSize: '12px', letterSpacing: '.15em',
-    color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: '10px',
+    fontFamily: 'inherit', fontSize: '12px', letterSpacing: '.15em',
+    color: 'var(--foreground)', display: 'flex', alignItems: 'center', gap: '10px',
   },
   badge: {
     padding: '3px 10px', borderRadius: '12px', fontSize: '8px',
-    letterSpacing: '.1em', fontFamily: "'Cinzel',serif",
-    background: 'linear-gradient(135deg, rgba(201,168,76,.15), rgba(201,168,76,.05))',
-    border: '1px solid rgba(201,168,76,.25)', color: 'var(--gold2)',
+    letterSpacing: '.1em', fontFamily: 'inherit',
+    background: 'linear-gradient(135deg, var(--accent), var(--secondary))',
+    border: '1px solid rgba(201,168,76,.25)', color: 'var(--foreground)',
   },
   close: {
     width: '28px', height: '28px', display: 'flex', alignItems: 'center',
     justifyContent: 'center', borderRadius: '50%', cursor: 'pointer',
-    background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)',
-    color: 'var(--text2)', fontSize: '13px', transition: 'all .2s',
+    background: 'var(--secondary)', border: '1px solid rgba(255,255,255,.08)',
+    color: 'var(--muted-foreground)', fontSize: '13px', transition: 'all .2s',
   },
   messagesArea: {
     flex: 1, overflow: 'auto', padding: '16px 20px',
@@ -117,30 +117,30 @@ const styles = {
   msgBubble: {
     maxWidth: '85%', padding: '12px 16px', borderRadius: '14px',
     fontSize: '12.5px', lineHeight: '1.65',
-    fontFamily: "'Cormorant Garamond',serif",
+    fontFamily: 'inherit',
     animation: 'fadeUp .3s ease backwards',
   },
   userBubble: {
     alignSelf: 'flex-end', textAlign: 'right',
     background: 'rgba(201,168,76,.06)',
     border: '1px solid rgba(201,168,76,.2)',
-    color: 'var(--text)',
+    color: 'var(--foreground)',
   },
   aiBubble: {
     alignSelf: 'flex-start',
     background: 'rgba(64,204,221,.04)',
     border: '1px solid rgba(64,204,221,.15)',
-    color: 'var(--text)',
+    color: 'var(--foreground)',
   },
   inputBar: {
-    padding: '12px 16px', borderTop: '1px solid rgba(201,168,76,.1)',
+    padding: '12px 16px', borderTop: '1px solid var(--accent)',
     display: 'flex', gap: '10px', alignItems: 'flex-end', flexShrink: 0,
   },
   textarea: {
-    flex: 1, background: 'rgba(255,255,255,.04)',
+    flex: 1, background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.1)', borderRadius: '12px',
-    padding: '10px 14px', color: 'var(--text)', fontSize: '12px',
-    fontFamily: "'Cormorant Garamond',serif",
+    padding: '10px 14px', color: 'var(--foreground)', fontSize: '12px',
+    fontFamily: 'inherit',
     resize: 'none', outline: 'none', minHeight: '42px', maxHeight: '120px',
     lineHeight: '1.5', transition: 'border-color .2s',
   },
@@ -148,12 +148,12 @@ const styles = {
     width: '42px', height: '42px', borderRadius: '50%',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     cursor: 'pointer', fontSize: '16px', flexShrink: 0, transition: 'all .2s',
-    background: 'linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.08))',
+    background: 'linear-gradient(135deg, rgba(201,168,76,.2), var(--accent))',
     border: '1px solid rgba(201,168,76,.3)',
   },
   sendBtnDisabled: {
     opacity: 0.4, cursor: 'default',
-    background: 'rgba(255,255,255,.04)',
+    background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.08)',
   },
   typing: {
@@ -170,9 +170,9 @@ const styles = {
   },
   suggestChip: {
     padding: '6px 12px', borderRadius: '20px', fontSize: '10px',
-    fontFamily: "'Cormorant Garamond',serif",
-    background: 'rgba(201,168,76,.05)', border: '1px solid rgba(201,168,76,.12)',
-    color: 'var(--gold2)', cursor: 'pointer', transition: 'all .2s',
+    fontFamily: 'inherit',
+    background: 'var(--secondary)', border: '1px solid var(--accent)',
+    color: 'var(--foreground)', cursor: 'pointer', transition: 'all .2s',
     letterSpacing: '.02em',
   },
   paywall: {
@@ -184,19 +184,19 @@ const styles = {
     fontSize: '40px', opacity: 0.5,
   },
   paywallTitle: {
-    fontFamily: "'Cinzel',serif", fontSize: '16px', letterSpacing: '.15em',
-    color: 'var(--gold)',
+    fontFamily: 'inherit', fontSize: '16px', letterSpacing: '.15em',
+    color: 'var(--foreground)',
   },
   paywallText: {
-    fontFamily: "'Cormorant Garamond',serif", fontSize: '14px',
-    color: 'var(--text2)', lineHeight: 1.6, maxWidth: '360px',
+    fontFamily: 'inherit', fontSize: '14px',
+    color: 'var(--muted-foreground)', lineHeight: 1.6, maxWidth: '360px',
   },
   paywallBtn: {
     padding: '10px 28px', borderRadius: '24px',
-    background: 'linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.08))',
-    border: '1px solid rgba(201,168,76,.35)',
-    fontFamily: "'Cinzel',serif", fontSize: '11px', letterSpacing: '.12em',
-    color: 'var(--gold)', cursor: 'pointer', transition: 'all .2s',
+    background: 'linear-gradient(135deg, rgba(201,168,76,.2), var(--accent))',
+    border: '1px solid var(--ring)',
+    fontFamily: 'inherit', fontSize: '11px', letterSpacing: '.12em',
+    color: 'var(--foreground)', cursor: 'pointer', transition: 'all .2s',
   },
 }
 
@@ -292,13 +292,13 @@ export default function AIChatPanel({ open, onClose }) {
               your cosmic blueprint.
             </div>
             <div style={{ ...styles.paywallText, fontSize: '12px', marginTop: '-4px' }}>
-              This feature requires the <span style={{ color: 'var(--gold)' }}>Explorer plan ($1.99/mo)</span>
+              This feature requires the <span style={{ color: 'var(--foreground)' }}>Explorer plan ($1.99/mo)</span>
             </div>
             <div
               style={styles.paywallBtn}
               onClick={() => { onClose(); setActiveDetail('pricing'); setActiveNav('pricing') }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,168,76,.2)'; e.currentTarget.style.borderColor = 'rgba(201,168,76,.5)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.08))'; e.currentTarget.style.borderColor = 'rgba(201,168,76,.35)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(201,168,76,.2)'; e.currentTarget.style.borderColor = 'var(--ring)' }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(201,168,76,.2), var(--accent))'; e.currentTarget.style.borderColor = 'var(--ring)' }}
             >
               ✦ Upgrade to Explorer — $1.99/mo
             </div>
@@ -317,7 +317,7 @@ export default function AIChatPanel({ open, onClose }) {
                 >
                   {msg.role === 'assistant' && (
                     <div style={{
-                      fontFamily: "'Cinzel',serif", fontSize: '8px', letterSpacing: '.12em',
+                      fontFamily: 'inherit', fontSize: '8px', letterSpacing: '.12em',
                       color: 'rgba(64,204,221,.5)', marginBottom: '6px',
                     }}>
                       {'\u2726'} AI GUIDE
@@ -345,12 +345,12 @@ export default function AIChatPanel({ open, onClose }) {
                     style={styles.suggestChip}
                     onClick={() => handleSend(prompt)}
                     onMouseEnter={(e) => {
-                      e.target.style.background = 'rgba(201,168,76,.12)'
+                      e.target.style.background = 'var(--accent)'
                       e.target.style.borderColor = 'rgba(201,168,76,.25)'
                     }}
                     onMouseLeave={(e) => {
-                      e.target.style.background = 'rgba(201,168,76,.05)'
-                      e.target.style.borderColor = 'rgba(201,168,76,.12)'
+                      e.target.style.background = 'var(--secondary)'
+                      e.target.style.borderColor = 'var(--accent)'
                     }}
                   >
                     {prompt}
@@ -373,7 +373,7 @@ export default function AIChatPanel({ open, onClose }) {
                   onFocus={(e) => { e.target.style.borderColor = 'rgba(201,168,76,.3)' }}
                   onBlur={(e) => { e.target.style.borderColor = 'rgba(255,255,255,.1)' }}
                 />
-                <div style={{ fontSize: '9px', color: 'var(--text3)', fontFamily: "'Inconsolata',monospace", paddingLeft: '2px' }}>
+                <div style={{ fontSize: '9px', color: 'var(--muted-foreground)', fontFamily: 'ui-monospace, monospace', paddingLeft: '2px' }}>
                   ↵ Enter to send &nbsp;·&nbsp; Shift+↵ for new line
                 </div>
               </div>
@@ -386,13 +386,13 @@ export default function AIChatPanel({ open, onClose }) {
                 onClick={() => handleSend()}
                 onMouseEnter={(e) => {
                   if (input.trim() && !isTyping) {
-                    e.currentTarget.style.background = 'linear-gradient(135deg, rgba(201,168,76,.35), rgba(201,168,76,.15))'
+                    e.currentTarget.style.background = 'linear-gradient(135deg, var(--ring), var(--accent))'
                   }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.background = input.trim() && !isTyping
-                    ? 'linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.08))'
-                    : 'rgba(255,255,255,.04)'
+                    ? 'linear-gradient(135deg, rgba(201,168,76,.2), var(--accent))'
+                    : 'var(--secondary)'
                 }}
               >
                 {'\u2726'}

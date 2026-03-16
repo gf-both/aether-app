@@ -16,20 +16,20 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -38,9 +38,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -63,7 +63,7 @@ function NumCircle({ val, color, size = 54, label }) {
       {label && (
         <div style={{
           fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.12em',
-          textTransform: 'uppercase', color: 'var(--text3)', textAlign: 'center',
+          textTransform: 'uppercase', color: 'var(--muted-foreground)', textAlign: 'center',
         }}>{label}</div>
       )}
     </div>
@@ -131,7 +131,7 @@ export default function NumerologyDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u221E'} Numerology</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Core numbers, master numbers, pinnacles, challenges, and personal cycles
         </div>
       </div>
@@ -159,12 +159,12 @@ export default function NumerologyDetail() {
               <div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-                  textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 4,
+                  textTransform: 'uppercase', color: 'var(--muted-foreground)', marginBottom: 4,
                 }}>
                   {key.replace(/([A-Z])/g, ' $1').trim()}
                 </div>
                 {key === 'birthday' && data.reduced && data.reduced !== data.val && (
-                  <div style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 2 }}>
+                  <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginBottom: 2 }}>
                     Reduced: {data.reduced}
                   </div>
                 )}
@@ -172,17 +172,17 @@ export default function NumerologyDetail() {
                   fontFamily: "'Cinzel', serif", fontSize: 13, letterSpacing: '.1em',
                   color: CORE_COLORS[key], marginBottom: 4,
                 }}>{data.title}</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                   {data.desc}
                 </div>
                 {derivations[key] && (
                   <div style={{
                     marginTop: 8, padding: '8px 10px', borderRadius: 6,
-                    background: 'rgba(201,168,76,.04)', border: '1px solid rgba(201,168,76,.08)',
+                    background: 'var(--secondary)', border: '1px solid var(--accent)',
                     fontFamily: "'Inconsolata', monospace", fontSize: 10, lineHeight: 1.5,
-                    color: 'var(--text3)', whiteSpace: 'pre-line',
+                    color: 'var(--muted-foreground)', whiteSpace: 'pre-line',
                   }}>
-                    <span style={{ fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--gold3)' }}>How it's derived:</span>
+                    <span style={{ fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--muted-foreground)' }}>How it's derived:</span>
                     {'\n'}{derivations[key]}
                   </div>
                 )}
@@ -205,9 +205,9 @@ export default function NumerologyDetail() {
             <div style={{ flex: 1 }}>
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.12em',
-                color: 'var(--gold2)', marginBottom: 4,
+                color: 'var(--foreground)', marginBottom: 4,
               }}>Hidden Passion</div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                 Number appearing most in name — drive for independence, leadership, and originality
               </div>
             </div>
@@ -220,7 +220,7 @@ export default function NumerologyDetail() {
                   fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.12em',
                   color: '#ee6688', marginBottom: 4,
                 }}>Karmic Debt {extended.karmicDebt.join(', ')}</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                   Lesson of self-sufficiency — learning independence through adversity
                 </div>
               </div>
@@ -236,7 +236,7 @@ export default function NumerologyDetail() {
                   fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.12em',
                   color: '#ee9955', marginBottom: 4,
                 }}>Karmic Lessons</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                   Missing numbers — areas needing development in this lifetime
                 </div>
               </div>
@@ -269,7 +269,7 @@ export default function NumerologyDetail() {
                       fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.1em',
                       color: 'var(--violet2)', marginBottom: 4,
                     }}>{info.label}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                    <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                       {info.desc}
                     </div>
                   </div>
@@ -278,7 +278,7 @@ export default function NumerologyDetail() {
             })}
           </div>
           <div style={{
-            marginTop: 10, fontSize: 12, color: 'var(--text3)', fontStyle: 'italic',
+            marginTop: 10, fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic',
             padding: '8px 12px', background: 'rgba(144,80,224,.03)', borderRadius: 8,
             border: '1px solid rgba(144,80,224,.08)', lineHeight: 1.5,
           }}>
@@ -306,13 +306,13 @@ export default function NumerologyDetail() {
             }}>
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
-                textTransform: 'uppercase', color: 'var(--text3)',
+                textTransform: 'uppercase', color: 'var(--muted-foreground)',
               }}>{c.label}</div>
               <NumCircle val={c.val} color={c.color} size={50} />
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em', color: c.color,
               }}>{c.title}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+              <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                 {c.desc}
               </div>
             </div>
@@ -327,23 +327,23 @@ export default function NumerologyDetail() {
           {pinnacles.map((p, i) => (
             <div key={i} style={{
               ...S.glass, textAlign: 'center', padding: '16px 12px',
-              borderColor: p.active ? 'rgba(201,168,76,.3)' : 'rgba(201,168,76,.1)',
+              borderColor: p.active ? 'rgba(201,168,76,.3)' : 'var(--accent)',
               background: p.active ? 'rgba(201,168,76,.06)' : 'rgba(5,5,26,.7)',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
             }}>
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
-                textTransform: 'uppercase', color: p.active ? 'var(--gold)' : 'var(--text3)',
+                textTransform: 'uppercase', color: p.active ? 'var(--foreground)' : 'var(--muted-foreground)',
               }}>{p.label}</div>
               <NumCircle val={p.num} color={p.active ? '#f0c040' : '#7788aa'} size={44} />
               <div style={{
-                fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)',
               }}>Ages {p.ageRange}</div>
-              <div style={{ fontSize: 11, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.3 }}>
+              <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.3 }}>
                 {p.desc}
               </div>
               {p.active && (
-                <span style={S.badge('rgba(201,168,76,.12)', 'rgba(201,168,76,.3)', 'var(--gold)')}>
+                <span style={S.badge('var(--accent)', 'rgba(201,168,76,.3)', 'var(--foreground)')}>
                   Current
                 </span>
               )}
@@ -359,19 +359,19 @@ export default function NumerologyDetail() {
           {challenges.map((c, i) => (
             <div key={i} style={{
               ...S.glass, textAlign: 'center', padding: '16px 12px',
-              borderColor: c.active ? 'rgba(212,48,112,.3)' : 'rgba(201,168,76,.1)',
+              borderColor: c.active ? 'rgba(212,48,112,.3)' : 'var(--accent)',
               background: c.active ? 'rgba(212,48,112,.04)' : 'rgba(5,5,26,.7)',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
             }}>
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
-                textTransform: 'uppercase', color: c.active ? 'var(--rose)' : 'var(--text3)',
+                textTransform: 'uppercase', color: c.active ? 'var(--rose)' : 'var(--muted-foreground)',
               }}>{c.label}</div>
               <NumCircle val={c.num} color={c.active ? '#d43070' : '#556677'} size={40} />
               <div style={{
-                fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)',
               }}>Ages {c.ageRange}</div>
-              <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.3 }}>
+              <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.3 }}>
                 {challengeDescs[c.num] || ''}
               </div>
               {c.active && (
@@ -388,7 +388,7 @@ export default function NumerologyDetail() {
       <div>
         <div style={S.sectionTitle}>Life Path {core.lifePath.val} — Detailed Interpretation</div>
         <div style={S.interpretation}>
-          <span style={{ color: 'var(--gold)' }}>Life Path {core.lifePath.val}: {core.lifePath.title}</span> is the path of
+          <span style={{ color: 'var(--foreground)' }}>Life Path {core.lifePath.val}: {core.lifePath.title}</span> is the path of
           introspection, spiritual seeking, and the relentless pursuit of truth. You are here to go
           deeper than anyone else — to question, analyze, and penetrate the mysteries that others
           accept on the surface. The 7 energy is fundamentally{' '}

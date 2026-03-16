@@ -14,7 +14,7 @@ const s = {
   },
   searchInput: {
     flex: 1,
-    background: 'rgba(255,255,255,.04)',
+    background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.08)',
     borderRadius: '8px',
     padding: '8px 12px',
@@ -25,27 +25,27 @@ const s = {
     transition: 'border .2s',
   },
   filterBtn: {
-    background: 'rgba(255,255,255,.04)',
+    background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.08)',
     borderRadius: '8px',
     padding: '8px 12px',
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.1em',
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
     textTransform: 'uppercase',
     transition: 'all .2s',
   },
   filterBtnActive: {
-    background: 'rgba(201,168,76,.12)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.3)',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
   },
   clientCard: {
     background: 'rgba(255,255,255,.025)',
-    border: '1px solid rgba(255,255,255,.06)',
+    border: '1px solid var(--border)',
     borderRadius: '10px',
     padding: '14px 16px',
     cursor: 'pointer',
@@ -93,13 +93,13 @@ const s = {
   clientMeta: {
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '12px',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     letterSpacing: '.03em',
   },
   clientDates: {
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '11px',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     marginTop: '3px',
   },
   statusDot: {
@@ -109,7 +109,7 @@ const s = {
     flexShrink: 0,
   },
   arrowBtn: {
-    background: 'rgba(201,168,76,.1)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.2)',
     borderRadius: '6px',
     width: '32px',
@@ -117,7 +117,7 @@ const s = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     fontSize: '14px',
     cursor: 'pointer',
     flexShrink: 0,
@@ -128,14 +128,14 @@ const s = {
     padding: '40px 20px',
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '14px',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
   },
 }
 
 const STATUS_COLORS = {
   active: 'var(--lime2)',
-  pending: 'var(--gold2)',
-  inactive: 'var(--text3)',
+  pending: 'var(--foreground)',
+  inactive: 'var(--muted-foreground)',
 }
 
 const FILTERS = ['All', 'Active', 'Generator', 'Projector', 'Manifestor', 'Reflector']
@@ -192,7 +192,7 @@ export default function ClientList({ onSelectClient, onViewDeepProfile }) {
         <div style={s.emptyState}>No clients match your search</div>
       ) : (
         filtered.map(client => {
-          const typeColor = HD_TYPE_COLORS[client.hdType] || 'var(--gold)'
+          const typeColor = HD_TYPE_COLORS[client.hdType] || 'var(--foreground)'
           const emoji = HD_TYPE_EMOJIS[client.hdType] || '✦'
           const lastSession = client.sessions.length > 0
             ? client.sessions.sort((a, b) => new Date(b.date) - new Date(a.date))[0].date
@@ -203,11 +203,11 @@ export default function ClientList({ onSelectClient, onViewDeepProfile }) {
               style={s.clientCard}
               onMouseEnter={e => {
                 e.currentTarget.style.borderColor = 'rgba(201,168,76,.25)'
-                e.currentTarget.style.background = 'rgba(201,168,76,.04)'
+                e.currentTarget.style.background = 'var(--secondary)'
                 e.currentTarget.style.transform = 'translateY(-1px)'
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,.06)'
+                e.currentTarget.style.borderColor = 'var(--border)'
                 e.currentTarget.style.background = 'rgba(255,255,255,.025)'
                 e.currentTarget.style.transform = 'none'
               }}
@@ -248,7 +248,7 @@ export default function ClientList({ onSelectClient, onViewDeepProfile }) {
               {/* Status + Actions */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <div style={{ ...s.statusDot, background: STATUS_COLORS[client.status] || 'var(--text3)' }} />
+                  <div style={{ ...s.statusDot, background: STATUS_COLORS[client.status] || 'var(--muted-foreground)' }} />
                   <span style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: STATUS_COLORS[client.status], textTransform: 'uppercase' }}>
                     {client.status}
                   </span>
@@ -280,11 +280,11 @@ export default function ClientList({ onSelectClient, onViewDeepProfile }) {
                   style={s.arrowBtn}
                   onMouseEnter={e => {
                     e.currentTarget.style.background = 'rgba(201,168,76,.25)'
-                    e.currentTarget.style.borderColor = 'rgba(201,168,76,.5)'
+                    e.currentTarget.style.borderColor = 'var(--ring)'
                     e.stopPropagation()
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.background = 'rgba(201,168,76,.1)'
+                    e.currentTarget.style.background = 'var(--accent)'
                     e.currentTarget.style.borderColor = 'rgba(201,168,76,.2)'
                   }}
                 >

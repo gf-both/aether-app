@@ -29,7 +29,7 @@ const S = {
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
     textTransform: 'uppercase', color: 'var(--gold3, #a08040)',
-    paddingBottom: 8, borderBottom: '1px solid rgba(201,168,76,.1)',
+    paddingBottom: 8, borderBottom: '1px solid var(--accent)',
   },
   question: {
     fontFamily: "'Cormorant Garamond', serif", fontSize: 17, lineHeight: 1.6,
@@ -38,8 +38,8 @@ const S = {
   optBtn: (selected) => ({
     display: 'flex', alignItems: 'flex-start', gap: 14,
     padding: '16px 20px', borderRadius: 12, cursor: 'pointer',
-    background: selected ? 'rgba(201,168,76,.1)' : 'rgba(5,5,26,.7)',
-    border: `1px solid ${selected ? 'rgba(201,168,76,.4)' : 'rgba(201,168,76,.12)'}`,
+    background: selected ? 'var(--accent)' : 'rgba(5,5,26,.7)',
+    border: `1px solid ${selected ? 'rgba(201,168,76,.4)' : 'var(--accent)'}`,
     transition: 'all .2s',
   }),
   optLabel: (selected) => ({
@@ -133,11 +133,11 @@ export default function DoshaQuiz({ onClose }) {
             }}>
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 28, letterSpacing: '.15em',
-                color: DOSHA_COLORS[result.primary.name.toLowerCase()]?.color || 'var(--gold)',
+                color: DOSHA_COLORS[result.primary.name.toLowerCase()]?.color || 'var(--foreground)',
               }}>
                 {result.constitution}
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', marginTop: 8 }}>
+              <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 8 }}>
                 {result.primary.elements} · {result.primary.season}
               </div>
             </div>
@@ -151,11 +151,11 @@ export default function DoshaQuiz({ onClose }) {
                     fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.1em',
                     color: DOSHA_COLORS[d].color,
                   }}>{d.charAt(0).toUpperCase()+d.slice(1)}</span>
-                  <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--text3)' }}>
+                  <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--muted-foreground)' }}>
                     {result.scores[d]}%
                   </span>
                 </div>
-                <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,.04)' }}>
+                <div style={{ height: 6, borderRadius: 3, background: 'var(--secondary)' }}>
                   <div style={{
                     height: '100%', borderRadius: 3, width: result.scores[d] + '%',
                     background: DOSHA_COLORS[d].color, transition: 'width .6s ease',
@@ -166,9 +166,9 @@ export default function DoshaQuiz({ onClose }) {
 
             <div style={S.sectionTitle}>Primary: {result.primary.name}</div>
             <div style={{
-              fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+              fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
               padding: '14px 18px', borderRadius: 10,
-              background: 'rgba(201,168,76,.03)', border: '1px solid rgba(201,168,76,.08)',
+              background: 'var(--secondary)', border: '1px solid var(--accent)',
             }}>
               {result.primary.description}
             </div>
@@ -186,7 +186,7 @@ export default function DoshaQuiz({ onClose }) {
               {DOSHA_QUESTIONS.map((_, i) => (
                 <div key={i} style={{
                   flex: 1, borderRadius: 2,
-                  background: i < step ? 'rgba(201,168,76,.5)' : i === step ? 'rgba(201,168,76,.3)' : 'rgba(255,255,255,.06)',
+                  background: i < step ? 'var(--ring)' : i === step ? 'rgba(201,168,76,.3)' : 'var(--border)',
                 }} />
               ))}
             </div>
@@ -203,13 +203,13 @@ export default function DoshaQuiz({ onClose }) {
                     key={i}
                     style={S.optBtn(isSelected)}
                     onClick={() => handleSelect(opt.dosha)}
-                    onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.borderColor='rgba(201,168,76,.3)'; e.currentTarget.style.background='rgba(201,168,76,.05)' }}}
-                    onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.borderColor='rgba(201,168,76,.12)'; e.currentTarget.style.background='rgba(5,5,26,.7)' }}}
+                    onMouseEnter={e => { if (!isSelected) { e.currentTarget.style.borderColor='rgba(201,168,76,.3)'; e.currentTarget.style.background='var(--secondary)' }}}
+                    onMouseLeave={e => { if (!isSelected) { e.currentTarget.style.borderColor='var(--accent)'; e.currentTarget.style.background='rgba(5,5,26,.7)' }}}
                   >
                     <span style={S.optLabel(isSelected)}>
                       {String.fromCharCode(65 + i)}
                     </span>
-                    <div style={{ flex: 1, fontSize: 14, lineHeight: 1.6, color: 'var(--text2)' }}>
+                    <div style={{ flex: 1, fontSize: 14, lineHeight: 1.6, color: 'var(--muted-foreground)' }}>
                       {opt.text}
                     </div>
                   </div>

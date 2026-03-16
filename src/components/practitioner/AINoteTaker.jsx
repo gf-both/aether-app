@@ -118,7 +118,7 @@ function CollapsibleSection({ icon, title, children, defaultOpen = true, private
         <span style={{ opacity: 0.6, fontSize: '0.75rem' }}>{open ? '▲' : '▼'}</span>
       </button>
       {open && (
-        <div style={{ padding: '4px 14px 14px', borderTop: '1px solid var(--glass-border, rgba(201,168,76,0.1))' }}>
+        <div style={{ padding: '4px 14px 14px', borderTop: '1px solid var(--glass-border, var(--accent))' }}>
           {children}
         </div>
       )}

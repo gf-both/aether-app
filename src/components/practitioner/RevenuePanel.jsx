@@ -3,8 +3,8 @@ import { MOCK_REVENUE } from '../../data/practitionerData'
 
 const s = {
   panel: {
-    background: 'var(--panel-bg)',
-    border: '1px solid var(--glass-border)',
+    background: 'var(--card)',
+    border: '1px solid var(--border)',
     borderRadius: '12px',
     padding: '20px',
   },
@@ -12,7 +12,7 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '11px',
     letterSpacing: '.2em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     textTransform: 'uppercase',
     marginBottom: '16px',
     display: 'flex',
@@ -26,21 +26,21 @@ const s = {
     marginBottom: '20px',
   },
   statCard: {
-    background: 'rgba(255,255,255,.03)',
-    border: '1px solid rgba(255,255,255,.06)',
+    background: 'var(--secondary)',
+    border: '1px solid var(--border)',
     borderRadius: '8px',
     padding: '12px',
   },
   statValue: {
     fontFamily: "'Cinzel',serif",
     fontSize: '20px',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     marginBottom: '2px',
   },
   statLabel: {
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '12px',
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     letterSpacing: '.05em',
   },
   statDelta: {
@@ -52,7 +52,7 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.15em',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     textTransform: 'uppercase',
     marginBottom: '10px',
     marginTop: '16px',
@@ -73,7 +73,7 @@ const s = {
   barContainer: {
     flex: 1,
     height: '18px',
-    background: 'rgba(255,255,255,.04)',
+    background: 'var(--secondary)',
     borderRadius: '4px',
     overflow: 'hidden',
     position: 'relative',
@@ -81,7 +81,7 @@ const s = {
   barAmount: {
     fontFamily: "'Cinzel',serif",
     fontSize: '10px',
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     width: '50px',
     textAlign: 'right',
     flexShrink: 0,
@@ -94,14 +94,14 @@ const s = {
     marginBottom: '4px',
   },
   exportBtn: {
-    background: 'rgba(201,168,76,.1)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.3)',
     borderRadius: '6px',
     padding: '6px 14px',
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.12em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     cursor: 'pointer',
     textTransform: 'uppercase',
     transition: 'all .2s',
@@ -155,17 +155,17 @@ export default function RevenuePanel() {
         <div style={s.statCard}>
           <div style={s.statValue}>{rev.currentMonth.sessions}</div>
           <div style={s.statLabel}>Sessions</div>
-          <div style={{ ...s.statDelta, color: 'var(--gold)' }}>+{rev.currentMonth.sessions - rev.lastMonth.sessions} vs last</div>
+          <div style={{ ...s.statDelta, color: 'var(--foreground)' }}>+{rev.currentMonth.sessions - rev.lastMonth.sessions} vs last</div>
         </div>
         <div style={s.statCard}>
           <div style={s.statValue}>{rev.currentMonth.newClients}</div>
           <div style={s.statLabel}>New Clients</div>
-          <div style={{ ...s.statDelta, color: 'var(--gold)' }}>+{rev.currentMonth.newClients - rev.lastMonth.newClients} vs last</div>
+          <div style={{ ...s.statDelta, color: 'var(--foreground)' }}>+{rev.currentMonth.newClients - rev.lastMonth.newClients} vs last</div>
         </div>
         <div style={s.statCard}>
           <div style={s.statValue}>${rev.currentMonth.avgSession}</div>
           <div style={s.statLabel}>Avg Session</div>
-          <div style={{ ...s.statDelta, color: 'var(--text3)' }}>+${rev.currentMonth.avgSession - rev.lastMonth.avgSession} vs last</div>
+          <div style={{ ...s.statDelta, color: 'var(--muted-foreground)' }}>+${rev.currentMonth.avgSession - rev.lastMonth.avgSession} vs last</div>
         </div>
       </div>
 
@@ -211,7 +211,7 @@ export default function RevenuePanel() {
                 borderRadius: '3px 3px 0 0',
                 transition: 'height .5s ease',
               }} />
-              <span style={{ fontSize: '9px', color: 'var(--text3)', fontFamily: "'Cinzel',serif" }}>{item.month}</span>
+              <span style={{ fontSize: '9px', color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif" }}>{item.month}</span>
             </div>
           )
         })}

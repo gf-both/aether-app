@@ -37,7 +37,7 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
@@ -50,18 +50,18 @@ const S = {
     color: 'rgba(200,160,255,1)', marginBottom: 4,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -70,9 +70,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -98,7 +98,7 @@ export default function VedicDetail() {
   if (!chart) {
     return (
       <div style={{ ...S.panel, justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ color: 'var(--text3)', fontFamily: "'Cinzel',serif", fontSize: 13 }}>
+        <div style={{ color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", fontSize: 13 }}>
           No birth data available
         </div>
       </div>
@@ -113,7 +113,7 @@ export default function VedicDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>🕉️ Vedic Astrology — Jyotish</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Sidereal zodiac · Lahiri Ayanamsa · Vimshottari Dasha system
         </div>
       </div>
@@ -129,9 +129,9 @@ export default function VedicDetail() {
           ].map(({ label, value, sub, glyph, col }) => (
             <div key={label} style={{ ...S.glass, textAlign: 'center', padding: '16px 12px' }}>
               <div style={{ fontSize: 28, color: col, lineHeight: 1 }}>{glyph}</div>
-              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--text3)', margin: '6px 0 4px' }}>{label}</div>
+              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', margin: '6px 0 4px' }}>{label}</div>
               <div style={{ fontFamily: "'Cinzel',serif", fontSize: 15, color: col, letterSpacing: '.1em' }}>{value}</div>
-              <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--text3)', marginTop: 4 }}>{sub}</div>
+              <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--muted-foreground)', marginTop: 4 }}>{sub}</div>
             </div>
           ))}
         </div>
@@ -153,10 +153,10 @@ export default function VedicDetail() {
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: 20, letterSpacing: '.12em', color: 'rgba(200,160,255,1)' }}>
               {moonNakshatra.name}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 4 }}>
               Pada {moonNakshatra.pada} · Lord: {moonNakshatra.lord}
             </div>
-            <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 6, fontStyle: 'italic' }}>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 6, fontStyle: 'italic' }}>
               {moonNakshatra.deity} · {moonNakshatra.symbol}
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function VedicDetail() {
           {dashaSeq.map((d, i) => (
             <div key={i} style={{
               ...S.row,
-              borderColor: d.isCurrent ? 'rgba(160,100,255,.3)' : 'rgba(255,255,255,.04)',
+              borderColor: d.isCurrent ? 'rgba(160,100,255,.3)' : 'var(--secondary)',
               background: d.isCurrent ? 'rgba(160,100,255,.06)' : 'rgba(255,255,255,.015)',
               padding: '8px 14px',
             }}>
@@ -186,13 +186,13 @@ export default function VedicDetail() {
               <div style={{ width: 80 }}>
                 <div style={{
                   fontFamily: "'Cinzel',serif", fontSize: 13, letterSpacing: '.06em',
-                  color: d.isCurrent ? 'rgba(200,160,255,1)' : 'var(--text)',
+                  color: d.isCurrent ? 'rgba(200,160,255,1)' : 'var(--foreground)',
                 }}>{d.lord}</div>
               </div>
-              <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--text3)', width: 30, textAlign: 'center' }}>
+              <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--muted-foreground)', width: 30, textAlign: 'center' }}>
                 {d.years}y
               </div>
-              <div style={{ flex: 1, fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--text3)' }}>
+              <div style={{ flex: 1, fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--muted-foreground)' }}>
                 {d.start} → {d.end}
               </div>
               {d.isCurrent && (
@@ -221,7 +221,7 @@ export default function VedicDetail() {
             return (
               <div key={body} style={{
                 ...S.row,
-                borderColor: 'rgba(255,255,255,.04)',
+                borderColor: 'var(--secondary)',
                 background: 'rgba(255,255,255,.015)',
                 padding: '7px 12px',
               }}>
@@ -232,17 +232,17 @@ export default function VedicDetail() {
                   </div>
                 </div>
                 <div style={{ width: 90 }}>
-                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--text)' }}>
+                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--foreground)' }}>
                     {p.sign}
                   </div>
-                  <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--text3)' }}>
+                  <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--muted-foreground)' }}>
                     {p.degree}°
                   </div>
                 </div>
                 {p.nakshatra && (
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 11, color: 'var(--text2)' }}>{p.nakshatra.name}</div>
-                    <div style={{ fontSize: 10, color: 'var(--text3)' }}>Pada {p.nakshatra.pada} · {p.nakshatra.lord}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>{p.nakshatra.name}</div>
+                    <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>Pada {p.nakshatra.pada} · {p.nakshatra.lord}</div>
                   </div>
                 )}
                 <span style={S.badge(elemCol + '12', elemCol + '30', elemCol)}>
@@ -262,16 +262,16 @@ export default function VedicDetail() {
             <div style={{
               fontFamily: "'Cinzel',serif", fontSize: 22, letterSpacing: '.1em', color: 'rgba(160,100,255,1)',
             }}>{lagna.sign}</div>
-            <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 11, color: 'var(--text3)' }}>
+            <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 11, color: 'var(--muted-foreground)' }}>
               {lagna.siderealLon}° sidereal
             </div>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)' }}>
-            Nakshatra: <span style={{ color: 'var(--text2)' }}>{lagna.nakshatra?.name}</span>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)' }}>
+            Nakshatra: <span style={{ color: 'var(--muted-foreground)' }}>{lagna.nakshatra?.name}</span>
             {' '}· Pada {lagna.nakshatra?.pada}
             {' '}· Lord: {lagna.nakshatra?.lord}
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6 }}>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 6 }}>
             Ayanamsa (Lahiri): {ayanamsa}°
           </div>
         </div>

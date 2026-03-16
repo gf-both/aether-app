@@ -165,7 +165,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
         <div className="pp-section">
           <div className="pp-sec-title">Primary Profile {'\u2014'} Self</div>
           {!profile.dob && user && (
-            <div style={{ padding: '12px 0', fontSize: 11, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textAlign: 'center' }}>
+            <div style={{ padding: '12px 0', fontSize: 11, color: 'var(--foreground)', fontFamily: 'inherit', textAlign: 'center' }}>
               ✦ Welcome! Fill in your birth data below to get started.
             </div>
           )}
@@ -259,7 +259,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
             </div>
           </div>
           {!user && (
-            <div style={{ fontSize: 10, color: 'var(--text2)', fontStyle: 'italic', marginBottom: 8, textAlign: 'center' }}>
+            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 8, textAlign: 'center' }}>
               ✦ Guest mode — data saved locally. Sign in to sync across devices.
             </div>
           )}
@@ -278,7 +278,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
                 marginTop: 8, width: '100%', padding: '8px 0', textAlign: 'center',
                 background: 'transparent', border: '1px solid rgba(220,60,60,0.3)',
                 borderRadius: 8, color: 'rgba(220,80,80,0.7)',
-                fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.1em',
+                fontFamily: 'inherit', fontSize: 10, letterSpacing: '.1em',
                 cursor: 'pointer',
               }}
               title="Clear cached data and reload defaults"

@@ -6,33 +6,33 @@ const ELEMENT_COLORS = {
   Fire:  { main: 'rgba(255,120,60,1)',  bg: 'rgba(255,120,60,.08)',  border: 'rgba(255,120,60,.22)'  },
   Water: { main: 'rgba(80,140,220,1)',  bg: 'rgba(80,140,220,.08)',  border: 'rgba(80,140,220,.22)'  },
   Earth: { main: 'rgba(120,180,80,1)',  bg: 'rgba(120,180,80,.08)',  border: 'rgba(120,180,80,.22)'  },
-  All:   { main: 'rgba(201,168,76,1)',  bg: 'rgba(201,168,76,.08)',  border: 'rgba(201,168,76,.22)'  },
+  All:   { main: 'rgba(201,168,76,1)',  bg: 'var(--accent)',  border: 'rgba(201,168,76,.22)'  },
 }
 
 const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
   badge: (bg, border, color) => ({
     display: 'inline-block', padding: '3px 10px', borderRadius: 12,
@@ -41,7 +41,7 @@ const S = {
   }),
   keyVal: {
     display: 'flex', alignItems: 'center', gap: 16,
-    padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,.04)',
+    padding: '6px 0', borderBottom: '1px solid var(--secondary)',
   },
 }
 
@@ -49,7 +49,7 @@ function TreeCard({ tree, label, accent = false }) {
   if (!tree) return null
   const elCol = ELEMENT_COLORS[tree.element] || ELEMENT_COLORS.Air
   const col   = accent
-    ? { main: 'rgba(201,168,76,1)', bg: 'rgba(201,168,76,.07)', border: 'rgba(201,168,76,.25)' }
+    ? { main: 'rgba(201,168,76,1)', bg: 'var(--secondary)', border: 'rgba(201,168,76,.25)' }
     : { main: elCol.main, bg: elCol.bg, border: elCol.border }
 
   const fmt = ([m, d]) => {
@@ -81,20 +81,20 @@ function TreeCard({ tree, label, accent = false }) {
             {tree.name}
           </div>
           <div style={{
-            fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text3)', marginTop: 2,
+            fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)', marginTop: 2,
           }}>
             Ogham: {tree.ogham}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text2)', fontStyle: 'italic', marginTop: 4, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4, lineHeight: 1.5 }}>
             {tree.meaning}
           </div>
           <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
             <span style={S.badge(elCol.bg, elCol.border, elCol.main)}>{tree.element}</span>
-            <span style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.2)', 'var(--gold3)')}>{tree.planet}</span>
-            <span style={S.badge('rgba(255,255,255,.04)', 'rgba(255,255,255,.1)', 'var(--text2)')}>{tree.keyword}</span>
+            <span style={S.badge('var(--accent)', 'rgba(201,168,76,.2)', 'var(--muted-foreground)')}>{tree.planet}</span>
+            <span style={S.badge('var(--secondary)', 'rgba(255,255,255,.1)', 'var(--muted-foreground)')}>{tree.keyword}</span>
           </div>
           <div style={{
-            fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)', marginTop: 6,
+            fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)', marginTop: 6,
           }}>
             {fmt(tree.startDate)} — {fmt(tree.endDate)}
           </div>
@@ -131,11 +131,11 @@ export default function CelticTreeDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>🌳 Celtic Tree Calendar</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Ogham tree zodiac — 13 lunar months of the Celtic year
         </div>
         <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
-          <span style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.2)', 'var(--gold3)')}>
+          <span style={S.badge('var(--accent)', 'rgba(201,168,76,.2)', 'var(--muted-foreground)')}>
             {birthTree?.name} · {birthTree?.ogham}
           </span>
           <span style={S.badge(elCol.bg, elCol.border, elCol.main)}>
@@ -166,12 +166,12 @@ export default function CelticTreeDetail() {
             <div key={i} style={S.keyVal}>
               <span style={{
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-                textTransform: 'uppercase', color: 'var(--text3)', minWidth: 120,
+                textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 120,
               }}>{label}</span>
               <span style={{
                 fontFamily: i < 2 ? "'Inconsolata', monospace" : "'Cormorant Garamond', serif",
                 fontSize: i === 6 ? 13 : 12,
-                color: i === 0 ? 'var(--gold)' : i === 2 ? elCol.main : 'var(--gold2)',
+                color: i === 0 ? 'var(--foreground)' : i === 2 ? elCol.main : 'var(--foreground)',
                 fontStyle: i === 6 ? 'italic' : 'normal',
               }}>{val}</span>
             </div>
@@ -183,11 +183,11 @@ export default function CelticTreeDetail() {
       <div>
         <div style={S.sectionTitle}>Your Tree Reading</div>
         <div style={S.interpretation}>
-          Born under the <span style={{ color: 'var(--gold)' }}>{birthTree?.name}</span> ({birthTree?.ogham}), you carry the essence of{' '}
+          Born under the <span style={{ color: 'var(--foreground)' }}>{birthTree?.name}</span> ({birthTree?.ogham}), you carry the essence of{' '}
           <span style={{ color: elCol.main }}>{birthTree?.meaning?.toLowerCase()}</span>. As a child of{' '}
           <span style={{ color: elCol.main }}>{birthTree?.element}</span> and the planet{' '}
-          <span style={{ color: 'var(--gold2)' }}>{birthTree?.planet}</span>, your soul's keyword is{' '}
-          <span style={{ color: 'var(--gold)' }}>{birthTree?.keyword}</span>.{' '}
+          <span style={{ color: 'var(--foreground)' }}>{birthTree?.planet}</span>, your soul's keyword is{' '}
+          <span style={{ color: 'var(--foreground)' }}>{birthTree?.keyword}</span>.{' '}
           The {birthTree?.name} stands as a sacred guardian in the Celtic tradition — its Ogham letter,{' '}
           {birthTree?.ogham}, is carved into the ancient standing stones as a living symbol of your lineage.
         </div>
@@ -216,23 +216,23 @@ export default function CelticTreeDetail() {
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
                 borderRadius: 8,
-                background: isActive ? 'rgba(201,168,76,.06)' : 'rgba(255,255,255,.02)',
-                border: `1px solid ${isActive ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.04)'}`,
+                background: isActive ? 'rgba(201,168,76,.06)' : 'var(--secondary)',
+                border: `1px solid ${isActive ? 'rgba(201,168,76,.2)' : 'var(--secondary)'}`,
               }}>
                 <span style={{ fontSize: 14 }}>🌿</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
                       fontFamily: "'Cinzel', serif", fontSize: 11,
-                      color: isActive ? 'var(--gold)' : 'var(--text)',
+                      color: isActive ? 'var(--foreground)' : 'var(--foreground)',
                       letterSpacing: '.08em',
                     }}>{tree.name}</span>
                     <span style={{
                       fontFamily: "'Inconsolata', monospace", fontSize: 9,
-                      color: isActive ? 'var(--gold3)' : 'var(--text3)',
+                      color: isActive ? 'var(--muted-foreground)' : 'var(--muted-foreground)',
                     }}>{tree.ogham}</span>
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 2 }}>
                     {fmt(tree.startDate)} – {fmt(tree.endDate)} · {tree.keyword}
                   </div>
                 </div>
@@ -251,21 +251,21 @@ export default function CelticTreeDetail() {
                 display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
                 borderRadius: 8, marginTop: 4,
                 background: isActive ? 'rgba(201,168,76,.06)' : 'rgba(201,168,76,.02)',
-                border: `1px solid ${isActive ? 'rgba(201,168,76,.2)' : 'rgba(201,168,76,.08)'}`,
+                border: `1px solid ${isActive ? 'rgba(201,168,76,.2)' : 'var(--accent)'}`,
               }}>
                 <span style={{ fontSize: 14 }}>🌟</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
                       fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.08em',
-                      color: isActive ? 'var(--gold)' : 'var(--gold3)',
+                      color: isActive ? 'var(--foreground)' : 'var(--muted-foreground)',
                     }}>{mistletoe?.name}</span>
                     <span style={{
-                      fontFamily: "'Inconsolata', monospace", fontSize: 9, color: 'var(--gold3)',
+                      fontFamily: "'Inconsolata', monospace", fontSize: 9, color: 'var(--muted-foreground)',
                     }}>{mistletoe?.ogham}</span>
-                    <span style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.2)', 'var(--gold3)')}>Sacred Day</span>
+                    <span style={S.badge('var(--accent)', 'rgba(201,168,76,.2)', 'var(--muted-foreground)')}>Sacred Day</span>
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 2 }}>
                     Dec 24 · Winter Solstice threshold · {mistletoe?.keyword}
                   </div>
                 </div>

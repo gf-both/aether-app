@@ -276,7 +276,7 @@ ${s.analysis?.patterns || 'Patterns will emerge across multiple sessions.'}
           onClick={() => setShowScheduler(s => !s)}
           style={{
             flex: 1,
-            background: 'rgba(201,168,76,0.1)',
+            background: 'var(--accent)',
             border: '1px solid var(--glass-border, rgba(201,168,76,0.3))',
             borderRadius: 8,
             padding: '10px 18px',

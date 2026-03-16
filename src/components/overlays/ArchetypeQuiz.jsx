@@ -25,14 +25,14 @@ const S = {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600,
     letterSpacing: '.18em', color: '#a878e8',
   },
-  sub: { fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.5 },
+  sub: { fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
     textTransform: 'uppercase', color: '#a878e8',
     paddingBottom: 8, borderBottom: '1px solid rgba(144,80,224,.15)',
   },
   question: {
-    fontFamily: "'Cormorant Garamond', serif", fontSize: 17, lineHeight: 1.6, color: 'var(--text)',
+    fontFamily: "'Cormorant Garamond', serif", fontSize: 17, lineHeight: 1.6, color: 'var(--foreground)',
   },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 },
   optBtn: (selected) => ({
@@ -44,7 +44,7 @@ const S = {
   closeBtn: {
     alignSelf: 'flex-end', fontFamily: "'Cinzel', serif", fontSize: 9,
     letterSpacing: '.2em', textTransform: 'uppercase',
-    color: 'var(--text3)', cursor: 'pointer',
+    color: 'var(--muted-foreground)', cursor: 'pointer',
     padding: '6px 16px', borderRadius: 20,
     border: '1px solid rgba(255,255,255,.08)', background: 'none',
   },
@@ -57,7 +57,7 @@ const S = {
   },
   counter: {
     fontFamily: "'Inconsolata', monospace", fontSize: 11,
-    color: 'var(--text3)', letterSpacing: '.1em',
+    color: 'var(--muted-foreground)', letterSpacing: '.1em',
   },
   progressWrap: { display: 'flex', gap: 4, height: 4, borderRadius: 2, overflow: 'hidden' },
 }
@@ -130,7 +130,7 @@ export default function ArchetypeQuiz({ onClose }) {
                     borderRadius: 10, padding: '10px 16px', minWidth: 100,
                   }}>
                     <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em', color: 'rgba(168,120,232,.6)', textTransform: 'uppercase', marginBottom: 4 }}>{label}</div>
-                    <div style={{ fontSize: 13, color: 'var(--text2)' }}>{value}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>{value}</div>
                   </div>
                 ))}
               </div>
@@ -140,7 +140,7 @@ export default function ArchetypeQuiz({ onClose }) {
                 display: 'inline-block',
               }}>
                 <span style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em', color: 'rgba(255,150,120,.6)', textTransform: 'uppercase' }}>Shadow · </span>
-                <span style={{ fontSize: 13, color: 'var(--text2)' }}>{result.shadow}</span>
+                <span style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>{result.shadow}</span>
               </div>
             </div>
 
@@ -151,14 +151,14 @@ export default function ArchetypeQuiz({ onClose }) {
                 <div key={i} style={{
                   padding: '8px 10px', borderRadius: 8, textAlign: 'center',
                   background: a.name === result.name ? 'rgba(144,80,224,.1)' : 'rgba(255,255,255,.015)',
-                  border: `1px solid ${a.name === result.name ? 'rgba(144,80,224,.35)' : 'rgba(255,255,255,.04)'}`,
+                  border: `1px solid ${a.name === result.name ? 'rgba(144,80,224,.35)' : 'var(--secondary)'}`,
                 }}>
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 9,
-                    color: a.name === result.name ? '#a878e8' : 'var(--text3)',
+                    color: a.name === result.name ? '#a878e8' : 'var(--muted-foreground)',
                     fontWeight: a.name === result.name ? 700 : 400,
                   }}>{a.name}</div>
-                  <div style={{ fontSize: 9, color: 'var(--text3)', fontStyle: 'italic', marginTop: 2 }}>{a.drive}</div>
+                  <div style={{ fontSize: 9, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 2 }}>{a.drive}</div>
                 </div>
               ))}
             </div>
@@ -176,7 +176,7 @@ export default function ArchetypeQuiz({ onClose }) {
               {QUESTIONS.map((_, i) => (
                 <div key={i} style={{
                   flex: 1, borderRadius: 2,
-                  background: i < step ? 'rgba(144,80,224,.5)' : i === step ? 'rgba(144,80,224,.3)' : 'rgba(255,255,255,.06)',
+                  background: i < step ? 'rgba(144,80,224,.5)' : i === step ? 'rgba(144,80,224,.3)' : 'var(--border)',
                 }} />
               ))}
             </div>
@@ -198,7 +198,7 @@ export default function ArchetypeQuiz({ onClose }) {
                     <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em', color: '#a878e8', marginBottom: 4 }}>
                       {ARCHETYPES[i]?.name}
                     </div>
-                    <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>{opt.text}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>{opt.text}</div>
                   </div>
                 )
               })}

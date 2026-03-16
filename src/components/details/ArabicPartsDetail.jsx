@@ -50,20 +50,20 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.15)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   chartIndicator: (isDay) => ({
@@ -77,7 +77,7 @@ const S = {
   }),
   partCard: (color) => ({
     display: 'flex', flexDirection: 'column', gap: 6, padding: '14px 16px',
-    borderRadius: 10, background: 'var(--row-bg)',
+    borderRadius: 10, background: 'var(--secondary)',
     border: `1px solid ${color}33`, transition: 'background .2s',
   }),
   partHeader: {
@@ -88,24 +88,24 @@ const S = {
   }),
   partName: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.12em',
-    color: 'var(--text)', textTransform: 'uppercase',
+    color: 'var(--foreground)', textTransform: 'uppercase',
   },
   position: (color) => ({
     fontFamily: "'Inconsolata', monospace", fontSize: 11, color: color,
     marginLeft: 'auto', flexShrink: 0,
   }),
   formula: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)',
     paddingLeft: 38,
   },
   description: {
-    fontSize: 14, lineHeight: 1.6, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.6, color: 'var(--muted-foreground)', fontStyle: 'italic',
     paddingLeft: 38,
   },
   intro: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -139,7 +139,7 @@ export default function ArabicPartsDetail() {
       {/* HEADER */}
       <div style={S.glass}>
         <div style={S.heading}>Arabic Parts · Lots</div>
-        <div style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic', marginBottom: 14 }}>
+        <div style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 14 }}>
           Sensitive points of synthesis — each Arabic Part is calculated from three natal positions,
           revealing hidden dimensions of fate, fortune, and soul purpose encoded in your chart.
         </div>
@@ -151,8 +151,8 @@ export default function ArabicPartsDetail() {
           <span style={{
             fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.1em',
             padding: '2px 10px', borderRadius: 10,
-            background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
-            color: 'var(--gold3)',
+            background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
+            color: 'var(--muted-foreground)',
           }}>
             {isDayChart ? 'Sun above horizon' : 'Sun below horizon'} · Traditional Reversal Applied
           </span>
@@ -164,7 +164,7 @@ export default function ArabicPartsDetail() {
         <div style={S.sectionTitle}>THE TEN LOTS</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {parts.map((part, i) => {
-            const color = PART_COLORS[i] || 'var(--gold)'
+            const color = PART_COLORS[i] || 'var(--foreground)'
             const signGlyph = SIGN_GLYPHS[part.signIndex] || ''
             return (
               <div key={part.name} style={S.partCard(color)}>
@@ -186,8 +186,8 @@ export default function ArabicPartsDetail() {
       {/* NOTE */}
       <div style={{
         padding: '12px 16px', borderRadius: 10,
-        background: 'rgba(201,168,76,.04)', border: '1px solid rgba(201,168,76,.1)',
-        fontSize: 12, lineHeight: 1.6, color: 'var(--text3)',
+        background: 'var(--secondary)', border: '1px solid var(--accent)',
+        fontSize: 12, lineHeight: 1.6, color: 'var(--muted-foreground)',
         fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic',
       }}>
         Arabic Parts originate in Hellenistic and medieval Arabic astrology. The Part of Fortune

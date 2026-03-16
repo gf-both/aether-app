@@ -22,11 +22,11 @@ export default function Cursor() {
   return (
     <>
       <div ref={c1Ref} style={{
-        position: 'fixed', width: 5, height: 5, background: 'var(--gold)', borderRadius: '50%',
+        position: 'fixed', width: 5, height: 5, background: 'var(--foreground)', borderRadius: '50%',
         pointerEvents: 'none', zIndex: 9999, transform: 'translate(-50%,-50%)', mixBlendMode: 'screen'
       }} />
       <div ref={c2Ref} style={{
-        position: 'fixed', width: 22, height: 22, border: '1px solid rgba(201,168,76,.35)', borderRadius: '50%',
+        position: 'fixed', width: 22, height: 22, border: '1px solid var(--ring)', borderRadius: '50%',
         pointerEvents: 'none', zIndex: 9998, transform: 'translate(-50%,-50%)', transition: 'all .1s ease'
       }} />
     </>

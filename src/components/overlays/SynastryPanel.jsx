@@ -36,7 +36,7 @@ function SelectorChips({ slot, currentId, primaryProfile, people, onSelect }) {
 function ScoreSection({ headerLabel, headerColor, scores, insight, aName, bName }) {
   return (
     <div className="score-section">
-      <div style={{ fontFamily: "'Cinzel',serif", fontSize: '8px', letterSpacing: '.15em', color: headerColor, marginBottom: '4px' }}>
+      <div style={{ fontFamily: 'inherit', fontSize: '8px', letterSpacing: '.15em', color: headerColor, marginBottom: '4px' }}>
         {headerLabel}
       </div>
       {scores.map((s, i) => (
@@ -162,7 +162,7 @@ function FamilyContent({ a, b, aName, bName, report }) {
         <div className="syn-ch"><span className="syn-ct">🧬 {karma.title}</span></div>
         <div className="syn-cb">
           <div className="score-section">
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '8px', letterSpacing: '.15em', color: karma.headerColor, marginBottom: '4px' }}>
+            <div style={{ fontFamily: 'inherit', fontSize: '8px', letterSpacing: '.15em', color: karma.headerColor, marginBottom: '4px' }}>
               {karma.headerLabel}
             </div>
             {karma.scores.map((s, i) => (
@@ -179,7 +179,7 @@ function FamilyContent({ a, b, aName, bName, report }) {
         <div className="syn-ch"><span className="syn-ct">🌳 {gen.title}</span></div>
         <div className="syn-cb">
           <div className="score-section">
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '8px', letterSpacing: '.15em', color: gen.headerColor, marginBottom: '4px' }}>
+            <div style={{ fontFamily: 'inherit', fontSize: '8px', letterSpacing: '.15em', color: gen.headerColor, marginBottom: '4px' }}>
               {gen.headerLabel}
             </div>
             {gen.scores.map((s, i) => (
@@ -203,7 +203,7 @@ function FamilyContent({ a, b, aName, bName, report }) {
         <div className="syn-ch"><span className="syn-ct">✡ Kabbalah · ∞ Numerology · ⬡ Gene Keys</span></div>
         <div className="syn-cb">
           <div className="score-section">
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '8px', letterSpacing: '.15em', color: fw.multiSystemSection.headerColor, marginBottom: '4px' }}>
+            <div style={{ fontFamily: 'inherit', fontSize: '8px', letterSpacing: '.15em', color: fw.multiSystemSection.headerColor, marginBottom: '4px' }}>
               {fw.multiSystemSection.headerLabel}
             </div>
             {msScores.map((s, i) => (
@@ -260,11 +260,11 @@ export function SynastryInner({ onClose }) {
 
         {/* Person A */}
         <div className="syn-select">
-          <div className="syn-avatar" style={{ borderColor: 'var(--gold)', background: 'rgba(201,168,76,.1)' }}>
+          <div className="syn-avatar" style={{ borderColor: 'var(--foreground)', background: 'var(--accent)' }}>
             {a.emoji || cfgA?.emoji || '\u2726'}
           </div>
           <div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--gold2)' }}>{aName}</div>
+            <div style={{ fontFamily: 'inherit', fontSize: '10px', color: 'var(--foreground)' }}>{aName}</div>
             <SelectorChips slot="A" currentId={synSelA} primaryProfile={profile} people={people} onSelect={setSynSel} />
           </div>
         </div>
@@ -277,7 +277,7 @@ export function SynastryInner({ onClose }) {
             {b ? (b.emoji || cfgB?.emoji || '?') : '?'}
           </div>
           <div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--rose2)' }}>{bName}</div>
+            <div style={{ fontFamily: 'inherit', fontSize: '10px', color: 'var(--rose2)' }}>{bName}</div>
             <SelectorChips slot="B" currentId={synSelB} primaryProfile={profile} people={people} onSelect={setSynSel} />
           </div>
         </div>
@@ -290,7 +290,7 @@ export function SynastryInner({ onClose }) {
             {hasSelection ? (romantic ? '\u2640 Romantic Synastry' : '\u25C8 Family Synastry') : 'No Selection'}
             {synastryReport && <span style={{ marginLeft: 8, opacity: 0.85 }}>{synastryReport.overall}%</span>}
           </div>
-          <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: '7.5px', color: 'var(--text3)' }}>
+          <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: '7.5px', color: 'var(--muted-foreground)' }}>
             {hasSelection
               ? (romantic ? 'Venus/Mars \u00B7 Soul Contracts \u00B7 Composite Chart' : 'Karmic Bonds \u00B7 Family Karma \u00B7 Generational Patterns')
               : 'Choose people to compare'}
@@ -309,8 +309,8 @@ export function SynastryInner({ onClose }) {
         ) : (
           <div style={{ gridColumn: '1/4', gridRow: '1/3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, opacity: .35 }}>
             <div style={{ fontSize: 48 }}>{'\u2295'}</div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '13px', letterSpacing: '.25em', color: 'var(--gold)' }}>Select Two People to Begin</div>
-            <div style={{ fontSize: '11px', color: 'var(--text3)', fontStyle: 'italic' }}>Choose profiles from the selectors above</div>
+            <div style={{ fontFamily: 'inherit', fontSize: '13px', letterSpacing: '.25em', color: 'var(--foreground)' }}>Select Two People to Begin</div>
+            <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Choose profiles from the selectors above</div>
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ const PAPERCLIP_BASE = 'http://127.0.0.1:3100/api'
 const COMPANY_ID = 'a77349ed-897c-476d-ad7e-50efb377090c'
 
 const STATUS_COLORS = {
-  idle: 'var(--text3)',
+  idle: 'var(--muted-foreground)',
   running: 'var(--lime2, #b8f26b)',
   error: 'var(--rose2, #f87171)',
   paused: 'var(--gold, #c9a84c)',
@@ -117,7 +117,7 @@ function usePaperclip() {
 // ── Panel base style ──
 const panel = {
   background: 'var(--panel-bg, rgba(10,10,30,.7))',
-  border: '1px solid var(--glass-border, rgba(201,168,76,.12))',
+  border: '1px solid var(--glass-border, var(--accent))',
   borderRadius: 12,
 }
 
@@ -148,15 +148,15 @@ function DashboardTab({ company, agents, issues }) {
       {/* Stats row */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
         {[
-          { label: 'Total Agents', value: agents.length, sub: `${activeAgents} running`, color: 'var(--gold)' },
+          { label: 'Total Agents', value: agents.length, sub: `${activeAgents} running`, color: 'var(--foreground)' },
           { label: 'Open Issues', value: openIssues, sub: `${criticalIssues} critical`, color: criticalIssues > 0 ? 'var(--rose2, #f87171)' : 'var(--lime2, #b8f26b)' },
           { label: 'Monthly Budget', value: `$${(totalBudget / 100).toFixed(0)}`, sub: 'allocated', color: 'var(--aqua2, #67e8f9)' },
           { label: 'Spent This Mo', value: `$${(spentBudget / 100).toFixed(0)}`, sub: `${totalBudget > 0 ? ((spentBudget / totalBudget) * 100).toFixed(0) : 0}% used`, color: 'var(--text2, #a0a0c0)' },
         ].map(stat => (
           <div key={stat.label} style={{ ...panel, padding: '14px 16px' }}>
-            <div style={{ fontSize: 11, color: 'var(--text3)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 6 }}>{stat.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 6 }}>{stat.label}</div>
             <div style={{ fontSize: 22, fontWeight: 700, color: stat.color, fontFamily: "'Cinzel',serif" }}>{stat.value}</div>
-            <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 3 }}>{stat.sub}</div>
+            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 3 }}>{stat.sub}</div>
           </div>
         ))}
       </div>
@@ -164,10 +164,10 @@ function DashboardTab({ company, agents, issues }) {
       {/* Company info + recent activity */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 16 }}>
         <div style={{ ...panel, padding: 20 }}>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 13, color: 'var(--gold)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 12 }}>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 13, color: 'var(--foreground)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 12 }}>
             {company?.name || 'Above + Inside Co.'}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.6, marginBottom: 14 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.6, marginBottom: 14 }}>
             {company?.description || 'Dual SaaS for spiritual self-discovery'}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -177,10 +177,10 @@ function DashboardTab({ company, agents, issues }) {
               { label: 'Issues Created', value: company?.issueCounter || 0 },
             ].map(row => (
               <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, borderBottom: '1px solid rgba(201,168,76,.06)', paddingBottom: 4 }}>
-                <span style={{ color: 'var(--text3)' }}>{row.label}</span>
+                <span style={{ color: 'var(--muted-foreground)' }}>{row.label}</span>
                 {row.badge
                   ? <span style={{ background: 'rgba(184,242,107,.1)', color: 'var(--lime2, #b8f26b)', borderRadius: 4, padding: '1px 7px', fontSize: 10 }}>{String(row.value).toUpperCase()}</span>
-                  : <span style={{ color: 'var(--text2)' }}>{row.value}</span>
+                  : <span style={{ color: 'var(--muted-foreground)' }}>{row.value}</span>
                 }
               </div>
             ))}
@@ -188,15 +188,15 @@ function DashboardTab({ company, agents, issues }) {
         </div>
 
         <div style={{ ...panel, padding: 20 }}>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--gold)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 14 }}>Recent Activity</div>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--foreground)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 14 }}>Recent Activity</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 260, overflowY: 'auto' }}>
             {recentIssues.length === 0
-              ? <div style={{ color: 'var(--text3)', fontSize: 12 }}>No recent activity</div>
+              ? <div style={{ color: 'var(--muted-foreground)', fontSize: 12 }}>No recent activity</div>
               : recentIssues.map(issue => (
-                <div key={issue.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid rgba(201,168,76,.05)' }}>
-                  <span style={{ fontSize: 9, color: PRIORITY_COLORS[issue.priority] || 'var(--text3)', fontWeight: 700, minWidth: 22 }}>●</span>
-                  <span style={{ fontSize: 10, color: 'var(--text3)', minWidth: 50 }}>{issue.identifier}</span>
-                  <span style={{ fontSize: 11, color: 'var(--text2)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.title}</span>
+                <div key={issue.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 0', borderBottom: '1px solid var(--secondary)' }}>
+                  <span style={{ fontSize: 9, color: PRIORITY_COLORS[issue.priority] || 'var(--muted-foreground)', fontWeight: 700, minWidth: 22 }}>●</span>
+                  <span style={{ fontSize: 10, color: 'var(--muted-foreground)', minWidth: 50 }}>{issue.identifier}</span>
+                  <span style={{ fontSize: 11, color: 'var(--muted-foreground)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.title}</span>
                   <StatusPill status={issue.status} />
                 </div>
               ))
@@ -207,13 +207,13 @@ function DashboardTab({ company, agents, issues }) {
 
       {/* Agent status overview */}
       <div style={{ ...panel, padding: 20 }}>
-        <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--gold)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 14 }}>Agent Status Overview</div>
+        <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--foreground)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 14 }}>Agent Status Overview</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
           {agents.map(agent => (
-            <div key={agent.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', background: 'rgba(255,255,255,.03)', borderRadius: 8, border: '1px solid rgba(201,168,76,.08)' }}>
+            <div key={agent.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 10px', background: 'var(--secondary)', borderRadius: 8, border: '1px solid var(--accent)' }}>
               <span style={{ fontSize: 14 }}>{getIcon(agent.icon)}</span>
-              <span style={{ fontSize: 11, color: 'var(--text2)' }}>{agent.name}</span>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: STATUS_COLORS[agent.status] || 'var(--text3)', display: 'inline-block' }} />
+              <span style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>{agent.name}</span>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: STATUS_COLORS[agent.status] || 'var(--muted-foreground)', display: 'inline-block' }} />
             </div>
           ))}
         </div>
@@ -227,17 +227,17 @@ function DashboardTab({ company, agents, issues }) {
 // ─────────────────────────────────────────────
 function StatusPill({ status }) {
   const map = {
-    'backlog': { bg: 'rgba(107,114,128,.15)', color: 'var(--text3)', label: 'Backlog' },
+    'backlog': { bg: 'rgba(107,114,128,.15)', color: 'var(--muted-foreground)', label: 'Backlog' },
     'todo': { bg: 'rgba(103,232,249,.08)', color: 'var(--aqua2, #67e8f9)', label: 'Todo' },
-    'in-progress': { bg: 'rgba(201,168,76,.1)', color: 'var(--gold)', label: 'In Progress' },
+    'in-progress': { bg: 'var(--accent)', color: 'var(--foreground)', label: 'In Progress' },
     'done': { bg: 'rgba(184,242,107,.08)', color: 'var(--lime2, #b8f26b)', label: 'Done' },
     'cancelled': { bg: 'rgba(248,113,113,.08)', color: 'var(--rose2, #f87171)', label: 'Cancelled' },
-    'idle': { bg: 'rgba(107,114,128,.12)', color: 'var(--text3)', label: 'Idle' },
+    'idle': { bg: 'rgba(107,114,128,.12)', color: 'var(--muted-foreground)', label: 'Idle' },
     'running': { bg: 'rgba(184,242,107,.1)', color: 'var(--lime2, #b8f26b)', label: 'Running' },
     'error': { bg: 'rgba(248,113,113,.12)', color: 'var(--rose2, #f87171)', label: 'Error' },
-    'paused': { bg: 'rgba(201,168,76,.1)', color: 'var(--gold)', label: 'Paused' },
+    'paused': { bg: 'var(--accent)', color: 'var(--foreground)', label: 'Paused' },
   }
-  const s = map[status] || { bg: 'rgba(107,114,128,.1)', color: 'var(--text3)', label: status || 'unknown' }
+  const s = map[status] || { bg: 'rgba(107,114,128,.1)', color: 'var(--muted-foreground)', label: status || 'unknown' }
   return (
     <span style={{ fontSize: 9, background: s.bg, color: s.color, borderRadius: 4, padding: '2px 6px', fontFamily: "'Cinzel',serif", letterSpacing: '.05em', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
       {s.label}
@@ -267,13 +267,13 @@ function AgentsTab({ agents }) {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search agents..."
-          style={{ flex: 1, padding: '7px 12px', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(201,168,76,.15)', borderRadius: 8, color: 'var(--text2)', fontSize: 12, outline: 'none' }}
+          style={{ flex: 1, padding: '7px 12px', background: 'var(--secondary)', border: '1px solid var(--accent)', borderRadius: 8, color: 'var(--muted-foreground)', fontSize: 12, outline: 'none' }}
         />
         {['all', 'idle', 'running', 'error', 'paused'].map(s => (
           <button key={s} onClick={() => setStatusFilter(s)} style={{
             padding: '5px 12px', borderRadius: 8, border: '1px solid rgba(201,168,76,.2)',
-            background: statusFilter === s ? 'rgba(201,168,76,.15)' : 'transparent',
-            color: statusFilter === s ? 'var(--gold)' : 'var(--text3)',
+            background: statusFilter === s ? 'var(--accent)' : 'transparent',
+            color: statusFilter === s ? 'var(--foreground)' : 'var(--muted-foreground)',
             fontSize: 10, fontFamily: "'Cinzel',serif", letterSpacing: '.08em', textTransform: 'uppercase', cursor: 'pointer'
           }}>{s}</button>
         ))}
@@ -293,40 +293,40 @@ function AgentsTab({ agents }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontSize: 22 }}>{getIcon(agent.icon)}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--gold)', letterSpacing: '.08em' }}>{agent.name}</div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 1 }}>{agent.title || agent.role}</div>
+                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--foreground)', letterSpacing: '.08em' }}>{agent.name}</div>
+                  <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 1 }}>{agent.title || agent.role}</div>
                 </div>
                 <StatusPill status={agent.status} />
               </div>
 
               {/* Aether identity */}
               {aether && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px', background: 'rgba(201,168,76,.05)', borderRadius: 8, border: '1px solid rgba(201,168,76,.1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px', background: 'var(--secondary)', borderRadius: 8, border: '1px solid var(--accent)' }}>
                   <span style={{ fontSize: 14 }}>{aether.archetypeEmoji?.split(' ')[0]}</span>
                   <div>
                     <div style={{ fontSize: 10, color: 'var(--gold2, #e6c84c)' }}>{aether.archetypeEmoji?.replace(/[^a-zA-Z\s]/g, '').trim()}</div>
-                    <div style={{ fontSize: 9, color: 'var(--text3)' }}>☉ {aether.sun} · ☽ {aether.moon} · LP {aether.lp}</div>
+                    <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>☉ {aether.sun} · ☽ {aether.moon} · LP {aether.lp}</div>
                   </div>
                 </div>
               )}
 
               {/* Meta info */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, fontSize: 10 }}>
-                <div style={{ color: 'var(--text3)' }}>Budget: <span style={{ color: 'var(--text2)' }}>${budget}/mo</span></div>
-                <div style={{ color: 'var(--text3)' }}>Spent: <span style={{ color: 'var(--text2)' }}>${spent}</span></div>
-                <div style={{ color: 'var(--text3)' }}>Adapter: <span style={{ color: 'var(--text2)' }}>{agent.adapterType || 'local'}</span></div>
-                {parent && <div style={{ color: 'var(--text3)' }}>Reports to: <span style={{ color: 'var(--text2)' }}>{parent.name}</span></div>}
+                <div style={{ color: 'var(--muted-foreground)' }}>Budget: <span style={{ color: 'var(--muted-foreground)' }}>${budget}/mo</span></div>
+                <div style={{ color: 'var(--muted-foreground)' }}>Spent: <span style={{ color: 'var(--muted-foreground)' }}>${spent}</span></div>
+                <div style={{ color: 'var(--muted-foreground)' }}>Adapter: <span style={{ color: 'var(--muted-foreground)' }}>{agent.adapterType || 'local'}</span></div>
+                {parent && <div style={{ color: 'var(--muted-foreground)' }}>Reports to: <span style={{ color: 'var(--muted-foreground)' }}>{parent.name}</span></div>}
               </div>
 
               {/* Actions */}
               <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
                 {[
                   { label: '▶ Run', color: 'var(--lime2, #b8f26b)' },
-                  { label: '📄 AETHER', color: 'var(--gold)' },
-                  { label: '✏️ Edit', color: 'var(--text3)' },
+                  { label: '📄 AETHER', color: 'var(--foreground)' },
+                  { label: '✏️ Edit', color: 'var(--muted-foreground)' },
                 ].map(btn => (
                   <button key={btn.label} style={{
-                    flex: 1, padding: '5px 0', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(201,168,76,.12)',
+                    flex: 1, padding: '5px 0', background: 'var(--secondary)', border: '1px solid var(--accent)',
                     borderRadius: 6, color: btn.color, fontSize: 10, cursor: 'pointer', fontFamily: "'Cinzel',serif", letterSpacing: '.06em'
                   }}>{btn.label}</button>
                 ))}
@@ -337,7 +337,7 @@ function AgentsTab({ agents }) {
       </div>
 
       {filtered.length === 0 && (
-        <div style={{ textAlign: 'center', color: 'var(--text3)', fontSize: 13, padding: 40 }}>No agents found</div>
+        <div style={{ textAlign: 'center', color: 'var(--muted-foreground)', fontSize: 13, padding: 40 }}>No agents found</div>
       )}
     </div>
   )
@@ -373,7 +373,7 @@ function IssuesTab({ issues, agents }) {
           <div key={s} style={{ ...panel, padding: '6px 14px', cursor: 'pointer', opacity: statusFilter !== 'all' && statusFilter !== s ? 0.5 : 1 }}
             onClick={() => setStatusFilter(statusFilter === s ? 'all' : s)}>
             <StatusPill status={s} />
-            <span style={{ fontSize: 11, color: 'var(--text2)', marginLeft: 6 }}>{statusCounts[s] || 0}</span>
+            <span style={{ fontSize: 11, color: 'var(--muted-foreground)', marginLeft: 6 }}>{statusCounts[s] || 0}</span>
           </div>
         ))}
       </div>
@@ -381,21 +381,21 @@ function IssuesTab({ issues, agents }) {
       {/* Filter row */}
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          <span style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Cinzel',serif" }}>PRIORITY</span>
+          <span style={{ fontSize: 10, color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif" }}>PRIORITY</span>
           {['all', 'critical', 'high', 'medium', 'low'].map(p => (
             <button key={p} onClick={() => setPriorityFilter(p)} style={{
-              padding: '4px 10px', borderRadius: 6, border: '1px solid rgba(201,168,76,.15)',
-              background: priorityFilter === p ? 'rgba(201,168,76,.12)' : 'transparent',
-              color: p === 'all' ? (priorityFilter === 'all' ? 'var(--gold)' : 'var(--text3)') : PRIORITY_COLORS[p],
+              padding: '4px 10px', borderRadius: 6, border: '1px solid var(--accent)',
+              background: priorityFilter === p ? 'var(--accent)' : 'transparent',
+              color: p === 'all' ? (priorityFilter === 'all' ? 'var(--foreground)' : 'var(--muted-foreground)') : PRIORITY_COLORS[p],
               fontSize: 10, cursor: 'pointer', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.06em'
             }}>{p}</button>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginLeft: 'auto' }}>
-          <span style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Cinzel',serif" }}>ASSIGNEE</span>
+          <span style={{ fontSize: 10, color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif" }}>ASSIGNEE</span>
           <select value={assigneeFilter} onChange={e => setAssigneeFilter(e.target.value)} style={{
-            background: 'rgba(10,10,30,.8)', border: '1px solid rgba(201,168,76,.15)', borderRadius: 6,
-            color: 'var(--text2)', fontSize: 11, padding: '4px 8px', cursor: 'pointer'
+            background: 'rgba(10,10,30,.8)', border: '1px solid var(--accent)', borderRadius: 6,
+            color: 'var(--muted-foreground)', fontSize: 11, padding: '4px 8px', cursor: 'pointer'
           }}>
             <option value="all">All</option>
             <option value="unassigned">Unassigned</option>
@@ -407,7 +407,7 @@ function IssuesTab({ issues, agents }) {
       {/* Issue list */}
       <div style={{ ...panel, overflow: 'hidden' }}>
         {/* Header */}
-        <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr 140px 90px 90px', gap: 8, padding: '10px 16px', borderBottom: '1px solid rgba(201,168,76,.1)', fontSize: 9, color: 'var(--text3)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', textTransform: 'uppercase' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr 140px 90px 90px', gap: 8, padding: '10px 16px', borderBottom: '1px solid var(--accent)', fontSize: 9, color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', textTransform: 'uppercase' }}>
           <div>ID</div>
           <div>Title</div>
           <div>Assignee</div>
@@ -420,21 +420,21 @@ function IssuesTab({ issues, agents }) {
             return (
               <div key={issue.id} style={{
                 display: 'grid', gridTemplateColumns: '70px 1fr 140px 90px 90px', gap: 8,
-                padding: '10px 16px', borderBottom: '1px solid rgba(201,168,76,.05)',
+                padding: '10px 16px', borderBottom: '1px solid var(--secondary)',
                 background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,.01)',
                 alignItems: 'center',
                 transition: 'background .15s',
               }}
-                onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,168,76,.04)'}
+                onMouseEnter={e => e.currentTarget.style.background = 'var(--secondary)'}
                 onMouseLeave={e => e.currentTarget.style.background = idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,.01)'}
               >
-                <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: 'monospace' }}>{issue.identifier}</div>
-                <div style={{ fontSize: 12, color: 'var(--text2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.title}</div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>{issue.identifier}</div>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.title}</div>
+                <div style={{ fontSize: 10, color: 'var(--muted-foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {assignee ? <><span style={{ marginRight: 4 }}>{getIcon(assignee.icon)}</span>{assignee.name}</> : <span style={{ opacity: 0.5 }}>Unassigned</span>}
                 </div>
                 <div>
-                  <span style={{ fontSize: 10, color: PRIORITY_COLORS[issue.priority] || 'var(--text3)', fontFamily: "'Cinzel',serif", letterSpacing: '.05em', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: 10, color: PRIORITY_COLORS[issue.priority] || 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", letterSpacing: '.05em', textTransform: 'uppercase' }}>
                     {issue.priority || '—'}
                   </span>
                 </div>
@@ -443,7 +443,7 @@ function IssuesTab({ issues, agents }) {
             )
           })}
           {filtered.length === 0 && (
-            <div style={{ textAlign: 'center', color: 'var(--text3)', fontSize: 12, padding: 32 }}>No issues match filters</div>
+            <div style={{ textAlign: 'center', color: 'var(--muted-foreground)', fontSize: 12, padding: 32 }}>No issues match filters</div>
           )}
         </div>
       </div>
@@ -475,14 +475,14 @@ function OrgChartTab({ agents }) {
         <div style={{
           ...panel, padding: '10px 14px', minWidth: 130, maxWidth: 160, textAlign: 'center',
           position: 'relative', cursor: 'default',
-          boxShadow: depth === 0 ? '0 0 20px rgba(201,168,76,.15)' : 'none',
-          borderColor: depth === 0 ? 'rgba(201,168,76,.4)' : 'rgba(201,168,76,.12)',
+          boxShadow: depth === 0 ? '0 0 20px var(--accent)' : 'none',
+          borderColor: depth === 0 ? 'rgba(201,168,76,.4)' : 'var(--accent)',
         }}>
           <div style={{ fontSize: 20, marginBottom: 4 }}>{getIcon(node.icon)}</div>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 10, color: 'var(--gold)', letterSpacing: '.08em', marginBottom: 2 }}>{node.name}</div>
-          <div style={{ fontSize: 9, color: 'var(--text3)', marginBottom: 4 }}>{node.title || node.role}</div>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 10, color: 'var(--foreground)', letterSpacing: '.08em', marginBottom: 2 }}>{node.name}</div>
+          <div style={{ fontSize: 9, color: 'var(--muted-foreground)', marginBottom: 4 }}>{node.title || node.role}</div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: STATUS_COLORS[node.status] || 'var(--text3)', display: 'inline-block' }} />
+            <span style={{ width: 6, height: 6, borderRadius: '50%', background: STATUS_COLORS[node.status] || 'var(--muted-foreground)', display: 'inline-block' }} />
             {aether && <span style={{ fontSize: 11 }}>{aether.archetypeEmoji?.split(' ')[0]}</span>}
           </div>
         </div>
@@ -516,13 +516,13 @@ function OrgChartTab({ agents }) {
 
   return (
     <div style={{ overflowX: 'auto', overflowY: 'auto', padding: 20, minHeight: 400 }}>
-      <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--gold)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 24 }}>
+      <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--foreground)', letterSpacing: '.12em', textTransform: 'uppercase', marginBottom: 24 }}>
         Reporting Hierarchy — {agents.length} Agents
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
         {roots.map(root => <OrgNode key={root.id} node={root} depth={0} />)}
       </div>
-      {agents.length === 0 && <div style={{ color: 'var(--text3)', textAlign: 'center', padding: 40 }}>No agents to display</div>}
+      {agents.length === 0 && <div style={{ color: 'var(--muted-foreground)', textAlign: 'center', padding: 40 }}>No agents to display</div>}
     </div>
   )
 }
@@ -542,12 +542,12 @@ function BudgetTab({ agents, company }) {
       {/* Total summary */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         {[
-          { label: 'Total Allocated', value: `$${(totalBudget / 100).toFixed(0)}/mo`, color: 'var(--gold)' },
+          { label: 'Total Allocated', value: `$${(totalBudget / 100).toFixed(0)}/mo`, color: 'var(--foreground)' },
           { label: 'Total Spent', value: `$${(totalSpent / 100).toFixed(2)}`, color: totalSpent > 0 ? 'var(--rose2, #f87171)' : 'var(--lime2, #b8f26b)' },
           { label: 'Remaining', value: `$${((totalBudget - totalSpent) / 100).toFixed(2)}`, color: 'var(--aqua2, #67e8f9)' },
         ].map(s => (
           <div key={s.label} style={{ ...panel, padding: '14px 18px' }}>
-            <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 6 }}>{s.label}</div>
+            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', textTransform: 'uppercase', marginBottom: 6 }}>{s.label}</div>
             <div style={{ fontSize: 20, fontWeight: 700, color: s.color, fontFamily: "'Cinzel',serif" }}>{s.value}</div>
           </div>
         ))}
@@ -562,8 +562,8 @@ function BudgetTab({ agents, company }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 18 }}>{getIcon(mostExpensive.icon)}</span>
                 <div>
-                  <div style={{ fontSize: 12, color: 'var(--text2)' }}>{mostExpensive.name}</div>
-                  <div style={{ fontSize: 10, color: 'var(--gold)' }}>${(mostExpensive.budgetMonthlyCents / 100).toFixed(0)}/mo</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted-foreground)' }}>{mostExpensive.name}</div>
+                  <div style={{ fontSize: 10, color: 'var(--foreground)' }}>${(mostExpensive.budgetMonthlyCents / 100).toFixed(0)}/mo</div>
                 </div>
               </div>
             </div>
@@ -574,7 +574,7 @@ function BudgetTab({ agents, company }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontSize: 18 }}>{getIcon(mostActive.icon)}</span>
                 <div>
-                  <div style={{ fontSize: 12, color: 'var(--text2)' }}>{mostActive.name}</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted-foreground)' }}>{mostActive.name}</div>
                   <div style={{ fontSize: 10, color: 'var(--lime2, #b8f26b)' }}>${(mostActive.spentMonthlyCents / 100).toFixed(2)} spent</div>
                 </div>
               </div>
@@ -585,7 +585,7 @@ function BudgetTab({ agents, company }) {
 
       {/* Per-agent budget table */}
       <div style={{ ...panel, overflow: 'hidden' }}>
-        <div style={{ padding: '10px 16px', borderBottom: '1px solid rgba(201,168,76,.1)', fontFamily: "'Cinzel',serif", fontSize: 10, color: 'var(--gold)', letterSpacing: '.12em', textTransform: 'uppercase' }}>
+        <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--accent)', fontFamily: "'Cinzel',serif", fontSize: 10, color: 'var(--foreground)', letterSpacing: '.12em', textTransform: 'uppercase' }}>
           Agent Budget Breakdown
         </div>
         <div style={{ maxHeight: 420, overflowY: 'auto' }}>
@@ -595,22 +595,22 @@ function BudgetTab({ agents, company }) {
             const pct = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0
             return (
               <div key={agent.id} style={{
-                padding: '12px 16px', borderBottom: '1px solid rgba(201,168,76,.05)',
-                background: agent === mostExpensive ? 'rgba(201,168,76,.04)' : 'transparent',
+                padding: '12px 16px', borderBottom: '1px solid var(--secondary)',
+                background: agent === mostExpensive ? 'var(--secondary)' : 'transparent',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                   <span style={{ fontSize: 16 }}>{getIcon(agent.icon)}</span>
-                  <span style={{ flex: 1, fontSize: 12, color: 'var(--text2)' }}>{agent.name}</span>
-                  <span style={{ fontSize: 11, color: 'var(--text3)' }}>{agent.title}</span>
-                  <span style={{ fontSize: 12, color: 'var(--gold)', minWidth: 60, textAlign: 'right' }}>${(budget / 100).toFixed(0)}/mo</span>
-                  <span style={{ fontSize: 11, color: 'var(--text3)', minWidth: 60, textAlign: 'right' }}>
+                  <span style={{ flex: 1, fontSize: 12, color: 'var(--muted-foreground)' }}>{agent.name}</span>
+                  <span style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>{agent.title}</span>
+                  <span style={{ fontSize: 12, color: 'var(--foreground)', minWidth: 60, textAlign: 'right' }}>${(budget / 100).toFixed(0)}/mo</span>
+                  <span style={{ fontSize: 11, color: 'var(--muted-foreground)', minWidth: 60, textAlign: 'right' }}>
                     ${(spent / 100).toFixed(2)} spent
                   </span>
                 </div>
-                <div style={{ height: 4, background: 'rgba(255,255,255,.06)', borderRadius: 2, overflow: 'hidden' }}>
+                <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
                   <div style={{
                     height: '100%', width: `${pct}%`,
-                    background: pct > 80 ? 'var(--rose2, #f87171)' : pct > 50 ? 'var(--gold)' : 'var(--lime2, #b8f26b)',
+                    background: pct > 80 ? 'var(--rose2, #f87171)' : pct > 50 ? 'var(--foreground)' : 'var(--lime2, #b8f26b)',
                     borderRadius: 2, transition: 'width .5s ease',
                   }} />
                 </div>
@@ -679,8 +679,8 @@ function AetherTab({ agents, company }) {
           {archetypes.map(a => (
             <button key={a} onClick={() => setArchetypeFilter(a)} style={{
               padding: '5px 12px', borderRadius: 8, border: '1px solid rgba(201,168,76,.2)',
-              background: archetypeFilter === a ? 'rgba(201,168,76,.15)' : 'transparent',
-              color: archetypeFilter === a ? 'var(--gold)' : 'var(--text3)',
+              background: archetypeFilter === a ? 'var(--accent)' : 'transparent',
+              color: archetypeFilter === a ? 'var(--foreground)' : 'var(--muted-foreground)',
               fontSize: 12, cursor: 'pointer',
             }}>{a === 'all' ? 'All Archetypes' : a}</button>
           ))}
@@ -689,8 +689,8 @@ function AetherTab({ agents, company }) {
           onClick={handleRebalance}
           disabled={rebalancing}
           style={{
-            padding: '8px 18px', borderRadius: 8, background: 'rgba(201,168,76,.12)',
-            border: '1px solid rgba(201,168,76,.3)', color: 'var(--gold)',
+            padding: '8px 18px', borderRadius: 8, background: 'var(--accent)',
+            border: '1px solid rgba(201,168,76,.3)', color: 'var(--foreground)',
             fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.1em',
             textTransform: 'uppercase', cursor: rebalancing ? 'wait' : 'pointer',
             opacity: rebalancing ? 0.7 : 1,
@@ -699,7 +699,7 @@ function AetherTab({ agents, company }) {
         </button>
       </div>
       {rebalanceMsg && (
-        <div style={{ ...panel, padding: '10px 16px', fontSize: 12, color: rebalanceMsg.startsWith('✓') ? 'var(--lime2, #b8f26b)' : 'var(--gold)' }}>
+        <div style={{ ...panel, padding: '10px 16px', fontSize: 12, color: rebalanceMsg.startsWith('✓') ? 'var(--lime2, #b8f26b)' : 'var(--foreground)' }}>
           {rebalanceMsg}
         </div>
       )}
@@ -713,7 +713,7 @@ function AetherTab({ agents, company }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{ fontSize: 24 }}>{a?.archetypeEmoji?.split(' ')[0] || getIcon(agent.icon)}</span>
                 <div>
-                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--gold)', letterSpacing: '.08em' }}>{agent.name}</div>
+                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--foreground)', letterSpacing: '.08em' }}>{agent.name}</div>
                   <div style={{ fontSize: 10, color: 'var(--gold2, #e6c84c)', marginTop: 2 }}>
                     {a?.archetypeEmoji?.replace(/^\S+\s*/, '') || agent.title}
                   </div>
@@ -722,33 +722,33 @@ function AetherTab({ agents, company }) {
 
               {a ? (
                 <>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, fontSize: 10, background: 'rgba(201,168,76,.04)', borderRadius: 8, padding: '8px 10px' }}>
-                    <div><span style={{ color: 'var(--text3)' }}>☉ </span><span style={{ color: 'var(--text2)' }}>{a.sun}</span></div>
-                    <div><span style={{ color: 'var(--text3)' }}>☽ </span><span style={{ color: 'var(--text2)' }}>{a.moon}</span></div>
-                    <div><span style={{ color: 'var(--text3)' }}>↑ </span><span style={{ color: 'var(--text2)' }}>{a.asc}</span></div>
-                    <div><span style={{ color: 'var(--text3)' }}>LP </span><span style={{ color: 'var(--text2)' }}>{a.lp}</span></div>
-                    {a.gk && <div><span style={{ color: 'var(--text3)' }}>GK </span><span style={{ color: 'var(--text2)' }}>Gate {a.gk}</span></div>}
-                    {a.mayan && <div style={{ gridColumn: 'span 2' }}><span style={{ color: 'var(--text3)' }}>Mayan: </span><span style={{ color: 'var(--text2)' }}>{a.mayan}</span></div>}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, fontSize: 10, background: 'var(--secondary)', borderRadius: 8, padding: '8px 10px' }}>
+                    <div><span style={{ color: 'var(--muted-foreground)' }}>☉ </span><span style={{ color: 'var(--muted-foreground)' }}>{a.sun}</span></div>
+                    <div><span style={{ color: 'var(--muted-foreground)' }}>☽ </span><span style={{ color: 'var(--muted-foreground)' }}>{a.moon}</span></div>
+                    <div><span style={{ color: 'var(--muted-foreground)' }}>↑ </span><span style={{ color: 'var(--muted-foreground)' }}>{a.asc}</span></div>
+                    <div><span style={{ color: 'var(--muted-foreground)' }}>LP </span><span style={{ color: 'var(--muted-foreground)' }}>{a.lp}</span></div>
+                    {a.gk && <div><span style={{ color: 'var(--muted-foreground)' }}>GK </span><span style={{ color: 'var(--muted-foreground)' }}>Gate {a.gk}</span></div>}
+                    {a.mayan && <div style={{ gridColumn: 'span 2' }}><span style={{ color: 'var(--muted-foreground)' }}>Mayan: </span><span style={{ color: 'var(--muted-foreground)' }}>{a.mayan}</span></div>}
                   </div>
 
                   {a.gift && (
                     <div style={{ fontSize: 11, color: 'var(--lime2, #b8f26b)', lineHeight: 1.5 }}>
-                      <span style={{ color: 'var(--text3)' }}>Gift: </span>{a.gift}
+                      <span style={{ color: 'var(--muted-foreground)' }}>Gift: </span>{a.gift}
                     </div>
                   )}
                   {a.shadow && (
                     <div style={{ fontSize: 11, color: 'var(--rose2, #f87171)', lineHeight: 1.5 }}>
-                      <span style={{ color: 'var(--text3)' }}>Shadow: </span>{a.shadow}
+                      <span style={{ color: 'var(--muted-foreground)' }}>Shadow: </span>{a.shadow}
                     </div>
                   )}
                   {a.creator && (
-                    <div style={{ fontSize: 10, color: 'var(--text3)', lineHeight: 1.5 }}>
+                    <div style={{ fontSize: 10, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
                       Creator: <span style={{ color: 'var(--aqua2, #67e8f9)' }}>{a.creator}</span>
                     </div>
                   )}
                 </>
               ) : (
-                <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>No AETHER profile found</div>
+                <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>No AETHER profile found</div>
               )}
             </div>
           )
@@ -756,7 +756,7 @@ function AetherTab({ agents, company }) {
       </div>
 
       {filtered.length === 0 && (
-        <div style={{ textAlign: 'center', color: 'var(--text3)', fontSize: 13, padding: 40 }}>No profiles match filter</div>
+        <div style={{ textAlign: 'center', color: 'var(--muted-foreground)', fontSize: 13, padding: 40 }}>No profiles match filter</div>
       )}
     </div>
   )
@@ -774,7 +774,7 @@ export default function CompanyPage() {
       return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 300, flexDirection: 'column', gap: 12 }}>
           <div style={{ fontSize: 28, animation: 'spin 2s linear infinite' }}>◈</div>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--text3)', letterSpacing: '.12em' }}>LOADING COMPANY DATA</div>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--muted-foreground)', letterSpacing: '.12em' }}>LOADING COMPANY DATA</div>
         </div>
       )
     }
@@ -794,13 +794,13 @@ export default function CompanyPage() {
       {/* Top header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '12px 20px', borderBottom: '1px solid rgba(201,168,76,.12)', flexShrink: 0,
+        padding: '12px 20px', borderBottom: '1px solid var(--accent)', flexShrink: 0,
         background: 'rgba(5,5,20,.5)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 18 }}>🏛️</span>
           <div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, color: 'var(--gold)', letterSpacing: '.12em', textTransform: 'uppercase' }}>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, color: 'var(--foreground)', letterSpacing: '.12em', textTransform: 'uppercase' }}>
               {company?.name || 'Above + Inside Co.'}
             </div>
             {error && <div style={{ fontSize: 9, color: 'var(--gold2, #e6c84c)', opacity: 0.7 }}>{error}</div>}
@@ -809,19 +809,19 @@ export default function CompanyPage() {
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={refetch} style={{
             padding: '6px 14px', borderRadius: 8, background: 'transparent',
-            border: '1px solid rgba(201,168,76,.2)', color: 'var(--text3)',
+            border: '1px solid rgba(201,168,76,.2)', color: 'var(--muted-foreground)',
             fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em',
             textTransform: 'uppercase', cursor: 'pointer',
           }}>↺ Refresh</button>
           <button style={{
-            padding: '6px 14px', borderRadius: 8, background: 'rgba(201,168,76,.1)',
-            border: '1px solid rgba(201,168,76,.3)', color: 'var(--gold)',
+            padding: '6px 14px', borderRadius: 8, background: 'var(--accent)',
+            border: '1px solid rgba(201,168,76,.3)', color: 'var(--foreground)',
             fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em',
             textTransform: 'uppercase', cursor: 'pointer',
           }}>+ New Agent</button>
           <button style={{
             padding: '6px 10px', borderRadius: 8, background: 'transparent',
-            border: '1px solid rgba(201,168,76,.15)', color: 'var(--text3)',
+            border: '1px solid var(--accent)', color: 'var(--muted-foreground)',
             fontSize: 12, cursor: 'pointer',
           }}>⚙</button>
         </div>
@@ -830,7 +830,7 @@ export default function CompanyPage() {
       {/* Body: sidebar nav + content */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {/* Left nav */}
-        <div style={{ width: 160, borderRight: '1px solid rgba(201,168,76,.1)', padding: '12px 0', display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
+        <div style={{ width: 160, borderRight: '1px solid var(--accent)', padding: '12px 0', display: 'flex', flexDirection: 'column', gap: 2, flexShrink: 0 }}>
           {TABS.map(tab => (
             <div
               key={tab.id}
@@ -838,15 +838,15 @@ export default function CompanyPage() {
               style={{
                 display: 'flex', alignItems: 'center', gap: 10,
                 padding: '9px 16px', cursor: 'pointer',
-                background: activeTab === tab.id ? 'rgba(201,168,76,.1)' : 'transparent',
-                borderLeft: activeTab === tab.id ? '2px solid var(--gold)' : '2px solid transparent',
+                background: activeTab === tab.id ? 'var(--accent)' : 'transparent',
+                borderLeft: activeTab === tab.id ? '2px solid var(--foreground)' : '2px solid transparent',
                 transition: 'all .15s',
               }}
-              onMouseEnter={e => { if (activeTab !== tab.id) e.currentTarget.style.background = 'rgba(201,168,76,.05)' }}
+              onMouseEnter={e => { if (activeTab !== tab.id) e.currentTarget.style.background = 'var(--secondary)' }}
               onMouseLeave={e => { if (activeTab !== tab.id) e.currentTarget.style.background = 'transparent' }}
             >
               <span style={{ fontSize: 14 }}>{tab.icon}</span>
-              <span style={{ fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: activeTab === tab.id ? 'var(--gold)' : 'var(--text3)' }}>
+              <span style={{ fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: activeTab === tab.id ? 'var(--foreground)' : 'var(--muted-foreground)' }}>
                 {tab.label}
               </span>
             </div>
@@ -855,8 +855,8 @@ export default function CompanyPage() {
           <div style={{ flex: 1 }} />
 
           {/* Agent count badge */}
-          <div style={{ padding: '10px 16px', borderTop: '1px solid rgba(201,168,76,.08)' }}>
-            <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: "'Cinzel',serif", letterSpacing: '.08em' }}>
+          <div style={{ padding: '10px 16px', borderTop: '1px solid var(--accent)' }}>
+            <div style={{ fontSize: 9, color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", letterSpacing: '.08em' }}>
               {agents.length} AGENTS · {issues.filter(i => i.status !== 'done').length} OPEN
             </div>
           </div>

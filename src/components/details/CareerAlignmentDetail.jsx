@@ -45,27 +45,27 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
     boxSizing: 'border-box',
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.15)', marginBottom: 12,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 12,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 20, backdropFilter: 'blur(12px)',
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 22, fontWeight: 600, letterSpacing: '.15em',
-    color: 'var(--gold)', marginBottom: 6,
+    color: 'var(--foreground)', marginBottom: 6,
   },
   quote: {
-    fontSize: 15, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 15, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
     marginTop: 10,
   },
 }
@@ -168,9 +168,9 @@ function WorkStyleInsight({ label, text }) {
       <div>
         <span style={{
           fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600,
-          color: 'var(--gold3)', letterSpacing: '.12em', textTransform: 'uppercase',
+          color: 'var(--muted-foreground)', letterSpacing: '.12em', textTransform: 'uppercase',
         }}>{label}: </span>
-        <span style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>{text}</span>
+        <span style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>{text}</span>
       </div>
     </div>
   )
@@ -235,9 +235,9 @@ export default function CareerAlignmentDetail() {
   if (!profile.dob) {
     return (
       <div style={{ ...S.panel, alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center', color: 'var(--text2)' }}>
+        <div style={{ textAlign: 'center', color: 'var(--muted-foreground)' }}>
           <div style={{ fontSize: 32, marginBottom: 12 }}>◈</div>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--gold3)' }}>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--muted-foreground)' }}>
             Enter your birth date to reveal your cosmic career blueprint
           </div>
         </div>
@@ -248,7 +248,7 @@ export default function CareerAlignmentDetail() {
   if (!alignment) {
     return (
       <div style={{ ...S.panel, alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: 'var(--text2)', fontStyle: 'italic' }}>Computing alignment…</div>
+        <div style={{ color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Computing alignment…</div>
       </div>
     )
   }
@@ -306,11 +306,11 @@ export default function CareerAlignmentDetail() {
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                     <span style={{
                       fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.1em',
-                      textTransform: 'uppercase', color: CATEGORY_COLORS[cat] || 'var(--gold3)',
+                      textTransform: 'uppercase', color: CATEGORY_COLORS[cat] || 'var(--muted-foreground)',
                     }}>{cat}</span>
                     <span style={{
                       fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600,
-                      color: CATEGORY_COLORS[cat] || 'var(--gold)',
+                      color: CATEGORY_COLORS[cat] || 'var(--foreground)',
                     }}>{score}%</span>
                   </div>
                   <ScoreBar score={score} color={CATEGORY_COLORS[cat] || '#c9a84c'} />
@@ -324,7 +324,7 @@ export default function CareerAlignmentDetail() {
       {complementaryProfile && (
         <div style={S.glass}>
           <div style={S.sectionTitle}>COMPLEMENTARY ROLES FOR YOUR TEAM</div>
-          <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.7 }}>
+          <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.7 }}>
             <div style={{ marginBottom: 8 }}>
               <span style={{ color: 'rgba(255,180,80,0.8)', fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase' }}>
                 Your blind spots:&nbsp;

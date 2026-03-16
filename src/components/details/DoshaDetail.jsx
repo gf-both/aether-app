@@ -13,30 +13,30 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
   quizBtn: {
     fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.18em',
-    textTransform: 'uppercase', color: 'var(--gold)', cursor: 'pointer',
+    textTransform: 'uppercase', color: 'var(--foreground)', cursor: 'pointer',
     padding: '12px 28px', borderRadius: 20,
     border: '1px solid rgba(201,168,76,.3)',
     background: 'rgba(201,168,76,.06)',
@@ -65,8 +65,8 @@ function DoshaCard({ doshaKey, label }) {
           background: `${c.color}0a`, border: `1px solid ${c.color}22`, color: `${c.color}cc`,
         }}>{data.season}</span>
       </div>
-      <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>{data.qualities}</div>
-      <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6, marginTop: 8 }}>{data.description}</div>
+      <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>{data.qualities}</div>
+      <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6, marginTop: 8 }}>{data.description}</div>
     </div>
   )
 }
@@ -87,7 +87,7 @@ export default function DoshaDetail() {
       {/* Header */}
       <div>
         <div style={S.heading}>☯ Ayurvedic Dosha</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Mind-body constitution · Tri-dosha system · Vata, Pitta, Kapha
         </div>
       </div>
@@ -100,11 +100,11 @@ export default function DoshaDetail() {
             <div style={{ ...S.glass, textAlign: 'center', borderColor: DOSHA_COLORS[primary]?.border }}>
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 28, letterSpacing: '.12em',
-                color: DOSHA_COLORS[primary]?.color || 'var(--gold)',
+                color: DOSHA_COLORS[primary]?.color || 'var(--foreground)',
               }}>
                 {doshaType}
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', marginTop: 6 }}>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 6 }}>
                 Prakruti — your natural constitution
               </div>
             </div>
@@ -138,15 +138,15 @@ export default function DoshaDetail() {
                     display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px',
                     borderRadius: 9,
                     background: isActive ? c.bg : 'rgba(255,255,255,.015)',
-                    border: `1px solid ${isActive ? c.border : 'rgba(255,255,255,.04)'}`,
+                    border: `1px solid ${isActive ? c.border : 'var(--secondary)'}`,
                   }}>
                     <div style={{
                       fontFamily: "'Cinzel', serif", fontSize: 15, color: c.color,
                       minWidth: 60, letterSpacing: '.06em',
                     }}>{data.name}</div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>{data.elements}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 2 }}>{data.qualities}</div>
+                      <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>{data.elements}</div>
+                      <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 2 }}>{data.qualities}</div>
                     </div>
                     {isActive && (
                       <span style={{
@@ -168,14 +168,14 @@ export default function DoshaDetail() {
             <span
               style={{
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                textTransform: 'uppercase', color: 'var(--text3)', cursor: 'pointer',
+                textTransform: 'uppercase', color: 'var(--muted-foreground)', cursor: 'pointer',
                 padding: '8px 20px', borderRadius: 20,
                 border: '1px solid rgba(255,255,255,.08)',
                 transition: 'all .2s', display: 'inline-block',
               }}
               onClick={() => setShowQuiz(true)}
-              onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(201,168,76,.3)'; e.currentTarget.style.color='var(--gold)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.08)'; e.currentTarget.style.color='var(--text3)' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(201,168,76,.3)'; e.currentTarget.style.color='var(--foreground)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.08)'; e.currentTarget.style.color='var(--muted-foreground)' }}
             >
               Retake Quiz
             </span>
@@ -192,8 +192,8 @@ export default function DoshaDetail() {
                 return (
                   <div key={key} style={{ ...S.glass, borderColor: c.border, background: c.bg }}>
                     <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, color: c.color, letterSpacing: '.1em', marginBottom: 6 }}>{data.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 4 }}>{data.elements} · {data.season}</div>
-                    <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>{data.description}</div>
+                    <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 4 }}>{data.elements} · {data.season}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>{data.description}</div>
                   </div>
                 )
               })}
@@ -210,7 +210,7 @@ export default function DoshaDetail() {
             <span
               style={S.quizBtn}
               onClick={() => setShowQuiz(true)}
-              onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(201,168,76,.5)'; e.currentTarget.style.background='rgba(201,168,76,.1)' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor='var(--ring)'; e.currentTarget.style.background='var(--accent)' }}
               onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(201,168,76,.3)'; e.currentTarget.style.background='rgba(201,168,76,.06)' }}
             >
               Take the Dosha Quiz

@@ -91,7 +91,7 @@ function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
       left:${rect.left}px; top:${rect.top}px;
       transform: scale(1.04); transition: none;
       box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      border: 1px solid rgba(201,168,76,.5);
+      border: 1px solid var(--ring);
     `
     document.body.appendChild(ghost)
     ghostRef.current = ghost
@@ -193,7 +193,7 @@ const ROWS = [
   {
     label: 'CORE STRUCTURAL SYSTEMS',
     sub: 'Foundational Maps \u00B7 Birth Charts \u00B7 Energy Systems',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     border: 'rgba(201,168,76,.3)',
     widgets: ['integral', 'natal', 'tr', 'hd', 'kab'],
     cols: '1fr 1.5fr 1fr 1.5fr 1fr',
@@ -356,20 +356,20 @@ function NatalWidget() {
           <button
             onClick={(e) => { e.stopPropagation(); setShowAspects(a => !a) }}
             style={{
-              background: showAspects ? 'rgba(201,168,76,.18)' : 'rgba(255,255,255,.04)',
+              background: showAspects ? 'rgba(201,168,76,.18)' : 'var(--secondary)',
               border: `1px solid ${showAspects ? 'rgba(201,168,76,.4)' : 'rgba(255,255,255,.08)'}`,
               borderRadius: 4, padding: '2px 6px', fontSize: 8, letterSpacing: '.06em',
-              color: showAspects ? 'var(--gold)' : 'var(--text2)', cursor: 'pointer',
+              color: showAspects ? 'var(--foreground)' : 'var(--muted-foreground)', cursor: 'pointer',
               fontFamily: "'Cinzel',serif", transition: 'all .2s',
             }}
           >ASP</button>
           <button
             onClick={(e) => { e.stopPropagation(); setShowHouses(h => !h) }}
             style={{
-              background: showHouses ? 'rgba(201,168,76,.18)' : 'rgba(255,255,255,.04)',
+              background: showHouses ? 'rgba(201,168,76,.18)' : 'var(--secondary)',
               border: `1px solid ${showHouses ? 'rgba(201,168,76,.4)' : 'rgba(255,255,255,.08)'}`,
               borderRadius: 4, padding: '2px 6px', fontSize: 8, letterSpacing: '.06em',
-              color: showHouses ? 'var(--gold)' : 'var(--text2)', cursor: 'pointer',
+              color: showHouses ? 'var(--foreground)' : 'var(--muted-foreground)', cursor: 'pointer',
               fontFamily: "'Cinzel',serif", transition: 'all .2s',
             }}
           >HSE</button>
@@ -400,9 +400,9 @@ function TarotWidget() {
         {primaryCard && (
           <div style={{ textAlign: 'center', padding: '16px 20px', borderRadius: 12, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.2)', minWidth: 100 }}>
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', color: 'rgba(201,168,76,.6)', marginBottom: 6 }}>BIRTH CARD</div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 36, color: 'var(--gold)', lineHeight: 1, marginBottom: 6 }}>{ROMAN[primaryCard.num]}</div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--gold)', letterSpacing: '.08em' }}>{primaryCard.name}</div>
-            <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', marginTop: 4 }}>{primaryCard.archetype}</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 36, color: 'var(--foreground)', lineHeight: 1, marginBottom: 6 }}>{ROMAN[primaryCard.num]}</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--foreground)', letterSpacing: '.08em' }}>{primaryCard.name}</div>
+            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>{primaryCard.archetype}</div>
           </div>
         )}
         {pairCard && (
@@ -410,11 +410,11 @@ function TarotWidget() {
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', color: 'rgba(144,80,224,.6)', marginBottom: 6 }}>SHADOW</div>
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: 36, color: 'rgba(144,80,224,1)', lineHeight: 1, marginBottom: 6 }}>{ROMAN[pairCard.num]}</div>
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'rgba(144,80,224,1)', letterSpacing: '.08em' }}>{pairCard.name}</div>
-            <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', marginTop: 4 }}>{pairCard.archetype}</div>
+            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>{pairCard.archetype}</div>
           </div>
         )}
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Inconsolata',monospace" }}>
+      <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontFamily: "'Inconsolata',monospace" }}>
         Birth Number · {birthNumber}
       </div>
     </div>
@@ -441,10 +441,10 @@ function CelticWidget() {
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontSize: 40, lineHeight: 1, marginBottom: 8 }}>🌿</div>
         <div style={{ fontFamily: "'Cinzel',serif", fontSize: 20, color: elCol, letterSpacing: '.15em' }}>{tree?.name}</div>
-        <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+        <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--muted-foreground)', marginTop: 4 }}>
           {tree?.ogham}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--text2)', fontStyle: 'italic', marginTop: 6, maxWidth: 200, lineHeight: 1.5 }}>
+        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 6, maxWidth: 200, lineHeight: 1.5 }}>
           {tree?.meaning}
         </div>
       </div>
@@ -452,14 +452,14 @@ function CelticWidget() {
         <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: elCol, background: elCol.replace('1)', '.08)'), border: `1px solid ${elCol.replace('1)', '.25)')}` }}>
           {tree?.element}
         </span>
-        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: 'var(--gold3)', background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)' }}>
+        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: 'var(--muted-foreground)', background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)' }}>
           {tree?.planet}
         </span>
-        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: 'var(--text2)', background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.1)' }}>
+        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: 'var(--muted-foreground)', background: 'var(--secondary)', border: '1px solid rgba(255,255,255,.1)' }}>
           {tree?.keyword}
         </span>
       </div>
-      <div style={{ fontSize: 10, color: 'var(--text3)', fontFamily: "'Inconsolata',monospace" }}>
+      <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontFamily: "'Inconsolata',monospace" }}>
         {tree ? `${fmt(tree.startDate)} – ${fmt(tree.endDate)}` : ''}
       </div>
     </div>
@@ -556,11 +556,11 @@ function WidgetContent({ widgetId }) {
               </div>
               <NumerologyBars />
               <div style={{
-                fontSize: '10px', color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.5,
-                padding: '5px 7px', background: 'rgba(201,168,76,.03)', borderRadius: '6px',
-                border: '1px solid rgba(201,168,76,.05)'
+                fontSize: '10px', color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5,
+                padding: '5px 7px', background: 'var(--secondary)', borderRadius: '6px',
+                border: '1px solid var(--secondary)'
               }}>
-                <span style={{ color: 'var(--gold)' }}>Life Path 7</span> — The Seeker. Introspection &amp; spiritual wisdom.{' '}
+                <span style={{ color: 'var(--foreground)' }}>Life Path 7</span> — The Seeker. Introspection &amp; spiritual wisdom.{' '}
                 <span style={{ color: 'var(--violet2)' }}>Master 11/22</span> anchors intuition into form.
               </div>
             </div>
@@ -586,7 +586,7 @@ function WidgetContent({ widgetId }) {
                     <div className="fbars">
                       <div className="fbar" style={{ height: item.bars[0], background: 'rgba(220,60,60,.6)' }} />
                       <div className="fbar" style={{ height: item.bars[1], background: 'rgba(64,204,221,.7)' }} />
-                      <div className="fbar" style={{ height: item.bars[2], background: 'rgba(201,168,76,.5)' }} />
+                      <div className="fbar" style={{ height: item.bars[2], background: 'var(--ring)' }} />
                     </div>
                   </div>
                 ))}
@@ -686,11 +686,11 @@ function WidgetContent({ widgetId }) {
               ['♂','Mars','Scorpio 19°','A parrot listening and talking to a man'],
               ['ASC','ASC','Virgo 9°','An expressionist painter at her easel'],
             ].map(([g,n,d,s]) => (
-              <div key={n} style={{ display: 'flex', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--row-bg)', border: '1px solid var(--row-border)', alignItems: 'flex-start' }}>
-                <span style={{ color: 'var(--gold)', fontSize: 14, width: 20, flexShrink: 0 }}>{g}</span>
+              <div key={n} style={{ display: 'flex', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--secondary)', border: '1px solid var(--border)', alignItems: 'flex-start' }}>
+                <span style={{ color: 'var(--foreground)', fontSize: 14, width: 20, flexShrink: 0 }}>{g}</span>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--text2)', textTransform: 'uppercase' }}>{n} · {d}</div>
-                  <div style={{ fontSize: 12, fontStyle: 'italic', color: 'var(--text)', lineHeight: 1.5, marginTop: 2 }}>"{s}"</div>
+                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--muted-foreground)', textTransform: 'uppercase' }}>{n} · {d}</div>
+                  <div style={{ fontSize: 12, fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.5, marginTop: 2 }}>"{s}"</div>
                 </div>
               </div>
             ))}
@@ -709,11 +709,11 @@ function WidgetContent({ widgetId }) {
               ['◉','Part of Career','Capricorn 22°','Vocation, public reputation'],
               ['⚔','Part of Passion','Leo 6°','Deep desires, creative fire'],
             ].map(([icon,name,pos,desc]) => (
-              <div key={name} style={{ display: 'flex', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--row-bg)', border: '1px solid var(--row-border)', alignItems: 'flex-start' }}>
-                <span style={{ color: 'var(--gold)', fontSize: 14, width: 20, flexShrink: 0 }}>{icon}</span>
+              <div key={name} style={{ display: 'flex', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--secondary)', border: '1px solid var(--border)', alignItems: 'flex-start' }}>
+                <span style={{ color: 'var(--foreground)', fontSize: 14, width: 20, flexShrink: 0 }}>{icon}</span>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--gold3)', textTransform: 'uppercase' }}>{name} · {pos}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text2)', lineHeight: 1.5, marginTop: 2 }}>{desc}</div>
+                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--muted-foreground)', textTransform: 'uppercase' }}>{name} · {pos}</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted-foreground)', lineHeight: 1.5, marginTop: 2 }}>{desc}</div>
                 </div>
               </div>
             ))}
@@ -750,8 +750,8 @@ function WidgetContent({ widgetId }) {
         <>
           <div className="ch"><span className="ct">Tibetan Astrology &middot; Losar &middot; Mewa</span><span className="ci">{'☸'}</span></div>
           <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--gold)', letterSpacing: '.15em' }}>☸</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>TIBETAN BIRTH YEAR</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--foreground)', letterSpacing: '.15em' }}>☸</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>TIBETAN BIRTH YEAR</div>
           </div>
         </>
       )
@@ -760,8 +760,8 @@ function WidgetContent({ widgetId }) {
         <>
           <div className="ch"><span className="ct">Fixed Stars &middot; Natal Conjunctions</span><span className="ci">{'✦'}</span></div>
           <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--gold)', letterSpacing: '.15em' }}>✦</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>FIXED STARS</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--foreground)', letterSpacing: '.15em' }}>✦</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>FIXED STARS</div>
           </div>
         </>
       )
@@ -770,8 +770,8 @@ function WidgetContent({ widgetId }) {
         <>
           <div className="ch"><span className="ct">Ayurvedic Dosha &middot; {doshaType || 'Take Quiz'}</span><span className="ci">{'☯'}</span></div>
           <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--gold)', letterSpacing: '.15em' }}>☯</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>DOSHA</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--foreground)', letterSpacing: '.15em' }}>☯</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>DOSHA</div>
           </div>
         </>
       )
@@ -781,7 +781,7 @@ function WidgetContent({ widgetId }) {
           <div className="ch"><span className="ct">Archetype &middot; {archetypeType || 'Take Quiz'}</span><span className="ci">{'⬡'}</span></div>
           <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
             <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: '#a878e8', letterSpacing: '.15em' }}>⬡</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>ARCHETYPE</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>ARCHETYPE</div>
           </div>
         </>
       )
@@ -791,7 +791,7 @@ function WidgetContent({ widgetId }) {
           <div className="ch"><span className="ct">Love Language &middot; {loveLanguage || 'Take Quiz'}</span><span className="ci">{'🤗'}</span></div>
           <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
             <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, letterSpacing: '.15em' }}>🤗</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--text3)', letterSpacing: '.1em' }}>LOVE LANGUAGE</div>
+            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>LOVE LANGUAGE</div>
           </div>
         </>
       )
@@ -811,7 +811,7 @@ function WidgetContent({ widgetId }) {
 
 /* ── Shared shell for all layouts ── */
 const CARD_BASE = {
-  background: 'var(--card-bg)', border: '1px solid var(--card-border)',
+  background: 'var(--card)', border: '1px solid var(--border)',
   borderRadius: 'var(--r)', overflow: 'hidden', backdropFilter: 'blur(12px)',
 }
 
@@ -849,12 +849,12 @@ const WIDGET_META = {
 
 /* ── Category Badges ── */
 const WIDGET_CATEGORIES = {
-  integral: { label: 'META', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
-  natal:    { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
-  tr:       { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  integral: { label: 'META', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
+  natal:    { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
+  tr:       { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   vedic:    { label: 'EASTERN', color: 'rgba(160,100,255,.8)', bg: 'rgba(160,100,255,.08)', border: 'rgba(160,100,255,.2)' },
-  sabian:   { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
-  arabic:   { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  sabian:   { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
+  arabic:   { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   hd:       { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
   kab:      { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
   gk:       { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
@@ -867,14 +867,14 @@ const WIDGET_CATEGORIES = {
   mbti:     { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
   pat:        { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
   biorhythm:  { label: 'CYCLES',      color: 'rgba(96,200,80,.8)',  bg: 'rgba(96,200,80,.08)',  border: 'rgba(96,200,80,.2)'  },
-  tarot:      { label: 'DIVINATION',  color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  tarot:      { label: 'DIVINATION',  color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   celtic:     { label: 'CELTIC',      color: 'rgba(120,180,80,.8)', bg: 'rgba(120,180,80,.08)', border: 'rgba(120,180,80,.2)' },
   tibetan:  { label: 'TIBETAN', color: 'rgba(232,160,64,.8)', bg: 'rgba(232,160,64,.08)', border: 'rgba(232,160,64,.2)' },
-  stars:    { label: 'STELLAR', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  stars:    { label: 'STELLAR', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   dosha:    { label: 'AYURVEDA', color: 'rgba(68,204,136,.8)', bg: 'rgba(68,204,136,.08)', border: 'rgba(68,204,136,.2)' },
   archetype:{ label: 'JUNGIAN', color: 'rgba(168,120,232,.8)', bg: 'rgba(168,120,232,.08)', border: 'rgba(168,120,232,.2)' },
   lovelang: { label: 'RELATIONAL', color: 'rgba(238,136,102,.8)', bg: 'rgba(238,136,102,.08)', border: 'rgba(238,136,102,.2)' },
-  timeline: { label: 'TIMELINE', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.2)' },
+  timeline: { label: 'TIMELINE', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   career:   { label: 'CAREER',   color: 'rgba(96,180,255,.8)', bg: 'rgba(96,180,255,.08)',  border: 'rgba(96,180,255,.2)'  },
 }
 
@@ -909,12 +909,12 @@ function DemoBanner() {
     <div style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '7px 16px',
-      background: 'linear-gradient(90deg, rgba(201,168,76,.08), rgba(201,168,76,.04))',
+      background: 'linear-gradient(90deg, var(--accent), var(--secondary))',
       borderBottom: '1px solid rgba(201,168,76,.18)',
       flexShrink: 0,
     }}>
-      <span style={{ fontSize: '11px', color: 'var(--text2)', fontFamily: "'Cormorant Garamond',serif" }}>
-        <span style={{ color: 'var(--gold)', fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', marginRight: '8px' }}>
+      <span style={{ fontSize: '11px', color: 'var(--muted-foreground)', fontFamily: "'Cormorant Garamond',serif" }}>
+        <span style={{ color: 'var(--foreground)', fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', marginRight: '8px' }}>
           ✦ DEMO MODE
         </span>
         You're viewing a sample profile. Add your birth data to see your cosmic blueprint.
@@ -924,14 +924,14 @@ function DemoBanner() {
           onClick={() => { setActiveDetail('profile'); setActiveNav('profile') }}
           style={{
             fontSize: '10px', fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
-            color: 'var(--gold)', cursor: 'pointer', padding: '3px 12px',
-            background: 'rgba(201,168,76,.12)', border: '1px solid rgba(201,168,76,.3)',
+            color: 'var(--foreground)', cursor: 'pointer', padding: '3px 12px',
+            background: 'var(--accent)', border: '1px solid rgba(201,168,76,.3)',
             borderRadius: '12px', transition: 'all .2s',
           }}
         >Add My Birth Data →</span>
         <span
           onClick={() => setDismissed(true)}
-          style={{ fontSize: '12px', color: 'var(--text3)', cursor: 'pointer', lineHeight: 1, padding: '2px 4px' }}
+          style={{ fontSize: '12px', color: 'var(--muted-foreground)', cursor: 'pointer', lineHeight: 1, padding: '2px 4px' }}
         >×</span>
       </div>
     </div>
@@ -958,17 +958,17 @@ function WidgetManagerBar() {
   return (
     <div style={{
       padding: '14px 20px 12px',
-      borderBottom: '1px solid rgba(201,168,76,.15)',
+      borderBottom: '1px solid var(--accent)',
       background: 'rgba(0,0,0,.3)',
       flexShrink: 0,
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
         <div>
-          <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', color: 'var(--gold)', textTransform: 'uppercase' }}>
+          <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', color: 'var(--foreground)', textTransform: 'uppercase' }}>
             ⚙ Widget Manager
           </span>
-          <span style={{ fontSize: 10, color: 'var(--text2)', marginLeft: 10 }}>
+          <span style={{ fontSize: 10, color: 'var(--muted-foreground)', marginLeft: 10 }}>
             {hiddenCount > 0 ? `${hiddenCount} hidden · click to toggle` : 'All widgets visible · click to hide'}
           </span>
         </div>
@@ -979,7 +979,7 @@ function WidgetManagerBar() {
               style={{
                 padding: '5px 14px', borderRadius: 7, cursor: 'pointer', border: '1px solid rgba(201,168,76,.4)',
                 fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.06em',
-                color: 'var(--gold)', background: 'rgba(201,168,76,.12)', transition: 'all .15s',
+                color: 'var(--foreground)', background: 'var(--accent)', transition: 'all .15s',
               }}
             >Show All</button>
           )}
@@ -988,7 +988,7 @@ function WidgetManagerBar() {
             style={{
               padding: '5px 14px', borderRadius: 7, cursor: 'pointer', border: '1px solid rgba(255,255,255,.12)',
               fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.06em',
-              color: 'var(--text2)', background: 'rgba(255,255,255,.04)', transition: 'all .15s',
+              color: 'var(--muted-foreground)', background: 'var(--secondary)', transition: 'all .15s',
             }}
           >Reset All</button>
         </div>
@@ -1008,15 +1008,15 @@ function WidgetManagerBar() {
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '7px 14px', borderRadius: 10, cursor: 'pointer',
                 transition: 'all .15s', userSelect: 'none',
-                background: isHidden ? 'rgba(255,255,255,.03)' : 'rgba(201,168,76,.1)',
-                border: `1px solid ${isHidden ? 'rgba(255,255,255,.08)' : 'rgba(201,168,76,.35)'}`,
-                color: isHidden ? 'rgba(255,255,255,.3)' : 'var(--gold)',
+                background: isHidden ? 'var(--secondary)' : 'var(--accent)',
+                border: `1px solid ${isHidden ? 'rgba(255,255,255,.08)' : 'var(--ring)'}`,
+                color: isHidden ? 'rgba(255,255,255,.3)' : 'var(--foreground)',
               }}
             >
               <span style={{ fontSize: 16 }}>{meta.icon || '✦'}</span>
               <div>
                 <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.04em' }}>{meta.label}</div>
-                <div style={{ fontSize: 9, color: isHidden ? 'rgba(255,255,255,.2)' : 'var(--text2)', marginTop: 1 }}>
+                <div style={{ fontSize: 9, color: isHidden ? 'rgba(255,255,255,.2)' : 'var(--muted-foreground)', marginTop: 1 }}>
                   {isHidden ? 'hidden · click to show' : 'visible · click to hide'}
                 </div>
               </div>
@@ -1041,10 +1041,10 @@ function BentoLayout({ visibleWidgets, setActiveDetail }) {
       {sideWidgets.map((id, i) => (
         <div key={id} className="card" style={{ gridColumn: 4, gridRow: i + 1, cursor: 'pointer', display: 'flex', flexDirection: 'column' }} onClick={() => setActiveDetail(id)}>
           <div style={{ padding: '12px 14px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ fontSize: 11, letterSpacing: '.12em', color: 'var(--gold)', fontFamily: "'Cinzel',serif", marginBottom: 4 }}>
+            <div style={{ fontSize: 11, letterSpacing: '.12em', color: 'var(--foreground)', fontFamily: "'Cinzel',serif", marginBottom: 4 }}>
               {WIDGET_META[id]?.label || id}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text2)' }}>{WIDGET_META[id]?.sub || ''}</div>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>{WIDGET_META[id]?.sub || ''}</div>
           </div>
         </div>
       ))}
@@ -1053,8 +1053,8 @@ function BentoLayout({ visibleWidgets, setActiveDetail }) {
           <div style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 20 }}>{WIDGET_META[id]?.icon || '\u2726'}</span>
             <div>
-              <div style={{ fontSize: 11, letterSpacing: '.08em', color: 'var(--gold)', fontFamily: "'Cinzel',serif" }}>{WIDGET_META[id]?.label || id}</div>
-              <div style={{ fontSize: 10, color: 'var(--text2)' }}>{WIDGET_META[id]?.sub || ''}</div>
+              <div style={{ fontSize: 11, letterSpacing: '.08em', color: 'var(--foreground)', fontFamily: "'Cinzel',serif" }}>{WIDGET_META[id]?.label || id}</div>
+              <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>{WIDGET_META[id]?.sub || ''}</div>
             </div>
           </div>
         </div>
@@ -1069,7 +1069,7 @@ function FocusLayout({ visibleWidgets, setActiveDetail }) {
   const focusId = visibleWidgets[focusIdx] || visibleWidgets[0]
   return (
     <div style={{ gridColumn: 2, gridRow: 2, display: 'flex', overflow: 'hidden', gap: 0 }}>
-      <div style={{ width: 56, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 4px', background: 'rgba(5,5,22,.5)', borderRadius: 'var(--r) 0 0 var(--r)', borderRight: '1px solid rgba(201,168,76,.08)' }}>
+      <div style={{ width: 56, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 4px', background: 'rgba(5,5,22,.5)', borderRadius: 'var(--r) 0 0 var(--r)', borderRight: '1px solid var(--accent)' }}>
         {visibleWidgets.map((id, idx) => {
           const meta = WIDGET_META[id]
           const active = idx === focusIdx
@@ -1077,13 +1077,13 @@ function FocusLayout({ visibleWidgets, setActiveDetail }) {
             <div key={id} onClick={() => setFocusIdx(idx)} style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
               padding: '8px 0', borderRadius: 8, cursor: 'pointer',
-              background: active ? 'rgba(201,168,76,.12)' : 'transparent',
+              background: active ? 'var(--accent)' : 'transparent',
               border: active ? '1px solid rgba(201,168,76,.3)' : '1px solid transparent',
               transition: 'all .2s', position: 'relative',
             }}>
-              {active && <div style={{ position: 'absolute', left: -4, top: '50%', transform: 'translateY(-50%)', width: 3, height: 18, background: 'var(--gold)', borderRadius: '0 2px 2px 0' }} />}
+              {active && <div style={{ position: 'absolute', left: -4, top: '50%', transform: 'translateY(-50%)', width: 3, height: 18, background: 'var(--foreground)', borderRadius: '0 2px 2px 0' }} />}
               <span style={{ fontSize: 16 }}>{meta?.icon || '\u2726'}</span>
-              <span style={{ fontSize: 7, letterSpacing: '.05em', color: active ? 'var(--gold)' : 'var(--text2)', marginTop: 2 }}>
+              <span style={{ fontSize: 7, letterSpacing: '.05em', color: active ? 'var(--foreground)' : 'var(--muted-foreground)', marginTop: 2 }}>
                 {id.toUpperCase()}
               </span>
             </div>
@@ -1092,10 +1092,10 @@ function FocusLayout({ visibleWidgets, setActiveDetail }) {
       </div>
       <div className="card" style={{ flex: 1, borderRadius: '0 var(--r) var(--r) 0', display: 'flex', flexDirection: 'column' }}>
         <WidgetContent widgetId={focusId} />
-        <div style={{ padding: '8px 14px', borderTop: '1px solid rgba(201,168,76,.08)', display: 'flex', justifyContent: 'flex-end' }}>
+        <div style={{ padding: '8px 14px', borderTop: '1px solid var(--accent)', display: 'flex', justifyContent: 'flex-end' }}>
           <div onClick={() => setActiveDetail(focusId)} style={{
-            padding: '4px 14px', borderRadius: 8, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
-            fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--gold2)', cursor: 'pointer', transition: 'all .2s',
+            padding: '4px 14px', borderRadius: 8, background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
+            fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--foreground)', cursor: 'pointer', transition: 'all .2s',
           }}>View Full Profile</div>
         </div>
       </div>
@@ -1109,16 +1109,16 @@ function MagazineLayout({ visibleWidgets, setActiveDetail, profile }) {
     <div style={{ gridColumn: 2, gridRow: 2, overflow: 'auto', padding: '0 8px 8px' }}>
       <div style={{
         display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: 16, overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,.06)', marginBottom: 16,
+        border: '1px solid var(--border)', marginBottom: 16,
       }}>
-        <div style={{ padding: '32px 28px', background: 'linear-gradient(135deg, rgba(120,80,200,.08), rgba(201,168,76,.05))' }}>
-          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 24, color: 'var(--text)', lineHeight: 1.2, marginBottom: 8 }}>Your Cosmic Blueprint</h2>
-          <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, color: 'var(--text2)', lineHeight: 1.5, marginBottom: 16 }}>
+        <div style={{ padding: '32px 28px', background: 'linear-gradient(135deg, rgba(120,80,200,.08), var(--secondary))' }}>
+          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 24, color: 'var(--foreground)', lineHeight: 1.2, marginBottom: 8 }}>Your Cosmic Blueprint</h2>
+          <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, color: 'var(--muted-foreground)', lineHeight: 1.5, marginBottom: 16 }}>
             {profile.sign} Sun with {profile.moon} Moon and {profile.asc} Rising. A {profile.hdProfile} {profile.hdType} walking Life Path {profile.lifePath}.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
             {[`\u2609 ${profile.sign}`, `\u25C8 ${profile.hdType} ${profile.hdProfile}`, `\u221E Life Path ${profile.lifePath}`, '\u2721 Tiphareth'].map((chip, i) => (
-              <span key={i} style={{ padding: '4px 10px', borderRadius: 16, fontSize: 10, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)', color: 'var(--gold)' }}>{chip}</span>
+              <span key={i} style={{ padding: '4px 10px', borderRadius: 16, fontSize: 10, background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)', color: 'var(--foreground)' }}>{chip}</span>
             ))}
           </div>
         </div>
@@ -1126,7 +1126,7 @@ function MagazineLayout({ visibleWidgets, setActiveDetail, profile }) {
           <WidgetContent widgetId={visibleWidgets[0]} />
         </div>
       </div>
-      <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.2em', color: 'rgba(201,168,76,.5)', marginBottom: 10 }}>
+      <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.2em', color: 'var(--ring)', marginBottom: 10 }}>
         EXPLORE YOUR FRAMEWORKS
       </div>
       <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 12, scrollSnapType: 'x mandatory' }}>
@@ -1135,14 +1135,14 @@ function MagazineLayout({ visibleWidgets, setActiveDetail, profile }) {
           return (
             <div key={id} onClick={() => setActiveDetail(id)} style={{
               minWidth: 200, scrollSnapAlign: 'start', borderRadius: 14, overflow: 'hidden',
-              border: '1px solid rgba(255,255,255,.06)', cursor: 'pointer', flexShrink: 0, transition: 'all .3s',
+              border: '1px solid var(--border)', cursor: 'pointer', flexShrink: 0, transition: 'all .3s',
             }}>
-              <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, background: 'rgba(201,168,76,.03)' }}>
+              <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, background: 'var(--secondary)' }}>
                 {meta?.icon || '\u2726'}
               </div>
-              <div style={{ padding: '10px 14px', background: 'rgba(255,255,255,.02)' }}>
-                <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.06em', color: 'var(--text)', marginBottom: 2 }}>{meta?.label || id}</div>
-                <div style={{ fontSize: 10, color: 'var(--text2)' }}>{meta?.sub || ''}</div>
+              <div style={{ padding: '10px 14px', background: 'var(--secondary)' }}>
+                <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.06em', color: 'var(--foreground)', marginBottom: 2 }}>{meta?.label || id}</div>
+                <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>{meta?.sub || ''}</div>
               </div>
             </div>
           )
@@ -1150,12 +1150,12 @@ function MagazineLayout({ visibleWidgets, setActiveDetail, profile }) {
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, marginTop: 4 }}>
         <div style={{ ...CARD_BASE, padding: 20, cursor: 'pointer' }} onClick={() => setActiveDetail('tr')}>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--gold)', letterSpacing: '.1em', marginBottom: 8 }}>TODAY'S TRANSITS</div>
-          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>Current planetary positions and their aspects to your natal chart.</div>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--foreground)', letterSpacing: '.1em', marginBottom: 8 }}>TODAY'S TRANSITS</div>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>Current planetary positions and their aspects to your natal chart.</div>
         </div>
         <div style={{ ...CARD_BASE, padding: 20, cursor: 'pointer' }} onClick={() => setActiveDetail(visibleWidgets[1])}>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--gold)', letterSpacing: '.1em', marginBottom: 8 }}>QUICK INSIGHT</div>
-          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>{WIDGET_META[visibleWidgets[1]]?.label} &mdash; {WIDGET_META[visibleWidgets[1]]?.sub}</div>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--foreground)', letterSpacing: '.1em', marginBottom: 8 }}>QUICK INSIGHT</div>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>{WIDGET_META[visibleWidgets[1]]?.label} &mdash; {WIDGET_META[visibleWidgets[1]]?.sub}</div>
         </div>
       </div>
     </div>
@@ -1323,13 +1323,13 @@ export default function Dashboard() {
           display: 'flex', flexDirection: 'column', animation: 'fadeUp .35s ease backwards',
         }}>
           <div style={{
-            padding: '10px 18px 8px', borderBottom: '1px solid rgba(201,168,76,.08)',
+            padding: '10px 18px 8px', borderBottom: '1px solid var(--accent)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
           }}>
-            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--gold)' }}>{title}</span>
+            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--foreground)' }}>{title}</span>
             <div onClick={() => setActiveDetail(null)} style={{
-              padding: '4px 14px', borderRadius: 8, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
-              fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--gold2)', cursor: 'pointer', transition: 'all .2s',
+              padding: '4px 14px', borderRadius: 8, background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
+              fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--foreground)', cursor: 'pointer', transition: 'all .2s',
             }}>Back to Dashboard</div>
           </div>
           <div style={{ flex: 1, overflow: 'auto' }}>

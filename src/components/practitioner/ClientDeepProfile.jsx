@@ -14,13 +14,13 @@ const s = {
     height: '100%',
     overflow: 'auto',
     fontFamily: "'Cormorant Garamond',serif",
-    color: 'var(--text)',
+    color: 'var(--foreground)',
     display: 'flex',
     flexDirection: 'column',
   },
   header: {
     padding: '20px 24px 0',
-    borderBottom: '1px solid rgba(201,168,76,.1)',
+    borderBottom: '1px solid var(--accent)',
     flexShrink: 0,
   },
   headerTop: {
@@ -33,12 +33,12 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '20px',
     letterSpacing: '.12em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     marginBottom: '4px',
   },
   clientMeta: {
     fontSize: '12px',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     letterSpacing: '.04em',
   },
   badge: {
@@ -47,9 +47,9 @@ const s = {
     borderRadius: '12px',
     fontSize: '10px',
     letterSpacing: '.06em',
-    background: 'rgba(201,168,76,.07)',
-    border: '1px solid rgba(201,168,76,.15)',
-    color: 'var(--gold2)',
+    background: 'var(--secondary)',
+    border: '1px solid var(--accent)',
+    color: 'var(--foreground)',
     fontFamily: "'Cinzel',serif",
   },
   actionBtn: {
@@ -59,8 +59,8 @@ const s = {
     fontFamily: "'Cinzel',serif",
     letterSpacing: '.08em',
     background: 'rgba(201,168,76,.06)',
-    border: '1px solid rgba(201,168,76,.15)',
-    color: 'var(--gold2)',
+    border: '1px solid var(--accent)',
+    color: 'var(--foreground)',
     cursor: 'pointer',
     transition: 'all .2s',
   },
@@ -69,7 +69,7 @@ const s = {
     border: 'none',
     padding: '0 0 10px 0',
     fontSize: '11px',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     cursor: 'pointer',
     display: 'block',
     letterSpacing: '.04em',
@@ -87,8 +87,8 @@ const s = {
     cursor: 'pointer',
     background: 'none',
     border: 'none',
-    borderBottom: active ? '2px solid var(--gold)' : '2px solid transparent',
-    color: active ? 'var(--gold)' : 'var(--text3)',
+    borderBottom: active ? '2px solid var(--foreground)' : '2px solid transparent',
+    color: active ? 'var(--foreground)' : 'var(--muted-foreground)',
     marginBottom: '-1px',
     transition: 'all .2s',
     textTransform: 'uppercase',
@@ -102,7 +102,7 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '11px',
     letterSpacing: '.18em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     marginBottom: '14px',
     textTransform: 'uppercase',
     display: 'flex',
@@ -111,12 +111,12 @@ const s = {
   },
   divider: {
     height: '1px',
-    background: 'linear-gradient(90deg, rgba(201,168,76,.15), transparent)',
+    background: 'linear-gradient(90deg, var(--accent), transparent)',
     margin: '20px 0',
   },
   card: {
-    background: 'rgba(255,255,255,.02)',
-    border: '1px solid rgba(255,255,255,.06)',
+    background: 'var(--secondary)',
+    border: '1px solid var(--border)',
     borderRadius: '12px',
     padding: '16px',
   },
@@ -126,7 +126,7 @@ const s = {
     gap: '10px',
   },
   miniCard: {
-    background: 'rgba(255,255,255,.02)',
+    background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.05)',
     borderRadius: '10px',
     padding: '12px',
@@ -162,7 +162,7 @@ function PatternCard({ pattern }) {
           }}>
             {pattern.name.toUpperCase()}
           </div>
-          <div style={{ fontSize: '11px', color: 'var(--text2)', marginTop: '2px' }}>
+          <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '2px' }}>
             {pattern.description}
           </div>
         </div>
@@ -206,14 +206,14 @@ function PatternCard({ pattern }) {
           background: `${baseColor}0.04)`,
           border: `1px solid ${baseColor}0.1)`,
           fontSize: '12px',
-          color: 'var(--text2)',
+          color: 'var(--muted-foreground)',
           lineHeight: 1.7,
           fontStyle: 'italic',
         }}>
           {pattern.insight}
         </div>
       )}
-      <div style={{ textAlign: 'right', fontSize: '9px', color: 'var(--text3)', marginTop: '4px' }}>
+      <div style={{ textAlign: 'right', fontSize: '9px', color: 'var(--muted-foreground)', marginTop: '4px' }}>
         {expanded ? 'collapse ▲' : 'practitioner insight ▼'}
       </div>
     </div>
@@ -239,9 +239,9 @@ function MiniCard({ label, icon, primary, secondary, tertiary, color = 'rgba(201
       }}>
         {icon} {label}
       </div>
-      <div style={{ fontSize: '15px', color: 'var(--text)', lineHeight: 1.3 }}>{primary || '—'}</div>
-      {secondary && <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '4px' }}>{secondary}</div>}
-      {tertiary && <div style={{ fontSize: '10px', color: 'var(--text3)', marginTop: '2px', opacity: 0.7 }}>{tertiary}</div>}
+      <div style={{ fontSize: '15px', color: 'var(--foreground)', lineHeight: 1.3 }}>{primary || '—'}</div>
+      {secondary && <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '4px' }}>{secondary}</div>}
+      {tertiary && <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', marginTop: '2px', opacity: 0.7 }}>{tertiary}</div>}
     </div>
   )
 }
@@ -251,7 +251,7 @@ function MiniCard({ label, icon, primary, secondary, tertiary, color = 'rgba(201
 function SessionTimeline({ sessions = [] }) {
   if (!sessions.length) {
     return (
-      <div style={{ ...s.card, textAlign: 'center', padding: '40px', color: 'var(--text3)', fontSize: '13px' }}>
+      <div style={{ ...s.card, textAlign: 'center', padding: '40px', color: 'var(--muted-foreground)', fontSize: '13px' }}>
         <div style={{ fontSize: '32px', marginBottom: '12px' }}>📅</div>
         No sessions recorded yet.
       </div>
@@ -266,7 +266,7 @@ function SessionTimeline({ sessions = [] }) {
         top: '8px',
         bottom: '8px',
         width: '1px',
-        background: 'linear-gradient(180deg, rgba(201,168,76,.3), rgba(201,168,76,.05))',
+        background: 'linear-gradient(180deg, rgba(201,168,76,.3), var(--secondary))',
       }} />
       <div style={{ paddingLeft: '46px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
         {[...sessions].reverse().map((session, i) => (
@@ -278,20 +278,20 @@ function SessionTimeline({ sessions = [] }) {
               width: '11px',
               height: '11px',
               borderRadius: '50%',
-              background: 'var(--gold)',
+              background: 'var(--foreground)',
               border: '2px solid rgba(201,168,76,.3)',
               boxShadow: '0 0 8px rgba(201,168,76,.3)',
             }} />
             <div style={s.card}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--text)', letterSpacing: '.06em' }}>
+                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--foreground)', letterSpacing: '.06em' }}>
                   Session #{sessions.length - i}
                 </div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)' }}>
+                <div style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>
                   {session.date} {session.duration ? `· ${session.duration} min` : ''}
                 </div>
               </div>
-              <div style={{ fontSize: '12px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '10px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', lineHeight: 1.6, marginBottom: '10px' }}>
                 {session.notes || session.summary}
               </div>
               {session.frameworks && session.frameworks.length > 0 && (
@@ -311,18 +311,18 @@ function SessionTimeline({ sessions = [] }) {
                 </div>
               )}
               {session.actionItems && session.actionItems.length > 0 && (
-                <div style={{ borderTop: '1px solid rgba(255,255,255,.04)', paddingTop: '8px' }}>
+                <div style={{ borderTop: '1px solid var(--secondary)', paddingTop: '8px' }}>
                   {session.actionItems.map((item, j) => (
                     <div key={j} style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '7px',
                       fontSize: '11px',
-                      color: item.done ? 'var(--text3)' : 'var(--text2)',
+                      color: item.done ? 'var(--muted-foreground)' : 'var(--muted-foreground)',
                       textDecoration: item.done ? 'line-through' : 'none',
                       padding: '2px 0',
                     }}>
-                      <span style={{ color: item.done ? '#7bc043' : 'var(--text3)', fontSize: '11px' }}>
+                      <span style={{ color: item.done ? '#7bc043' : 'var(--muted-foreground)', fontSize: '11px' }}>
                         {item.done ? '✓' : '○'}
                       </span>
                       {item.text}
@@ -344,11 +344,11 @@ function FamilyTab({ client }) {
   return (
     <div>
       <div style={s.sectionTitle}><span>🌳</span> Family Constellation</div>
-      <div style={{ ...s.card, marginBottom: '16px', fontSize: '12px', color: 'var(--text2)', lineHeight: 1.7 }}>
+      <div style={{ ...s.card, marginBottom: '16px', fontSize: '12px', color: 'var(--muted-foreground)', lineHeight: 1.7 }}>
         Family constellation mapping reveals inherited patterns, ancestral wounds, and relational dynamics.
         Cross-reference natal 4th/8th house, HD definition patterns, Gene Keys Purpose sphere, and karmic numbers.
       </div>
-      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text3)', fontSize: '13px' }}>
+      <div style={{ textAlign: 'center', padding: '40px', color: 'var(--muted-foreground)', fontSize: '13px' }}>
         <div style={{ fontSize: '40px', marginBottom: '12px' }}>🌳</div>
         Open the Family Constellation panel to map this client's family system.
         <br />
@@ -414,7 +414,7 @@ function BlueprintOverview({ fullProfile, client }) {
       {/* Patterns */}
       <div style={s.sectionTitle}><span>🔮</span> Cross-System Pattern Analysis</div>
       {patterns.length === 0 ? (
-        <div style={{ ...s.card, textAlign: 'center', padding: '28px', color: 'var(--text3)', fontSize: '12px' }}>
+        <div style={{ ...s.card, textAlign: 'center', padding: '28px', color: 'var(--muted-foreground)', fontSize: '12px' }}>
           <div style={{ fontSize: '28px', marginBottom: '8px' }}>🔍</div>
           No strong patterns detected yet.
           Add birth time, MBTI, and Enneagram type to improve pattern detection.
@@ -553,7 +553,7 @@ export default function ClientDeepProfile({ client, sessions = [], onBack }) {
 
   if (!client) {
     return (
-      <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text3)' }}>
+      <div style={{ padding: '40px', textAlign: 'center', color: 'var(--muted-foreground)' }}>
         No client selected.
       </div>
     )

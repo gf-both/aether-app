@@ -12,7 +12,7 @@ const ZONES = [
     ],
   },
   {
-    id: 'third', label: 'Third Eye Center', icon: '\u25CE', color: 'var(--silver2)',
+    id: 'third', label: 'Third Eye Center', icon: '\u25CE', color: 'var(--muted-foreground)',
     colBase: 'rgba(100,120,220,',
     systems: [
       { framework: 'Enneagram', value: null, desc: 'Your core personality type reveals how you perceive and interact with reality at the deepest level.' },
@@ -30,7 +30,7 @@ const ZONES = [
     ],
   },
   {
-    id: 'heart', label: 'Heart Center', icon: '\u2609', color: 'var(--gold)',
+    id: 'heart', label: 'Heart Center', icon: '\u2609', color: 'var(--foreground)',
     colBase: 'rgba(201,168,76,',
     systems: [
       { framework: 'Astrology', value: null, desc: 'Your Sun sign represents your core identity, life force, and the central organizing principle of your psyche.' },
@@ -39,7 +39,7 @@ const ZONES = [
     ],
   },
   {
-    id: 'solar', label: 'Solar Plexus Center', icon: '\u2642', color: 'var(--gold2)',
+    id: 'solar', label: 'Solar Plexus Center', icon: '\u2642', color: 'var(--foreground)',
     colBase: 'rgba(240,192,64,',
     systems: [
       { framework: 'Human Design', value: null, desc: 'Your Definition type reveals how energy flows through your bodygraph and how you process experience.' },
@@ -72,35 +72,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -109,9 +109,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -164,7 +164,7 @@ export default function IntegralDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u25CE'} Integral Consciousness Map</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           A diagnostic scan of your consciousness -- all systems unified through the body
         </div>
       </div>
@@ -212,7 +212,7 @@ export default function IntegralDetail() {
                         ...S.mono, color: z.color, fontSize: 13,
                       }}>{sys.value}</span>
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>
+                    <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
                       {sys.desc}
                     </div>
                   </div>
@@ -227,16 +227,16 @@ export default function IntegralDetail() {
       <div>
         <div style={S.sectionTitle}>Integration Analysis</div>
         <div style={S.interpretation}>
-          Your Integral Consciousness Map reveals a <span style={{ color: 'var(--gold)' }}>strongly activated central channel</span> --
+          Your Integral Consciousness Map reveals a <span style={{ color: 'var(--foreground)' }}>strongly activated central channel</span> --
           the crown-to-root spine of awareness is fully lit, indicating a soul path focused on
           embodied integration. The <span style={{ color: 'var(--aqua2)' }}>{profile.hdType || '?'} strategy</span> operates
           through the throat center, while your <span style={{ color: 'var(--violet2)' }}>Life Path {profile.lifePath || '?'}</span> provides
-          the crown directive. The heart center, ruled by your <span style={{ color: 'var(--gold)' }}>{profile.sign || '?'} Sun</span> and
+          the crown directive. The heart center, ruled by your <span style={{ color: 'var(--foreground)' }}>{profile.sign || '?'} Sun</span> and
           aligned with Tiphareth, is the great integrator -- all systems converge here.
           Your <span style={{ color: 'var(--rose2)' }}>{profile.moon || '?'} Moon</span> anchors the sacral center,
           giving emotional depth to the {profile.hdDef || '?'} definition pattern of your bodygraph.
           The task is not to master each system separately, but to feel how they all describe
-          <span style={{ color: 'var(--gold2)' }}> one unified field of consciousness</span> -- yours.
+          <span style={{ color: 'var(--foreground)' }}> one unified field of consciousness</span> -- yours.
         </div>
       </div>
     </div>

@@ -10,8 +10,8 @@ export const THEMES = [
     name: 'Cosmic Void',
     desc: 'Deep space observatory',
     emoji: '🌑',
-    night: { bg: '#01010a', accent: '#c9a84c', text: '#e8e0d0', card: 'rgba(201,168,76,0.1)' },
-    day:   { bg: '#0f0820', accent: '#d4a547', text: '#f0ece4', card: 'rgba(201,168,76,0.15)' },
+    night: { bg: '#01010a', accent: '#c9a84c', text: '#e8e0d0', card: 'var(--accent)' },
+    day:   { bg: '#0f0820', accent: '#d4a547', text: '#f0ece4', card: 'var(--accent)' },
   },
   {
     id: 'parchment',
@@ -35,7 +35,7 @@ export const THEMES = [
     desc: 'Immersive cosmic depths',
     emoji: '🌌',
     night: { bg: '#08060f', accent: '#ffb830', text: '#e8dcc8', card: 'rgba(201,168,76,0.06)' },
-    day:   { bg: '#0d0b1a', accent: '#c9a84c', text: '#e8dcc8', card: 'rgba(201,168,76,0.08)' },
+    day:   { bg: '#0d0b1a', accent: '#c9a84c', text: '#e8dcc8', card: 'var(--accent)' },
   },
   {
     id: 'manuscript',
@@ -69,7 +69,7 @@ export default function ThemePicker({ onClose }) {
     }}>
       <div style={{
         fontFamily: "'Cinzel',serif",
-        fontSize: 11, letterSpacing: '.22em', color: 'var(--gold)',
+        fontSize: 11, letterSpacing: '.22em', color: 'var(--foreground)',
         textAlign: 'center', marginBottom: 20, textTransform: 'uppercase',
       }}>
         ✦ Select Theme ✦
@@ -79,7 +79,7 @@ export default function ThemePicker({ onClose }) {
           <div key={t.id}>
             <div style={{
               fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.12em',
-              color: 'var(--text2)', textAlign: 'center', marginBottom: 8,
+              color: 'var(--muted-foreground)', textAlign: 'center', marginBottom: 8,
               textTransform: 'uppercase',
             }}>
               {t.emoji} {t.name}
@@ -140,7 +140,7 @@ export default function ThemePicker({ onClose }) {
               })}
             </div>
             <div style={{
-              fontSize: 7.5, color: 'var(--text3)', textAlign: 'center',
+              fontSize: 7.5, color: 'var(--muted-foreground)', textAlign: 'center',
               marginTop: 5, fontStyle: 'italic',
             }}>
               {t.desc}

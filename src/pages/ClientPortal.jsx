@@ -42,7 +42,7 @@ const st = {
   },
   sectionTitle: {
     fontFamily: "'Cinzel',serif", fontSize: '13px', letterSpacing: '.2em',
-    color: 'var(--gold)', marginBottom: '16px', textTransform: 'uppercase',
+    color: 'var(--foreground)', marginBottom: '16px', textTransform: 'uppercase',
     display: 'flex', alignItems: 'center', gap: '10px',
   },
   divider: {
@@ -50,17 +50,17 @@ const st = {
     margin: '28px 0',
   },
   card: {
-    background: 'rgba(255,255,255,.02)', border: '1px solid rgba(255,255,255,.06)',
+    background: 'var(--secondary)', border: '1px solid var(--border)',
     borderRadius: '12px', padding: '16px', transition: 'all .2s',
   },
   profileChip: {
     display: 'inline-flex', alignItems: 'center', gap: '6px',
     padding: '5px 12px', borderRadius: '16px', fontSize: '11px',
-    background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)',
-    color: 'var(--gold)',
+    background: 'rgba(201,168,76,.06)', border: '1px solid var(--accent)',
+    color: 'var(--foreground)',
   },
   checkbox: {
-    width: '14px', height: '14px', accentColor: 'var(--gold)', cursor: 'pointer',
+    width: '14px', height: '14px', accentColor: 'var(--foreground)', cursor: 'pointer',
     flexShrink: 0,
   },
   msgBubble: {
@@ -70,21 +70,21 @@ const st = {
   msgPractitioner: {
     alignSelf: 'flex-start',
     background: 'rgba(64,204,221,.04)', border: '1px solid rgba(64,204,221,.12)',
-    color: 'var(--text)',
+    color: 'var(--foreground)',
   },
   msgClient: {
     alignSelf: 'flex-end',
-    background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)',
-    color: 'var(--text)', textAlign: 'right',
+    background: 'rgba(201,168,76,.06)', border: '1px solid var(--accent)',
+    color: 'var(--foreground)', textAlign: 'right',
   },
   calendarCard: {
-    background: 'rgba(255,255,255,.02)', border: '1px solid rgba(255,255,255,.06)',
+    background: 'var(--secondary)', border: '1px solid var(--border)',
     borderRadius: '12px', padding: '16px', display: 'flex', gap: '16px',
     alignItems: 'center', transition: 'all .2s',
   },
   calDateBox: {
     width: '52px', height: '52px', borderRadius: '10px',
-    background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)',
+    background: 'var(--accent)', border: '1px solid var(--accent)',
     display: 'flex', flexDirection: 'column', alignItems: 'center',
     justifyContent: 'center', flexShrink: 0,
   },
@@ -99,9 +99,9 @@ const st = {
     padding: '12px 0 0',
   },
   textarea: {
-    flex: 1, background: 'rgba(255,255,255,.04)',
+    flex: 1, background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.1)', borderRadius: '12px',
-    padding: '10px 14px', color: 'var(--text)', fontSize: '12px',
+    padding: '10px 14px', color: 'var(--foreground)', fontSize: '12px',
     fontFamily: "'Cormorant Garamond',serif",
     resize: 'none', outline: 'none', minHeight: '42px',
     lineHeight: 1.5, transition: 'border-color .2s',
@@ -110,7 +110,7 @@ const st = {
     width: '42px', height: '42px', borderRadius: '50%',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     cursor: 'pointer', fontSize: '14px', flexShrink: 0,
-    background: 'linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.08))',
+    background: 'linear-gradient(135deg, rgba(201,168,76,.2), var(--accent))',
     border: '1px solid rgba(201,168,76,.3)', transition: 'all .2s',
   },
 }
@@ -159,10 +159,10 @@ export default function ClientPortal() {
     <div style={st.container}>
       {/* Header */}
       <div style={{ marginBottom: '20px' }}>
-        <div style={{ fontFamily: "'Cinzel',serif", fontSize: '18px', letterSpacing: '.15em', color: 'var(--gold)', marginBottom: '4px' }}>
+        <div style={{ fontFamily: "'Cinzel',serif", fontSize: '18px', letterSpacing: '.15em', color: 'var(--foreground)', marginBottom: '4px' }}>
           {'\uD83D\uDCCB'} Client Portal
         </div>
-        <div style={{ fontSize: '12px', color: 'var(--text2)' }}>
+        <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
           Your personal space for sessions, insights, and growth tracking.
         </div>
       </div>
@@ -177,9 +177,9 @@ export default function ClientPortal() {
               padding: '7px 16px', borderRadius: '20px', fontSize: '11px',
               fontFamily: "'Cinzel',serif", letterSpacing: '.06em', cursor: 'pointer',
               transition: 'all .2s',
-              background: activeTab === tab.id ? 'rgba(201,168,76,.12)' : 'rgba(255,255,255,.03)',
-              border: `1px solid ${activeTab === tab.id ? 'rgba(201,168,76,.3)' : 'rgba(255,255,255,.06)'}`,
-              color: activeTab === tab.id ? 'var(--gold)' : 'var(--text2)',
+              background: activeTab === tab.id ? 'var(--accent)' : 'var(--secondary)',
+              border: `1px solid ${activeTab === tab.id ? 'rgba(201,168,76,.3)' : 'var(--border)'}`,
+              color: activeTab === tab.id ? 'var(--foreground)' : 'var(--muted-foreground)',
             }}
           >
             {tab.icon} {tab.label}
@@ -199,17 +199,17 @@ export default function ClientPortal() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
               <div style={{
                 width: '56px', height: '56px', borderRadius: '50%',
-                background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
+                background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '24px',
               }}>
                 {profile.emoji || '\u2652'}
               </div>
               <div>
-                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '16px', color: 'var(--text)', letterSpacing: '.08em' }}>
+                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '16px', color: 'var(--foreground)', letterSpacing: '.08em' }}>
                   {profile.name}
                 </div>
-                <div style={{ fontSize: '12px', color: 'var(--text2)', marginTop: '2px' }}>
+                <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '2px' }}>
                   {profile.dob} &middot; {profile.tob} &middot; {profile.pob}
                 </div>
               </div>
@@ -227,14 +227,14 @@ export default function ClientPortal() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
               <div style={{
                 padding: '12px', borderRadius: '10px',
-                background: 'rgba(201,168,76,.04)', border: '1px solid rgba(201,168,76,.08)',
+                background: 'var(--secondary)', border: '1px solid var(--accent)',
                 textAlign: 'center',
               }}>
-                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: 'var(--gold2)', marginBottom: '4px' }}>
+                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: 'var(--foreground)', marginBottom: '4px' }}>
                   HD TYPE
                 </div>
-                <div style={{ fontSize: '14px', color: 'var(--text)' }}>{profile.hdType}</div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)' }}>{profile.hdAuth} Authority</div>
+                <div style={{ fontSize: '14px', color: 'var(--foreground)' }}>{profile.hdType}</div>
+                <div style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>{profile.hdAuth} Authority</div>
               </div>
               <div style={{
                 padding: '12px', borderRadius: '10px',
@@ -244,8 +244,8 @@ export default function ClientPortal() {
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: 'rgba(64,204,221,.6)', marginBottom: '4px' }}>
                   GENE KEYS
                 </div>
-                <div style={{ fontSize: '14px', color: 'var(--text)' }}>41/31</div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)' }}>Incarnation Cross</div>
+                <div style={{ fontSize: '14px', color: 'var(--foreground)' }}>41/31</div>
+                <div style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>Incarnation Cross</div>
               </div>
               <div style={{
                 padding: '12px', borderRadius: '10px',
@@ -255,34 +255,34 @@ export default function ClientPortal() {
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: 'rgba(144,80,224,.6)', marginBottom: '4px' }}>
                   SESSIONS
                 </div>
-                <div style={{ fontSize: '14px', color: 'var(--text)' }}>{MOCK_SESSION_HISTORY.length}</div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)' }}>Completed</div>
+                <div style={{ fontSize: '14px', color: 'var(--foreground)' }}>{MOCK_SESSION_HISTORY.length}</div>
+                <div style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>Completed</div>
               </div>
             </div>
           </div>
 
           {/* Progress summary */}
           <div style={st.card}>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', letterSpacing: '.1em', color: 'var(--gold2)', marginBottom: '10px' }}>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', letterSpacing: '.1em', color: 'var(--foreground)', marginBottom: '10px' }}>
               GROWTH PROGRESS
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
               <div style={{
                 flex: 1, height: '6px', borderRadius: '3px',
-                background: 'rgba(255,255,255,.06)',
+                background: 'var(--border)',
               }}>
                 <div style={{
                   height: '100%', borderRadius: '3px',
-                  background: 'linear-gradient(90deg, var(--gold), rgba(64,204,221,.8))',
+                  background: 'linear-gradient(90deg, var(--foreground), rgba(64,204,221,.8))',
                   width: `${(completedTodos / totalTodos) * 100}%`,
                   transition: 'width .3s',
                 }} />
               </div>
-              <span style={{ fontSize: '11px', color: 'var(--text2)', fontFamily: "'Inconsolata',monospace" }}>
+              <span style={{ fontSize: '11px', color: 'var(--muted-foreground)', fontFamily: "'Inconsolata',monospace" }}>
                 {completedTodos}/{totalTodos}
               </span>
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--text2)' }}>
+            <div style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>
               {completedTodos} of {totalTodos} to-dos completed. Keep up the inner work!
             </div>
           </div>
@@ -302,26 +302,26 @@ export default function ClientPortal() {
                 <div key={session.id} style={st.card}>
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                     <div style={st.calDateBox}>
-                      <div style={{ fontFamily: "'Cinzel',serif", fontSize: '8px', letterSpacing: '.1em', color: 'var(--gold2)' }}>
+                      <div style={{ fontFamily: "'Cinzel',serif", fontSize: '8px', letterSpacing: '.1em', color: 'var(--foreground)' }}>
                         {d.month.toUpperCase()}
                       </div>
-                      <div style={{ fontFamily: "'Cinzel',serif", fontSize: '18px', color: 'var(--gold)', lineHeight: 1 }}>
+                      <div style={{ fontFamily: "'Cinzel',serif", fontSize: '18px', color: 'var(--foreground)', lineHeight: 1 }}>
                         {d.day}
                       </div>
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <span style={{ fontFamily: "'Cinzel',serif", fontSize: '12px', color: 'var(--text)', letterSpacing: '.06em' }}>
+                        <span style={{ fontFamily: "'Cinzel',serif", fontSize: '12px', color: 'var(--foreground)', letterSpacing: '.06em' }}>
                           {session.type}
                         </span>
-                        <span style={{ fontSize: '10px', color: 'var(--text3)', fontFamily: "'Inconsolata',monospace" }}>
+                        <span style={{ fontSize: '10px', color: 'var(--muted-foreground)', fontFamily: "'Inconsolata',monospace" }}>
                           {session.duration}
                         </span>
                       </div>
-                      <div style={{ fontSize: '10px', color: 'var(--text3)', marginBottom: '8px' }}>
+                      <div style={{ fontSize: '10px', color: 'var(--muted-foreground)', marginBottom: '8px' }}>
                         with {session.practitioner}
                       </div>
-                      <div style={{ fontSize: '12px', color: 'var(--text2)', lineHeight: 1.6, marginBottom: '10px' }}>
+                      <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', lineHeight: 1.6, marginBottom: '10px' }}>
                         {session.summary}
                       </div>
                       <div>
@@ -344,7 +344,7 @@ export default function ClientPortal() {
           <div style={st.sectionTitle}>
             <span>{'\u2611'}</span> My To-Dos &amp; Next Steps
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text2)', marginBottom: '16px' }}>
+          <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginBottom: '16px' }}>
             Tasks and practices assigned by your practitioner. Check them off as you complete them.
           </div>
 
@@ -353,7 +353,7 @@ export default function ClientPortal() {
             {todos.filter((t) => !t.done).map((todo) => (
               <div key={todo.id} style={{
                 display: 'flex', alignItems: 'flex-start', gap: '10px',
-                padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,.04)',
+                padding: '10px 0', borderBottom: '1px solid var(--secondary)',
               }}>
                 <input
                   type="checkbox"
@@ -362,10 +362,10 @@ export default function ClientPortal() {
                   style={st.checkbox}
                 />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '12px', color: 'var(--text)', lineHeight: 1.5 }}>
+                  <div style={{ fontSize: '12px', color: 'var(--foreground)', lineHeight: 1.5 }}>
                     {todo.text}
                   </div>
-                  <div style={{ fontSize: '9px', color: 'var(--text3)', marginTop: '2px' }}>
+                  <div style={{ fontSize: '9px', color: 'var(--muted-foreground)', marginTop: '2px' }}>
                     From session: {todo.fromSession}
                   </div>
                 </div>
@@ -375,13 +375,13 @@ export default function ClientPortal() {
             {/* Completed items */}
             {todos.filter((t) => t.done).length > 0 && (
               <div style={{ marginTop: '12px' }}>
-                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: 'var(--text3)', marginBottom: '8px' }}>
+                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: 'var(--muted-foreground)', marginBottom: '8px' }}>
                   COMPLETED
                 </div>
                 {todos.filter((t) => t.done).map((todo) => (
                   <div key={todo.id} style={{
                     display: 'flex', alignItems: 'flex-start', gap: '10px',
-                    padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,.02)',
+                    padding: '8px 0', borderBottom: '1px solid var(--secondary)',
                     opacity: 0.5,
                   }}>
                     <input
@@ -391,7 +391,7 @@ export default function ClientPortal() {
                       style={st.checkbox}
                     />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '12px', color: 'var(--text2)', lineHeight: 1.5, textDecoration: 'line-through' }}>
+                      <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', lineHeight: 1.5, textDecoration: 'line-through' }}>
                         {todo.text}
                       </div>
                     </div>
@@ -415,26 +415,26 @@ export default function ClientPortal() {
               return (
                 <div key={session.id} style={st.calendarCard}>
                   <div style={st.calDateBox}>
-                    <div style={{ fontFamily: "'Cinzel',serif", fontSize: '8px', letterSpacing: '.1em', color: 'var(--gold2)' }}>
+                    <div style={{ fontFamily: "'Cinzel',serif", fontSize: '8px', letterSpacing: '.1em', color: 'var(--foreground)' }}>
                       {d.month.toUpperCase()}
                     </div>
-                    <div style={{ fontFamily: "'Cinzel',serif", fontSize: '18px', color: 'var(--gold)', lineHeight: 1 }}>
+                    <div style={{ fontFamily: "'Cinzel',serif", fontSize: '18px', color: 'var(--foreground)', lineHeight: 1 }}>
                       {d.day}
                     </div>
                   </div>
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: "'Cinzel',serif", fontSize: '12px', color: 'var(--text)', letterSpacing: '.06em', marginBottom: '4px' }}>
+                    <div style={{ fontFamily: "'Cinzel',serif", fontSize: '12px', color: 'var(--foreground)', letterSpacing: '.06em', marginBottom: '4px' }}>
                       {session.type}
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--text2)' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>
                       {session.time} &middot; {session.duration} &middot; with {session.practitioner}
                     </div>
                   </div>
                   <div style={{
                     padding: '6px 14px', borderRadius: '8px',
-                    background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)',
+                    background: 'rgba(201,168,76,.06)', border: '1px solid var(--accent)',
                     fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.08em',
-                    color: 'var(--gold2)', cursor: 'pointer', transition: 'all .2s',
+                    color: 'var(--foreground)', cursor: 'pointer', transition: 'all .2s',
                   }}>
                     Reschedule
                   </div>
@@ -449,10 +449,10 @@ export default function ClientPortal() {
             padding: '32px', opacity: 0.5,
           }}>
             <div style={{ fontSize: '32px', marginBottom: '8px' }}>{'\uD83D\uDCC5'}</div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '12px', letterSpacing: '.1em', color: 'var(--gold2)', marginBottom: '4px' }}>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '12px', letterSpacing: '.1em', color: 'var(--foreground)', marginBottom: '4px' }}>
               Full Calendar View
             </div>
-            <div style={{ fontSize: '11px', color: 'var(--text3)' }}>
+            <div style={{ fontSize: '11px', color: 'var(--muted-foreground)' }}>
               Coming soon &mdash; interactive calendar with session scheduling
             </div>
           </div>
@@ -472,7 +472,7 @@ export default function ClientPortal() {
           }}>
             {/* Message header */}
             <div style={{
-              padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,.06)',
+              padding: '12px 16px', borderBottom: '1px solid var(--border)',
               display: 'flex', alignItems: 'center', gap: '10px',
             }}>
               <div style={{
@@ -484,10 +484,10 @@ export default function ClientPortal() {
                 {'\u2726'}
               </div>
               <div>
-                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '11px', color: 'var(--text)', letterSpacing: '.06em' }}>
+                <div style={{ fontFamily: "'Cinzel',serif", fontSize: '11px', color: 'var(--foreground)', letterSpacing: '.06em' }}>
                   Above Inside Guide
                 </div>
-                <div style={{ fontSize: '10px', color: 'var(--text3)' }}>Your practitioner</div>
+                <div style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>Your practitioner</div>
               </div>
             </div>
 
@@ -516,7 +516,7 @@ export default function ClientPortal() {
             </div>
 
             {/* Input */}
-            <div style={{ ...st.inputBar, padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,.06)' }}>
+            <div style={{ ...st.inputBar, padding: '12px 16px', borderTop: '1px solid var(--border)' }}>
               <textarea
                 style={st.textarea}
                 placeholder="Write a message..."

@@ -96,35 +96,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -133,9 +133,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -165,11 +165,11 @@ function NumCircle({ val, color, size = 54, label, sub }) {
       {label && (
         <div style={{
           fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.12em',
-          textTransform: 'uppercase', color: 'var(--text3)', textAlign: 'center',
+          textTransform: 'uppercase', color: 'var(--muted-foreground)', textAlign: 'center',
         }}>{label}</div>
       )}
       {sub && (
-        <div style={{ fontSize: 11, color: 'var(--text2)', textAlign: 'center', fontStyle: 'italic', maxWidth: 120 }}>
+        <div style={{ fontSize: 11, color: 'var(--muted-foreground)', textAlign: 'center', fontStyle: 'italic', maxWidth: 120 }}>
           {sub}
         </div>
       )}
@@ -186,7 +186,7 @@ export default function GematriaDetail() {
       {/* 1. HEADER */}
       <div>
         <div style={S.heading}>{'\u05D0'} Gematria</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Name numerology -- Hebrew, Pythagorean, Chaldean, and English ordinal analysis
         </div>
         <div style={{
@@ -196,7 +196,7 @@ export default function GematriaDetail() {
           <div style={{ flex: 1 }}>
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 16, letterSpacing: '.12em',
-              color: 'var(--gold)', marginBottom: 4,
+              color: 'var(--foreground)', marginBottom: 4,
             }}>
               {P.fullName}
             </div>
@@ -204,7 +204,7 @@ export default function GematriaDetail() {
               {P.firstName} ({P.hebrew.firstNameValue}) + {P.lastName} ({P.hebrew.lastNameValue}) = {P.hebrew.fullValue}
             </div>
             <div style={{
-              ...S.monoSm, color: 'var(--text3)', marginTop: 2,
+              ...S.monoSm, color: 'var(--muted-foreground)', marginTop: 2,
             }}>
               Reduced: {P.hebrew.fullValue} {'\u2192'} {P.hebrew.reducedValue}
             </div>
@@ -226,8 +226,8 @@ export default function GematriaDetail() {
                   <th key={h} style={{
                     padding: '8px 10px', textAlign: 'left',
                     fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
-                    textTransform: 'uppercase', color: 'var(--text3)',
-                    borderBottom: '1px solid rgba(201,168,76,.1)',
+                    textTransform: 'uppercase', color: 'var(--muted-foreground)',
+                    borderBottom: '1px solid var(--accent)',
                   }}>{h}</th>
                 ))}
               </tr>
@@ -246,11 +246,11 @@ export default function GematriaDetail() {
                     padding: '8px 10px', color: m.color,
                     fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.08em',
                   }}>{m.name}</td>
-                  <td style={{ padding: '8px 10px', color: 'var(--text)' }}>
+                  <td style={{ padding: '8px 10px', color: 'var(--foreground)' }}>
                     <span style={{ color: m.color, fontWeight: 600 }}>{m.d.fullValue}</span>
                   </td>
-                  <td style={{ padding: '8px 10px', color: 'var(--text2)' }}>{m.d.firstNameValue}</td>
-                  <td style={{ padding: '8px 10px', color: 'var(--text2)' }}>{m.d.lastNameValue}</td>
+                  <td style={{ padding: '8px 10px', color: 'var(--muted-foreground)' }}>{m.d.firstNameValue}</td>
+                  <td style={{ padding: '8px 10px', color: 'var(--muted-foreground)' }}>{m.d.lastNameValue}</td>
                   <td style={{ padding: '8px 10px' }}>
                     <span style={S.badge(m.color + '14', m.color + '30', m.color)}>
                       {m.d.reducedValue}
@@ -265,14 +265,14 @@ export default function GematriaDetail() {
           {GEMATRIA_METHODS.map((m, i) => (
             <div key={i} style={{
               flex: '1 1 200px', padding: '8px 12px', borderRadius: 8,
-              background: 'rgba(255,255,255,.015)', border: '1px solid rgba(255,255,255,.04)',
+              background: 'rgba(255,255,255,.015)', border: '1px solid var(--secondary)',
             }}>
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em',
-                color: METHOD_COLORS[m.name] || 'var(--gold)', marginBottom: 4,
+                color: METHOD_COLORS[m.name] || 'var(--foreground)', marginBottom: 4,
                 textTransform: 'uppercase',
               }}>{m.name}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+              <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                 {m.description}
               </div>
             </div>
@@ -294,8 +294,8 @@ export default function GematriaDetail() {
                   <th key={i} style={{
                     padding: '6px 8px', textAlign: i < 2 ? 'center' : 'left',
                     fontFamily: "'Cinzel', serif", fontSize: 7, letterSpacing: '.12em',
-                    textTransform: 'uppercase', color: 'var(--text3)',
-                    borderBottom: '1px solid rgba(201,168,76,.1)',
+                    textTransform: 'uppercase', color: 'var(--muted-foreground)',
+                    borderBottom: '1px solid var(--accent)',
                   }}>{h}</th>
                 ))}
               </tr>
@@ -306,18 +306,18 @@ export default function GematriaDetail() {
                 return (
                   <tr key={i} style={{
                     background: i % 2 === 0 ? 'rgba(255,255,255,.015)' : 'transparent',
-                    borderTop: isFirstOfLast ? '1px solid rgba(201,168,76,.15)' : 'none',
+                    borderTop: isFirstOfLast ? '1px solid var(--accent)' : 'none',
                   }}>
-                    <td style={{ padding: '5px 8px', textAlign: 'center', color: 'var(--text3)', fontSize: 9 }}>
+                    <td style={{ padding: '5px 8px', textAlign: 'center', color: 'var(--muted-foreground)', fontSize: 9 }}>
                       {i + 1}
                     </td>
                     <td style={{
                       padding: '5px 8px', textAlign: 'center',
-                      fontFamily: "'Cinzel', serif", fontSize: 13, color: 'var(--gold)',
+                      fontFamily: "'Cinzel', serif", fontSize: 13, color: 'var(--foreground)',
                     }}>
                       {b.letter}
                     </td>
-                    <td style={{ padding: '5px 8px', fontSize: 10, color: 'var(--text2)' }}>
+                    <td style={{ padding: '5px 8px', fontSize: 10, color: 'var(--muted-foreground)' }}>
                       {b.hebrewEquiv}
                     </td>
                     <td style={{ padding: '5px 8px', fontSize: 14 }}>
@@ -341,12 +341,12 @@ export default function GematriaDetail() {
               {/* Totals row */}
               <tr style={{
                 borderTop: '1px solid rgba(201,168,76,.2)',
-                background: 'rgba(201,168,76,.04)',
+                background: 'var(--secondary)',
               }}>
                 <td colSpan={4} style={{
                   padding: '6px 8px',
                   fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em',
-                  color: 'var(--gold)', textTransform: 'uppercase',
+                  color: 'var(--foreground)', textTransform: 'uppercase',
                 }}>Total</td>
                 <td style={{ padding: '6px 8px', color: METHOD_COLORS.Hebrew, fontWeight: 600 }}>
                   {P.hebrew.fullValue}
@@ -376,14 +376,14 @@ export default function GematriaDetail() {
           }}>
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
-              textTransform: 'uppercase', color: 'var(--text3)',
+              textTransform: 'uppercase', color: 'var(--muted-foreground)',
             }}>Name Number</div>
             <NumCircle val={P.pythagorean.nameNumber} color="#40ccdd" size={56} />
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em',
               color: '#40ccdd',
             }}>The Initiator</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
               {P.pythagorean.fullValue} {'\u2192'} {P.pythagorean.nameNumber} -- Leadership, independence, original creation
             </div>
           </div>
@@ -395,14 +395,14 @@ export default function GematriaDetail() {
           }}>
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
-              textTransform: 'uppercase', color: 'var(--text3)',
+              textTransform: 'uppercase', color: 'var(--muted-foreground)',
             }}>Soul Urge (Vowels)</div>
             <NumCircle val={P.pythagorean.vowelNumber} color="#d43070" size={56} />
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em',
               color: '#d43070',
             }}>The Communicator</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
               {P.pythagorean.rawVowelSum} {'\u2192'} {P.pythagorean.vowelNumber} -- Self-expression, creativity, artistic joy
             </div>
           </div>
@@ -414,14 +414,14 @@ export default function GematriaDetail() {
           }}>
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
-              textTransform: 'uppercase', color: 'var(--text3)',
+              textTransform: 'uppercase', color: 'var(--muted-foreground)',
             }}>Personality (Consonants)</div>
             <NumCircle val={P.pythagorean.consonantNumber} color="#9050e0" size={56} />
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em',
               color: 'var(--violet2)',
             }}>The Seeker</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
               {P.pythagorean.rawConsonantSum} {'\u2192'} {P.pythagorean.consonantNumber} -- Analysis, depth, spiritual inquiry
             </div>
           </div>
@@ -430,14 +430,14 @@ export default function GematriaDetail() {
         {P.pythagorean.firstNameValue === 22 && (
           <div style={{
             marginTop: 12, padding: '10px 14px', borderRadius: 8,
-            background: 'rgba(201,168,76,.05)', border: '1px solid rgba(201,168,76,.15)',
+            background: 'var(--secondary)', border: '1px solid var(--accent)',
           }}>
             <span style={{
               fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em',
-              color: 'var(--gold)', textTransform: 'uppercase',
+              color: 'var(--foreground)', textTransform: 'uppercase',
             }}>Master Number Alert: </span>
-            <span style={{ fontSize: 12, color: 'var(--text2)', fontStyle: 'italic' }}>
-              First name "{P.firstName}" sums to <span style={{ color: 'var(--gold)' }}>22</span> (Master Builder) in Pythagorean gematria.
+            <span style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
+              First name "{P.firstName}" sums to <span style={{ color: 'var(--foreground)' }}>22</span> (Master Builder) in Pythagorean gematria.
               This is not reduced -- it vibrates at the frequency of sacred architecture, the 22 Hebrew letters, and the 22 paths of the Tree of Life.
             </span>
           </div>
@@ -462,29 +462,29 @@ export default function GematriaDetail() {
               return (
                 <div key={i} style={{
                   ...S.row, flexDirection: 'column', alignItems: 'stretch', gap: 6, padding: '12px 16px',
-                  borderColor: `rgba(201,168,76,.1)`, background: 'rgba(201,168,76,.02)',
+                  borderColor: `var(--accent)`, background: 'rgba(201,168,76,.02)',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <span style={{
-                      fontSize: 24, minWidth: 36, textAlign: 'center', color: 'var(--gold)',
+                      fontSize: 24, minWidth: 36, textAlign: 'center', color: 'var(--foreground)',
                     }}>{hebrewEntry.hebrew}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <span style={{
                           fontFamily: "'Cinzel', serif", fontSize: 13, letterSpacing: '.1em',
-                          color: 'var(--gold)',
+                          color: 'var(--foreground)',
                         }}>{hebrewEntry.letter}</span>
                         <span style={{
                           fontFamily: "'Inconsolata', monospace", fontSize: 11,
-                          color: 'var(--text3)',
+                          color: 'var(--muted-foreground)',
                         }}>= {hebrewEntry.value}</span>
-                        <span style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.18)', 'var(--gold)')}>
+                        <span style={S.badge('var(--accent)', 'rgba(201,168,76,.18)', 'var(--foreground)')}>
                           {nameLetters.join(', ')}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5, paddingLeft: 48 }}>
+                  <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5, paddingLeft: 48 }}>
                     {hebrewEntry.meaning}
                   </div>
                 </div>
@@ -517,7 +517,7 @@ export default function GematriaDetail() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                     {s.matches.map((m, j) => (
                       <div key={j} style={{
-                        fontSize: 12, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.4,
+                        fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4,
                         paddingLeft: 10, borderLeft: `2px solid ${color}22`,
                       }}>
                         {m}
@@ -538,19 +538,19 @@ export default function GematriaDetail() {
           {P.kabbalisticCorrespondences.map((k, i) => (
             <div key={i} style={S.row}>
               <span style={{
-                fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--gold)',
+                fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--foreground)',
                 width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: 8, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)',
+                borderRadius: 8, background: 'var(--accent)', border: '1px solid var(--accent)',
                 flexShrink: 0,
               }}>{k.path.includes('\u05D0') ? '\u05D0' : k.path.includes('\u05D2') ? '\u05D2' : k.path.includes('\u05EA') ? '\u05EA' : k.path.includes('\u05E8') ? '\u05E8' : k.path.includes('\u05E4') ? '\u05E4' : '\u2721'}</span>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{
                     fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.08em',
-                    color: 'var(--gold)',
+                    color: 'var(--foreground)',
                   }}>{k.path}</span>
                 </div>
-                <span style={{ ...S.monoSm, color: 'var(--text3)', fontSize: 10 }}>
+                <span style={{ ...S.monoSm, color: 'var(--muted-foreground)', fontSize: 10 }}>
                   {k.connection}
                 </span>
                 {k.tarot && (
@@ -559,7 +559,7 @@ export default function GematriaDetail() {
                     alignSelf: 'flex-start', marginTop: 2,
                   }}>{k.tarot}</span>
                 )}
-                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5, marginTop: 4 }}>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5, marginTop: 4 }}>
                   {k.meaning}
                 </div>
               </div>
@@ -582,8 +582,8 @@ export default function GematriaDetail() {
                   <th key={i} style={{
                     padding: '6px 8px', textAlign: i === 0 ? 'center' : 'left',
                     fontFamily: "'Cinzel', serif", fontSize: 7, letterSpacing: '.12em',
-                    textTransform: 'uppercase', color: 'var(--text3)',
-                    borderBottom: '1px solid rgba(201,168,76,.1)',
+                    textTransform: 'uppercase', color: 'var(--muted-foreground)',
+                    borderBottom: '1px solid var(--accent)',
                   }}>{h}</th>
                 ))}
               </tr>
@@ -593,26 +593,26 @@ export default function GematriaDetail() {
                 const inName = P.letterBreakdown.some(b => b.hebrewEquiv === h.letter)
                 return (
                   <tr key={i} style={{
-                    background: inName ? 'rgba(201,168,76,.04)' : (i % 2 === 0 ? 'rgba(255,255,255,.01)' : 'transparent'),
+                    background: inName ? 'var(--secondary)' : (i % 2 === 0 ? 'rgba(255,255,255,.01)' : 'transparent'),
                     borderLeft: inName ? '2px solid rgba(201,168,76,.3)' : '2px solid transparent',
                   }}>
                     <td style={{
                       padding: '5px 8px', textAlign: 'center', fontSize: 16,
-                      color: inName ? 'var(--gold)' : 'var(--text3)',
+                      color: inName ? 'var(--foreground)' : 'var(--muted-foreground)',
                     }}>{h.hebrew}</td>
                     <td style={{
                       padding: '5px 8px',
                       fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.06em',
-                      color: inName ? 'var(--gold)' : 'var(--text2)',
+                      color: inName ? 'var(--foreground)' : 'var(--muted-foreground)',
                     }}>{h.letter}</td>
                     <td style={{
                       padding: '5px 8px',
-                      color: inName ? 'var(--gold)' : 'var(--text2)',
+                      color: inName ? 'var(--foreground)' : 'var(--muted-foreground)',
                       fontWeight: inName ? 600 : 400,
                     }}>{h.value}</td>
                     <td style={{
                       padding: '5px 8px', fontSize: 11,
-                      color: 'var(--text3)', fontStyle: 'italic',
+                      color: 'var(--muted-foreground)', fontStyle: 'italic',
                     }}>{h.meaning}</td>
                   </tr>
                 )
@@ -626,15 +626,15 @@ export default function GematriaDetail() {
       <div>
         <div style={S.sectionTitle}>Gematria Reading</div>
         <div style={S.interpretation}>
-          The name <span style={{ color: 'var(--gold)' }}>Gaston Frydlewski</span> carries a Hebrew gematria
+          The name <span style={{ color: 'var(--foreground)' }}>Gaston Frydlewski</span> carries a Hebrew gematria
           value of <span style={{ color: '#f0c040' }}>{P.hebrew.fullValue}</span>, which reduces to{' '}
           <span style={{ color: '#f0c040' }}>{P.hebrew.reducedValue}</span> -- the number of{' '}
-          <span style={{ color: 'var(--gold)' }}>new beginnings and singular purpose</span>. This
+          <span style={{ color: 'var(--foreground)' }}>new beginnings and singular purpose</span>. This
           is the frequency of Aleph, the first letter, the breath of creation before the word is spoken.
           <br /><br />
           The most striking feature is the first name "<span style={{ color: '#40ccdd' }}>Gaston</span>"
           summing to <span style={{ color: '#40ccdd' }}>22</span> in Pythagorean gematria -- a{' '}
-          <span style={{ color: 'var(--gold)' }}>Master Number</span> never reduced. Twenty-two is the number of
+          <span style={{ color: 'var(--foreground)' }}>Master Number</span> never reduced. Twenty-two is the number of
           the Master Builder: the 22 Hebrew letters through which creation was spoken, the 22 paths of the
           Tree of Life, the 22 Major Arcana of the Tarot. A name that vibrates at 22 carries the blueprint
           of sacred architecture -- the capacity to build structures that bridge heaven and earth.
@@ -648,9 +648,9 @@ export default function GematriaDetail() {
           cuts through illusion to reach the marrow of truth.
           <br /><br />
           The Hebrew letter composition of the name is dominated by high-value letters:{' '}
-          <span style={{ color: 'var(--gold)' }}>Tav (400)</span>,{' '}
-          <span style={{ color: 'var(--gold)' }}>Resh (200)</span>, and{' '}
-          <span style={{ color: 'var(--gold)' }}>Pe (80)</span> -- together representing completion,
+          <span style={{ color: 'var(--foreground)' }}>Tav (400)</span>,{' '}
+          <span style={{ color: 'var(--foreground)' }}>Resh (200)</span>, and{' '}
+          <span style={{ color: 'var(--foreground)' }}>Pe (80)</span> -- together representing completion,
           solar consciousness, and transformative speech. This name is not quiet; it is a name that speaks
           worlds into existence and then has the discipline to build them, brick by brick, letter by letter,
           from the crown of Kether to the kingdom of Malkuth.

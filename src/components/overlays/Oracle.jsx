@@ -106,7 +106,7 @@ export default function Oracle({ open, onClose }) {
       {/* Context chip */}
       <div style={{
         padding: '8px 16px',
-        borderBottom: '1px solid var(--panel-border)',
+        borderBottom: '1px solid var(--border)',
         display: 'flex',
         alignItems: 'center',
         gap: 8,
@@ -115,12 +115,12 @@ export default function Oracle({ open, onClose }) {
         <span style={{
           padding: '3px 10px',
           borderRadius: 12,
-          background: 'var(--interp-bg)',
-          border: '1px solid var(--interp-border)',
+          background: 'var(--accent)',
+          border: '1px solid var(--border)',
           fontSize: 9,
-          fontFamily: "'Cinzel',serif",
+          fontFamily: 'inherit',
           letterSpacing: '.1em',
-          color: 'var(--gold)',
+          color: 'var(--foreground)',
           textTransform: 'uppercase',
         }}>
           {profile?.sign || '♒'} {profile?.name || 'Seeker'}
@@ -128,12 +128,12 @@ export default function Oracle({ open, onClose }) {
         <span style={{
           padding: '3px 10px',
           borderRadius: 12,
-          background: 'var(--interp-bg)',
-          border: '1px solid var(--interp-border)',
+          background: 'var(--accent)',
+          border: '1px solid var(--border)',
           fontSize: 9,
-          fontFamily: "'Cinzel',serif",
+          fontFamily: 'inherit',
           letterSpacing: '.1em',
-          color: 'var(--text2)',
+          color: 'var(--muted-foreground)',
           textTransform: 'uppercase',
         }}>
           {hdType} {hdProfile}
@@ -141,12 +141,12 @@ export default function Oracle({ open, onClose }) {
         <span style={{
           padding: '3px 10px',
           borderRadius: 12,
-          background: 'var(--interp-bg)',
-          border: '1px solid var(--interp-border)',
+          background: 'var(--accent)',
+          border: '1px solid var(--border)',
           fontSize: 9,
-          fontFamily: "'Cinzel',serif",
+          fontFamily: 'inherit',
           letterSpacing: '.1em',
-          color: 'var(--text2)',
+          color: 'var(--muted-foreground)',
           textTransform: 'uppercase',
         }}>
           LP {profile?.lifePath || '7'}

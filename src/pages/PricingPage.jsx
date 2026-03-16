@@ -71,8 +71,8 @@ const S = {
     flexDirection: 'column',
     alignItems: 'center',
     gap: 36,
-    background: 'var(--panel-bg)',
-    color: 'var(--text)',
+    background: 'var(--card)',
+    color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   header: {
@@ -84,13 +84,13 @@ const S = {
     fontSize: 28,
     fontWeight: 600,
     letterSpacing: '.18em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     marginBottom: 12,
     lineHeight: 1.3,
   },
   subtitle: {
     fontSize: 17,
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     lineHeight: 1.6,
     fontStyle: 'italic',
   },
@@ -106,8 +106,8 @@ const S = {
     flex: '1 1 300px',
     maxWidth: 340,
     minWidth: 280,
-    background: 'var(--glass-bg)',
-    border: '1px solid var(--glass-border)',
+    background: 'var(--card)',
+    border: '1px solid var(--border)',
     borderRadius: 18,
     padding: '28px 24px 24px',
     display: 'flex',
@@ -120,7 +120,7 @@ const S = {
   },
   cardHighlight: {
     border: '1px solid rgba(201,168,76,.45)',
-    boxShadow: '0 0 40px rgba(201,168,76,.08), inset 0 1px 0 rgba(201,168,76,.15)',
+    boxShadow: '0 0 40px var(--accent), inset 0 1px 0 var(--accent)',
     transform: 'scale(1.03)',
   },
   cardHoverGlow: {
@@ -129,7 +129,7 @@ const S = {
     inset: 0,
     pointerEvents: 'none',
     zIndex: 0,
-    background: 'radial-gradient(ellipse at 50% 0%, rgba(201,168,76,.04) 0%, transparent 60%)',
+    background: 'radial-gradient(ellipse at 50% 0%, var(--secondary) 0%, transparent 60%)',
   },
   badgePopular: {
     position: 'absolute',
@@ -137,14 +137,14 @@ const S = {
     right: 14,
     padding: '4px 12px',
     borderRadius: 20,
-    background: 'rgba(201,168,76,.15)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.4)',
     fontFamily: "'Cinzel', serif",
     fontSize: 8,
     fontWeight: 600,
     letterSpacing: '.15em',
     textTransform: 'uppercase',
-    color: 'var(--gold2)',
+    color: 'var(--foreground)',
   },
   badgeComingSoon: {
     display: 'inline-block',
@@ -166,7 +166,7 @@ const S = {
     fontSize: 18,
     fontWeight: 600,
     letterSpacing: '.15em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
   },
   priceRow: {
     display: 'flex',
@@ -177,17 +177,17 @@ const S = {
     fontFamily: "'Inconsolata', monospace",
     fontSize: 36,
     fontWeight: 700,
-    color: 'var(--text)',
+    color: 'var(--foreground)',
     lineHeight: 1,
   },
   period: {
     fontFamily: "'Cormorant Garamond', serif",
     fontSize: 14,
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
   },
   description: {
     fontSize: 14,
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     lineHeight: 1.5,
     fontStyle: 'italic',
     minHeight: 42,
@@ -208,7 +208,7 @@ const S = {
     alignItems: 'flex-start',
     gap: 10,
     fontSize: 13,
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     lineHeight: 1.4,
   },
   featureCheck: {
@@ -216,13 +216,13 @@ const S = {
     width: 18,
     height: 18,
     borderRadius: '50%',
-    background: 'rgba(201,168,76,.1)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.25)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: 10,
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     marginTop: 1,
   },
   featureCheckHighlight: {
@@ -233,27 +233,27 @@ const S = {
     width: '100%',
     padding: '12px 20px',
     borderRadius: 12,
-    background: 'rgba(201,168,76,.08)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.25)',
     fontFamily: "'Cinzel', serif",
     fontSize: 11,
     fontWeight: 600,
     letterSpacing: '.15em',
     textTransform: 'uppercase',
-    color: 'var(--gold2)',
+    color: 'var(--foreground)',
     cursor: 'pointer',
     transition: 'all .25s ease',
     textAlign: 'center',
   },
   ctaButtonHighlight: {
-    background: 'linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.1))',
-    border: '1px solid rgba(201,168,76,.5)',
-    boxShadow: '0 4px 20px rgba(201,168,76,.12)',
+    background: 'linear-gradient(135deg, rgba(201,168,76,.2), var(--accent))',
+    border: '1px solid var(--ring)',
+    boxShadow: '0 4px 20px var(--accent)',
   },
   ctaButtonCurrent: {
-    background: 'rgba(255,255,255,.03)',
+    background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.1)',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     cursor: 'default',
   },
   footer: {
@@ -272,14 +272,14 @@ const S = {
   footerText: {
     fontFamily: "'Inconsolata', monospace",
     fontSize: 11,
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     letterSpacing: '.05em',
   },
   manageLink: {
     fontFamily: "'Cinzel', serif",
     fontSize: 10,
     letterSpacing: '.12em',
-    color: 'var(--gold3)',
+    color: 'var(--muted-foreground)',
     cursor: 'pointer',
     transition: 'color .2s',
     textDecoration: 'underline',
@@ -287,7 +287,7 @@ const S = {
   },
   comparisonNote: {
     fontSize: 12,
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     textAlign: 'center',
     maxWidth: 500,
     lineHeight: 1.5,
@@ -396,8 +396,8 @@ export default function PricingPage() {
                   if (!isCurrent) {
                     e.currentTarget.style.background = isHighlight
                       ? 'linear-gradient(135deg, rgba(201,168,76,.3), rgba(201,168,76,.18))'
-                      : 'rgba(201,168,76,.15)'
-                    e.currentTarget.style.borderColor = 'rgba(201,168,76,.5)'
+                      : 'var(--accent)'
+                    e.currentTarget.style.borderColor = 'var(--ring)'
                   }
                 }}
                 onMouseLeave={(e) => {
@@ -428,8 +428,8 @@ export default function PricingPage() {
         <div
           style={S.manageLink}
           onClick={() => createPortalSession()}
-          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--gold)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--gold3)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--foreground)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--muted-foreground)' }}
         >
           Manage Subscription
         </div>

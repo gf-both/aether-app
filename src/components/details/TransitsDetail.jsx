@@ -201,7 +201,7 @@ const ASP_COLORS = {
 
 const SPEED_COLORS = {
   Fast: '#40ccdd',
-  Normal: 'var(--text2)',
+  Normal: 'var(--muted-foreground)',
   Slow: '#f0c040',
   'Very Slow': '#d43070',
 }
@@ -211,35 +211,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -248,9 +248,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -263,7 +263,7 @@ export default function TransitsDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u263F'} Planetary Transits</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           March 4, 2026 -- Current sky positions, natal aspects, and upcoming alignments
         </div>
       </div>
@@ -278,7 +278,7 @@ export default function TransitsDetail() {
           <TransitWheel />
         </div>
         <div style={{ display: 'flex', gap: 16, marginTop: 8, justifyContent: 'center' }}>
-          <span style={{ fontSize: 10, color: 'rgba(201,168,76,.5)', fontFamily: "'Cinzel',serif" }}>
+          <span style={{ fontSize: 10, color: 'var(--ring)', fontFamily: "'Cinzel',serif" }}>
             {'\u25CF'} Inner Ring: Natal
           </span>
           <span style={{ fontSize: 10, color: 'rgba(64,204,221,.5)', fontFamily: "'Cinzel',serif" }}>
@@ -300,7 +300,7 @@ export default function TransitsDetail() {
             gap: 8, padding: '4px 12px',
           }}>
             {['', 'PLANET', 'SIGN', 'DEGREE', 'HOUSE', 'SPEED', 'STATUS', 'NATAL ASPECT'].map((h, i) => (
-              <span key={i} style={{ fontFamily: "'Inconsolata', monospace", fontSize: 9, color: 'var(--text3)' }}>{h}</span>
+              <span key={i} style={{ fontFamily: "'Inconsolata', monospace", fontSize: 9, color: 'var(--muted-foreground)' }}>{h}</span>
             ))}
           </div>
           {CURRENT_TRANSITS_LIVE.map((t, i) => {
@@ -312,24 +312,24 @@ export default function TransitsDetail() {
                 gap: 8, borderLeftColor: ac.color, borderLeftWidth: 2,
               }}>
                 <span style={{ fontSize: 18, textAlign: 'center', color: ac.color }}>{t.sym}</span>
-                <span style={{ ...S.mono, color: 'var(--gold2)' }}>{t.planet}</span>
-                <span style={{ ...S.mono, color: 'var(--text)' }}>{t.sign}</span>
+                <span style={{ ...S.mono, color: 'var(--foreground)' }}>{t.planet}</span>
+                <span style={{ ...S.mono, color: 'var(--foreground)' }}>{t.sign}</span>
                 <span style={S.monoSm}>{t.deg}</span>
                 <span style={{ ...S.monoSm, textAlign: 'center' }}>
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                     width: 22, height: 22, borderRadius: '50%',
-                    background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.12)',
-                    fontFamily: "'Cinzel', serif", fontSize: 10, color: 'var(--gold)',
+                    background: 'rgba(201,168,76,.06)', border: '1px solid var(--accent)',
+                    fontFamily: "'Cinzel', serif", fontSize: 10, color: 'var(--foreground)',
                   }}>{t.house}</span>
                 </span>
                 <span style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 9,
-                  color: SPEED_COLORS[t.speed] || 'var(--text3)',
+                  color: SPEED_COLORS[t.speed] || 'var(--muted-foreground)',
                 }}>{t.speed}</span>
                 <span style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 9,
-                  color: t.retro ? 'var(--rose)' : 'var(--text3)',
+                  color: t.retro ? 'var(--rose)' : 'var(--muted-foreground)',
                 }}>
                   {t.retro ? '\u211E Rx' : 'Direct'}
                 </span>
@@ -337,11 +337,11 @@ export default function TransitsDetail() {
                   <span style={S.badge(ac.bg, ac.border, ac.color)}>
                     {t.aspType}
                   </span>
-                  <span style={{ ...S.monoSm, fontSize: 10, color: 'var(--text2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <span style={{ ...S.monoSm, fontSize: 10, color: 'var(--muted-foreground)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {t.aspect}
                   </span>
                   {t.aspOrb !== '\u2014' && (
-                    <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)', flexShrink: 0 }}>
+                    <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)', flexShrink: 0 }}>
                       {t.aspOrb}
                     </span>
                   )}
@@ -363,21 +363,21 @@ export default function TransitsDetail() {
               <div key={i} style={{
                 ...S.glass, padding: '10px 14px', minWidth: 90,
                 textAlign: 'center',
-                borderColor: isRetro ? 'rgba(212,48,112,.2)' : isStation ? 'rgba(240,192,64,.2)' : 'rgba(255,255,255,.06)',
+                borderColor: isRetro ? 'rgba(212,48,112,.2)' : isStation ? 'rgba(240,192,64,.2)' : 'var(--border)',
                 background: isRetro ? 'rgba(212,48,112,.04)' : isStation ? 'rgba(240,192,64,.04)' : 'rgba(5,5,26,.5)',
               }}>
-                <div style={{ fontSize: 18, marginBottom: 4, color: isRetro ? 'var(--rose)' : isStation ? 'var(--gold)' : 'var(--text3)' }}>
+                <div style={{ fontSize: 18, marginBottom: 4, color: isRetro ? 'var(--rose)' : isStation ? 'var(--foreground)' : 'var(--muted-foreground)' }}>
                   {t.sym}
                 </div>
                 <div style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 10,
-                  color: isRetro ? 'var(--rose2)' : isStation ? 'var(--gold2)' : 'var(--text3)',
+                  color: isRetro ? 'var(--rose2)' : isStation ? 'var(--foreground)' : 'var(--muted-foreground)',
                 }}>
                   {isRetro ? '\u211E Retro' : isStation ? 'Station' : 'Direct'}
                 </div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 7, letterSpacing: '.1em',
-                  color: 'var(--text3)', marginTop: 2, textTransform: 'uppercase',
+                  color: 'var(--muted-foreground)', marginTop: 2, textTransform: 'uppercase',
                 }}>{t.planet}</div>
               </div>
             )
@@ -394,24 +394,24 @@ export default function TransitsDetail() {
             return (
               <div key={i} style={{
                 ...S.glass, textAlign: 'center', padding: '18px 14px',
-                borderColor: isCurrent ? 'rgba(170,170,200,.25)' : 'rgba(201,168,76,.1)',
+                borderColor: isCurrent ? 'rgba(170,170,200,.25)' : 'var(--accent)',
                 background: isCurrent ? 'rgba(170,170,200,.04)' : 'rgba(5,5,26,.7)',
               }}>
                 <div style={{ fontSize: 32, marginBottom: 6 }}>{MOON_GLYPHS[m.name]}</div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.1em',
-                  color: 'var(--silver2)', marginBottom: 4,
+                  color: 'var(--muted-foreground)', marginBottom: 4,
                 }}>{m.name}</div>
                 <div style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 11,
-                  color: 'var(--text3)', marginBottom: 4,
+                  color: 'var(--muted-foreground)', marginBottom: 4,
                 }}>{m.date} -- {m.sign}</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                   {m.desc}
                 </div>
                 {isCurrent && (
                   <span style={{
-                    ...S.badge('rgba(170,170,200,.1)', 'rgba(170,170,200,.25)', 'var(--silver2)'),
+                    ...S.badge('rgba(170,170,200,.1)', 'rgba(170,170,200,.25)', 'var(--muted-foreground)'),
                     marginTop: 8,
                   }}>Upcoming</span>
                 )}
@@ -435,16 +435,16 @@ export default function TransitsDetail() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{
                     fontFamily: "'Inconsolata', monospace", fontSize: 12,
-                    color: 'var(--gold)', minWidth: 50, flexShrink: 0,
+                    color: 'var(--foreground)', minWidth: 50, flexShrink: 0,
                   }}>{a.date}</span>
-                  <span style={{ ...S.mono, color: 'var(--gold2)', minWidth: 60 }}>{a.planet}</span>
-                  <span style={{ ...S.mono, color: 'var(--text)', flex: 1 }}>{a.aspect}</span>
+                  <span style={{ ...S.mono, color: 'var(--foreground)', minWidth: 60 }}>{a.planet}</span>
+                  <span style={{ ...S.mono, color: 'var(--foreground)', flex: 1 }}>{a.aspect}</span>
                   <span style={S.badge(ac.bg, ac.border, ac.color)}>{a.type}</span>
                   {a.orb !== '\u2014' && (
-                    <span style={{ ...S.monoSm, color: 'var(--text3)', fontSize: 10, flexShrink: 0 }}>{a.orb}</span>
+                    <span style={{ ...S.monoSm, color: 'var(--muted-foreground)', fontSize: 10, flexShrink: 0 }}>{a.orb}</span>
                   )}
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4, paddingLeft: 62 }}>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4, paddingLeft: 62 }}>
                   {a.desc}
                 </div>
               </div>
@@ -457,7 +457,7 @@ export default function TransitsDetail() {
       <div>
         <div style={S.sectionTitle}>Daily Energy Forecast -- March 4, 2026</div>
         <div style={S.interpretation}>
-          <span style={{ color: 'var(--gold)' }}>High-intensity transformative day.</span>{' '}
+          <span style={{ color: 'var(--foreground)' }}>High-intensity transformative day.</span>{' '}
           Transiting <span style={{ color: '#9050e0' }}>Pluto conjunct your natal Sun</span> (1{'\u00B0'}49' orb)
           continues its multi-month passage, fundamentally reshaping your sense of identity and personal power.
           Today the <span style={{ color: '#40ccdd' }}>Sun trining your natal Moon</span> provides emotional
@@ -500,20 +500,20 @@ export default function TransitsDetail() {
                     fontFamily: "'Inconsolata', monospace", fontSize: 13, fontWeight: 600,
                     color: e.color,
                   }}>{e.date}</span>
-                  <span style={{ ...S.mono, color: 'var(--text)' }}>{e.sign}</span>
+                  <span style={{ ...S.mono, color: 'var(--foreground)' }}>{e.sign}</span>
                   <span style={S.badge(e.color + '15', e.color + '30', e.color)}>
                     {e.type}
                   </span>
                 </div>
                 <div style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 10,
-                  color: 'var(--gold2)', background: 'rgba(201,168,76,.04)',
+                  color: 'var(--foreground)', background: 'var(--secondary)',
                   padding: '3px 8px', borderRadius: 6, display: 'inline-block',
-                  border: '1px solid rgba(201,168,76,.08)',
+                  border: '1px solid var(--accent)',
                 }}>
                   Natal: {e.natalAspect}
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
                   {e.desc}
                 </div>
               </div>
@@ -543,7 +543,7 @@ export default function TransitsDetail() {
                   {/* Timeline dot */}
                   <div style={{
                     position: 'absolute', left: -22, top: 12, width: 10, height: 10,
-                    borderRadius: '50%', background: ev.color, border: '2px solid var(--bg)',
+                    borderRadius: '50%', background: ev.color, border: '2px solid var(--background)',
                     boxShadow: `0 0 8px ${ev.color}44`,
                   }} />
                   <div style={{
@@ -558,12 +558,12 @@ export default function TransitsDetail() {
                       }}>{ev.date}</span>
                       <span style={{
                         fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.08em',
-                        color: 'var(--gold2)',
+                        color: 'var(--foreground)',
                       }}>{ev.planetName}</span>
-                      <span style={{ ...S.mono, color: 'var(--text)' }}>{ev.event}</span>
+                      <span style={{ ...S.mono, color: 'var(--foreground)' }}>{ev.event}</span>
                       <span style={S.badge(typeBg, typeBorder, ev.color)}>{typeLabel}</span>
                     </div>
-                    <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.6 }}>
+                    <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.6 }}>
                       {ev.desc}
                     </div>
                   </div>
@@ -603,16 +603,16 @@ export default function TransitsDetail() {
                 </div>
                 <div style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 9,
-                  color: bar.i > 80 ? 'var(--rose2)' : bar.i > 60 ? 'var(--gold)' : 'var(--text3)',
+                  color: bar.i > 80 ? 'var(--rose2)' : bar.i > 60 ? 'var(--foreground)' : 'var(--muted-foreground)',
                 }}>{bar.m}</div>
                 <div style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 8,
-                  color: 'var(--text3)',
+                  color: 'var(--muted-foreground)',
                 }}>{bar.i}%</div>
               </div>
             ))}
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center' }}>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center' }}>
             Intensity based on: number of exact aspects to natal chart, eclipse activations, and outer planet ingresses.{' '}
             <span style={{ color: 'var(--rose2)' }}>January 2027</span> peaks with Pluto exact conjunct natal Sun +
             eclipse on Mercury-Mars.

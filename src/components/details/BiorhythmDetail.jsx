@@ -5,33 +5,33 @@ import BiorhythmChart from '../canvas/BiorhythmChart'
 const CYCLE_COLORS = {
   physical:     { main: '#ff6b6b', bg: 'rgba(255,107,107,.08)', border: 'rgba(255,107,107,.22)' },
   emotional:    { main: '#40ccdd', bg: 'rgba(64,204,221,.08)',  border: 'rgba(64,204,221,.22)'  },
-  intellectual: { main: '#c9a84c', bg: 'rgba(201,168,76,.08)', border: 'rgba(201,168,76,.22)'  },
+  intellectual: { main: '#c9a84c', bg: 'var(--accent)', border: 'rgba(201,168,76,.22)'  },
 }
 
 const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -67,7 +67,7 @@ function CycleBar({ label, cycle, color }) {
         </div>
       </div>
       {/* Progress bar: 0-100% where 50% = 0 */}
-      <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,.06)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ height: 6, borderRadius: 3, background: 'var(--border)', position: 'relative', overflow: 'hidden' }}>
         {/* Center marker */}
         <div style={{ position: 'absolute', left: '50%', top: 0, width: 1, height: '100%', background: 'rgba(255,255,255,.2)' }} />
         <div style={{
@@ -112,21 +112,21 @@ export default function BiorhythmDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>◈ Biorhythm Cycles</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Physical · Emotional · Intellectual sine cycles since birth
         </div>
         <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
           <span style={{
             fontSize: 9, fontFamily: "'Cinzel', serif", letterSpacing: '.1em', padding: '3px 10px',
-            borderRadius: 10, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
-            color: 'var(--gold3)',
+            borderRadius: 10, background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
+            color: 'var(--muted-foreground)',
           }}>
             {date}
           </span>
           <span style={{
             fontSize: 9, fontFamily: "'Cinzel', serif", letterSpacing: '.1em', padding: '3px 10px',
-            borderRadius: 10, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.08)',
-            color: 'var(--text2)',
+            borderRadius: 10, background: 'var(--secondary)', border: '1px solid rgba(255,255,255,.08)',
+            color: 'var(--muted-foreground)',
           }}>
             Day {daysSinceBirth.toLocaleString()} of life
           </span>
@@ -151,10 +151,10 @@ export default function BiorhythmDetail() {
           }}>
             {overallEnergy}
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', fontFamily: "'Cinzel', serif", letterSpacing: '.2em', marginTop: 4 }}>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontFamily: "'Cinzel', serif", letterSpacing: '.2em', marginTop: 4 }}>
             VITALITY SCORE
           </div>
-          <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,.06)', margin: '12px auto 0', maxWidth: 200, overflow: 'hidden' }}>
+          <div style={{ height: 6, borderRadius: 3, background: 'var(--border)', margin: '12px auto 0', maxWidth: 200, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${overallEnergy}%`, background: energyColor, borderRadius: 3, transition: 'width .5s ease' }} />
           </div>
         </div>
@@ -191,29 +191,29 @@ export default function BiorhythmDetail() {
             return (
               <div key={key} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,.04)',
+                padding: '8px 0', borderBottom: '1px solid var(--secondary)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 3, height: 24, borderRadius: 2, background: color }} />
                   <div>
                     <div style={{ fontFamily: "'Cinzel', serif", fontSize: 11, color, letterSpacing: '.1em' }}>{label}</div>
-                    <div style={{ fontSize: 9, color: 'var(--text3)', fontFamily: "'Inconsolata', monospace", marginTop: 2 }}>
+                    <div style={{ fontSize: 9, color: 'var(--muted-foreground)', fontFamily: "'Inconsolata', monospace", marginTop: 2 }}>
                       {period}-day cycle
                     </div>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: "'Inconsolata', monospace", fontSize: 13, color: 'var(--text)' }}>
+                  <div style={{ fontFamily: "'Inconsolata', monospace", fontSize: 13, color: 'var(--foreground)' }}>
                     {days === 1 ? 'Tomorrow' : `in ${days} day${days !== 1 ? 's' : ''}`}
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 2 }}>
                     {critDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </div>
                 </div>
               </div>
             )
           })}
-          <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 4, lineHeight: 1.5 }}>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4, lineHeight: 1.5 }}>
             Critical days occur when a cycle crosses zero — extra care and adaptability are recommended during these transitions.
           </div>
         </div>
@@ -232,9 +232,9 @@ export default function BiorhythmDetail() {
               <div style={{ width: 20, height: 3, borderRadius: 2, background: color, marginTop: 7, flexShrink: 0 }} />
               <div>
                 <div style={{ fontFamily: "'Cinzel', serif", fontSize: 11, color, letterSpacing: '.1em' }}>
-                  {label} <span style={{ fontSize: 9, color: 'var(--text3)' }}>· {period}-day cycle</span>
+                  {label} <span style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>· {period}-day cycle</span>
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 3, lineHeight: 1.5 }}>{desc}</div>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 3, lineHeight: 1.5 }}>{desc}</div>
               </div>
             </div>
           ))}

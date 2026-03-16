@@ -118,7 +118,7 @@ function HDChartSummary({ chart }) {
           <span style={cs.chartLabel}>Defined Centers</span>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
             {chart.definedCenters.map(c => (
-              <span key={c} style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', color: 'var(--gold)', background: 'rgba(201,168,76,.1)', border: '1px solid rgba(201,168,76,.2)', borderRadius: '4px', padding: '2px 6px' }}>{c}</span>
+              <span key={c} style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', color: 'var(--foreground)', background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)', borderRadius: '4px', padding: '2px 6px' }}>{c}</span>
             ))}
           </div>
         </div>
@@ -161,12 +161,12 @@ function GeneKeysSummary({ profile }) {
     <div style={cs.chartContent}>
       {spheres.map(sphere => sphere.data && (
         <div key={sphere.label} style={{ marginBottom: '10px' }}>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: 'var(--text3)', marginBottom: '4px', textTransform: 'uppercase' }}>{sphere.label}</div>
-          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '13px', color: 'var(--gold)' }}>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: 'var(--muted-foreground)', marginBottom: '4px', textTransform: 'uppercase' }}>{sphere.label}</div>
+          <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '13px', color: 'var(--foreground)' }}>
             Gate {sphere.data.gate} · Line {sphere.data.line}
           </div>
           {sphere.data.shadow && (
-            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '11px', color: 'var(--text3)' }}>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '11px', color: 'var(--muted-foreground)' }}>
               {sphere.data.shadow} → {sphere.data.gift} → {sphere.data.siddhi}
             </div>
           )}
@@ -198,7 +198,7 @@ function ChartView({ client, frameworkId }) {
     <div style={cs.chartPlaceholder}>
       <div style={{ fontSize: '24px', marginBottom: '8px' }}>✦</div>
       <div>{FRAMEWORKS.find(f => f.id === frameworkId)?.label} framework</div>
-      <div style={{ fontSize: '11px', color: 'var(--text3)', marginTop: '4px' }}>{client.birthCity}</div>
+      <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '4px' }}>{client.birthCity}</div>
     </div>
   )
 }
@@ -213,7 +213,7 @@ const cs = {
     height: '160px',
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '13px',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
   },
   chartContent: {
     display: 'flex',
@@ -226,13 +226,13 @@ const cs = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '4px 0',
-    borderBottom: '1px solid rgba(255,255,255,.03)',
+    borderBottom: '1px solid var(--secondary)',
   },
   chartLabel: {
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.1em',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     textTransform: 'uppercase',
   },
   chartValue: {
@@ -255,7 +255,7 @@ const s = {
     alignItems: 'center',
     gap: '16px',
     padding: '16px 24px',
-    borderBottom: '1px solid var(--glass-border)',
+    borderBottom: '1px solid var(--border)',
     background: 'rgba(0,0,0,.3)',
     flexShrink: 0,
   },
@@ -267,7 +267,7 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '10px',
     letterSpacing: '.12em',
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     cursor: 'pointer',
     transition: 'all .2s',
   },
@@ -275,7 +275,7 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '13px',
     letterSpacing: '.15em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     textTransform: 'uppercase',
     flex: 1,
   },
@@ -306,7 +306,7 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.1em',
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     cursor: 'pointer',
     transition: 'all .2s',
   },
@@ -328,10 +328,10 @@ const s = {
     gap: '1px',
     flex: 1,
     overflow: 'hidden',
-    background: 'var(--glass-border)',
+    background: 'var(--border)',
   },
   leftPanel: {
-    background: 'var(--panel-bg)',
+    background: 'var(--card)',
     overflow: 'auto',
     padding: '20px',
     display: 'flex',
@@ -339,7 +339,7 @@ const s = {
     gap: '16px',
   },
   rightPanel: {
-    background: 'var(--panel-bg)',
+    background: 'var(--card)',
     overflow: 'auto',
     padding: '20px',
     display: 'flex',
@@ -350,7 +350,7 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '10px',
     letterSpacing: '.2em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     textTransform: 'uppercase',
     marginBottom: '10px',
   },
@@ -361,32 +361,32 @@ const s = {
     marginBottom: '12px',
   },
   frameworkBtn: {
-    background: 'rgba(255,255,255,.04)',
+    background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.08)',
     borderRadius: '20px',
     padding: '4px 12px',
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.1em',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     cursor: 'pointer',
     transition: 'all .2s',
   },
   frameworkBtnActive: {
-    background: 'rgba(201,168,76,.15)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.4)',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
   },
   chartBox: {
-    background: 'rgba(255,255,255,.02)',
+    background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.05)',
     borderRadius: '10px',
     padding: '16px',
     minHeight: '180px',
   },
   aiBox: {
-    background: 'rgba(201,168,76,.04)',
-    border: '1px solid rgba(201,168,76,.15)',
+    background: 'var(--secondary)',
+    border: '1px solid var(--accent)',
     borderRadius: '10px',
     padding: '16px',
   },
@@ -399,21 +399,21 @@ const s = {
     marginBottom: '10px',
   },
   aiBtn: {
-    background: 'rgba(201,168,76,.12)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.25)',
     borderRadius: '6px',
     padding: '6px 14px',
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.12em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     cursor: 'pointer',
     transition: 'all .2s',
   },
   notesTextarea: {
     width: '100%',
     minHeight: '120px',
-    background: 'rgba(255,255,255,.03)',
+    background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.08)',
     borderRadius: '8px',
     padding: '12px',
@@ -427,7 +427,7 @@ const s = {
     transition: 'border .2s',
   },
   prevNote: {
-    borderBottom: '1px solid rgba(255,255,255,.04)',
+    borderBottom: '1px solid var(--secondary)',
     paddingBottom: '12px',
     marginBottom: '12px',
   },
@@ -435,14 +435,14 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.12em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     textTransform: 'uppercase',
     marginBottom: '4px',
   },
   prevNoteText: {
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '12px',
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     lineHeight: '1.6',
     display: '-webkit-box',
     WebkitLineClamp: 3,
@@ -473,17 +473,17 @@ const s = {
   actionText: {
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '13px',
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
     flex: 1,
   },
   actionDone: {
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     textDecoration: 'line-through',
   },
   addActionInput: {
     width: '100%',
-    background: 'rgba(255,255,255,.03)',
-    border: '1px solid rgba(255,255,255,.06)',
+    background: 'var(--secondary)',
+    border: '1px solid var(--border)',
     borderRadius: '6px',
     padding: '6px 10px',
     fontFamily: "'Cormorant Garamond',serif",
@@ -559,8 +559,8 @@ export default function SessionMode({ client, onBack }) {
       <div style={s.header}>
         <button
           style={s.backBtn}
-          onMouseEnter={e => e.currentTarget.style.color = 'var(--gold)'}
-          onMouseLeave={e => e.currentTarget.style.color = 'var(--text2)'}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--foreground)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--muted-foreground)'}
           onClick={onBack}
         >
           ← Back
@@ -569,7 +569,7 @@ export default function SessionMode({ client, onBack }) {
 
         {/* Timer */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ ...s.timer, color: running ? 'var(--lime2)' : 'var(--gold)' }}>
+          <div style={{ ...s.timer, color: running ? 'var(--lime2)' : 'var(--foreground)' }}>
             <span style={{ fontSize: '12px' }}>⏱</span>
             {formatTime(seconds)}
           </div>
@@ -673,7 +673,7 @@ export default function SessionMode({ client, onBack }) {
                     {sess.notes}
                   </div>
                   <button
-                    style={{ background: 'none', border: 'none', fontFamily: "'Cinzel',serif", fontSize: '9px', color: 'var(--text3)', cursor: 'pointer', padding: '4px 0', letterSpacing: '.1em' }}
+                    style={{ background: 'none', border: 'none', fontFamily: "'Cinzel',serif", fontSize: '9px', color: 'var(--muted-foreground)', cursor: 'pointer', padding: '4px 0', letterSpacing: '.1em' }}
                     onClick={() => setExpandedNotes(expandedNotes === sess.id ? null : sess.id)}
                   >
                     {expandedNotes === sess.id ? '▲ Collapse' : '▼ Expand'}
@@ -705,7 +705,7 @@ export default function SessionMode({ client, onBack }) {
                   {item.text}
                 </span>
                 <span
-                  style={{ cursor: 'pointer', color: 'var(--text3)', fontSize: '10px', padding: '0 4px' }}
+                  style={{ cursor: 'pointer', color: 'var(--muted-foreground)', fontSize: '10px', padding: '0 4px' }}
                   onClick={() => removeAction(item.id)}
                 >
                   ✕
@@ -719,7 +719,7 @@ export default function SessionMode({ client, onBack }) {
               onChange={e => setNewAction(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && addAction()}
               onFocus={e => e.target.style.borderColor = 'rgba(201,168,76,.3)'}
-              onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,.06)'}
+              onBlur={e => e.target.style.borderColor = 'var(--border)'}
             />
           </div>
 
@@ -728,7 +728,7 @@ export default function SessionMode({ client, onBack }) {
           {/* Family Constellation */}
           <div>
             <div style={s.sectionTitle}>Family Constellation</div>
-            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '13px', color: 'var(--text3)', marginBottom: '10px' }}>
+            <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: '13px', color: 'var(--muted-foreground)', marginBottom: '10px' }}>
               Map family dynamics and intergenerational patterns
             </div>
             <button style={{ ...s.aiBtn, fontSize: '10px' }}>

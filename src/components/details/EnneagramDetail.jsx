@@ -9,35 +9,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -46,13 +46,13 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
   keyVal: {
     display: 'flex', alignItems: 'center', gap: 16,
-    padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,.04)',
+    padding: '6px 0', borderBottom: '1px solid var(--secondary)',
   },
 }
 
@@ -98,7 +98,7 @@ function EnneagramQuiz() {
     const tc = TRIAD_COLORS[typeData?.triad] || TRIAD_COLORS.Head
     return (
       <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'center' }}>
-        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--gold3)' }}>
+        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--muted-foreground)' }}>
           Quiz Result
         </div>
         <div style={{
@@ -107,7 +107,7 @@ function EnneagramQuiz() {
           background: tc.bg, border: `2px solid ${tc.border}`,
           fontFamily: "'Cinzel', serif", fontSize: 32, color: tc.color,
         }}>{result.type}</div>
-        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--gold)', letterSpacing: '.1em' }}>
+        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--foreground)', letterSpacing: '.1em' }}>
           Type {result.type}: {result.name}
         </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
@@ -116,9 +116,9 @@ function EnneagramQuiz() {
             return (
               <span key={i} style={{
                 padding: '3px 10px', borderRadius: 12, fontSize: 10,
-                background: i === 0 ? 'rgba(201,168,76,.1)' : 'rgba(255,255,255,.04)',
+                background: i === 0 ? 'var(--accent)' : 'var(--secondary)',
                 border: `1px solid ${i === 0 ? 'rgba(201,168,76,.3)' : 'rgba(255,255,255,.08)'}`,
-                color: i === 0 ? 'var(--gold)' : 'var(--text3)',
+                color: i === 0 ? 'var(--foreground)' : 'var(--muted-foreground)',
                 fontFamily: "'Inconsolata', monospace",
               }}>
                 {td?.name} ({pts}pts)
@@ -126,7 +126,7 @@ function EnneagramQuiz() {
             )
           })}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>
+        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
           This is a brief indicator. For accurate typing, explore the full descriptions below
           and consider which core fear and desire resonate most deeply.
         </div>
@@ -139,9 +139,9 @@ function EnneagramQuiz() {
           }}>✓ Saved to your profile</div>
         )}
         <div onClick={reset} style={{
-          padding: '6px 18px', borderRadius: 8, background: 'rgba(201,168,76,.08)',
+          padding: '6px 18px', borderRadius: 8, background: 'var(--accent)',
           border: '1px solid rgba(201,168,76,.2)', cursor: 'pointer', alignSelf: 'center',
-          fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--gold2)',
+          fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--foreground)',
         }}>Retake Quiz</div>
       </div>
     )
@@ -151,21 +151,21 @@ function EnneagramQuiz() {
   return (
     <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 14 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--gold3)' }}>
+        <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--muted-foreground)' }}>
           Quick Type Finder
         </span>
-        <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)' }}>
+        <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)' }}>
           {step + 1} / {ENNEAGRAM_QUIZ.length}
         </span>
       </div>
-      <div style={{ height: 3, borderRadius: 2, background: 'var(--bar-track)', overflow: 'hidden' }}>
+      <div style={{ height: 3, borderRadius: 2, background: 'var(--border)', overflow: 'hidden' }}>
         <div style={{
-          height: '100%', borderRadius: 2, background: 'var(--gold)',
+          height: '100%', borderRadius: 2, background: 'var(--foreground)',
           width: `${((step + 1) / ENNEAGRAM_QUIZ.length) * 100}%`,
           transition: 'width .3s ease',
         }} />
       </div>
-      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: 'var(--text)', lineHeight: 1.5 }}>
+      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 15, color: 'var(--foreground)', lineHeight: 1.5 }}>
         {q.q}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -177,10 +177,10 @@ function EnneagramQuiz() {
             <span style={{
               width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)',
-              fontFamily: "'Cinzel', serif", fontSize: 10, color: 'var(--gold)',
+              background: 'rgba(201,168,76,.06)', border: '1px solid var(--accent)',
+              fontFamily: "'Cinzel', serif", fontSize: 10, color: 'var(--foreground)',
             }}>{String.fromCharCode(65 + i)}</span>
-            <span style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.4 }}>{opt.label}</span>
+            <span style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.4 }}>{opt.label}</span>
           </div>
         ))}
       </div>
@@ -239,7 +239,7 @@ export default function EnneagramDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u2B21'} Enneagram</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Personality architecture -- type, wing, tritype, instincts, and growth paths
         </div>
       </div>
@@ -272,9 +272,9 @@ export default function EnneagramDetail() {
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
               padding: '10px 20px', borderRadius: 10, cursor: 'pointer',
-              background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
+              background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
               fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.12em',
-              color: 'var(--gold2)', transition: 'all .2s',
+              color: 'var(--foreground)', transition: 'all .2s',
             }}
           >
             ↺ Retake Enneagram Quiz
@@ -297,10 +297,10 @@ export default function EnneagramDetail() {
             <div key={i} style={S.keyVal}>
               <span style={{
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-                textTransform: 'uppercase', color: 'var(--text3)', minWidth: 140,
+                textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 140,
               }}>{lbl}</span>
               <span style={{
-                ...S.mono, color: i === 0 ? 'var(--gold)' : 'var(--gold2)',
+                ...S.mono, color: i === 0 ? 'var(--foreground)' : 'var(--foreground)',
                 textAlign: 'right', maxWidth: '60%',
               }}>
                 {i === 0
@@ -328,7 +328,7 @@ export default function EnneagramDetail() {
           <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, color: '#ee5544', letterSpacing: '.15em' }}>
             {activeType.vice}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6, fontStyle: 'italic' }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 6, fontStyle: 'italic' }}>
             The emotional habit that keeps the ego fixated
           </div>
         </div>
@@ -343,7 +343,7 @@ export default function EnneagramDetail() {
           <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, color: '#88dd44', letterSpacing: '.15em' }}>
             {activeType.virtue}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 6, fontStyle: 'italic' }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 6, fontStyle: 'italic' }}>
             The higher quality that emerges through self-awareness
           </div>
         </div>
@@ -356,18 +356,18 @@ export default function EnneagramDetail() {
           {/* Primary wing */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{
-              fontFamily: "'Cinzel', serif", fontSize: 24, color: 'var(--gold)',
+              fontFamily: "'Cinzel', serif", fontSize: 24, color: 'var(--foreground)',
               width: 44, height: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: '50%', background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.18)',
+              borderRadius: '50%', background: 'var(--accent)', border: '1px solid rgba(201,168,76,.18)',
             }}>{primaryWing}</span>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ ...S.mono, color: 'var(--gold2)', fontSize: 14 }}>
+                <span style={{ ...S.mono, color: 'var(--foreground)', fontSize: 14 }}>
                   Wing {primaryWing}: {primaryWingType.name}
                 </span>
-                <span style={S.badge('rgba(201,168,76,.1)', 'rgba(201,168,76,.25)', 'var(--gold)')}>Primary</span>
+                <span style={S.badge('var(--accent)', 'rgba(201,168,76,.25)', 'var(--foreground)')}>Primary</span>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', marginTop: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>
                 {useStaticInstinct && ENNEAGRAM_PROFILE.wingInfluence[`wing${primaryWing}`]
                   ? ENNEAGRAM_PROFILE.wingInfluence[`wing${primaryWing}`]
                   : `Adds ${primaryWingType.name.toLowerCase()} qualities — ${primaryWingType.keywords.slice(0, 2).join(', ').toLowerCase()} — to the core ${activeType.name} pattern`}
@@ -377,18 +377,18 @@ export default function EnneagramDetail() {
           {/* Secondary wing */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, opacity: .7 }}>
             <span style={{
-              fontFamily: "'Cinzel', serif", fontSize: 20, color: 'var(--gold3)',
+              fontFamily: "'Cinzel', serif", fontSize: 20, color: 'var(--muted-foreground)',
               width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: '50%', background: 'rgba(201,168,76,.04)', border: '1px solid rgba(201,168,76,.1)',
+              borderRadius: '50%', background: 'var(--secondary)', border: '1px solid var(--accent)',
             }}>{secondaryWing}</span>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ ...S.mono, color: 'var(--text2)', fontSize: 13 }}>
+                <span style={{ ...S.mono, color: 'var(--muted-foreground)', fontSize: 13 }}>
                   Wing {secondaryWing}: {secondaryWingType.name}
                 </span>
-                <span style={S.badge('rgba(255,255,255,.04)', 'rgba(255,255,255,.08)', 'var(--text3)')}>Secondary</span>
+                <span style={S.badge('var(--secondary)', 'rgba(255,255,255,.08)', 'var(--muted-foreground)')}>Secondary</span>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', marginTop: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>
                 {useStaticInstinct && ENNEAGRAM_PROFILE.wingInfluence[`wing${secondaryWing}`]
                   ? ENNEAGRAM_PROFILE.wingInfluence[`wing${secondaryWing}`]
                   : `A subtler influence adding ${secondaryWingType.keywords.slice(0, 2).join(', ').toLowerCase()} tendencies`}
@@ -403,10 +403,10 @@ export default function EnneagramDetail() {
         <div style={S.sectionTitle}>Tritype</div>
         <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-            <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 20, color: 'var(--gold)', fontWeight: 700 }}>
+            <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 20, color: 'var(--foreground)', fontWeight: 700 }}>
               {tritype.label}
             </span>
-            <span style={{ ...S.mono, color: 'var(--text2)' }}>{tritype.name}</span>
+            <span style={{ ...S.mono, color: 'var(--muted-foreground)' }}>{tritype.name}</span>
           </div>
           {tritype.types.map((tNum, i) => {
             const tData = ENNEAGRAM_TYPES.find(t => t.number === tNum)
@@ -429,14 +429,14 @@ export default function EnneagramDetail() {
                       {tData.triad} Center
                     </span>
                   </div>
-                  <span style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>
+                  <span style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
                     {centers[i]} center response: {tData.vice} {'\u2192'} {tData.virtue}
                   </span>
                 </div>
               </div>
             )
           })}
-          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', padding: '4px 0' }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', padding: '4px 0' }}>
             {tritype.description}
           </div>
         </div>
@@ -447,12 +447,12 @@ export default function EnneagramDetail() {
         <div style={S.sectionTitle}>Instinctual Stacking</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
           <span style={{
-            fontFamily: "'Inconsolata', monospace", fontSize: 20, color: 'var(--gold)',
+            fontFamily: "'Inconsolata', monospace", fontSize: 20, color: 'var(--foreground)',
             fontWeight: 700, letterSpacing: '.1em',
           }}>
             {stacking.stacking.toUpperCase()}
           </span>
-          <span style={{ ...S.monoSm, color: 'var(--text3)' }}>
+          <span style={{ ...S.monoSm, color: 'var(--muted-foreground)' }}>
             Dominant {'\u2192'} Secondary (blind spot: {stacking.blind.toUpperCase()})
           </span>
         </div>
@@ -465,27 +465,27 @@ export default function EnneagramDetail() {
             return (
               <div key={i} style={{
                 ...S.row,
-                borderColor: isDom ? 'rgba(201,168,76,.2)' : isSec ? 'rgba(64,204,221,.15)' : 'rgba(255,255,255,.04)',
-                background: isDom ? 'rgba(201,168,76,.06)' : isSec ? 'rgba(64,204,221,.03)' : 'rgba(255,255,255,.02)',
+                borderColor: isDom ? 'rgba(201,168,76,.2)' : isSec ? 'rgba(64,204,221,.15)' : 'var(--secondary)',
+                background: isDom ? 'rgba(201,168,76,.06)' : isSec ? 'rgba(64,204,221,.03)' : 'var(--secondary)',
                 opacity: isBlind ? .55 : 1,
               }}>
                 <span style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 16, fontWeight: 700,
                   minWidth: 32, textAlign: 'center',
-                  color: isDom ? 'var(--gold)' : isSec ? 'var(--aqua2)' : 'var(--text3)',
+                  color: isDom ? 'var(--foreground)' : isSec ? 'var(--aqua2)' : 'var(--muted-foreground)',
                 }}>{iv.code.toUpperCase()}</span>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ ...S.mono, color: isDom ? 'var(--gold2)' : 'var(--text2)', fontSize: 13 }}>
+                    <span style={{ ...S.mono, color: isDom ? 'var(--foreground)' : 'var(--muted-foreground)', fontSize: 13 }}>
                       {iv.name}
                     </span>
                     <span style={S.badge(
-                      isDom ? 'rgba(201,168,76,.1)' : isSec ? 'rgba(64,204,221,.08)' : 'rgba(255,255,255,.04)',
+                      isDom ? 'var(--accent)' : isSec ? 'rgba(64,204,221,.08)' : 'var(--secondary)',
                       isDom ? 'rgba(201,168,76,.25)' : isSec ? 'rgba(64,204,221,.2)' : 'rgba(255,255,255,.08)',
-                      isDom ? 'var(--gold)' : isSec ? 'var(--aqua2)' : 'var(--text3)',
+                      isDom ? 'var(--foreground)' : isSec ? 'var(--aqua2)' : 'var(--muted-foreground)',
                     )}>{lbl}</span>
                   </div>
-                  <span style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                  <span style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                     {iv.focus}
                   </span>
                 </div>
@@ -506,7 +506,7 @@ export default function EnneagramDetail() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             <span style={{
-              fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--gold)',
+              fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--foreground)',
             }}>{typeNum}</span>
             <span style={{ color: '#88dd44', fontSize: 16 }}>{'\u2192'}</span>
             <span style={{
@@ -514,7 +514,7 @@ export default function EnneagramDetail() {
             }}>{integrationTo}</span>
             <span style={{ ...S.mono, color: '#88dd44', fontSize: 11 }}>({integType.name})</span>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
             {useStaticInstinct
               ? ENNEAGRAM_PROFILE.integration.description
               : `Moves toward the healthy ${integType.name} \u2014 takes on ${integType.keywords.slice(0, 2).join(', ').toLowerCase()} qualities`}
@@ -529,7 +529,7 @@ export default function EnneagramDetail() {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             <span style={{
-              fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--gold)',
+              fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--foreground)',
             }}>{typeNum}</span>
             <span style={{ color: '#ee5544', fontSize: 16 }}>{'\u2192'}</span>
             <span style={{
@@ -537,7 +537,7 @@ export default function EnneagramDetail() {
             }}>{disintegrationTo}</span>
             <span style={{ ...S.mono, color: '#ee5544', fontSize: 11 }}>({disintType.name})</span>
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
             {useStaticInstinct
               ? ENNEAGRAM_PROFILE.disintegration.description
               : `Under stress, takes on unhealthy ${disintType.name} traits \u2014 becomes more ${disintType.keywords.slice(2).join(', ').toLowerCase()}`}
@@ -551,12 +551,12 @@ export default function EnneagramDetail() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {/* header */}
           <div style={{ display: 'grid', gridTemplateColumns: '32px 110px 70px 80px 90px 90px', gap: 8, padding: '4px 12px' }}>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>#</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>NAME</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>TRIAD</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>VICE</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>VIRTUE</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>ARROWS</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>#</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>NAME</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>TRIAD</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>VICE</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>VIRTUE</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>ARROWS</span>
           </div>
           {ENNEAGRAM_TYPES.map((t, i) => {
             const triC = TRIAD_COLORS[t.triad]
@@ -565,22 +565,22 @@ export default function EnneagramDetail() {
               <div key={i} style={{
                 ...S.row,
                 display: 'grid', gridTemplateColumns: '32px 110px 70px 80px 90px 90px', gap: 8,
-                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.04)',
-                background: isActive ? 'rgba(201,168,76,.06)' : 'rgba(255,255,255,.02)',
+                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'var(--secondary)',
+                background: isActive ? 'rgba(201,168,76,.06)' : 'var(--secondary)',
               }}>
                 <span style={{
                   fontFamily: "'Cinzel', serif", fontSize: 16, textAlign: 'center',
-                  color: isActive ? 'var(--gold)' : t.col + '0.7)',
+                  color: isActive ? 'var(--foreground)' : t.col + '0.7)',
                 }}>{t.number}</span>
                 <span style={{
                   ...S.mono,
-                  color: isActive ? 'var(--gold)' : 'var(--text2)',
+                  color: isActive ? 'var(--foreground)' : 'var(--muted-foreground)',
                   fontWeight: isActive ? 700 : 400,
                 }}>{t.name}</span>
                 <span style={S.badge(triC.bg, triC.border, triC.color)}>{t.triad}</span>
                 <span style={{ ...S.monoSm, color: 'var(--rose2)', fontSize: 10 }}>{t.vice}</span>
                 <span style={{ ...S.monoSm, color: '#88dd44', fontSize: 10 }}>{t.virtue}</span>
-                <span style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)' }}>
+                <span style={{ ...S.monoSm, fontSize: 10, color: 'var(--muted-foreground)' }}>
                   {'\u2191'}{t.growth} {'\u2193'}{t.stress}
                 </span>
               </div>
@@ -594,13 +594,13 @@ export default function EnneagramDetail() {
         <div style={S.sectionTitle}>Levels of Development</div>
         <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-            <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--text3)' }}>
+            <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)' }}>
               Current Level
             </span>
             <span style={{
-              fontFamily: "'Inconsolata', monospace", fontSize: 18, color: 'var(--gold)', fontWeight: 700,
+              fontFamily: "'Inconsolata', monospace", fontSize: 18, color: 'var(--foreground)', fontWeight: 700,
             }}>{ENNEAGRAM_PROFILE.level.current}</span>
-            <span style={{ ...S.mono, color: 'var(--gold2)' }}>{ENNEAGRAM_PROFILE.level.name}</span>
+            <span style={{ ...S.mono, color: 'var(--foreground)' }}>{ENNEAGRAM_PROFILE.level.name}</span>
           </div>
           {/* Level bar */}
           <div style={{ display: 'flex', gap: 3, height: 8, borderRadius: 4, overflow: 'hidden' }}>
@@ -634,7 +634,7 @@ export default function EnneagramDetail() {
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
                 textTransform: 'uppercase', color,
               }}>{lbl}</span>
-              <span style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+              <span style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                 {desc}
               </span>
             </div>
@@ -651,12 +651,12 @@ export default function EnneagramDetail() {
               ...S.row, padding: '10px 14px',
             }}>
               <span style={{
-                fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--gold)',
+                fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--foreground)',
                 width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: '50%', background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)',
+                borderRadius: '50%', background: 'var(--accent)', border: '1px solid var(--accent)',
                 flexShrink: 0,
               }}>{i + 1}</span>
-              <span style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>
+              <span style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
                 {rec}
               </span>
             </div>
@@ -668,11 +668,11 @@ export default function EnneagramDetail() {
       <div>
         <div style={S.sectionTitle}>Profile Reading</div>
         <div style={S.interpretation}>
-          As a <span style={{ color: 'var(--gold)' }}>Type {label} ({stacking.stacking})</span> with the{' '}
+          As a <span style={{ color: 'var(--foreground)' }}>Type {label} ({stacking.stacking})</span> with the{' '}
           <span style={{ color: 'var(--aqua2)' }}>{tritype.label} tritype</span>, you lead with the {activeType.triad}{' '}
           center's core fear of {activeType.fear.toLowerCase()}, colored by the {primaryWingType.name}'s{' '}
           {primaryWingType.keywords[0].toLowerCase()} qualities. The{' '}
-          <span style={{ color: 'var(--gold)' }}>{INSTINCTUAL_VARIANTS.find(v => v.code === stacking.dominant)?.name} dominant</span>{' '}
+          <span style={{ color: 'var(--foreground)' }}>{INSTINCTUAL_VARIANTS.find(v => v.code === stacking.dominant)?.name} dominant</span>{' '}
           instinct focuses your {activeType.name.toLowerCase()} nature on {INSTINCTUAL_VARIANTS.find(v => v.code === stacking.dominant)?.keyword.toLowerCase()}.{' '}
           Growth comes through moving toward{' '}
           <span style={{ color: '#88dd44' }}>{integrationTo} ({integType.name})</span> -- taking on{' '}

@@ -83,7 +83,7 @@ const CENTER_INFO = {
 }
 
 const TYPE_COLORS = {
-  Projector:             { bg: 'rgba(201,168,76,.1)',   border: 'rgba(201,168,76,.35)',   color: '#c9a84c' },
+  Projector:             { bg: 'var(--accent)',   border: 'var(--ring)',   color: '#c9a84c' },
   Generator:             { bg: 'rgba(212,48,112,.1)',   border: 'rgba(240,96,160,.35)',   color: '#f060a0' },
   'Manifesting Generator': { bg: 'rgba(212,48,112,.1)', border: 'rgba(240,96,160,.35)', color: '#f060a0' },
   Manifestor:            { bg: 'rgba(238,68,68,.1)',    border: 'rgba(238,68,68,.35)',    color: '#ee5544' },
@@ -92,13 +92,13 @@ const TYPE_COLORS = {
 
 /* ─── Styles ──────────────────────────────────────────────────────────────── */
 const DESIGN_COLOR  = '#cc3333'
-const PERSON_COLOR  = 'var(--text)'
+const PERSON_COLOR  = 'var(--foreground)'
 
 const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto',
     display: 'flex', flexDirection: 'column',
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   tabBar: {
@@ -108,18 +108,18 @@ const S = {
   tab: (active) => ({
     padding: '12px 20px', cursor: 'pointer', fontSize: 11,
     fontFamily: "'Cinzel', serif", letterSpacing: '.15em', textTransform: 'uppercase',
-    color: active ? 'var(--gold)' : 'var(--text3)',
-    borderBottom: active ? '2px solid var(--gold)' : '2px solid transparent',
+    color: active ? 'var(--foreground)' : 'var(--muted-foreground)',
+    borderBottom: active ? '2px solid var(--foreground)' : '2px solid transparent',
     background: 'transparent', border: 'none', outline: 'none',
     transition: 'color .15s',
   }),
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 12,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 12,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 12, padding: 16, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -216,7 +216,7 @@ function RavechartTab({ chart }) {
         {/* RIGHT: Personality column */}
         <div style={{ padding: '48px 8px 8px 8px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase', color: PERSON_COLOR, marginBottom: 2 }}>PERSONALITY</div>
-          <div style={{ fontSize: 10, color: 'var(--text2)', marginBottom: 12, fontStyle: 'italic' }}>The Conscious</div>
+          <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginBottom: 12, fontStyle: 'italic' }}>The Conscious</div>
           {PLANET_ORDER.map(key => (
             <PersonalityPlanetRow key={key} planetKey={key} planet={hd.personality?.[key]} />
           ))}
@@ -224,10 +224,10 @@ function RavechartTab({ chart }) {
       </div>
 
       {/* ── BOTTOM: Core profile info ── */}
-      <div style={{ padding: '0 16px 0 16px', borderTop: '1px solid rgba(255,255,255,.06)', paddingTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ padding: '0 16px 0 16px', borderTop: '1px solid var(--border)', paddingTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Type badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--text3)', minWidth: 80 }}>Personality Type</span>
+          <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80 }}>Personality Type</span>
           <span style={{ ...S.badge(tc.bg, tc.border, tc.color), fontSize: 11, padding: '4px 16px', letterSpacing: '.12em' }}>{hd.type}</span>
         </div>
 
@@ -241,21 +241,21 @@ function RavechartTab({ chart }) {
           ['Signature',  hd.signature || '—'],
         ].map(([label, val]) => (
           <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--text3)', minWidth: 80, paddingTop: 2 }}>{label}</span>
-            <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--gold2)', lineHeight: 1.4 }}>{val}</span>
+            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80, paddingTop: 2 }}>{label}</span>
+            <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--foreground)', lineHeight: 1.4 }}>{val}</span>
           </div>
         ))}
 
         {hd.cross && (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--text3)', minWidth: 80, paddingTop: 2 }}>Cross</span>
-            <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 11, color: 'var(--text2)', lineHeight: 1.4 }}>{hd.cross}</span>
+            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80, paddingTop: 2 }}>Cross</span>
+            <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 11, color: 'var(--muted-foreground)', lineHeight: 1.4 }}>{hd.cross}</span>
           </div>
         )}
 
         {chart?.designDate && (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--text3)', minWidth: 80, paddingTop: 2 }}>Design Date</span>
+            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80, paddingTop: 2 }}>Design Date</span>
             <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 11, color: DESIGN_COLOR, lineHeight: 1.4 }}>{chart.designDate}</span>
           </div>
         )}
@@ -293,8 +293,8 @@ function MechanicsTab({ chart }) {
         <div style={S.sectionTitle}>
           Energy Centers
           <span style={{ float: 'right', fontFamily: "'Inconsolata',monospace", fontSize: 10 }}>
-            <span style={{ color: 'var(--gold)' }}>{definedCount} defined</span>{' / '}
-            <span style={{ color: 'var(--text3)' }}>{centerRows.length - definedCount} undefined</span>
+            <span style={{ color: 'var(--foreground)' }}>{definedCount} defined</span>{' / '}
+            <span style={{ color: 'var(--muted-foreground)' }}>{centerRows.length - definedCount} undefined</span>
           </span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -303,20 +303,20 @@ function MechanicsTab({ chart }) {
               ...S.glass,
               padding: '10px 14px',
               display: 'flex', alignItems: 'center', gap: 10,
-              borderColor: c.defined ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.06)',
-              background: c.defined ? 'rgba(201,168,76,.05)' : 'rgba(255,255,255,.02)',
+              borderColor: c.defined ? 'rgba(201,168,76,.2)' : 'var(--border)',
+              background: c.defined ? 'var(--secondary)' : 'var(--secondary)',
             }}>
-              <span style={{ fontSize: 22, color: c.defined ? 'var(--gold)' : 'var(--text3)', opacity: c.defined ? 1 : 0.4, minWidth: 28, textAlign: 'center' }}>{c.glyph}</span>
+              <span style={{ fontSize: 22, color: c.defined ? 'var(--foreground)' : 'var(--muted-foreground)', opacity: c.defined ? 1 : 0.4, minWidth: 28, textAlign: 'center' }}>{c.glyph}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
-                  <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: c.defined ? 'var(--gold2)' : 'var(--text2)', fontWeight: 600 }}>{c.name}</span>
+                  <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: c.defined ? 'var(--foreground)' : 'var(--muted-foreground)', fontWeight: 600 }}>{c.name}</span>
                   <span style={S.badge(
-                    c.defined ? 'rgba(201,168,76,.12)' : 'rgba(255,255,255,.04)',
+                    c.defined ? 'var(--accent)' : 'var(--secondary)',
                     c.defined ? 'rgba(201,168,76,.3)'  : 'rgba(255,255,255,.1)',
-                    c.defined ? 'var(--gold)'           : 'var(--text3)',
+                    c.defined ? 'var(--foreground)'           : 'var(--muted-foreground)',
                   )}>{c.defined ? 'Defined' : 'Open'}</span>
                 </div>
-                <span style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>{c.meaning}</span>
+                <span style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>{c.meaning}</span>
               </div>
             </div>
           ))}
@@ -327,7 +327,7 @@ function MechanicsTab({ chart }) {
       <div>
         <div style={S.sectionTitle}>Active Channels ({channels.length})</div>
         {channels.length === 0
-          ? <div style={{ color: 'var(--text3)', fontStyle: 'italic', fontSize: 13 }}>No channels computed yet</div>
+          ? <div style={{ color: 'var(--muted-foreground)', fontStyle: 'italic', fontSize: 13 }}>No channels computed yet</div>
           : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               {Object.entries(byCircuit).map(([circuit, chs]) => {
@@ -342,8 +342,8 @@ function MechanicsTab({ chart }) {
                       {chs.map((ch, i) => (
                         <div key={i} style={{ ...S.glass, padding: '10px 14px', background: circuitBg, borderColor: circuitBorder }}>
                           <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 13, color: circuitColor, fontWeight: 700, letterSpacing: '.06em', marginBottom: 4 }}>{ch.gates?.join('-') || '?'}</div>
-                          <div style={{ fontSize: 12, color: 'var(--text2)', marginBottom: 2 }}>{ch.name}</div>
-                          {ch.centers && <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic' }}>{ch.centers.join(' ↔ ')}</div>}
+                          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginBottom: 2 }}>{ch.name}</div>
+                          {ch.centers && <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>{ch.centers.join(' ↔ ')}</div>}
                         </div>
                       ))}
                     </div>
@@ -385,7 +385,7 @@ function VariablesTab({ chart }) {
     <div style={{ padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
         <div style={S.sectionTitle}>Primary Health System (PHS)</div>
-        <div style={{ ...S.glass, padding: '14px 18px', fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.7 }}>
+        <div style={{ ...S.glass, padding: '14px 18px', fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.7 }}>
           PHS is the most advanced level of Human Design, focusing on the four variables
           that optimize your bio-energetic environment, digestion, and perception.
           Full PHS analysis requires advanced chart calculation beyond gate/line positions.
@@ -397,12 +397,12 @@ function VariablesTab({ chart }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {variables.map((v, i) => (
             <div key={i} style={{ ...S.glass, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-              <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--text3)', minWidth: 140 }}>{v.label}</span>
-              <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--gold2)', minWidth: 40 }}>
+              <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 140 }}>{v.label}</span>
+              <span style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--foreground)', minWidth: 40 }}>
                 {v.planet ? `${v.planet.gate}.${v.planet.line}` : '—'}
               </span>
               <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--aqua2)', minWidth: 20 }}>{v.arrow}</span>
-              <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--text2)' }}>{v.side}</span>
+              <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--muted-foreground)' }}>{v.side}</span>
             </div>
           ))}
         </div>
@@ -421,14 +421,14 @@ function VariablesTab({ chart }) {
           ])].sort((a, b) => a - b).map(gate => {
             const isPerson = Object.values(chart.personality).some(p => p.gate === gate)
             const isDesign  = Object.values(chart.design).some(p => p.gate === gate)
-            const color = (isPerson && isDesign) ? 'var(--gold)' : isPerson ? PERSON_COLOR : DESIGN_COLOR
+            const color = (isPerson && isDesign) ? 'var(--foreground)' : isPerson ? PERSON_COLOR : DESIGN_COLOR
             return (
               <div key={gate} style={{
                 padding: '6px 10px', borderRadius: 8, border: `1px solid ${(isPerson && isDesign) ? 'rgba(201,168,76,.3)' : isPerson ? 'rgba(255,255,255,.12)' : 'rgba(204,51,51,.3)'}`,
-                background: (isPerson && isDesign) ? 'rgba(201,168,76,.06)' : isPerson ? 'rgba(255,255,255,.03)' : 'rgba(204,51,51,.05)',
+                background: (isPerson && isDesign) ? 'rgba(201,168,76,.06)' : isPerson ? 'var(--secondary)' : 'rgba(204,51,51,.05)',
               }}>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, color, textAlign: 'center' }}>{gate}</div>
-                <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--text3)', textAlign: 'center', marginTop: 2 }}>{GATE_DESCRIPTIONS[gate] || `Gate ${gate}`}</div>
+                <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)', textAlign: 'center', marginTop: 2 }}>{GATE_DESCRIPTIONS[gate] || `Gate ${gate}`}</div>
               </div>
             )
           })}

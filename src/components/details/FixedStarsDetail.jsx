@@ -27,20 +27,20 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   starRow: (isExact) => ({
@@ -57,12 +57,12 @@ const S = {
   }),
   emptyState: {
     textAlign: 'center', padding: '48px 24px',
-    fontStyle: 'italic', color: 'var(--text3)', fontSize: 14,
+    fontStyle: 'italic', color: 'var(--muted-foreground)', fontSize: 14,
   },
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -96,7 +96,7 @@ export default function FixedStarsDetail() {
       {/* Header */}
       <div>
         <div style={S.heading}>✦ Fixed Stars</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Prominent stars conjunct natal planets within {1.5}° — ancient stellar influences
         </div>
       </div>
@@ -108,16 +108,16 @@ export default function FixedStarsDetail() {
           <div style={{ ...S.glass, display: 'flex', gap: 24, justifyContent: 'center' }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{
-                fontFamily: "'Cinzel', serif", fontSize: 28, color: 'var(--gold)', letterSpacing: '.1em',
+                fontFamily: "'Cinzel', serif", fontSize: 28, color: 'var(--foreground)', letterSpacing: '.1em',
               }}>{conjunctions.length}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Total Conjunctions</div>
+              <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Total Conjunctions</div>
             </div>
             {exactCount > 0 && (
               <div style={{ textAlign: 'center' }}>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 28, color: '#e8c040', letterSpacing: '.1em',
                 }}>{exactCount}</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>Exact (&lt;0.5°)</div>
+                <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Exact (&lt;0.5°)</div>
               </div>
             )}
           </div>
@@ -134,7 +134,7 @@ export default function FixedStarsDetail() {
           <div style={S.emptyState}>
             No fixed star conjunctions within 1.5° found in this natal chart.
             <br />
-            <span style={{ fontSize: 12, color: 'var(--text3)', display: 'block', marginTop: 8 }}>
+            <span style={{ fontSize: 12, color: 'var(--muted-foreground)', display: 'block', marginTop: 8 }}>
               Try widening the orb or check birth data accuracy.
             </span>
           </div>
@@ -148,8 +148,8 @@ export default function FixedStarsDetail() {
                 <div style={{
                   width: 40, height: 40, borderRadius: 10, flexShrink: 0,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)',
-                  fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--gold)',
+                  background: 'rgba(201,168,76,.06)', border: '1px solid var(--accent)',
+                  fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--foreground)',
                 }}>
                   {sym}
                 </div>
@@ -164,7 +164,7 @@ export default function FixedStarsDetail() {
                       {c.star}
                     </span>
                     {c.exact && (
-                      <span style={S.badge('rgba(201,168,76,.1)', 'rgba(201,168,76,.3)', 'var(--gold)')}>
+                      <span style={S.badge('var(--accent)', 'rgba(201,168,76,.3)', 'var(--foreground)')}>
                         Exact
                       </span>
                     )}
@@ -173,7 +173,7 @@ export default function FixedStarsDetail() {
                     </span>
                     <span style={{
                       fontFamily: "'Inconsolata', monospace", fontSize: 10,
-                      color: 'var(--text3)', marginLeft: 'auto',
+                      color: 'var(--muted-foreground)', marginLeft: 'auto',
                     }}>
                       {c.planet} ∿ orb {c.orb}°
                     </span>
@@ -188,14 +188,14 @@ export default function FixedStarsDetail() {
                   </div>
 
                   {/* Meaning */}
-                  <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.5, fontStyle: 'italic' }}>
+                  <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.5, fontStyle: 'italic' }}>
                     {c.meaning}
                   </div>
 
                   {/* Degree info */}
                   <div style={{
                     fontFamily: "'Inconsolata', monospace", fontSize: 10,
-                    color: 'var(--text3)', marginTop: 6,
+                    color: 'var(--muted-foreground)', marginTop: 6,
                   }}>
                     {c.planetSign} {Number(c.planetDegree).toFixed(1)}° conjunct {c.star} in {c.starSign}
                   </div>
@@ -218,7 +218,7 @@ export default function FixedStarsDetail() {
                 display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
                 borderRadius: 8,
                 background: isActive ? 'rgba(201,168,76,.06)' : 'rgba(255,255,255,.01)',
-                border: `1px solid ${isActive ? 'rgba(201,168,76,.18)' : 'rgba(255,255,255,.04)'}`,
+                border: `1px solid ${isActive ? 'rgba(201,168,76,.18)' : 'var(--secondary)'}`,
               }}>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 12, color: nc,
@@ -226,10 +226,10 @@ export default function FixedStarsDetail() {
                 }}>
                   {isActive && '✦ '}{star.name}
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', flex: 1 }}>
+                <div style={{ fontSize: 10, color: 'var(--muted-foreground)', flex: 1 }}>
                   {star.sign} {star.lon}° · {star.nature}
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', maxWidth: 160, textAlign: 'right' }}>
+                <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', maxWidth: 160, textAlign: 'right' }}>
                   {star.keywords}
                 </div>
               </div>
@@ -247,7 +247,7 @@ export default function FixedStarsDetail() {
             conjunction{conjunctions.length > 1 ? 's' : ''},{' '}
             {exactCount > 0 ? `including ${exactCount} exact alignment${exactCount > 1 ? 's' : ''} under 0.5°. ` : ''}
             The brightest influence is{' '}
-            <span style={{ color: NATURE_COLORS[conjunctions[0].nature] || 'var(--gold)' }}>
+            <span style={{ color: NATURE_COLORS[conjunctions[0].nature] || 'var(--foreground)' }}>
               {conjunctions[0].star}
             </span>{' '}
             conjunct your {conjunctions[0].planet.toUpperCase()} — bringing{' '}

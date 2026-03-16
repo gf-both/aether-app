@@ -31,7 +31,7 @@ const S = {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600,
     letterSpacing: '.18em', color: '#ee8866',
   },
-  sub: { fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.5 },
+  sub: { fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
     textTransform: 'uppercase', color: '#ee8866',
@@ -39,7 +39,7 @@ const S = {
   },
   question: {
     fontFamily: "'Cormorant Garamond', serif", fontSize: 16, lineHeight: 1.6,
-    color: 'var(--text)', textAlign: 'center', fontStyle: 'italic',
+    color: 'var(--foreground)', textAlign: 'center', fontStyle: 'italic',
   },
   optBtn: (selected) => ({
     flex: 1, padding: '18px 20px', borderRadius: 12, cursor: 'pointer',
@@ -49,13 +49,13 @@ const S = {
   }),
   counter: {
     fontFamily: "'Inconsolata', monospace", fontSize: 11,
-    color: 'var(--text3)', letterSpacing: '.1em', textAlign: 'center',
+    color: 'var(--muted-foreground)', letterSpacing: '.1em', textAlign: 'center',
   },
   progressWrap: { display: 'flex', gap: 3, height: 4, borderRadius: 2, overflow: 'hidden' },
   closeBtn: {
     alignSelf: 'flex-end', fontFamily: "'Cinzel', serif", fontSize: 9,
     letterSpacing: '.2em', textTransform: 'uppercase',
-    color: 'var(--text3)', cursor: 'pointer',
+    color: 'var(--muted-foreground)', cursor: 'pointer',
     padding: '6px 16px', borderRadius: 20,
     border: '1px solid rgba(255,255,255,.08)', background: 'none',
   },
@@ -121,7 +121,7 @@ export default function LoveLangQuiz({ onClose }) {
               }}>
                 {result.primary?.name}
               </div>
-              <div style={{ fontSize: 14, color: 'var(--text2)', fontStyle: 'italic', marginTop: 8 }}>
+              <div style={{ fontSize: 14, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 8 }}>
                 {result.primary?.desc}
               </div>
             </div>
@@ -131,14 +131,14 @@ export default function LoveLangQuiz({ onClose }) {
                 <div style={S.sectionTitle}>Secondary: {result.secondary?.name}</div>
                 <div style={{
                   borderRadius: 10, padding: '12px 16px',
-                  background: LANG_COLORS[result.secondary?.id]?.bg || 'rgba(255,255,255,.03)',
+                  background: LANG_COLORS[result.secondary?.id]?.bg || 'var(--secondary)',
                   border: `1px solid ${LANG_COLORS[result.secondary?.id]?.border || 'rgba(255,255,255,.08)'}`,
                   display: 'flex', alignItems: 'center', gap: 12,
                 }}>
                   <span style={{ fontSize: 24 }}>{result.secondary?.emoji}</span>
                   <div>
                     <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: LANG_COLORS[result.secondary?.id]?.color, letterSpacing: '.08em' }}>{result.secondary?.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', marginTop: 2 }}>{result.secondary?.desc}</div>
+                    <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 2 }}>{result.secondary?.desc}</div>
                   </div>
                 </div>
               </>
@@ -155,11 +155,11 @@ export default function LoveLangQuiz({ onClose }) {
                     <span style={{ fontSize: 13, color: LANG_COLORS[lang.id].color }}>
                       {lang.emoji} {lang.name}
                     </span>
-                    <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text3)' }}>
+                    <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)' }}>
                       {score}/{total}
                     </span>
                   </div>
-                  <div style={{ height: 5, borderRadius: 3, background: 'rgba(255,255,255,.04)' }}>
+                  <div style={{ height: 5, borderRadius: 3, background: 'var(--secondary)' }}>
                     <div style={{
                       height: '100%', borderRadius: 3, width: pct + '%',
                       background: LANG_COLORS[lang.id].color, transition: 'width .6s ease',
@@ -182,7 +182,7 @@ export default function LoveLangQuiz({ onClose }) {
               {LOVE_LANG_QUESTIONS.map((_, i) => (
                 <div key={i} style={{
                   flex: 1, borderRadius: 2,
-                  background: i < step ? 'rgba(238,136,102,.5)' : i === step ? 'rgba(238,136,102,.3)' : 'rgba(255,255,255,.06)',
+                  background: i < step ? 'rgba(238,136,102,.5)' : i === step ? 'rgba(238,136,102,.3)' : 'var(--border)',
                 }} />
               ))}
             </div>
@@ -207,14 +207,14 @@ export default function LoveLangQuiz({ onClose }) {
                     {LOVE_LANGUAGES.find(l => l.id === opt.lang)?.emoji}{' '}
                     {LOVE_LANGUAGES.find(l => l.id === opt.lang)?.name}
                   </div>
-                  <div style={{ fontSize: 15, color: 'var(--text2)', lineHeight: 1.6 }}>{opt.text}</div>
+                  <div style={{ fontSize: 15, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>{opt.text}</div>
                 </div>
               ))}
             </div>
 
             <div style={{
               fontFamily: "'Inconsolata', monospace", fontSize: 10,
-              color: 'var(--text3)', textAlign: 'center', letterSpacing: '.08em',
+              color: 'var(--muted-foreground)', textAlign: 'center', letterSpacing: '.08em',
             }}>
               Click to choose — no next button needed
             </div>

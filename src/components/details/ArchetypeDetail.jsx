@@ -7,7 +7,7 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
@@ -20,11 +20,11 @@ const S = {
     color: '#a878e8', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid rgba(144,80,224,.18)',
+    background: 'var(--card)', border: '1px solid rgba(144,80,224,.18)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
     background: 'rgba(144,80,224,.03)', border: '1px solid rgba(144,80,224,.1)',
   },
@@ -51,7 +51,7 @@ export default function ArchetypeDetail() {
       {/* Header */}
       <div>
         <div style={S.heading}>⬡ Archetype Assessment</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Jungian archetypes · 12 patterns · Drive, fear, gift, shadow
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function ArchetypeDetail() {
                       fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
                       textTransform: 'uppercase', color: `${color}88`, marginBottom: 4,
                     }}>{label}</div>
-                    <div style={{ fontSize: 13, color: 'var(--text2)' }}>{value}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted-foreground)' }}>{value}</div>
                   </div>
                 ))}
               </div>
@@ -119,10 +119,10 @@ export default function ArchetypeDetail() {
                   }}>
                     <div style={{
                       fontFamily: "'Cinzel', serif", fontSize: 10,
-                      color: isActive ? '#a878e8' : 'var(--text3)',
+                      color: isActive ? '#a878e8' : 'var(--muted-foreground)',
                       fontWeight: isActive ? 700 : 400, letterSpacing: '.06em',
                     }}>{a.name}</div>
-                    <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', marginTop: 2 }}>
+                    <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 2 }}>
                       {a.drive}
                     </div>
                   </div>
@@ -136,14 +136,14 @@ export default function ArchetypeDetail() {
             <span
               style={{
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                textTransform: 'uppercase', color: 'var(--text3)', cursor: 'pointer',
+                textTransform: 'uppercase', color: 'var(--muted-foreground)', cursor: 'pointer',
                 padding: '8px 20px', borderRadius: 20,
                 border: '1px solid rgba(255,255,255,.08)',
                 transition: 'all .2s', display: 'inline-block',
               }}
               onClick={() => setShowQuiz(true)}
               onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(144,80,224,.3)'; e.currentTarget.style.color='#a878e8' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.08)'; e.currentTarget.style.color='var(--text3)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.08)'; e.currentTarget.style.color='var(--muted-foreground)' }}
             >
               Retake Quiz
             </span>
@@ -164,7 +164,7 @@ export default function ArchetypeDetail() {
                     fontFamily: "'Cinzel', serif", fontSize: 11, color: '#a878e8',
                     letterSpacing: '.08em', marginBottom: 4,
                   }}>{a.name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>
+                  <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
                     Drive: {a.drive} · Fear: {a.fear}
                   </div>
                 </div>

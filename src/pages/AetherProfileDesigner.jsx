@@ -63,7 +63,7 @@ const TABS = [
 
 function TabBar({ active, onChange }) {
   return (
-    <div style={{ display: 'flex', gap: 4, padding: '12px 18px 0', borderBottom: '1px solid rgba(201,168,76,0.08)', flexShrink: 0 }}>
+    <div style={{ display: 'flex', gap: 4, padding: '12px 18px 0', borderBottom: '1px solid var(--accent)', flexShrink: 0 }}>
       {TABS.map(t => (
         <button
           key={t.id}
@@ -74,7 +74,7 @@ function TabBar({ active, onChange }) {
             border: '1px solid',
             borderBottom: 'none',
             borderColor: active === t.id ? 'rgba(201,168,76,0.3)' : 'transparent',
-            background: active === t.id ? 'rgba(201,168,76,0.08)' : 'transparent',
+            background: active === t.id ? 'var(--accent)' : 'transparent',
             color: active === t.id ? GOLD2 : 'rgba(255,255,255,0.4)',
             fontFamily: "'Cinzel', serif",
             fontSize: 9,
@@ -331,7 +331,7 @@ function ArchetypeCard({ profile, selected, onSelect }) {
         padding: '14px 16px',
         cursor: 'pointer',
         border: `1px solid ${selected ? 'rgba(201,168,76,0.5)' : 'rgba(201,168,76,0.12)'}`,
-        background: selected ? 'rgba(201,168,76,0.08)' : 'rgba(255,255,255,0.02)',
+        background: selected ? 'var(--accent)' : 'rgba(255,255,255,0.02)',
         transition: 'all .2s',
       }}
     >
@@ -340,7 +340,7 @@ function ArchetypeCard({ profile, selected, onSelect }) {
       <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 8, lineHeight: 1.5 }}>{profile.description}</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
         {(profile.bestFor || []).slice(0, 3).map(r => (
-          <span key={r} style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(201,168,76,0.1)', color: GOLD, fontFamily: "'Cinzel',serif", letterSpacing: '.06em' }}>{r}</span>
+          <span key={r} style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'var(--accent)', color: GOLD, fontFamily: "'Cinzel',serif", letterSpacing: '.06em' }}>{r}</span>
         ))}
       </div>
     </div>
@@ -662,7 +662,7 @@ export default function AetherProfileDesigner() {
       {/* Header */}
       <div style={{
         padding: '14px 20px 0',
-        borderBottom: '1px solid rgba(201,168,76,0.08)',
+        borderBottom: '1px solid var(--accent)',
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>

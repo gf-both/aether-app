@@ -15,7 +15,7 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
@@ -28,11 +28,11 @@ const S = {
     color: '#ee8866', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid rgba(238,136,102,.18)',
+    background: 'var(--card)', border: '1px solid rgba(238,136,102,.18)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
     background: 'rgba(238,136,102,.03)', border: '1px solid rgba(238,136,102,.1)',
   },
@@ -62,7 +62,7 @@ export default function LoveLangDetail() {
       {/* Header */}
       <div>
         <div style={S.heading}>🤗 Love Languages</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Gary Chapman's 5 Love Languages · How you give and receive love
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function LoveLangDetail() {
               }}>
                 {primary.name}
               </div>
-              <div style={{ fontSize: 14, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.6 }}>
+              <div style={{ fontSize: 14, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.6 }}>
                 {primary.desc}
               </div>
             </div>
@@ -103,18 +103,18 @@ export default function LoveLangDetail() {
                     display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px',
                     borderRadius: 9,
                     background: isActive ? c.bg : 'rgba(255,255,255,.015)',
-                    border: `1px solid ${isActive ? c.border : 'rgba(255,255,255,.04)'}`,
+                    border: `1px solid ${isActive ? c.border : 'var(--secondary)'}`,
                   }}>
                     <span style={{ fontSize: 24 }}>{lang.emoji}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{
                         fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.06em',
-                        color: isActive ? c.color : 'var(--text2)',
+                        color: isActive ? c.color : 'var(--muted-foreground)',
                         fontWeight: isActive ? 700 : 400,
                       }}>
                         {lang.name}
                       </div>
-                      <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', marginTop: 2 }}>
+                      <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 2 }}>
                         {lang.desc}
                       </div>
                     </div>
@@ -151,14 +151,14 @@ export default function LoveLangDetail() {
             <span
               style={{
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                textTransform: 'uppercase', color: 'var(--text3)', cursor: 'pointer',
+                textTransform: 'uppercase', color: 'var(--muted-foreground)', cursor: 'pointer',
                 padding: '8px 20px', borderRadius: 20,
                 border: '1px solid rgba(255,255,255,.08)',
                 transition: 'all .2s', display: 'inline-block',
               }}
               onClick={() => setShowQuiz(true)}
               onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(238,136,102,.3)'; e.currentTarget.style.color='#ee8866' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.08)'; e.currentTarget.style.color='var(--text3)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,.08)'; e.currentTarget.style.color='var(--muted-foreground)' }}
             >
               Retake Quiz
             </span>
@@ -180,7 +180,7 @@ export default function LoveLangDetail() {
                         <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, color: c.color, letterSpacing: '.08em' }}>
                           {lang.name}
                         </div>
-                        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', marginTop: 4 }}>
+                        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>
                           {lang.desc}
                         </div>
                       </div>

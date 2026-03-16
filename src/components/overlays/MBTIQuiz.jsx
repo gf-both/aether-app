@@ -86,43 +86,43 @@ const S = {
     padding: '16px',
   },
   modal: {
-    background: 'var(--panel-bg)', border: '1px solid rgba(201,168,76,.18)',
+    background: 'var(--card)', border: '1px solid rgba(201,168,76,.18)',
     borderRadius: 18, maxWidth: 540, width: '100%', maxHeight: '90vh',
     overflowY: 'auto', padding: '28px 28px 24px',
     display: 'flex', flexDirection: 'column', gap: 22,
     fontFamily: "'Cormorant Garamond', Georgia, serif",
-    color: 'var(--text)',
+    color: 'var(--foreground)',
     boxShadow: '0 24px 64px rgba(0,0,0,.6)',
   },
   title: {
     fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 600,
-    letterSpacing: '.18em', color: 'var(--gold)',
+    letterSpacing: '.18em', color: 'var(--foreground)',
   },
   subtitle: {
-    fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.5,
+    fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5,
   },
   sectionLabel: {
     fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 600,
     letterSpacing: '.25em', textTransform: 'uppercase',
-    color: 'var(--gold3)', marginBottom: 4,
+    color: 'var(--muted-foreground)', marginBottom: 4,
   },
   progress: {
-    height: 4, borderRadius: 2, background: 'rgba(255,255,255,.06)', overflow: 'hidden',
+    height: 4, borderRadius: 2, background: 'var(--border)', overflow: 'hidden',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   question: {
-    fontSize: 15, lineHeight: 1.65, color: 'var(--text)', fontWeight: 500,
+    fontSize: 15, lineHeight: 1.65, color: 'var(--foreground)', fontWeight: 500,
   },
   optBtn: (active) => ({
     flex: 1, padding: '12px 14px', borderRadius: 10, cursor: 'pointer',
     fontFamily: "'Cormorant Garamond', serif", fontSize: 13, lineHeight: 1.5,
     textAlign: 'left',
-    background: active ? 'rgba(201,168,76,.14)' : 'rgba(255,255,255,.03)',
+    background: active ? 'rgba(201,168,76,.14)' : 'var(--secondary)',
     border: `1px solid ${active ? 'rgba(201,168,76,.4)' : 'rgba(255,255,255,.07)'}`,
-    color: active ? 'var(--gold)' : 'var(--text2)',
+    color: active ? 'var(--foreground)' : 'var(--muted-foreground)',
     transition: 'all .18s',
     display: 'flex', alignItems: 'flex-start', gap: 10,
   }),
@@ -130,18 +130,18 @@ const S = {
     padding: primary ? '11px 28px' : '9px 22px',
     borderRadius: 10, cursor: 'pointer',
     fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.12em',
-    background: primary ? 'rgba(201,168,76,.14)' : 'rgba(255,255,255,.04)',
-    border: `1px solid ${primary ? 'rgba(201,168,76,.35)' : 'rgba(255,255,255,.08)'}`,
-    color: primary ? 'var(--gold)' : 'var(--text3)',
+    background: primary ? 'rgba(201,168,76,.14)' : 'var(--secondary)',
+    border: `1px solid ${primary ? 'var(--ring)' : 'rgba(255,255,255,.08)'}`,
+    color: primary ? 'var(--foreground)' : 'var(--muted-foreground)',
     transition: 'all .18s',
   }),
   resultCode: {
     fontFamily: "'Cinzel', serif", fontSize: 36, letterSpacing: '.2em',
-    color: 'var(--gold)', textAlign: 'center',
+    color: 'var(--foreground)', textAlign: 'center',
   },
   resultName: {
     fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: '.1em',
-    color: 'var(--gold2)', textAlign: 'center',
+    color: 'var(--foreground)', textAlign: 'center',
   },
   barTrack: {
     flex: 1, height: 8, borderRadius: 4,
@@ -150,11 +150,11 @@ const S = {
   barFill: (pct, primary) => ({
     height: '100%', borderRadius: 4,
     width: `${pct * 100}%`,
-    background: primary ? 'var(--gold)' : 'rgba(201,168,76,.3)',
+    background: primary ? 'var(--foreground)' : 'rgba(201,168,76,.3)',
     transition: 'width .6s ease',
   }),
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--muted-foreground)',
   },
 }
 
@@ -180,7 +180,7 @@ function QuizResult({ code, scores, onSave, onRetake, onClose }) {
       <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div style={S.resultCode}>{code}</div>
         <div style={S.resultName}>{typeData.name}</div>
-        <div style={{ fontSize: 13, color: 'var(--text3)', fontStyle: 'italic', textAlign: 'center' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', textAlign: 'center' }}>
           {typeData.desc}
         </div>
       </div>
@@ -197,18 +197,18 @@ function QuizResult({ code, scores, onSave, onRetake, onClose }) {
             return (
               <div key={label}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em', color: 'var(--gold3)', textTransform: 'uppercase' }}>{label}</span>
-                  <span style={{ ...S.mono, fontSize: 10, color: 'var(--gold)' }}>{winner} ({Math.max(scoreA, scoreB)}/{total})</span>
+                  <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em', color: 'var(--muted-foreground)', textTransform: 'uppercase' }}>{label}</span>
+                  <span style={{ ...S.mono, fontSize: 10, color: 'var(--foreground)' }}>{winner} ({Math.max(scoreA, scoreB)}/{total})</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <span style={{ ...S.mono, fontSize: 11, color: scoreA >= scoreB ? 'var(--gold)' : 'var(--text3)', minWidth: 12, textAlign: 'center' }}>{a}</span>
+                  <span style={{ ...S.mono, fontSize: 11, color: scoreA >= scoreB ? 'var(--foreground)' : 'var(--muted-foreground)', minWidth: 12, textAlign: 'center' }}>{a}</span>
                   <div style={S.barTrack}>
                     <div style={S.barFill(scoreA / total, scoreA >= scoreB)} />
                   </div>
                   <div style={S.barTrack}>
                     <div style={{ ...S.barFill(scoreB / total, scoreB > scoreA), transform: 'scaleX(-1)', transformOrigin: 'right' }} />
                   </div>
-                  <span style={{ ...S.mono, fontSize: 11, color: scoreB > scoreA ? 'var(--gold)' : 'var(--text3)', minWidth: 12, textAlign: 'center' }}>{b}</span>
+                  <span style={{ ...S.mono, fontSize: 11, color: scoreB > scoreA ? 'var(--foreground)' : 'var(--muted-foreground)', minWidth: 12, textAlign: 'center' }}>{b}</span>
                 </div>
               </div>
             )
@@ -216,7 +216,7 @@ function QuizResult({ code, scores, onSave, onRetake, onClose }) {
         </div>
       </div>
 
-      <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.6 }}>
+      <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.6 }}>
         This is a simplified self-report indicator. For deeper cognitive analysis, explore the full
         function stack in the MBTI detail view after saving.
       </div>
@@ -304,7 +304,7 @@ export default function MBTIQuiz({ onClose }) {
                 <span style={{ ...S.sectionLabel, marginBottom: 0 }}>
                   {dimLabel}
                 </span>
-                <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)' }}>
+                <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)' }}>
                   {step + 1} / {totalSteps}
                 </span>
               </div>
@@ -313,10 +313,10 @@ export default function MBTIQuiz({ onClose }) {
                   <div key={i} style={{
                     flex: 1, borderRadius: 2,
                     background: i < step
-                      ? 'rgba(201,168,76,.5)'
+                      ? 'var(--ring)'
                       : i === step
-                        ? 'var(--gold)'
-                        : 'rgba(255,255,255,.06)',
+                        ? 'var(--foreground)'
+                        : 'var(--border)',
                     transition: 'background .3s',
                   }} />
                 ))}
@@ -338,10 +338,10 @@ export default function MBTIQuiz({ onClose }) {
                   >
                     <span style={{
                       fontFamily: "'Cinzel', serif", fontSize: 14,
-                      color: currentAnswer === key ? 'var(--gold)' : 'rgba(201,168,76,.35)',
+                      color: currentAnswer === key ? 'var(--foreground)' : 'var(--ring)',
                       width: 22, height: 22, borderRadius: '50%',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      border: `1px solid ${currentAnswer === key ? 'rgba(201,168,76,.5)' : 'rgba(255,255,255,.1)'}`,
+                      border: `1px solid ${currentAnswer === key ? 'var(--ring)' : 'rgba(255,255,255,.1)'}`,
                       flexShrink: 0, marginTop: 2,
                     }}>{key}</span>
                     <span>{text}</span>
@@ -374,7 +374,7 @@ export default function MBTIQuiz({ onClose }) {
             <div style={{ textAlign: 'center' }}>
               <span
                 onClick={onClose}
-                style={{ fontSize: 11, color: 'var(--text3)', cursor: 'pointer', fontStyle: 'italic' }}
+                style={{ fontSize: 11, color: 'var(--muted-foreground)', cursor: 'pointer', fontStyle: 'italic' }}
               >
                 Close quiz
               </span>

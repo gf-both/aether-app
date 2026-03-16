@@ -45,7 +45,7 @@ const PILLARS = [
   { name: 'Pillar of Equilibrium', hebrew: 'Shvil haZahav', side: 'Middle',
     sephiroth: ['Kether', 'Tiphareth', 'Yesod', 'Malkuth'],
     desc: 'The central column of balance and consciousness. All four sephiroth are active -- the spine of your Tree is fully illuminated, indicating a soul path focused on integration and wholeness.',
-    color: 'var(--gold)' },
+    color: 'var(--foreground)' },
   { name: 'Pillar of Mercy', hebrew: 'Chesed', side: 'Right',
     sephiroth: ['Chokmah', 'Chesed', 'Netzach'],
     desc: 'The masculine, expansive, force-giving pillar. Chokmah is active but Chesed and Netzach are dormant -- wisdom flows but may struggle to find its generous, loving expression.',
@@ -64,7 +64,7 @@ const ACTIVE_PATHS = [
 
 const PILLAR_COLORS = {
   Severity: 'var(--rose)',
-  Equilibrium: 'var(--gold)',
+  Equilibrium: 'var(--foreground)',
   Mercy: 'var(--aqua2)',
 }
 
@@ -73,35 +73,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -110,9 +110,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -160,7 +160,7 @@ export default function KabbalahDetail() {
             ? 'All four sephiroth are active — the spine of your Tree is fully illuminated, indicating a soul path focused on integration and wholeness.'
             : `${eq} of 4 equilibrium sephiroth are active — the central column is partially illuminated.`
         })(),
-        color: 'var(--gold)' },
+        color: 'var(--foreground)' },
       { name: 'Pillar of Mercy', hebrew: 'Chesed', side: 'Right',
         sephiroth: ['Chokmah', 'Chesed', 'Netzach'],
         desc: mercyActive >= 2
@@ -184,7 +184,7 @@ export default function KabbalahDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u2721'} Kabbalah</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Tree of Life -- Sephiroth, pillars, paths, and the hidden Da'ath
         </div>
       </div>
@@ -205,9 +205,9 @@ export default function KabbalahDetail() {
         <div style={S.sectionTitle}>
           The 10 Sephiroth
           <span style={{ float: 'right', fontFamily: "'Inconsolata', monospace", fontSize: 10 }}>
-            <span style={{ color: 'var(--gold)' }}>{activeCount} active</span>
+            <span style={{ color: 'var(--foreground)' }}>{activeCount} active</span>
             {' / '}
-            <span style={{ color: 'var(--text3)' }}>{10 - activeCount} dormant</span>
+            <span style={{ color: 'var(--muted-foreground)' }}>{10 - activeCount} dormant</span>
           </span>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -217,7 +217,7 @@ export default function KabbalahDetail() {
             return (
               <div key={i} style={{
                 ...S.row,
-                borderColor: s.active ? colBase + '0.2)' : 'rgba(255,255,255,.04)',
+                borderColor: s.active ? colBase + '0.2)' : 'var(--secondary)',
                 background: s.active ? colBase + '0.04)' : 'rgba(255,255,255,.015)',
                 flexDirection: 'column', alignItems: 'stretch', gap: 6,
                 padding: '12px 16px',
@@ -225,7 +225,7 @@ export default function KabbalahDetail() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{
                     fontSize: 22, minWidth: 36, textAlign: 'center',
-                    color: s.active ? colBase + '0.9)' : 'var(--text3)',
+                    color: s.active ? colBase + '0.9)' : 'var(--muted-foreground)',
                     opacity: s.active ? 1 : 0.4,
                   }}>
                     {orig?.glyph || '\u25CB'}
@@ -234,38 +234,38 @@ export default function KabbalahDetail() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span style={{
                         fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: '.1em',
-                        color: s.active ? colBase + '0.9)' : 'var(--text3)',
+                        color: s.active ? colBase + '0.9)' : 'var(--muted-foreground)',
                       }}>
                         {s.name}
                       </span>
                       <span style={{
                         fontFamily: "'Inconsolata', monospace", fontSize: 11,
-                        color: 'var(--text3)', opacity: 0.6,
+                        color: 'var(--muted-foreground)', opacity: 0.6,
                       }}>#{s.num}</span>
                       <span style={S.badge(
-                        PILLAR_COLORS[s.pillar] ? PILLAR_COLORS[s.pillar].replace(')', '') + ', .08)' : 'rgba(255,255,255,.04)',
+                        PILLAR_COLORS[s.pillar] ? PILLAR_COLORS[s.pillar].replace(')', '') + ', .08)' : 'var(--secondary)',
                         PILLAR_COLORS[s.pillar] ? PILLAR_COLORS[s.pillar].replace(')', '') + ', .2)' : 'rgba(255,255,255,.08)',
-                        PILLAR_COLORS[s.pillar] || 'var(--text3)',
+                        PILLAR_COLORS[s.pillar] || 'var(--muted-foreground)',
                       )}>
                         {s.pillar}
                       </span>
                     </div>
                     <div style={{
                       fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.12em',
-                      textTransform: 'uppercase', color: 'var(--text3)', marginTop: 2,
+                      textTransform: 'uppercase', color: 'var(--muted-foreground)', marginTop: 2,
                     }}>
                       {s.attr}
                     </div>
                   </div>
                   <span style={S.badge(
-                    s.active ? 'rgba(201,168,76,.1)' : 'rgba(255,255,255,.04)',
+                    s.active ? 'var(--accent)' : 'var(--secondary)',
                     s.active ? 'rgba(201,168,76,.25)' : 'rgba(255,255,255,.08)',
-                    s.active ? 'var(--gold)' : 'var(--text3)',
+                    s.active ? 'var(--foreground)' : 'var(--muted-foreground)',
                   )}>
                     {s.active ? 'Active' : 'Dormant'}
                   </span>
                 </div>
-                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5, paddingLeft: 48 }}>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5, paddingLeft: 48 }}>
                   {s.interp}
                 </div>
               </div>
@@ -290,7 +290,7 @@ export default function KabbalahDetail() {
                   color: p.color, marginBottom: 2,
                 }}>{p.name}</div>
                 <div style={{
-                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)',
                 }}>{p.hebrew} -- {p.side}</div>
               </div>
               <div style={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -298,14 +298,14 @@ export default function KabbalahDetail() {
                   const sd = SEPHIROTH_DETAIL.find(s => s.name === sn)
                   return (
                     <span key={j} style={S.badge(
-                      sd?.active ? 'rgba(201,168,76,.1)' : 'rgba(255,255,255,.04)',
+                      sd?.active ? 'var(--accent)' : 'var(--secondary)',
                       sd?.active ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.08)',
-                      sd?.active ? 'var(--gold)' : 'var(--text3)',
+                      sd?.active ? 'var(--foreground)' : 'var(--muted-foreground)',
                     )}>{sn}</span>
                   )
                 })}
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center' }}>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center' }}>
                 {p.desc}
               </div>
             </div>
@@ -320,18 +320,18 @@ export default function KabbalahDetail() {
           {ACTIVE_PATHS_LIVE.map((p, i) => (
             <div key={i} style={S.row}>
               <span style={{
-                fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--gold)',
+                fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--foreground)',
                 width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                borderRadius: 8, background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)',
+                borderRadius: 8, background: 'var(--accent)', border: '1px solid var(--accent)',
                 flexShrink: 0,
               }}>{p.num}</span>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ ...S.mono, color: 'var(--text2)', fontSize: 11 }}>
+                  <span style={{ ...S.mono, color: 'var(--muted-foreground)', fontSize: 11 }}>
                     {p.from} {'\u2192'} {p.to}
                   </span>
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>{p.desc}</span>
+                <span style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>{p.desc}</span>
               </div>
               <span style={{
                 ...S.badge('rgba(144,80,224,.1)', 'rgba(144,80,224,.25)', 'var(--violet2)'),
@@ -356,10 +356,10 @@ export default function KabbalahDetail() {
           }}>Da'ath</div>
           <div style={{
             fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.18em',
-            textTransform: 'uppercase', color: 'var(--text3)', marginBottom: 14,
+            textTransform: 'uppercase', color: 'var(--muted-foreground)', marginBottom: 14,
           }}>The Abyss -- Knowledge Beyond Understanding</div>
           <div style={{
-            fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.7,
+            fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.7,
             maxWidth: 600, margin: '0 auto',
           }}>
             Da'ath is the invisible Sephirah that sits between the Supernal Triad (Kether, Chokmah, Binah)
@@ -375,7 +375,7 @@ export default function KabbalahDetail() {
       <div>
         <div style={S.sectionTitle}>Personal Kabbalah Life Path</div>
         <div style={S.interpretation}>
-          Your Tree of Life reveals a <span style={{ color: 'var(--gold)' }}>strongly illuminated central pillar</span> --
+          Your Tree of Life reveals a <span style={{ color: 'var(--foreground)' }}>strongly illuminated central pillar</span> --
           Kether, Tiphareth, Yesod, and Malkuth are all active, forming an unbroken channel from
           divine crown to earthly kingdom. This is the mark of a soul whose purpose is{' '}
           <span style={{ color: 'var(--aqua2)' }}>integration and embodiment</span> rather than retreat

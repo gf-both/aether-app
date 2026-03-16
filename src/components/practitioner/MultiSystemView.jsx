@@ -14,28 +14,28 @@ const s = {
   container: {
     padding: '24px',
     fontFamily: "'Cormorant Garamond',serif",
-    color: 'var(--text)',
+    color: 'var(--foreground)',
   },
   sectionTitle: {
     fontFamily: "'Cinzel',serif",
     fontSize: '11px',
     letterSpacing: '.18em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     marginBottom: '14px',
     textTransform: 'uppercase',
   },
   card: {
-    background: 'rgba(255,255,255,.02)',
-    border: '1px solid rgba(255,255,255,.06)',
+    background: 'var(--secondary)',
+    border: '1px solid var(--border)',
     borderRadius: '12px',
     padding: '16px',
   },
   select: {
-    background: 'rgba(255,255,255,.03)',
+    background: 'var(--secondary)',
     border: '1px solid rgba(255,255,255,.08)',
     borderRadius: '8px',
     padding: '8px 12px',
-    color: 'var(--text)',
+    color: 'var(--foreground)',
     fontSize: '12px',
     fontFamily: "'Cormorant Garamond',serif",
     outline: 'none',
@@ -50,9 +50,9 @@ const s = {
     letterSpacing: '.06em',
     cursor: 'pointer',
     transition: 'all .2s',
-    background: active ? 'rgba(201,168,76,.12)' : 'transparent',
-    border: active ? '1px solid rgba(201,168,76,.25)' : '1px solid rgba(255,255,255,.06)',
-    color: active ? 'var(--gold)' : 'var(--text3)',
+    background: active ? 'var(--accent)' : 'transparent',
+    border: active ? '1px solid rgba(201,168,76,.25)' : '1px solid var(--border)',
+    color: active ? 'var(--foreground)' : 'var(--muted-foreground)',
   }),
   badge: {
     display: 'inline-block',
@@ -61,15 +61,15 @@ const s = {
     fontSize: '9px',
     letterSpacing: '.06em',
     fontFamily: "'Cinzel',serif",
-    background: 'rgba(201,168,76,.07)',
-    border: '1px solid rgba(201,168,76,.15)',
-    color: 'var(--gold2)',
+    background: 'var(--secondary)',
+    border: '1px solid var(--accent)',
+    color: 'var(--foreground)',
   },
   dataRow: {
     display: 'flex',
     justifyContent: 'space-between',
     padding: '5px 0',
-    borderBottom: '1px solid rgba(255,255,255,.03)',
+    borderBottom: '1px solid var(--secondary)',
     fontSize: '12px',
   },
 }
@@ -88,7 +88,7 @@ function PersonColumn({ person, profile, isA }) {
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: '300px',
-        color: 'var(--text3)',
+        color: 'var(--muted-foreground)',
         fontSize: '12px',
         flexDirection: 'column',
         gap: '8px',
@@ -141,10 +141,10 @@ function PersonColumn({ person, profile, isA }) {
             {person.emoji || (isA ? '🅰' : '🅱')}
           </div>
           <div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '12px', color: 'var(--text)', letterSpacing: '.06em', marginBottom: '2px' }}>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: '12px', color: 'var(--foreground)', letterSpacing: '.06em', marginBottom: '2px' }}>
               {person.name}
             </div>
-            <div style={{ fontSize: '10px', color: 'var(--text3)' }}>
+            <div style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>
               {person.dob} · {person.birthCity || person.pob || '—'}
             </div>
           </div>
@@ -177,15 +177,15 @@ function PersonColumn({ person, profile, isA }) {
       <div style={{ padding: '10px 16px' }}>
         {rows.map((row) => (
           <div key={row.label} style={s.dataRow}>
-            <span style={{ color: 'var(--text3)', fontSize: '10px', letterSpacing: '.03em' }}>{row.label}</span>
-            <span style={{ color: 'var(--text)', fontFamily: "'Inconsolata',monospace", fontSize: '11px' }}>{row.val}</span>
+            <span style={{ color: 'var(--muted-foreground)', fontSize: '10px', letterSpacing: '.03em' }}>{row.label}</span>
+            <span style={{ color: 'var(--foreground)', fontFamily: "'Inconsolata',monospace", fontSize: '11px' }}>{row.val}</span>
           </div>
         ))}
       </div>
 
       {/* Patterns */}
       {profile?.patterns?.length > 0 && (
-        <div style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,.04)' }}>
+        <div style={{ padding: '10px 16px', borderTop: '1px solid var(--secondary)' }}>
           <div style={{ fontFamily: "'Cinzel',serif", fontSize: '9px', letterSpacing: '.1em', color: `${accentColor}0.7)`, marginBottom: '6px' }}>
             TOP PATTERNS
           </div>
@@ -218,7 +218,7 @@ function PersonColumn({ person, profile, isA }) {
 function SynastryView({ personA, personB, profileA, profileB }) {
   if (!personA || !personB) {
     return (
-      <div style={{ ...s.card, textAlign: 'center', padding: '40px', color: 'var(--text3)', fontSize: '13px' }}>
+      <div style={{ ...s.card, textAlign: 'center', padding: '40px', color: 'var(--muted-foreground)', fontSize: '13px' }}>
         Select two people above to see synastry analysis.
       </div>
     )
@@ -284,7 +284,7 @@ function SynastryView({ personA, personB, profileA, profileB }) {
   }
 
   score = Math.min(score + 28, 100)
-  const scoreColor = score >= 70 ? '#7bc043' : score >= 50 ? 'var(--gold)' : '#f0a03c'
+  const scoreColor = score >= 70 ? '#7bc043' : score >= 50 ? 'var(--foreground)' : '#f0a03c'
 
   return (
     <div>
@@ -294,18 +294,18 @@ function SynastryView({ personA, personB, profileA, profileB }) {
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: '16px',
-        background: 'rgba(201,168,76,.04)',
-        border: '1px solid rgba(201,168,76,.15)',
+        background: 'var(--secondary)',
+        border: '1px solid var(--accent)',
       }}>
         <div>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: '11px', letterSpacing: '.1em', color: 'var(--gold2)', marginBottom: '4px' }}>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: '11px', letterSpacing: '.1em', color: 'var(--foreground)', marginBottom: '4px' }}>
             SYNASTRY COMPATIBILITY
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text2)' }}>{personA.name} × {personB.name}</div>
+          <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>{personA.name} × {personB.name}</div>
         </div>
         <div style={{ textAlign: 'right' }}>
           <div style={{ fontFamily: "'Cinzel',serif", fontSize: '34px', color: scoreColor, lineHeight: 1 }}>{score}%</div>
-          <div style={{ fontSize: '10px', color: 'var(--text3)' }}>
+          <div style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>
             {score >= 70 ? 'Strong Resonance' : score >= 50 ? 'Compatible' : 'Growth Dynamic'}
           </div>
         </div>
@@ -314,7 +314,7 @@ function SynastryView({ personA, personB, profileA, profileB }) {
       <div style={s.sectionTitle}><span>🔍</span> Compatibility Indicators</div>
 
       {compatPoints.length === 0 ? (
-        <div style={{ ...s.card, color: 'var(--text3)', fontSize: '12px', textAlign: 'center', padding: '24px' }}>
+        <div style={{ ...s.card, color: 'var(--muted-foreground)', fontSize: '12px', textAlign: 'center', padding: '24px' }}>
           Add birth data for both people to generate detailed synastry analysis.
         </div>
       ) : (
@@ -323,8 +323,8 @@ function SynastryView({ personA, personB, profileA, profileB }) {
             <div key={i} style={{
               padding: '10px 14px',
               borderRadius: '10px',
-              background: point.impact === 'positive' ? 'rgba(96,176,48,.04)' : 'rgba(255,255,255,.02)',
-              border: `1px solid ${point.impact === 'positive' ? 'rgba(96,176,48,.18)' : 'rgba(255,255,255,.06)'}`,
+              background: point.impact === 'positive' ? 'rgba(96,176,48,.04)' : 'var(--secondary)',
+              border: `1px solid ${point.impact === 'positive' ? 'rgba(96,176,48,.18)' : 'var(--border)'}`,
               marginBottom: '2px',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
@@ -333,12 +333,12 @@ function SynastryView({ personA, personB, profileA, profileB }) {
                   fontFamily: "'Cinzel',serif",
                   fontSize: '10px',
                   letterSpacing: '.06em',
-                  color: point.impact === 'positive' ? '#7bc043' : 'var(--text2)',
+                  color: point.impact === 'positive' ? '#7bc043' : 'var(--muted-foreground)',
                 }}>
                   {point.label}
                 </span>
               </div>
-              <div style={{ fontSize: '12px', color: 'var(--text2)', lineHeight: 1.5, paddingLeft: '21px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', lineHeight: 1.5, paddingLeft: '21px' }}>
                 {point.note}
               </div>
             </div>
@@ -388,7 +388,7 @@ export default function MultiSystemView({ clients }) {
         marginBottom: '20px',
         flexWrap: 'wrap',
         padding: '16px',
-        background: 'rgba(255,255,255,.02)',
+        background: 'var(--secondary)',
         border: '1px solid rgba(255,255,255,.05)',
         borderRadius: '12px',
       }}>
@@ -402,7 +402,7 @@ export default function MultiSystemView({ clients }) {
           </select>
         </div>
 
-        <div style={{ fontFamily: "'Cinzel',serif", fontSize: '16px', color: 'var(--text3)', paddingBottom: '6px' }}>×</div>
+        <div style={{ fontFamily: "'Cinzel',serif", fontSize: '16px', color: 'var(--muted-foreground)', paddingBottom: '6px' }}>×</div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <label style={{ fontSize: '9px', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', color: 'rgba(212,48,112,.7)' }}>
@@ -428,10 +428,10 @@ export default function MultiSystemView({ clients }) {
         <div style={{
           display: 'flex',
           gap: '1px',
-          background: 'rgba(255,255,255,.04)',
+          background: 'var(--secondary)',
           borderRadius: '12px',
           overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,.06)',
+          border: '1px solid var(--border)',
         }}>
           <PersonColumn person={personA} profile={profileA} isA={true} />
           <PersonColumn person={personB} profile={profileB} isA={false} />

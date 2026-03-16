@@ -59,24 +59,25 @@ function OverlayManager() {
 function ThemeSync() {
   const theme = useAboveInsideStore((s) => s.theme)
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme)
-    // Update body background to match theme
-    const bgMap = {
-      'cosmic-night': '#01010a', 'cosmic-day': '#0f0820',
-      'parchment-night': '#0d0805', 'parchment-day': '#f5e8c8',
-      'crystal-night': '#060810', 'crystal-day': '#f8faff',
-      'nebula-night': '#08060f', 'nebula-day': '#0d0b1a',
-      'manuscript-night': '#0d0805', 'manuscript-day': '#f5f0e8',
-      'dark': '#01010a', 'light': '#f5f2ec',
-    }
-    document.body.style.background = bgMap[theme] || '#01010a'
-    document.documentElement.style.background = bgMap[theme] || '#01010a'
-    // Update text color
-    const textMap = {
-      'parchment-day': '#2a1a0a', 'crystal-day': '#1e293b',
-      'manuscript-day': '#2a2520',
-    }
-    document.body.style.color = textMap[theme] || ''
+    const html = document.documentElement
+
+    // Keep data-theme for any legacy references
+    html.setAttribute('data-theme', theme)
+
+    // Paperclip dark/light class — determines base chrome colors
+    const isLight = theme === 'parchment-day' || theme === 'crystal-day' || theme === 'manuscript-day' || theme === 'light'
+    html.classList.toggle('dark', !isLight)
+
+    // Remove all theme-* classes, add current one
+    const themeClasses = Array.from(html.classList).filter(c => c.startsWith('theme-'))
+    themeClasses.forEach(c => html.classList.remove(c))
+    html.classList.add(`theme-${theme}`)
+
+    // Clear any inline styles (let CSS vars take over)
+    document.body.style.background = ''
+    document.body.style.color = ''
+    html.style.background = ''
+    html.style.color = ''
   }, [theme])
   return null
 }

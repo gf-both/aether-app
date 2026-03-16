@@ -2,7 +2,7 @@ import { useMemo, useRef, useEffect } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
 const FRAMEWORK_COLORS = {
-  astro:   { color: '#c9a84c', bg: 'rgba(201,168,76,.12)',  border: 'rgba(201,168,76,.4)'  },
+  astro:   { color: '#c9a84c', bg: 'var(--accent)',  border: 'rgba(201,168,76,.4)'  },
   hd:      { color: '#9050e0', bg: 'rgba(144,80,224,.12)', border: 'rgba(144,80,224,.4)'  },
   num:     { color: '#40ccdd', bg: 'rgba(64,204,221,.12)',  border: 'rgba(64,204,221,.4)'  },
   saturn:  { color: '#e8a040', bg: 'rgba(232,160,64,.12)', border: 'rgba(232,160,64,.4)'  },
@@ -116,30 +116,30 @@ export default function TimelineDetail() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'transparent' }}>
       {/* Header */}
-      <div style={{ padding: '16px 24px 12px', borderBottom: '1px solid rgba(201,168,76,.1)', flexShrink: 0 }}>
+      <div style={{ padding: '16px 24px 12px', borderBottom: '1px solid var(--accent)', flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, letterSpacing: '.2em', color: 'var(--gold)', textTransform: 'uppercase' }}>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, letterSpacing: '.2em', color: 'var(--foreground)', textTransform: 'uppercase' }}>
               ◈ Cosmic Life Timeline
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text2)', marginTop: 3, fontStyle: 'italic' }}>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 3, fontStyle: 'italic' }}>
               {profile.name || 'Your'} · {profile.dob || '?'} · Age {currentAge}
             </div>
           </div>
           <div style={{ display: 'flex', gap: 16 }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 18, color: 'var(--gold)' }}>{currentAge}</div>
-              <div style={{ fontSize: 9, color: 'var(--text2)', letterSpacing: '.1em', textTransform: 'uppercase' }}>Current Age</div>
+              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 18, color: 'var(--foreground)' }}>{currentAge}</div>
+              <div style={{ fontSize: 9, color: 'var(--muted-foreground)', letterSpacing: '.1em', textTransform: 'uppercase' }}>Current Age</div>
             </div>
             {nextEvent && (
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 18, color: '#60b030' }}>{yearsToNext}y</div>
-                <div style={{ fontSize: 9, color: 'var(--text2)', letterSpacing: '.1em', textTransform: 'uppercase' }}>Next: {nextEvent.label.split('·')[0].trim()}</div>
+                <div style={{ fontSize: 9, color: 'var(--muted-foreground)', letterSpacing: '.1em', textTransform: 'uppercase' }}>Next: {nextEvent.label.split('·')[0].trim()}</div>
               </div>
             )}
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontFamily: "'Cinzel',serif", fontSize: 18, color: '#40ccdd' }}>{events.length}</div>
-              <div style={{ fontSize: 9, color: 'var(--text2)', letterSpacing: '.1em', textTransform: 'uppercase' }}>Key Events</div>
+              <div style={{ fontSize: 9, color: 'var(--muted-foreground)', letterSpacing: '.1em', textTransform: 'uppercase' }}>Key Events</div>
             </div>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default function TimelineDetail() {
           ].map(({ type, label }) => {
             const c = FRAMEWORK_COLORS[type]
             return (
-              <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 9, color: 'var(--text2)', fontFamily: "'Cinzel',serif", letterSpacing: '.06em' }}>
+              <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 9, color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", letterSpacing: '.06em' }}>
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: c.color, boxShadow: `0 0 6px ${c.color}` }} />
                 {label}
               </div>
@@ -281,7 +281,7 @@ export default function TimelineDetail() {
                 }}>
                   <div style={{ fontSize: 14, marginBottom: 2 }}>{evt.icon}</div>
                   <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, color: c.color, letterSpacing: '.04em', lineHeight: 1.3 }}>{evt.label}</div>
-                  <div style={{ fontSize: 8, color: 'var(--text2)', marginTop: 3, lineHeight: 1.4 }}>{evt.sub}</div>
+                  <div style={{ fontSize: 8, color: 'var(--muted-foreground)', marginTop: 3, lineHeight: 1.4 }}>{evt.sub}</div>
                   <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 8, color: c.color, marginTop: 3, opacity: .7 }}>
                     Age {evt.age} · {getBirthYear(profile.dob) + evt.age}
                   </div>
@@ -294,7 +294,7 @@ export default function TimelineDetail() {
 
       {/* Bottom scroll hint */}
       <div style={{ padding: '8px 24px', borderTop: '1px solid rgba(201,168,76,.06)', flexShrink: 0, textAlign: 'center' }}>
-        <span style={{ fontSize: 9, color: 'var(--text3)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em' }}>
+        <span style={{ fontSize: 9, color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em' }}>
           ← DRAG TO SCROLL · COSMIC JOURNEY FROM BIRTH TO 90 →
         </span>
       </div>

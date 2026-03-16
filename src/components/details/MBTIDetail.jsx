@@ -22,35 +22,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -59,13 +59,13 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
   keyVal: {
     display: 'flex', alignItems: 'center', gap: 16,
-    padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,.04)',
+    padding: '6px 0', borderBottom: '1px solid var(--secondary)',
   },
 }
 
@@ -110,7 +110,7 @@ function MBTIQuiz({ onComplete }) {
         {MBTI_QUIZ_QUESTIONS.map((_, i) => (
           <div key={i} style={{
             flex: 1, borderRadius: 2,
-            background: i < currentQ ? 'rgba(201,168,76,.5)' : i === currentQ ? 'rgba(201,168,76,.3)' : 'var(--bar-track)',
+            background: i < currentQ ? 'var(--ring)' : i === currentQ ? 'rgba(201,168,76,.3)' : 'var(--border)',
             transition: 'background .3s',
           }} />
         ))}
@@ -118,7 +118,7 @@ function MBTIQuiz({ onComplete }) {
 
       {/* Question counter */}
       <div style={{
-        fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text3)',
+        fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
         letterSpacing: '.1em',
       }}>
         QUESTION {currentQ + 1} OF {MBTI_QUIZ_QUESTIONS.length}
@@ -127,14 +127,14 @@ function MBTIQuiz({ onComplete }) {
       {/* Question text */}
       <div style={{
         fontFamily: "'Cormorant Garamond', serif", fontSize: 17, lineHeight: 1.6,
-        color: 'var(--text)', padding: '0 4px',
+        color: 'var(--foreground)', padding: '0 4px',
       }}>
         {q.question}
       </div>
 
       {/* Dimension badge */}
       <div style={{ display: 'flex', gap: 8 }}>
-        <span style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.18)', 'var(--gold)')}>
+        <span style={S.badge('var(--accent)', 'rgba(201,168,76,.18)', 'var(--foreground)')}>
           {q.dimension === 'EI' ? 'Energy' : q.dimension === 'SN' ? 'Perception' : q.dimension === 'TF' ? 'Judgment' : 'Lifestyle'}
         </span>
       </div>
@@ -154,26 +154,26 @@ function MBTIQuiz({ onComplete }) {
               padding: '16px 20px',
               display: 'flex', alignItems: 'flex-start', gap: 14,
               transition: 'all .2s',
-              borderColor: 'rgba(201,168,76,.1)',
+              borderColor: 'var(--accent)',
             }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(201,168,76,.35)'
+              e.currentTarget.style.borderColor = 'var(--ring)'
               e.currentTarget.style.background = 'rgba(201,168,76,.06)'
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(201,168,76,.1)'
+              e.currentTarget.style.borderColor = 'var(--accent)'
               e.currentTarget.style.background = 'rgba(5,5,26,.7)'
             }}
           >
             <span style={{
-              fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--gold)',
+              fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--foreground)',
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: '50%', background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.18)',
+              borderRadius: '50%', background: 'var(--accent)', border: '1px solid rgba(201,168,76,.18)',
               flexShrink: 0,
             }}>{opt.key}</span>
             <div style={{ flex: 1 }}>
               <div style={{
-                fontSize: 14, lineHeight: 1.6, color: 'var(--text2)',
+                fontSize: 14, lineHeight: 1.6, color: 'var(--muted-foreground)',
               }}>
                 {opt.text}
               </div>
@@ -197,7 +197,7 @@ function MBTIResults({ typeCode, onRetake }) {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u29C9'} MBTI</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Myers-Briggs cognitive type -- function stack, personality architecture, and compatibility
         </div>
       </div>
@@ -208,7 +208,7 @@ function MBTIResults({ typeCode, onRetake }) {
         <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 12, textAlign: 'center' }}>
           <div style={{
             fontFamily: "'Cinzel', serif", fontSize: 36, letterSpacing: '.2em',
-            color: 'var(--gold)', marginBottom: 4,
+            color: 'var(--foreground)', marginBottom: 4,
           }}>
             {typeData.code}
           </div>
@@ -219,13 +219,13 @@ function MBTIResults({ typeCode, onRetake }) {
             {typeData.nickname}
           </div>
           <div style={{
-            fontFamily: "'Cormorant Garamond', serif", fontSize: 13, color: 'var(--text2)',
+            fontFamily: "'Cormorant Garamond', serif", fontSize: 13, color: 'var(--muted-foreground)',
             fontStyle: 'italic', lineHeight: 1.5, maxWidth: 400, margin: '0 auto',
           }}>
             {typeData.name}
           </div>
           <div style={{
-            fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', padding: '8px 0',
+            fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', padding: '8px 0',
           }}>
             {typeData.description}
           </div>
@@ -262,7 +262,7 @@ function MBTIResults({ typeCode, onRetake }) {
                       </span>
                     </div>
                     {fnData && (
-                      <span style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>
+                      <span style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
                         {fnData.description}
                       </span>
                     )}
@@ -270,7 +270,7 @@ function MBTIResults({ typeCode, onRetake }) {
                 </div>
                 {/* Strength bar */}
                 <div style={{
-                  height: 6, borderRadius: 3, background: 'rgba(255,255,255,.04)',
+                  height: 6, borderRadius: 3, background: 'var(--secondary)',
                   overflow: 'hidden',
                 }}>
                   <div style={{
@@ -302,18 +302,18 @@ function MBTIResults({ typeCode, onRetake }) {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{
                   fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
-                  textTransform: 'uppercase', color: 'var(--text3)',
+                  textTransform: 'uppercase', color: 'var(--muted-foreground)',
                 }}>{d.pair}</span>
                 <span style={{
-                  fontFamily: "'Cinzel', serif", fontSize: 20, color: 'var(--gold)',
+                  fontFamily: "'Cinzel', serif", fontSize: 20, color: 'var(--foreground)',
                   fontWeight: 700,
                 }}>{d.dim}</span>
               </div>
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.1em',
-                color: 'var(--gold2)',
+                color: 'var(--foreground)',
               }}>{d.label}</div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
                 {d.desc}
               </div>
             </div>
@@ -343,7 +343,7 @@ function MBTIResults({ typeCode, onRetake }) {
                   <span style={{ ...S.mono, color: cc + '.7)', fontSize: 12 }}>
                     {compType.nickname}
                   </span>
-                  <span style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>
+                  <span style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
                     {compType.name}
                   </span>
                 </div>
@@ -363,16 +363,16 @@ function MBTIResults({ typeCode, onRetake }) {
             return (
               <div key={i} style={{
                 textAlign: 'center', padding: '8px 4px', borderRadius: 8,
-                background: isActive ? 'rgba(201,168,76,.1)' : isCompat ? t.color + '.04)' : 'rgba(255,255,255,.015)',
-                border: `1px solid ${isActive ? 'rgba(201,168,76,.3)' : isCompat ? t.color + '.15)' : 'rgba(255,255,255,.04)'}`,
+                background: isActive ? 'var(--accent)' : isCompat ? t.color + '.04)' : 'rgba(255,255,255,.015)',
+                border: `1px solid ${isActive ? 'rgba(201,168,76,.3)' : isCompat ? t.color + '.15)' : 'var(--secondary)'}`,
               }}>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 11,
-                  color: isActive ? 'var(--gold)' : isCompat ? t.color + '.7)' : 'var(--text3)',
+                  color: isActive ? 'var(--foreground)' : isCompat ? t.color + '.7)' : 'var(--muted-foreground)',
                   fontWeight: isActive ? 700 : 400, letterSpacing: '.08em',
                 }}>{t.code}</div>
                 <div style={{
-                  fontSize: 8, color: 'var(--text3)', fontStyle: 'italic', marginTop: 2,
+                  fontSize: 8, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 2,
                 }}>{t.nickname}</div>
               </div>
             )
@@ -384,7 +384,7 @@ function MBTIResults({ typeCode, onRetake }) {
       <div>
         <div style={S.sectionTitle}>Profile Reading</div>
         <div style={S.interpretation}>
-          As an <span style={{ color: 'var(--gold)' }}>{typeData.code} ({typeData.nickname})</span>, you
+          As an <span style={{ color: 'var(--foreground)' }}>{typeData.code} ({typeData.nickname})</span>, you
           lead with <span style={{ color: FUNCTION_COLORS[typeData.functions[0]].color }}>
           {typeData.functions[0]}</span> as your dominant function -- the lens through which you first
           engage with reality. This is supported by{' '}
@@ -407,18 +407,18 @@ function MBTIResults({ typeCode, onRetake }) {
           onClick={onRetake}
           style={{
             fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-            textTransform: 'uppercase', color: 'var(--text3)', cursor: 'pointer',
+            textTransform: 'uppercase', color: 'var(--muted-foreground)', cursor: 'pointer',
             padding: '8px 20px', borderRadius: 20,
             border: '1px solid rgba(255,255,255,.08)',
             transition: 'all .2s',
           }}
           onMouseEnter={e => {
             e.currentTarget.style.borderColor = 'rgba(201,168,76,.3)'
-            e.currentTarget.style.color = 'var(--gold)'
+            e.currentTarget.style.color = 'var(--foreground)'
           }}
           onMouseLeave={e => {
             e.currentTarget.style.borderColor = 'rgba(255,255,255,.08)'
-            e.currentTarget.style.color = 'var(--text3)'
+            e.currentTarget.style.color = 'var(--muted-foreground)'
           }}
         >
           Retake Quiz
@@ -469,7 +469,7 @@ export default function MBTIDetail() {
           {/* Quiz header */}
           <div>
             <div style={S.heading}>{'\u29C9'} MBTI</div>
-            <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+            <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
               Discover your cognitive type through 20 questions that reveal how you perceive and judge reality
             </div>
           </div>

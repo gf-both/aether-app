@@ -7,35 +7,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -44,9 +44,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -102,7 +102,7 @@ export default function EgyptianDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{SIGN_GLYPHS['Mut']} Egyptian Astrology</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Ancient Egyptian zodiac signs, deity archetypes, elemental alignments, and divine compatibility
         </div>
       </div>
@@ -115,35 +115,35 @@ export default function EgyptianDetail() {
           <div style={{
             width: 80, height: 80, borderRadius: '50%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(201,168,76,.08)', border: '2px solid rgba(201,168,76,.25)',
+            background: 'var(--accent)', border: '2px solid rgba(201,168,76,.25)',
             fontSize: 44, flexShrink: 0,
           }}>
             {SIGN_GLYPHS[P.sign]}
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{
-              fontFamily: "'Cinzel', serif", fontSize: 20, letterSpacing: '.15em', color: 'var(--gold)',
+              fontFamily: "'Cinzel', serif", fontSize: 20, letterSpacing: '.15em', color: 'var(--foreground)',
             }}>
               {P.sign}
             </div>
-            <div style={{ ...S.monoSm, color: 'var(--text3)' }}>
+            <div style={{ ...S.monoSm, color: 'var(--muted-foreground)' }}>
               {P.symbol} &middot; {P.dates}
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
-              <span style={S.badge('rgba(201,168,76,.1)', 'rgba(201,168,76,.25)', 'var(--gold)')}>
+              <span style={S.badge('var(--accent)', 'rgba(201,168,76,.25)', 'var(--foreground)')}>
                 {P.element}
               </span>
               <span style={S.badge('rgba(184,160,112,.1)', 'rgba(184,160,112,.25)', '#b8a070')}>
                 {P.planet}
               </span>
-              <span style={S.badge('rgba(201,168,76,.06)', 'rgba(201,168,76,.15)', 'var(--gold3)')}>
+              <span style={S.badge('rgba(201,168,76,.06)', 'var(--accent)', 'var(--muted-foreground)')}>
                 {P.color}
               </span>
-              <span style={S.badge('rgba(201,168,76,.06)', 'rgba(201,168,76,.15)', 'var(--gold3)')}>
+              <span style={S.badge('rgba(201,168,76,.06)', 'var(--accent)', 'var(--muted-foreground)')}>
                 {P.symbol}
               </span>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 4 }}>
               Traits: {P.traits.join(' \u00B7 ')}
             </div>
           </div>
@@ -165,19 +165,19 @@ export default function EgyptianDetail() {
           {P.traits.map((trait, i) => (
             <div key={i} style={{
               ...S.glass, padding: '14px 20px', textAlign: 'center', flex: '1 1 120px',
-              borderColor: 'rgba(201,168,76,.12)',
+              borderColor: 'var(--accent)',
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
             }}>
               <div style={{
                 width: 36, height: 36, borderRadius: '50%',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)',
-                fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--gold)',
+                background: 'rgba(201,168,76,.06)', border: '1px solid var(--accent)',
+                fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--foreground)',
               }}>
                 {i + 1}
               </div>
               <div style={{
-                fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.1em', color: 'var(--gold2)',
+                fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.1em', color: 'var(--foreground)',
               }}>
                 {trait}
               </div>
@@ -198,7 +198,7 @@ export default function EgyptianDetail() {
               fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
               textTransform: 'uppercase', color: '#60b030', marginBottom: 10,
             }}>Strengths</div>
-            <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6, fontStyle: 'italic' }}>
+            <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6, fontStyle: 'italic' }}>
               {P.strengths}
             </div>
           </div>
@@ -210,7 +210,7 @@ export default function EgyptianDetail() {
               fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
               textTransform: 'uppercase', color: '#dc5050', marginBottom: 10,
             }}>Weaknesses</div>
-            <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6, fontStyle: 'italic' }}>
+            <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6, fontStyle: 'italic' }}>
               {P.weaknesses}
             </div>
           </div>
@@ -236,10 +236,10 @@ export default function EgyptianDetail() {
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: '.08em', color: '#60b030',
                   }}>{name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text3)' }}>
+                  <div style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>
                     {compSign?.dates}
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>
+                  <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 2 }}>
                     {compSign?.traits?.join(' \u00B7 ')}
                   </div>
                 </div>
@@ -274,7 +274,7 @@ export default function EgyptianDetail() {
               fontFamily: "'Cinzel', serif", fontSize: 28, color: '#d4a017',
               letterSpacing: '.15em', lineHeight: 1,
             }}>{P.element}</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8, fontStyle: 'italic' }}>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 8, fontStyle: 'italic' }}>
               Grounding, stability, endurance, and practical manifestation
             </div>
           </div>
@@ -292,7 +292,7 @@ export default function EgyptianDetail() {
               fontFamily: "'Cinzel', serif", fontSize: 28, color: '#b8a070',
               letterSpacing: '.15em', lineHeight: 1,
             }}>{P.planet}</div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 8, fontStyle: 'italic' }}>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 8, fontStyle: 'italic' }}>
               Intuition, cycles, reflection, emotional depth, and hidden knowledge
             </div>
           </div>
@@ -309,8 +309,8 @@ export default function EgyptianDetail() {
             return (
               <div key={i} style={{
                 ...S.row,
-                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.04)',
-                background: isActive ? 'rgba(201,168,76,.04)' : 'rgba(255,255,255,.015)',
+                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'var(--secondary)',
+                background: isActive ? 'var(--secondary)' : 'rgba(255,255,255,.015)',
                 padding: '6px 12px',
               }}>
                 <span style={{ fontSize: 20, minWidth: 32, textAlign: 'center' }}>
@@ -319,18 +319,18 @@ export default function EgyptianDetail() {
                 <div style={{ width: 80 }}>
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em',
-                    color: isActive ? 'var(--gold)' : 'var(--text)',
+                    color: isActive ? 'var(--foreground)' : 'var(--foreground)',
                   }}>{sign.name}</div>
-                  <div style={{ fontSize: 9, color: 'var(--text3)' }}>{sign.symbol}</div>
+                  <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>{sign.symbol}</div>
                 </div>
                 <span style={S.badge(elemCol + '10', elemCol + '28', elemCol)}>
                   {sign.element}
                 </span>
                 <span style={{
-                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)',
                   width: 50, textAlign: 'center',
                 }}>{sign.planet}</span>
-                <div style={{ flex: 1, fontSize: 10, color: 'var(--text3)' }}>
+                <div style={{ flex: 1, fontSize: 10, color: 'var(--muted-foreground)' }}>
                   {sign.traits.join(' \u00B7 ')}
                 </div>
                 <div style={{
@@ -339,7 +339,7 @@ export default function EgyptianDetail() {
                   flexShrink: 0,
                 }} />
                 {isActive && (
-                  <span style={S.badge('rgba(201,168,76,.12)', 'rgba(201,168,76,.3)', 'var(--gold)')}>
+                  <span style={S.badge('var(--accent)', 'rgba(201,168,76,.3)', 'var(--foreground)')}>
                     You
                   </span>
                 )}
@@ -353,7 +353,7 @@ export default function EgyptianDetail() {
       <div>
         <div style={S.sectionTitle}>Holistic Interpretation</div>
         <div style={S.interpretation}>
-          As a child of <span style={{ color: 'var(--gold)' }}>Mut, the Mother Goddess</span>, your
+          As a child of <span style={{ color: 'var(--foreground)' }}>Mut, the Mother Goddess</span>, your
           Egyptian astrological blueprint speaks of deep, abiding power rooted in the earth itself.
           Governed by the <span style={{ color: '#b8a070' }}>Moon</span>, you move through life with
           a cyclical awareness -- understanding that growth requires patience, that strength is not

@@ -129,35 +129,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -167,13 +167,13 @@ const S = {
   }),
   symbolLg: { fontSize: 22, minWidth: 28, textAlign: 'center' },
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
   keyVal: {
     display: 'flex', alignItems: 'center', gap: 16,
-    padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,.04)',
+    padding: '6px 0', borderBottom: '1px solid var(--secondary)',
   },
 }
 
@@ -265,7 +265,7 @@ export default function NatalDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u2609'} Natal Astrology</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Full birth chart analysis — planets, houses, aspects, rising sign, and elemental balance
         </div>
       </div>
@@ -293,10 +293,10 @@ export default function NatalDetail() {
               fontFamily: "'Cinzel', serif", fontSize: 28, color: '#60b030',
             }}>{'\u264D'}</div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: "'Cinzel', serif", fontSize: 18, color: 'var(--gold)', letterSpacing: '.1em' }}>
+              <div style={{ fontFamily: "'Cinzel', serif", fontSize: 18, color: 'var(--foreground)', letterSpacing: '.1em' }}>
                 {RISING_SIGN.sign} Rising
               </div>
-              <div style={{ ...S.monoSm, color: 'var(--text3)', marginTop: 2 }}>
+              <div style={{ ...S.monoSm, color: 'var(--muted-foreground)', marginTop: 2 }}>
                 {RISING_SIGN.degree} {'\u00B7'} Ruler: {RISING_SIGN.ruler} in {RISING_SIGN.rulerSign} (House {RISING_SIGN.rulerHouse})
               </div>
             </div>
@@ -309,9 +309,9 @@ export default function NatalDetail() {
             <div key={i} style={S.keyVal}>
               <span style={{
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-                textTransform: 'uppercase', color: 'var(--text3)', minWidth: 140,
+                textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 140,
               }}>{label}</span>
-              <span style={{ ...S.mono, color: 'var(--gold2)', textAlign: 'right', maxWidth: '60%' }}>{val}</span>
+              <span style={{ ...S.mono, color: 'var(--foreground)', textAlign: 'right', maxWidth: '60%' }}>{val}</span>
             </div>
           ))}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
@@ -333,7 +333,7 @@ export default function NatalDetail() {
           borderRadius: 10,
           border: '1px solid rgba(201,168,76,.18)',
           overflow: 'hidden',
-          background: 'var(--glass-bg)',
+          background: 'var(--card)',
         }}>
           {/* Header row */}
           <div style={{
@@ -347,15 +347,15 @@ export default function NatalDetail() {
             {['', '', 'PLANET', 'DEGREE', 'SIGN', 'HSE', ''].map((h, i) => (
               <span key={i} style={{
                 fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.12em',
-                textTransform: 'uppercase', color: 'var(--text3)', paddingLeft: i > 1 ? 4 : 0,
+                textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingLeft: i > 1 ? 4 : 0,
               }}>{h}</span>
             ))}
           </div>
 
           {/* Data rows */}
           {PLANETS.map((p, i) => {
-            const elColor = SIGN_ELEMENTS[p.sign] ? ELEMENT_COLORS[SIGN_ELEMENTS[p.sign]] : 'var(--text2)'
-            const planetColor = PLANET_COLORS_TABLE[p.key] || 'var(--gold2)'
+            const elColor = SIGN_ELEMENTS[p.sign] ? ELEMENT_COLORS[SIGN_ELEMENTS[p.sign]] : 'var(--muted-foreground)'
+            const planetColor = PLANET_COLORS_TABLE[p.key] || 'var(--foreground)'
             const isEven = i % 2 === 0
             const dignityColor = p.dignity === 'Exalt' ? '#2a8040'
               : p.dignity === 'Dom' ? '#2266aa'
@@ -369,7 +369,7 @@ export default function NatalDetail() {
                 padding: '5px 12px',
                 alignItems: 'center',
                 background: isEven ? 'rgba(0,0,0,0)' : 'rgba(201,168,76,.025)',
-                borderBottom: i < PLANETS.length - 1 ? '1px solid rgba(201,168,76,.07)' : 'none',
+                borderBottom: i < PLANETS.length - 1 ? '1px solid var(--secondary)' : 'none',
                 transition: 'background .15s',
               }}>
                 {/* Planet glyph (colored by planet) */}
@@ -389,7 +389,7 @@ export default function NatalDetail() {
                 {/* Degree (monospace) */}
                 <span style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 13, fontWeight: 600,
-                  color: 'var(--text)', letterSpacing: '.02em', paddingLeft: 4,
+                  color: 'var(--foreground)', letterSpacing: '.02em', paddingLeft: 4,
                 }}>{p.deg}</span>
                 {/* Sign glyph + name (colored by element) */}
                 <span style={{
@@ -406,7 +406,7 @@ export default function NatalDetail() {
                 </span>
                 {/* House number */}
                 <span style={{
-                  fontFamily: "'Cinzel', serif", fontSize: 11, color: 'var(--gold)',
+                  fontFamily: "'Cinzel', serif", fontSize: 11, color: 'var(--foreground)',
                   textAlign: 'center', paddingLeft: 4,
                 }}>{p.key !== 'mc' ? p.house : '—'}</span>
                 {/* Dignity badge */}
@@ -432,15 +432,15 @@ export default function NatalDetail() {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{
-                  fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--gold)',
+                  fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--foreground)',
                   width: 30, height: 30, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderRadius: '50%', background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.15)',
+                  borderRadius: '50%', background: 'var(--accent)', border: '1px solid var(--accent)',
                 }}>{h.num}</span>
-                <span style={{ ...S.mono, fontSize: 12, color: ELEMENT_COLORS[SIGN_ELEMENTS[h.sign]] || 'var(--text2)' }}>
+                <span style={{ ...S.mono, fontSize: 12, color: ELEMENT_COLORS[SIGN_ELEMENTS[h.sign]] || 'var(--muted-foreground)' }}>
                   {h.sign}
                 </span>
               </div>
-              <span style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)', textAlign: 'right' }}>{h.deg}</span>
+              <span style={{ ...S.monoSm, fontSize: 10, color: 'var(--muted-foreground)', textAlign: 'right' }}>{h.deg}</span>
             </div>
           ))}
         </div>
@@ -452,20 +452,20 @@ export default function NatalDetail() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {/* header */}
           <div style={{ display: 'grid', gridTemplateColumns: '100px 24px 100px 110px 70px', gap: 8, padding: '4px 12px' }}>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>PLANET 1</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>PLANET 1</span>
             <span></span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>PLANET 2</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>ASPECT</span>
-            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>ORB</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>PLANET 2</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>ASPECT</span>
+            <span style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>ORB</span>
           </div>
           {ASPECTS.map((a, i) => (
             <div key={i} style={{
               ...S.row,
               display: 'grid', gridTemplateColumns: '100px 24px 100px 110px 70px', gap: 8,
             }}>
-              <span style={{ ...S.mono, color: 'var(--gold2)' }}>{a.p1}</span>
+              <span style={{ ...S.mono, color: 'var(--foreground)' }}>{a.p1}</span>
               <span style={{ fontSize: 16, textAlign: 'center', color: a.color }}>{a.symbol}</span>
-              <span style={{ ...S.mono, color: 'var(--gold2)' }}>{a.p2}</span>
+              <span style={{ ...S.mono, color: 'var(--foreground)' }}>{a.p2}</span>
               <span style={S.badge(
                 a.type === 'Conjunction' ? 'rgba(240,192,64,.1)' :
                 a.type === 'Trine' ? 'rgba(64,204,221,.1)' :
@@ -479,7 +479,7 @@ export default function NatalDetail() {
                 a.type === 'Opposition' ? 'rgba(120,144,238,.25)' : 'rgba(255,255,255,.1)',
                 a.color,
               )}>{a.type}</span>
-              <span style={{ ...S.monoSm, color: 'var(--text3)' }}>{a.orb}</span>
+              <span style={{ ...S.monoSm, color: 'var(--muted-foreground)' }}>{a.orb}</span>
             </div>
           ))}
         </div>
@@ -495,9 +495,9 @@ export default function NatalDetail() {
               <div key={el} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ ...S.mono, color: ELEMENT_COLORS[el], fontSize: 13 }}>{el}</span>
-                  <span style={{ ...S.monoSm, color: 'var(--text3)' }}>{count} / {totalEl}</span>
+                  <span style={{ ...S.monoSm, color: 'var(--muted-foreground)' }}>{count} / {totalEl}</span>
                 </div>
-                <div style={{ height: 6, background: 'var(--bar-track)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ height: 6, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{
                     height: '100%', borderRadius: 3,
                     width: `${(count / totalEl) * 100}%`,
@@ -519,9 +519,9 @@ export default function NatalDetail() {
               <div key={mod} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ ...S.mono, color: MODALITY_COLORS[mod], fontSize: 13 }}>{mod}</span>
-                  <span style={{ ...S.monoSm, color: 'var(--text3)' }}>{count} / {totalMod}</span>
+                  <span style={{ ...S.monoSm, color: 'var(--muted-foreground)' }}>{count} / {totalMod}</span>
                 </div>
-                <div style={{ height: 6, background: 'var(--bar-track)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ height: 6, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
                   <div style={{
                     height: '100%', borderRadius: 3,
                     width: `${(count / totalMod) * 100}%`,
@@ -540,7 +540,7 @@ export default function NatalDetail() {
       <div>
         <div style={S.sectionTitle}>Chart Interpretation</div>
         <div style={S.interpretation}>
-          <span style={{ color: 'var(--gold)' }}>Aquarius Sun in the 5th House</span> with a{' '}
+          <span style={{ color: 'var(--foreground)' }}>Aquarius Sun in the 5th House</span> with a{' '}
           <span style={{ color: '#60b030' }}>Virgo Moon and Virgo Rising</span> creates an individual
           who is intellectually progressive yet emotionally grounded in practical analysis and service.
           The Moon conjunct the Ascendant (0{'\u00B0'}13' orb) means the emotional nature is immediately

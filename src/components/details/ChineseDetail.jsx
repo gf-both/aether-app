@@ -8,35 +8,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -45,9 +45,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -136,7 +136,7 @@ export default function ChineseDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{animalData.emoji} Chinese Astrology</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Four Pillars of Destiny (Ba Zi), zodiac animals, five elements, and annual forecast
         </div>
       </div>
@@ -149,35 +149,35 @@ export default function ChineseDetail() {
           <div style={{
             width: 80, height: 80, borderRadius: '50%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(201,168,76,.08)', border: '2px solid rgba(201,168,76,.25)',
+            background: 'var(--accent)', border: '2px solid rgba(201,168,76,.25)',
             fontSize: 44, flexShrink: 0,
           }}>
             {animalData.emoji}
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{
-              fontFamily: "'Cinzel', serif", fontSize: 20, letterSpacing: '.15em', color: 'var(--gold)',
+              fontFamily: "'Cinzel', serif", fontSize: 20, letterSpacing: '.15em', color: 'var(--foreground)',
             }}>
               {P.polarity} {P.animal}
             </div>
-            <div style={{ ...S.monoSm, color: 'var(--text3)' }}>
+            <div style={{ ...S.monoSm, color: 'var(--muted-foreground)' }}>
               {P.stemChinese}{P.branch} &middot; {P.stem} {P.branchPinyin} &middot; Born {P.dob}
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
-              <span style={S.badge('rgba(201,168,76,.1)', 'rgba(201,168,76,.25)', 'var(--gold)')}>
+              <span style={S.badge('var(--accent)', 'rgba(201,168,76,.25)', 'var(--foreground)')}>
                 {P.yinYang}
               </span>
               <span style={S.badge('rgba(207,216,220,.1)', 'rgba(207,216,220,.25)', '#cfd8dc')}>
                 {P.element}
               </span>
-              <span style={S.badge('rgba(201,168,76,.06)', 'rgba(201,168,76,.15)', 'var(--gold3)')}>
+              <span style={S.badge('rgba(201,168,76,.06)', 'var(--accent)', 'var(--muted-foreground)')}>
                 Order #{animalData.order}
               </span>
-              <span style={S.badge('rgba(201,168,76,.06)', 'rgba(201,168,76,.15)', 'var(--gold3)')}>
+              <span style={S.badge('rgba(201,168,76,.06)', 'var(--accent)', 'var(--muted-foreground)')}>
                 {animalData.season}
               </span>
             </div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 4 }}>
               Traits: {animalData.traits.join(' \u00B7 ')}
             </div>
           </div>
@@ -193,26 +193,26 @@ export default function ChineseDetail() {
             return (
               <div key={key} style={{
                 ...S.glass, textAlign: 'center', padding: '20px 12px',
-                borderColor: key === 'day' ? 'rgba(30,136,229,.2)' : 'rgba(201,168,76,.1)',
+                borderColor: key === 'day' ? 'rgba(30,136,229,.2)' : 'var(--accent)',
                 display: 'flex', flexDirection: 'column', gap: 8,
               }}>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
                   textTransform: 'uppercase',
-                  color: key === 'day' ? '#1e88e5' : 'var(--gold3)',
+                  color: key === 'day' ? '#1e88e5' : 'var(--muted-foreground)',
                 }}>
                   {key} pillar {key === 'day' ? '(day master)' : ''}
                 </div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 15, letterSpacing: '.1em',
-                  color: key === 'day' ? '#1e88e5' : 'var(--gold)',
+                  color: key === 'day' ? '#1e88e5' : 'var(--foreground)',
                 }}>
                   {pillar.label}
                 </div>
-                <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)' }}>
+                <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--muted-foreground)' }}>
                   {pillar.stem} {pillar.branch}
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4, marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4, marginTop: 4 }}>
                   {pillar.desc}
                 </div>
               </div>
@@ -231,7 +231,7 @@ export default function ChineseDetail() {
           <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, color: '#1e88e5', marginBottom: 4 }}>
             {P.dayMaster}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.5 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
             {P.dayMasterDesc}
           </div>
         </div>
@@ -254,27 +254,27 @@ export default function ChineseDetail() {
             return (
               <div key={i} style={{
                 ...S.glass, textAlign: 'center', padding: '20px 14px',
-                borderColor: i === 0 ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.06)',
+                borderColor: i === 0 ? 'rgba(201,168,76,.2)' : 'var(--border)',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
               }}>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
-                  textTransform: 'uppercase', color: 'var(--gold3)',
+                  textTransform: 'uppercase', color: 'var(--muted-foreground)',
                 }}>{item.label}</div>
                 <div style={{ fontSize: 36 }}>{animalData?.emoji}</div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: '.1em',
-                  color: i === 0 ? 'var(--gold)' : 'var(--text)',
+                  color: i === 0 ? 'var(--foreground)' : 'var(--foreground)',
                 }}>
                   {item.element} {item.animal}
                 </div>
-                <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)' }}>
+                <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--muted-foreground)' }}>
                   {item.stem} {item.branch}
                 </div>
                 <span style={S.badge(elemCol + '12', elemCol + '30', elemCol)}>
                   {item.element}
                 </span>
-                <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4, marginTop: 4 }}>
+                <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4, marginTop: 4 }}>
                   {item.desc}
                 </div>
               </div>
@@ -303,7 +303,7 @@ export default function ChineseDetail() {
                     <span style={{ fontSize: 22 }}>{a?.emoji}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: '#60b030' }}>{name}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text3)' }}>{a?.traits?.slice(0, 2).join(' \u00B7 ')}</div>
+                      <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>{a?.traits?.slice(0, 2).join(' \u00B7 ')}</div>
                     </div>
                     {name === P.bestFriend && (
                       <span style={S.badge('rgba(96,176,48,.12)', 'rgba(96,176,48,.3)', '#60b030')}>
@@ -331,7 +331,7 @@ export default function ChineseDetail() {
                     <span style={{ fontSize: 22 }}>{a?.emoji}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: '#dc5050' }}>{name}</div>
-                      <div style={{ fontSize: 10, color: 'var(--text3)' }}>{a?.traits?.slice(0, 2).join(' \u00B7 ')}</div>
+                      <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>{a?.traits?.slice(0, 2).join(' \u00B7 ')}</div>
                     </div>
                     {name === P.conflictAnimal && (
                       <span style={S.badge('rgba(220,60,60,.12)', 'rgba(220,60,60,.3)', '#dc5050')}>
@@ -356,30 +356,30 @@ export default function ChineseDetail() {
             return (
               <div key={i} style={{
                 ...S.row,
-                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.04)',
-                background: isActive ? 'rgba(201,168,76,.04)' : 'rgba(255,255,255,.015)',
+                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'var(--secondary)',
+                background: isActive ? 'var(--secondary)' : 'rgba(255,255,255,.015)',
                 padding: '6px 12px',
               }}>
                 <span style={{ fontSize: 20, minWidth: 32, textAlign: 'center' }}>{animal.emoji}</span>
                 <div style={{ width: 72 }}>
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.08em',
-                    color: isActive ? 'var(--gold)' : 'var(--text)',
+                    color: isActive ? 'var(--foreground)' : 'var(--foreground)',
                   }}>{animal.name}</div>
-                  <div style={{ fontSize: 9, color: 'var(--text3)' }}>{animal.branch}</div>
+                  <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>{animal.branch}</div>
                 </div>
                 <span style={S.badge(elemCol + '10', elemCol + '28', elemCol)}>
                   {animal.fixedElement}
                 </span>
                 <span style={{
-                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)',
                   width: 30, textAlign: 'center',
                 }}>{animal.yinYang}</span>
-                <div style={{ flex: 1, fontSize: 10, color: 'var(--text3)' }}>
+                <div style={{ flex: 1, fontSize: 10, color: 'var(--muted-foreground)' }}>
                   {animal.traits.join(' \u00B7 ')}
                 </div>
                 {isActive && (
-                  <span style={S.badge('rgba(201,168,76,.12)', 'rgba(201,168,76,.3)', 'var(--gold)')}>
+                  <span style={S.badge('var(--accent)', 'rgba(201,168,76,.3)', 'var(--foreground)')}>
                     You
                   </span>
                 )}
@@ -398,7 +398,7 @@ export default function ChineseDetail() {
             return (
               <div key={i} style={{
                 ...S.glass, textAlign: 'center', padding: '16px 10px',
-                borderColor: isActive ? elem.color + '44' : 'rgba(255,255,255,.04)',
+                borderColor: isActive ? elem.color + '44' : 'var(--secondary)',
                 background: isActive ? elem.color + '08' : 'rgba(5,5,26,.7)',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
               }}>
@@ -406,13 +406,13 @@ export default function ChineseDetail() {
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.1em', color: elem.color,
                 }}>{elem.name}</div>
-                <div style={{ fontSize: 9, color: 'var(--text3)' }}>
+                <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>
                   {elem.yin}/{elem.yang}
                 </div>
-                <div style={{ fontSize: 9, color: 'var(--text3)' }}>
+                <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>
                   {elem.season} &middot; {elem.direction}
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.3, marginTop: 4 }}>
+                <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.3, marginTop: 4 }}>
                   {elem.qualities.join(', ')}
                 </div>
                 {isActive && (
@@ -425,7 +425,7 @@ export default function ChineseDetail() {
           })}
         </div>
         <div style={{
-          marginTop: 12, fontSize: 12, color: 'var(--text3)', fontStyle: 'italic',
+          marginTop: 12, fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic',
           textAlign: 'center', lineHeight: 1.5,
         }}>
           The five elements cycle through generation (Wood feeds Fire, Fire creates Earth, Earth bears Metal, Metal collects Water, Water nourishes Wood) and control (Wood parts Earth, Earth dams Water, Water extinguishes Fire, Fire melts Metal, Metal chops Wood).
@@ -457,7 +457,7 @@ export default function ChineseDetail() {
               }}>
                 Year of the {P.currentYear.label}
               </div>
-              <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)' }}>
+              <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--muted-foreground)' }}>
                 {P.currentYear.chinese} &middot; {P.currentYear.stem} {P.currentYear.animal} &middot; {P.currentYear.year}
               </div>
               <span style={S.badge(
@@ -470,7 +470,7 @@ export default function ChineseDetail() {
             </div>
           </div>
           <div style={S.interpretation}>
-            <span style={{ color: 'var(--gold)' }}>Metal Monkey in the Year of the Fire Horse:</span>{' '}
+            <span style={{ color: 'var(--foreground)' }}>Metal Monkey in the Year of the Fire Horse:</span>{' '}
             {P.currentYear.influence}
           </div>
         </div>
@@ -494,11 +494,11 @@ export default function ChineseDetail() {
             }}>
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.18em',
-                textTransform: 'uppercase', color: 'var(--gold3)',
+                textTransform: 'uppercase', color: 'var(--muted-foreground)',
               }}>{group.label}</div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {group.items.map((item, j) => (
-                  <span key={j} style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.18)', 'var(--gold)')}>
+                  <span key={j} style={S.badge('var(--accent)', 'rgba(201,168,76,.18)', 'var(--foreground)')}>
                     {group.icon} {item}
                   </span>
                 ))}
@@ -512,7 +512,7 @@ export default function ChineseDetail() {
       <div>
         <div style={S.sectionTitle}>Holistic Interpretation</div>
         <div style={S.interpretation}>
-          As a <span style={{ color: 'var(--gold)' }}>Yang Metal Monkey</span> with a{' '}
+          As a <span style={{ color: 'var(--foreground)' }}>Yang Metal Monkey</span> with a{' '}
           <span style={{ color: '#1e88e5' }}>Ren Water day master</span>, your chart reveals a
           fascinating interplay between the surface and the depths. The Monkey's sharp intellect and
           versatile nature (Metal) serves as the outer vessel for a far more fluid, adaptable inner

@@ -48,7 +48,7 @@ const PLANET_COLORS = {
 }
 
 const GROUPS = [
-  { label: 'PERSONAL PLANETS', color: 'var(--gold)', keys: ['sun','moon','mercury','venus','mars'] },
+  { label: 'PERSONAL PLANETS', color: 'var(--foreground)', keys: ['sun','moon','mercury','venus','mars'] },
   { label: 'SOCIAL PLANETS', color: 'rgba(144,80,224,.9)', keys: ['jupiter','saturn'] },
   { label: 'GENERATIONAL PLANETS', color: 'rgba(64,204,221,.9)', keys: ['uranus','neptune','pluto'] },
   { label: 'NODES & ANGLES', color: 'rgba(201,168,76,.7)', keys: ['northNode','asc','mc'] },
@@ -61,26 +61,26 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: (color) => ({
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: color || 'var(--gold3)', paddingBottom: 8,
-    borderBottom: `1px solid ${color ? color.replace(')', ',.15)').replace('rgba(','rgba(') : 'rgba(201,168,76,.15)'}`,
+    textTransform: 'uppercase', color: color || 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: `1px solid ${color ? color.replace(')', ',.15)').replace('rgba(','rgba(') : 'var(--accent)'}`,
     marginBottom: 4,
   }),
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   planetCard: (color) => ({
     display: 'flex', flexDirection: 'column', gap: 6, padding: '14px 16px',
-    borderRadius: 10, background: 'var(--row-bg)',
+    borderRadius: 10, background: 'var(--secondary)',
     border: `1px solid ${color}33`,
     transition: 'background .2s',
   }),
@@ -93,14 +93,14 @@ const S = {
   }),
   planetName: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    color: 'var(--text)', textTransform: 'uppercase',
+    color: 'var(--foreground)', textTransform: 'uppercase',
   },
   degree: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
     marginLeft: 'auto', flexShrink: 0,
   },
   symbolText: {
-    fontSize: 15, lineHeight: 1.6, color: 'var(--text)', fontStyle: 'italic',
+    fontSize: 15, lineHeight: 1.6, color: 'var(--foreground)', fontStyle: 'italic',
     paddingLeft: 38,
   },
   themeTag: (color) => ({
@@ -116,9 +116,9 @@ const S = {
     color: 'rgba(255,200,60,.6)', marginLeft: 6,
   },
   intro: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -150,7 +150,7 @@ export default function SabianDetail() {
       {/* HEADER */}
       <div style={S.glass}>
         <div style={S.heading}>Sabian Symbols</div>
-        <div style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic', marginBottom: 12 }}>
+        <div style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12 }}>
           360 symbolic images — one for each degree of the zodiac. Your natal planets each fall upon
           a specific Sabian Symbol, revealing the archetypal image encoded in your birth moment.
         </div>
@@ -159,8 +159,8 @@ export default function SabianDetail() {
             <span key={tag} style={{
               fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.1em',
               padding: '2px 10px', borderRadius: 10,
-              background: 'rgba(201,168,76,.08)', border: '1px solid rgba(201,168,76,.2)',
-              color: 'var(--gold3)',
+              background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
+              color: 'var(--muted-foreground)',
             }}>{tag}</span>
           ))}
         </div>
@@ -178,7 +178,7 @@ export default function SabianDetail() {
             <div style={S.sectionTitle(group.color)}>{group.label}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {entries.map(({ key, data }) => {
-                const color = PLANET_COLORS[key] || 'var(--gold)'
+                const color = PLANET_COLORS[key] || 'var(--foreground)'
                 const signIdx = data.lon != null ? Math.floor(data.lon / 30) : 0
                 const signGlyph = SIGN_GLYPHS[signIdx] || ''
                 const signName = SIGN_NAMES[signIdx] || data.sign || ''

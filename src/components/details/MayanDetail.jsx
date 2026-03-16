@@ -38,31 +38,31 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -71,18 +71,18 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
   keyVal: {
     display: 'flex', alignItems: 'center', gap: 16,
-    padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,.04)',
+    padding: '6px 0', borderBottom: '1px solid var(--secondary)',
   },
 }
 
 /* Mayan dot-and-bar tone notation (CSS-rendered) */
-function ToneNotation({ tone, size = 6, color = 'var(--gold)' }) {
+function ToneNotation({ tone, size = 6, color = 'var(--foreground)' }) {
   const bars = Math.floor(tone / 5)
   const dots = tone % 5
   return (
@@ -104,7 +104,7 @@ function ToneNotation({ tone, size = 6, color = 'var(--gold)' }) {
 /* Hero card for Day Sign / Trecena Sign */
 function SignHeroCard({ title, signName, description, emoji, color, meaning }) {
   const signData = DAY_SIGNS[signName] || {}
-  const cardColor = color || signData.color || 'var(--gold)'
+  const cardColor = color || signData.color || 'var(--foreground)'
   return (
     <div style={{
       flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -125,7 +125,7 @@ function SignHeroCard({ title, signName, description, emoji, color, meaning }) {
       }}>{signName}</div>
       <div style={{
         fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13,
-        color: 'var(--text2)', fontStyle: 'italic',
+        color: 'var(--muted-foreground)', fontStyle: 'italic',
       }}>{signData.english || description}</div>
       {signData.element && (
         <div style={S.badge(cardColor + '15', cardColor + '44', cardColor)}>
@@ -134,7 +134,7 @@ function SignHeroCard({ title, signName, description, emoji, color, meaning }) {
       )}
       {meaning && (
         <div style={{
-          fontSize: 11, color: 'var(--text3)', fontStyle: 'italic',
+          fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic',
           lineHeight: 1.5, marginTop: 4, paddingTop: 8,
           borderTop: `1px solid ${cardColor}22`,
         }}>{meaning}</div>
@@ -149,8 +149,8 @@ function ToneHeroCard({ tone, toneName, meaning }) {
     <div style={{
       flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
       padding: '22px 16px', borderRadius: 14, textAlign: 'center',
-      background: 'rgba(201,168,76,.08)',
-      border: '1.5px solid rgba(201,168,76,.35)',
+      background: 'var(--accent)',
+      border: '1.5px solid var(--ring)',
       gap: 8,
     }}>
       <div style={{
@@ -159,21 +159,21 @@ function ToneHeroCard({ tone, toneName, meaning }) {
       }}>Galactic Tone</div>
       <div style={{
         fontFamily: "'Cinzel', serif", fontSize: 52, fontWeight: 700,
-        color: 'var(--gold)', lineHeight: 1,
+        color: 'var(--foreground)', lineHeight: 1,
       }}>{tone}</div>
       <div style={{
         fontFamily: "'Cinzel', serif", fontSize: 15, fontWeight: 600,
-        letterSpacing: '.15em', color: 'var(--gold2)',
+        letterSpacing: '.15em', color: 'var(--foreground)',
         textTransform: 'uppercase',
       }}>{toneName}</div>
       <div style={{ paddingTop: 6 }}>
-        <ToneNotation tone={tone} size={9} color="var(--gold)" />
+        <ToneNotation tone={tone} size={9} color="var(--foreground)" />
       </div>
       {meaning && (
         <div style={{
-          fontSize: 11, color: 'var(--text3)', fontStyle: 'italic',
+          fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic',
           lineHeight: 1.5, marginTop: 4, paddingTop: 8,
-          borderTop: '1px solid rgba(201,168,76,.15)',
+          borderTop: '1px solid var(--accent)',
         }}>{meaning}</div>
       )}
     </div>
@@ -224,12 +224,12 @@ function OracleCard({ entry, label, desc, col, isCenter }) {
       }}>{entry.signature}</div>
       <div style={{
         fontFamily: "'Inconsolata', monospace", fontSize: 9,
-        color: 'var(--text3)', marginTop: 2,
+        color: 'var(--muted-foreground)', marginTop: 2,
       }}>Kin {entry.kin}</div>
       <div style={{ marginTop: 4 }}>
         <ToneNotation tone={entry.toneNum} size={isCenter ? 5 : 4} color={col + '0.5)'} />
       </div>
-      <div style={{ fontSize: 9, color: 'var(--text3)', fontStyle: 'italic', marginTop: 4 }}>
+      <div style={{ fontSize: 9, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>
         {desc}
       </div>
     </div>
@@ -277,7 +277,7 @@ export default function MayanDetail() {
       <div>
         <div style={{
           fontFamily: "'Cinzel', serif", fontSize: 11, letterSpacing: '.3em',
-          textTransform: 'uppercase', color: 'var(--gold3)', textAlign: 'center',
+          textTransform: 'uppercase', color: 'var(--muted-foreground)', textAlign: 'center',
           marginBottom: 18,
         }}>Your Mayan Solar Seal</div>
 
@@ -316,16 +316,16 @@ export default function MayanDetail() {
             {/* Long Count — prominent */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-              padding: '14px 16px', borderBottom: '1px solid rgba(201,168,76,.1)',
+              padding: '14px 16px', borderBottom: '1px solid var(--accent)',
             }}>
               <div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 4,
+                  textTransform: 'uppercase', color: 'var(--ring)', marginBottom: 4,
                 }}>Long Count</div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 26, fontWeight: 700,
-                  color: 'var(--gold)', letterSpacing: '.15em',
+                  color: 'var(--foreground)', letterSpacing: '.15em',
                 }}>{longCount}</div>
               </div>
               <div style={{
@@ -342,52 +342,52 @@ export default function MayanDetail() {
             {/* Haab & Kin row */}
             <div style={{ display: 'flex', gap: 0 }}>
               <div style={{
-                flex: 1, padding: '14px 16px', borderRight: '1px solid rgba(201,168,76,.08)',
+                flex: 1, padding: '14px 16px', borderRight: '1px solid var(--accent)',
               }}>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 4,
+                  textTransform: 'uppercase', color: 'var(--ring)', marginBottom: 4,
                 }}>Haab Date</div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 600,
-                  color: 'var(--gold2)',
+                  color: 'var(--foreground)',
                 }}>{haabFormatted}</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2, fontStyle: 'italic' }}>
+                <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 2, fontStyle: 'italic' }}>
                   {classicalProfile.haab.monthMeaning}
                 </div>
               </div>
               <div style={{ flex: 1, padding: '14px 16px' }}>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 4,
+                  textTransform: 'uppercase', color: 'var(--ring)', marginBottom: 4,
                 }}>Tzolkin Kin</div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 20, fontWeight: 600,
-                  color: 'var(--gold2)',
+                  color: 'var(--foreground)',
                 }}>Kin {kinNumber}</div>
-                <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 2, fontStyle: 'italic' }}>
+                <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 2, fontStyle: 'italic' }}>
                   of 260 in the Tzolkin cycle
                 </div>
               </div>
             </div>
 
             {/* Year Bearer & Lord of Night */}
-            <div style={{ display: 'flex', gap: 0, borderTop: '1px solid rgba(201,168,76,.08)' }}>
-              <div style={{ flex: 1, padding: '12px 16px', borderRight: '1px solid rgba(201,168,76,.08)' }}>
+            <div style={{ display: 'flex', gap: 0, borderTop: '1px solid var(--accent)' }}>
+              <div style={{ flex: 1, padding: '12px 16px', borderRight: '1px solid var(--accent)' }}>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 2,
+                  textTransform: 'uppercase', color: 'var(--ring)', marginBottom: 2,
                 }}>Year Bearer</div>
-                <div style={{ ...S.mono, color: 'var(--gold2)' }}>
+                <div style={{ ...S.mono, color: 'var(--foreground)' }}>
                   {classicalProfile.yearBearer.formatted}
                 </div>
               </div>
               <div style={{ flex: 1, padding: '12px 16px' }}>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                  textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 2,
+                  textTransform: 'uppercase', color: 'var(--ring)', marginBottom: 2,
                 }}>Lord of Night</div>
-                <div style={{ ...S.mono, color: 'var(--gold2)' }}>
+                <div style={{ ...S.mono, color: 'var(--foreground)' }}>
                   {classicalProfile.lordOfNight}
                 </div>
               </div>
@@ -415,11 +415,11 @@ export default function MayanDetail() {
                 <div>
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 15, fontWeight: 700,
-                    color: daySignData.color || 'var(--gold)', letterSpacing: '.1em',
+                    color: daySignData.color || 'var(--foreground)', letterSpacing: '.1em',
                   }}>{daySignName} — {daySignData.english}</div>
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                    textTransform: 'uppercase', color: 'rgba(201,168,76,.5)',
+                    textTransform: 'uppercase', color: 'var(--ring)',
                   }}>Day Sign · {daySignData.element} Element</div>
                 </div>
               </div>
@@ -431,25 +431,25 @@ export default function MayanDetail() {
             {/* Tone meaning */}
             <div style={{
               ...S.glass,
-              background: 'rgba(201,168,76,.05)',
+              background: 'var(--secondary)',
               borderColor: 'rgba(201,168,76,.2)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                 <div style={{ textAlign: 'center', minWidth: 40 }}>
-                  <ToneNotation tone={galacticTone} size={7} color="var(--gold)" />
+                  <ToneNotation tone={galacticTone} size={7} color="var(--foreground)" />
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 700,
-                    color: 'var(--gold)', marginTop: 4,
+                    color: 'var(--foreground)', marginTop: 4,
                   }}>{galacticTone}</div>
                 </div>
                 <div>
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 15, fontWeight: 700,
-                    color: 'var(--gold)', letterSpacing: '.1em',
+                    color: 'var(--foreground)', letterSpacing: '.1em',
                   }}>Tone {galacticTone} — {toneNameStr}</div>
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                    textTransform: 'uppercase', color: 'rgba(201,168,76,.5)',
+                    textTransform: 'uppercase', color: 'var(--ring)',
                   }}>Galactic Tone · {tz?.toneKeyword}</div>
                 </div>
               </div>
@@ -469,16 +469,16 @@ export default function MayanDetail() {
                 <div>
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 15, fontWeight: 700,
-                    color: trecenaData.color || 'var(--gold2)', letterSpacing: '.1em',
+                    color: trecenaData.color || 'var(--foreground)', letterSpacing: '.1em',
                   }}>Trecena of {trecenaName} — {trecenaData.english}</div>
                   <div style={{
                     fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-                    textTransform: 'uppercase', color: 'rgba(201,168,76,.5)',
+                    textTransform: 'uppercase', color: 'var(--ring)',
                   }}>Trecena Lord · 13-Day Period</div>
                 </div>
               </div>
               <div style={S.interpretation}>
-                You were born in the trecena of <strong style={{ color: trecenaData.color || 'var(--gold2)' }}>{trecenaName} ({trecenaData.english})</strong>.
+                You were born in the trecena of <strong style={{ color: trecenaData.color || 'var(--foreground)' }}>{trecenaName} ({trecenaData.english})</strong>.
                 The trecena lord governs the 13-day period that contains your birth, shaping the overarching energy
                 and theme of your life path. {trecenaData.element} energy influences your spiritual foundation.
               </div>
@@ -505,7 +505,7 @@ export default function MayanDetail() {
         <div style={{ ...S.glass, textAlign: 'center', padding: '28px 22px' }}>
           <div style={{
             fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.25em',
-            textTransform: 'uppercase', color: 'var(--gold3)', marginBottom: 14,
+            textTransform: 'uppercase', color: 'var(--muted-foreground)', marginBottom: 14,
           }}>Kin {P.kin} {'\u2014'} {P.signature}</div>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: 40, alignItems: 'flex-start', marginBottom: 16 }}>
@@ -521,7 +521,7 @@ export default function MayanDetail() {
                 fontFamily: "'Cinzel', serif", fontSize: 16, color: sealCol,
                 letterSpacing: '.12em',
               }}>{colorLabel} {seal.name}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>
+              <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
                 Solar Seal {seal.num} ({seal.mayanName})
               </div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -536,22 +536,22 @@ export default function MayanDetail() {
             {/* Tone */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
               <div style={{ marginTop: 8 }}>
-                <ToneNotation tone={tone.number} size={10} color="var(--gold)" />
+                <ToneNotation tone={tone.number} size={10} color="var(--foreground)" />
               </div>
               <div style={{
-                fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--gold)',
+                fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--foreground)',
                 letterSpacing: '.15em', lineHeight: 1,
               }}>{tone.number}</div>
               <div style={{
-                fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--gold2)',
+                fontFamily: "'Cinzel', serif", fontSize: 16, color: 'var(--foreground)',
                 letterSpacing: '.12em',
               }}>{tone.name}</div>
-              <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic' }}>
+              <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
                 Galactic Tone {'\u2014'} {tone.keyword}
               </div>
               <div style={{ display: 'flex', gap: 6 }}>
                 {[tone.action, tone.power].map((kw, i) => (
-                  <span key={i} style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.22)', 'var(--gold2)')}>
+                  <span key={i} style={S.badge('var(--accent)', 'rgba(201,168,76,.22)', 'var(--foreground)')}>
                     {kw}
                   </span>
                 ))}
@@ -559,7 +559,7 @@ export default function MayanDetail() {
             </div>
           </div>
 
-          <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 4 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 4 }}>
             Born {P.birthDate}
           </div>
         </div>
@@ -582,12 +582,12 @@ export default function MayanDetail() {
             <div key={i} style={S.keyVal}>
               <span style={{
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-                textTransform: 'uppercase', color: 'var(--text3)', minWidth: 140,
+                textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 140,
               }}>{label}</span>
-              <span style={{ ...S.mono, color: i === 0 ? 'var(--gold)' : 'var(--gold2)' }}>
+              <span style={{ ...S.mono, color: i === 0 ? 'var(--foreground)' : 'var(--foreground)' }}>
                 {i === 0
                   ? <span style={{
-                      ...S.badge('rgba(201,168,76,.1)', 'rgba(201,168,76,.3)', 'var(--gold)'),
+                      ...S.badge('var(--accent)', 'rgba(201,168,76,.3)', 'var(--foreground)'),
                       fontSize: 10, padding: '4px 14px',
                     }}>{val}</span>
                   : val}
@@ -610,10 +610,10 @@ export default function MayanDetail() {
           <div style={{ fontFamily: "'Cinzel', serif", fontSize: 22, color: sealCol, letterSpacing: '.15em' }}>
             {seal.name}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text2)', marginTop: 4, fontStyle: 'italic' }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 4, fontStyle: 'italic' }}>
             {seal.action} {'\u00B7'} {seal.power} {'\u00B7'} {seal.essence}
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6 }}>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 6 }}>
             {colorLabel} {'\u00B7'} {seal.direction} {'\u00B7'} {seal.earthFamily}
           </div>
           <div style={{ marginTop: 10 }}>
@@ -623,24 +623,24 @@ export default function MayanDetail() {
 
         <div style={{
           ...S.glass, textAlign: 'center', padding: '20px 18px',
-          background: 'rgba(201,168,76,.04)', borderColor: 'rgba(201,168,76,.15)',
+          background: 'var(--secondary)', borderColor: 'var(--accent)',
         }}>
           <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(201,168,76,.6)', marginBottom: 6 }}>
             Galactic Tone
           </div>
           <div style={{ marginBottom: 8 }}>
-            <ToneNotation tone={tone.number} size={10} color="var(--gold)" />
+            <ToneNotation tone={tone.number} size={10} color="var(--foreground)" />
           </div>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--gold)', letterSpacing: '.15em', lineHeight: 1 }}>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--foreground)', letterSpacing: '.15em', lineHeight: 1 }}>
             {tone.number}
           </div>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 18, color: 'var(--gold2)', letterSpacing: '.12em', marginTop: 6 }}>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 18, color: 'var(--foreground)', letterSpacing: '.12em', marginTop: 6 }}>
             {tone.name}
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text2)', marginTop: 6 }}>
+          <div style={{ fontSize: 13, color: 'var(--muted-foreground)', marginTop: 6 }}>
             {tone.keyword}
           </div>
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 8, fontStyle: 'italic' }}>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 8, fontStyle: 'italic' }}>
             {tone.action} {'\u00B7'} {tone.power}
           </div>
         </div>
@@ -658,19 +658,19 @@ export default function MayanDetail() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
         <div style={{
           ...S.glass, padding: '20px 18px',
-          background: 'rgba(201,168,76,.04)', borderColor: 'rgba(201,168,76,.15)',
+          background: 'var(--secondary)', borderColor: 'var(--accent)',
         }}>
           <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(201,168,76,.6)', marginBottom: 8 }}>
             Wavespell {P.wavespell.number} of 20
           </div>
           <div style={{ fontSize: 28, marginBottom: 4 }}>{P.wavespell.seal.glyph}</div>
-          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--gold2)', letterSpacing: '.1em' }}>
+          <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, color: 'var(--foreground)', letterSpacing: '.1em' }}>
             {P.wavespell.name}
           </div>
-          <div style={{ ...S.monoSm, color: 'var(--text3)', marginTop: 4 }}>
+          <div style={{ ...S.monoSm, color: 'var(--muted-foreground)', marginTop: 4 }}>
             {P.wavespell.label}
           </div>
-          <div style={{ ...S.monoSm, color: 'var(--text3)', marginTop: 2 }}>
+          <div style={{ ...S.monoSm, color: 'var(--muted-foreground)', marginTop: 2 }}>
             Kins {P.wavespell.startKin}{'\u2013'}{P.wavespell.startKin + 12}
           </div>
         </div>
@@ -685,10 +685,10 @@ export default function MayanDetail() {
           <div style={{ fontFamily: "'Cinzel', serif", fontSize: 14, color: P.castle.color, letterSpacing: '.1em' }}>
             {P.castle.name}
           </div>
-          <div style={{ ...S.monoSm, color: 'var(--text3)', marginTop: 4 }}>
+          <div style={{ ...S.monoSm, color: 'var(--muted-foreground)', marginTop: 4 }}>
             Court of {P.castle.court}
           </div>
-          <div style={{ ...S.monoSm, color: 'var(--text3)', marginTop: 2 }}>
+          <div style={{ ...S.monoSm, color: 'var(--muted-foreground)', marginTop: 2 }}>
             Kins {P.castle.range[0]}{'\u2013'}{P.castle.range[1]}
           </div>
         </div>
@@ -699,10 +699,10 @@ export default function MayanDetail() {
         <div style={S.sectionTitle}>Earth Family</div>
         <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-            <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 18, color: 'var(--gold)', fontWeight: 700 }}>
+            <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 18, color: 'var(--foreground)', fontWeight: 700 }}>
               {P.earthFamily.name}
             </span>
-            <span style={{ ...S.monoSm, color: 'var(--text3)' }}>
+            <span style={{ ...S.monoSm, color: 'var(--muted-foreground)' }}>
               {P.earthFamily.role} {'\u00B7'} {P.earthFamily.chakra} Chakra
             </span>
           </div>
@@ -715,13 +715,13 @@ export default function MayanDetail() {
                 <div key={i} style={{
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '8px 12px', borderRadius: 8,
-                  background: isYou ? 'rgba(201,168,76,.08)' : 'rgba(255,255,255,.02)',
-                  border: `1px solid ${isYou ? 'rgba(201,168,76,.25)' : 'rgba(255,255,255,.06)'}`,
+                  background: isYou ? 'var(--accent)' : 'var(--secondary)',
+                  border: `1px solid ${isYou ? 'rgba(201,168,76,.25)' : 'var(--border)'}`,
                 }}>
                   <span style={{ fontSize: 18 }}>{s.glyph}</span>
                   <div>
-                    <div style={{ ...S.mono, color: isYou ? 'var(--gold)' : sc, fontSize: 12 }}>{s.name}</div>
-                    <div style={{ fontSize: 9, color: 'var(--text3)' }}>Seal {s.num}</div>
+                    <div style={{ ...S.mono, color: isYou ? 'var(--foreground)' : sc, fontSize: 12 }}>{s.name}</div>
+                    <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>Seal {s.num}</div>
                   </div>
                 </div>
               )
@@ -736,7 +736,7 @@ export default function MayanDetail() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '28px 28px 90px 80px 80px 70px 55px', gap: 8, padding: '4px 12px' }}>
             {['#', '', 'NAME', 'ACTION', 'POWER', 'FAMILY', 'DIR'].map((h, i) => (
-              <span key={i} style={{ ...S.monoSm, fontSize: 9, color: 'var(--text3)' }}>{h}</span>
+              <span key={i} style={{ ...S.monoSm, fontSize: 9, color: 'var(--muted-foreground)' }}>{h}</span>
             ))}
           </div>
           {DREAMSPELL_SEALS.map((s, i) => {
@@ -746,14 +746,14 @@ export default function MayanDetail() {
               <div key={i} style={{
                 ...S.row,
                 display: 'grid', gridTemplateColumns: '28px 28px 90px 80px 80px 70px 55px', gap: 8,
-                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.04)',
-                background: isActive ? 'rgba(201,168,76,.06)' : 'rgba(255,255,255,.02)',
+                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'var(--secondary)',
+                background: isActive ? 'rgba(201,168,76,.06)' : 'var(--secondary)',
               }}>
-                <span style={{ fontFamily: "'Cinzel', serif", fontSize: 12, textAlign: 'center', color: isActive ? 'var(--gold)' : sc }}>
+                <span style={{ fontFamily: "'Cinzel', serif", fontSize: 12, textAlign: 'center', color: isActive ? 'var(--foreground)' : sc }}>
                   {s.num}
                 </span>
                 <span style={{ fontSize: 16, textAlign: 'center' }}>{s.glyph}</span>
-                <span style={{ ...S.mono, color: isActive ? 'var(--gold)' : 'var(--gold2)', fontWeight: isActive ? 700 : 400 }}>
+                <span style={{ ...S.mono, color: isActive ? 'var(--foreground)' : 'var(--foreground)', fontWeight: isActive ? 700 : 400 }}>
                   {s.name}
                 </span>
                 <span style={{ ...S.monoSm, fontSize: 10 }}>{s.action}</span>
@@ -775,30 +775,30 @@ export default function MayanDetail() {
             return (
               <div key={i} style={{
                 ...S.row,
-                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.04)',
-                background: isActive ? 'rgba(201,168,76,.06)' : 'rgba(255,255,255,.02)',
+                borderColor: isActive ? 'rgba(201,168,76,.2)' : 'var(--secondary)',
+                background: isActive ? 'rgba(201,168,76,.06)' : 'var(--secondary)',
               }}>
                 <div style={{ minWidth: 36, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                  <ToneNotation tone={t.number} size={4} color={isActive ? 'var(--gold)' : 'rgba(201,168,76,.25)'} />
+                  <ToneNotation tone={t.number} size={4} color={isActive ? 'var(--foreground)' : 'rgba(201,168,76,.25)'} />
                 </div>
                 <span style={{
                   fontSize: 14, minWidth: 24, textAlign: 'center',
                   fontFamily: "'Cinzel', serif",
-                  color: isActive ? 'var(--gold)' : 'var(--text3)',
+                  color: isActive ? 'var(--foreground)' : 'var(--muted-foreground)',
                   fontWeight: isActive ? 700 : 400,
                 }}>{t.number}</span>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ ...S.mono, color: isActive ? 'var(--gold)' : 'var(--gold2)', fontSize: 13 }}>
+                    <span style={{ ...S.mono, color: isActive ? 'var(--foreground)' : 'var(--foreground)', fontSize: 13 }}>
                       {t.name}
                     </span>
                     <span style={S.badge(
-                      isActive ? 'rgba(201,168,76,.1)' : 'rgba(255,255,255,.04)',
+                      isActive ? 'var(--accent)' : 'var(--secondary)',
                       isActive ? 'rgba(201,168,76,.25)' : 'rgba(255,255,255,.08)',
-                      isActive ? 'var(--gold)' : 'var(--text3)',
+                      isActive ? 'var(--foreground)' : 'var(--muted-foreground)',
                     )}>{t.keyword}</span>
                   </div>
-                  <span style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                  <span style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                     {t.action} {'\u00B7'} {t.power}
                   </span>
                 </div>
@@ -817,18 +817,18 @@ export default function MayanDetail() {
             return (
               <div key={i} style={{
                 ...S.row,
-                borderColor: isActive ? c.color + '44' : 'rgba(255,255,255,.04)',
-                background: isActive ? c.color + '0c' : 'rgba(255,255,255,.02)',
+                borderColor: isActive ? c.color + '44' : 'var(--secondary)',
+                background: isActive ? c.color + '0c' : 'var(--secondary)',
               }}>
                 <span style={{
                   fontFamily: "'Cinzel', serif", fontSize: 16, minWidth: 28, textAlign: 'center',
                   color: isActive ? c.color : c.color + '66',
                 }}>{c.num}</span>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ ...S.mono, color: isActive ? c.color : 'var(--text2)', fontSize: 12, fontWeight: isActive ? 700 : 400 }}>
+                  <span style={{ ...S.mono, color: isActive ? c.color : 'var(--muted-foreground)', fontSize: 12, fontWeight: isActive ? 700 : 400 }}>
                     {c.name}
                   </span>
-                  <span style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic' }}>
+                  <span style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
                     Court of {c.court} {'\u00B7'} Kins {c.range[0]}{'\u2013'}{c.range[1]}
                   </span>
                 </div>
@@ -842,20 +842,20 @@ export default function MayanDetail() {
       <div>
         <div style={S.sectionTitle}>Your Dreamspell Reading</div>
         <div style={S.interpretation}>
-          As <span style={{ color: 'var(--gold)' }}>Kin {P.kin} {'\u2014'} {P.signature}</span>, you embody
+          As <span style={{ color: 'var(--foreground)' }}>Kin {P.kin} {'\u2014'} {P.signature}</span>, you embody
           the galactic signature of the {seal.name} seal ({seal.mayanName}) — the power of {seal.power.toLowerCase()}.
-          As <span style={{ color: 'var(--gold)' }}>Tone {tone.number} ({tone.name})</span>, you{' '}
+          As <span style={{ color: 'var(--foreground)' }}>Tone {tone.number} ({tone.name})</span>, you{' '}
           {tone.action.toLowerCase()} in order to {seal.action.toLowerCase()},{' '}
           {tone.power.toLowerCase()}ing the power of {seal.power.toLowerCase()}.{' '}
           Your oracle cross reveals{' '}
           <span style={{ color: '#88dd44' }}>{P.oracle.guide.signature}</span> as your Guide (higher self);{' '}
-          <span style={{ color: 'var(--gold)' }}>{P.oracle.analog.signature}</span> as your Analog (support);{' '}
+          <span style={{ color: 'var(--foreground)' }}>{P.oracle.analog.signature}</span> as your Analog (support);{' '}
           <span style={{ color: '#ee5544' }}>{P.oracle.antipode.signature}</span> as your Antipode (challenge); and{' '}
           <span style={{ color: 'var(--aqua2)' }}>{P.oracle.occult.signature}</span> as your Occult (hidden power).{' '}
           You walk within the{' '}
           <span style={{ color: P.castle.color }}>{P.castle.name}</span>,
           the Court of {P.castle.court}. The{' '}
-          <span style={{ color: 'var(--gold2)' }}>{P.wavespell.name} Wavespell</span> infuses your
+          <span style={{ color: 'var(--foreground)' }}>{P.wavespell.name} Wavespell</span> infuses your
           journey with the power of {P.wavespell.seal.power.toLowerCase()}.
         </div>
       </div>

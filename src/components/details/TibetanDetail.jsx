@@ -25,30 +25,30 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px',
-    borderRadius: 8, background: 'var(--row-bg)', border: '1px solid var(--row-border)',
+    borderRadius: 8, background: 'var(--secondary)', border: '1px solid var(--border)',
   },
   badge: (bg, border, color) => ({
     display: 'inline-block', padding: '3px 10px', borderRadius: 12,
@@ -74,8 +74,8 @@ export default function TibetanDetail() {
 
   if (!profile) return null
 
-  const animalColor = ELEM_COLORS[profile.animalProfile?.element] || 'var(--gold)'
-  const elemColor = ELEM_COLORS[profile.element] || 'var(--gold)'
+  const animalColor = ELEM_COLORS[profile.animalProfile?.element] || 'var(--foreground)'
+  const elemColor = ELEM_COLORS[profile.element] || 'var(--foreground)'
   const mewaColor = MEWA_COLORS[profile.mewaMeaning?.color?.split('/')[0]] || '#c9a84c'
 
   return (
@@ -83,7 +83,7 @@ export default function TibetanDetail() {
       {/* Header */}
       <div>
         <div style={S.heading}>☸ Tibetan Astrology</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Losar calendar · 60-year cycle · Mewa magic square · Elemental year
         </div>
       </div>
@@ -94,11 +94,11 @@ export default function TibetanDetail() {
         <div style={{ ...S.glass, textAlign: 'center' }}>
           <div style={{
             fontFamily: "'Cinzel', serif", fontSize: 26, letterSpacing: '.15em',
-            color: 'var(--gold)', marginBottom: 6,
+            color: 'var(--foreground)', marginBottom: 6,
           }}>
             {profile.fullLabel}
           </div>
-          <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
             Tibetan Year {profile.tibetanYear} · {profile.yinYang} Polarity
           </div>
         </div>
@@ -118,10 +118,10 @@ export default function TibetanDetail() {
             <div style={{ fontFamily: "'Cinzel', serif", fontSize: 20, color: animalColor, marginBottom: 8, letterSpacing: '.1em' }}>
               {profile.animal}
             </div>
-            <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
               {profile.animalProfile?.quality}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 6 }}>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 6 }}>
               Challenge: {profile.animalProfile?.challenge}
             </div>
           </div>
@@ -136,10 +136,10 @@ export default function TibetanDetail() {
             <div style={{ fontFamily: "'Cinzel', serif", fontSize: 20, color: elemColor, marginBottom: 8, letterSpacing: '.1em' }}>
               {profile.element}
             </div>
-            <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>
-              Year polarity: <span style={{ color: 'var(--gold)' }}>{profile.yinYang}</span>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
+              Year polarity: <span style={{ color: 'var(--foreground)' }}>{profile.yinYang}</span>
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', marginTop: 6 }}>
+            <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 6 }}>
               60-year Tibetan cycle
             </div>
           </div>
@@ -167,7 +167,7 @@ export default function TibetanDetail() {
                 {profile.mewaMeaning?.element}
               </span>
             </div>
-            <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+            <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
               {profile.mewaMeaning?.meaning}
             </div>
           </div>
@@ -180,7 +180,7 @@ export default function TibetanDetail() {
         <div style={S.interpretation}>
           Born in a <span style={{ color: elemColor }}>{profile.element}</span> year,
           you carry the qualities of the <span style={{ color: animalColor }}>{profile.animal}</span> — {profile.animalProfile?.quality?.toLowerCase()}.
-          The <span style={{ color: 'var(--gold)' }}>{profile.yinYang}</span> polarity shapes
+          The <span style={{ color: 'var(--foreground)' }}>{profile.yinYang}</span> polarity shapes
           how this energy flows in your life. Your Mewa{' '}
           <span style={{ color: mewaColor }}>{profile.mewaNumber} ({profile.mewaMeaning?.color})</span>{' '}
           brings {profile.mewaMeaning?.meaning?.toLowerCase()}, operating as the inner

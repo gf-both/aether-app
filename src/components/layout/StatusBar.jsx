@@ -8,13 +8,13 @@ export default function StatusBar() {
   const time = useClock()
 
   const items = [
-    { dot: 'var(--aqua)', label: 'Type', val: profile.hdType, valColor: 'var(--aqua2)' },
-    { dot: 'var(--rose)', label: 'Authority', val: profile.hdAuth, valColor: 'var(--rose2)' },
-    { dot: 'var(--violet)', label: 'Profile', val: `${profile.hdProfile} Martyr\u00B7Heretic`, valColor: 'var(--violet2)' },
-    { dot: 'var(--silver)', label: 'Definition', val: profile.hdDef, valColor: 'var(--silver2)' },
-    { dot: 'var(--lime)', label: 'Strategy', val: 'Wait for Invitation', valColor: 'var(--lime2)' },
-    { dot: 'var(--gold)', label: 'Not-Self', val: 'Bitterness', valColor: 'var(--text2)' },
-    { dot: '#aa80ff', label: 'Inc. Cross', val: 'Right Angle \u00B7 Unexpected', valColor: '#aa80ff' },
+    { dot: 'var(--aqua)', label: 'Type', val: profile.hdType },
+    { dot: 'var(--rose)', label: 'Authority', val: profile.hdAuth },
+    { dot: 'var(--violet)', label: 'Profile', val: `${profile.hdProfile} Martyr·Heretic` },
+    { dot: 'var(--muted-foreground)', label: 'Definition', val: profile.hdDef },
+    { dot: 'var(--lime)', label: 'Strategy', val: 'Wait for Invitation' },
+    { dot: 'var(--accent-color, #c9a84c)', label: 'Not-Self', val: 'Bitterness' },
+    { dot: '#aa80ff', label: 'Inc. Cross', val: 'Right Angle · Unexpected' },
   ]
 
   return (
@@ -24,7 +24,7 @@ export default function StatusBar() {
           <div className="sb-dot" style={{ background: item.dot }} />
           <div>
             <div className="sb-label">{item.label}</div>
-            <div className="sb-val" style={{ color: item.valColor }}>{item.val}</div>
+            <div className="sb-val">{item.val}</div>
           </div>
         </div>
       ))}
@@ -38,11 +38,11 @@ export default function StatusBar() {
         </div>
       </div>
       <div style={{ flex: 1 }} />
-      <div className="sb-item" onClick={() => setActivePanel('profile')} style={{ cursor: 'none' }}>
-        <div className="sb-dot" style={{ background: 'var(--gold)' }} />
+      <div className="sb-item" onClick={() => setActivePanel('profile')} style={{ cursor: 'pointer' }}>
+        <div className="sb-dot" style={{ background: 'var(--ring)' }} />
         <div>
           <div className="sb-label">Profiles</div>
-          <div className="sb-val" style={{ color: 'var(--gold)' }}>{1 + people.length} profiles</div>
+          <div className="sb-val">{1 + people.length} profiles</div>
         </div>
       </div>
       <span className="ttime">{time}</span>

@@ -8,7 +8,7 @@ import {
 
 /* ---- type config ---- */
 const TYPE_CONFIG = {
-  resonance: { col: '#c9a84c',            bg: 'rgba(201,168,76,.08)',  border: 'rgba(201,168,76,.22)', label: 'Resonance' },
+  resonance: { col: '#c9a84c',            bg: 'var(--accent)',  border: 'rgba(201,168,76,.22)', label: 'Resonance' },
   tension:   { col: 'var(--violet2)',      bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.22)', label: 'Tension' },
   gateway:   { col: '#40ccdd',            bg: 'rgba(64,204,221,.08)', border: 'rgba(64,204,221,.22)', label: 'Gateway' },
   mirror:    { col: 'rgba(255,255,255,.7)', bg: 'rgba(255,255,255,.05)', border: 'rgba(255,255,255,.12)', label: 'Mirror' },
@@ -17,7 +17,7 @@ const TYPE_CONFIG = {
 const ACTIVATION_CONFIG = {
   active:   { col: '#60b030', bg: 'rgba(96,176,48,.1)',  border: 'rgba(96,176,48,.25)', label: 'ACTIVE' },
   building: { col: '#e09040', bg: 'rgba(224,144,64,.1)', border: 'rgba(224,144,64,.25)', label: 'BUILDING' },
-  fading:   { col: 'var(--text3)', bg: 'rgba(255,255,255,.04)', border: 'rgba(255,255,255,.08)', label: 'FADING' },
+  fading:   { col: 'var(--muted-foreground)', bg: 'var(--secondary)', border: 'rgba(255,255,255,.08)', label: 'FADING' },
 }
 
 const FRAMEWORK_LABELS = {
@@ -35,35 +35,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -72,9 +72,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -86,7 +86,7 @@ function CircularProgress({ value, size = 48, stroke = 3, color = '#c9a84c' }) {
   return (
     <svg width={size} height={size} style={{ flexShrink: 0 }}>
       <circle cx={size / 2} cy={size / 2} r={r}
-        fill="none" stroke="var(--bar-track)" strokeWidth={stroke} />
+        fill="none" stroke="var(--border)" strokeWidth={stroke} />
       <circle cx={size / 2} cy={size / 2} r={r}
         fill="none" stroke={color} strokeWidth={stroke}
         strokeDasharray={circ} strokeDashoffset={offset}
@@ -106,7 +106,7 @@ function StrengthMeter({ value, max = 10, color = '#c9a84c' }) {
   const pct = (value / max) * 100
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ flex: 1, height: 5, background: 'var(--bar-track)', borderRadius: 3, overflow: 'hidden' }}>
+      <div style={{ flex: 1, height: 5, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
         <div style={{
           height: '100%', borderRadius: 3, width: `${pct}%`,
           background: color, opacity: 0.75, transition: 'width .6s ease',
@@ -141,11 +141,11 @@ export default function PatternsDetail() {
       {/* ═══ HEADER ═══ */}
       <div>
         <div style={S.heading}>{'\u2B21'} Your Pattern Map</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', marginBottom: 12 }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12 }}>
           Cross-framework alignments, synchronicities, and hidden correlations across all your esoteric systems
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <span style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.2)', 'var(--gold)')}>
+          <span style={S.badge('var(--accent)', 'rgba(201,168,76,.2)', 'var(--foreground)')}>
             {totalAlignments} alignments detected
           </span>
           <span style={S.badge(
@@ -180,10 +180,10 @@ export default function PatternsDetail() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                   <span style={S.badge(ac.bg, ac.border, ac.col)}>{ac.label}</span>
-                  <span style={{ ...S.mono, fontSize: 13, color: 'var(--gold2)', flex: 1 }}>{tp.pattern}</span>
+                  <span style={{ ...S.mono, fontSize: 13, color: 'var(--foreground)', flex: 1 }}>{tp.pattern}</span>
                   <span style={{ ...S.monoSm, fontSize: 10 }}>peak {tp.peakDate}</span>
                 </div>
-                <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+                <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>
                   {tp.description}
                 </div>
               </div>
@@ -234,7 +234,7 @@ export default function PatternsDetail() {
                 <StrengthMeter value={a.strength} color={tc.col} />
 
                 {/* Description */}
-                <div style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.6 }}>
+                <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>
                   {a.description}
                 </div>
               </div>
@@ -256,7 +256,7 @@ export default function PatternsDetail() {
                   <span style={{ fontSize: 18, minWidth: 24, textAlign: 'center' }}>{cat.icon}</span>
                   <div>
                     <div style={S.subHeading}>{cat.name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: -4 }}>{cat.description}</div>
+                    <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: -4 }}>{cat.description}</div>
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -273,7 +273,7 @@ export default function PatternsDetail() {
                           <span style={{ ...S.mono, fontSize: 13, color: tc.col, flex: 1 }}>{a.title}</span>
                           <span style={{ ...S.monoSm, fontSize: 10 }}>{a.strength}/10</span>
                         </div>
-                        <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5, paddingLeft: 14 }}>
+                        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5, paddingLeft: 14 }}>
                           {a.description}
                         </div>
                       </div>
@@ -289,10 +289,10 @@ export default function PatternsDetail() {
       {/* ═══ PROFILE MATCHES ═══ */}
       <div>
         <div style={S.sectionTitle}>Profile Pattern Matches</div>
-        <div style={{ fontSize: 12, color: 'var(--text3)', marginBottom: 8, fontStyle: 'italic' }}>
+        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginBottom: 8, fontStyle: 'italic' }}>
           How your pattern signature resonates with others
           {people.length > 0 && (
-            <span style={{ color: 'var(--text2)' }}> — {people.length} profile{people.length > 1 ? 's' : ''} in your circle</span>
+            <span style={{ color: 'var(--muted-foreground)' }}> — {people.length} profile{people.length > 1 ? 's' : ''} in your circle</span>
           )}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -313,21 +313,21 @@ export default function PatternsDetail() {
                     <span style={{ fontSize: 16 }}>{pm.emoji}</span>
                     <span style={{
                       fontFamily: "'Cinzel', serif", fontSize: 13, letterSpacing: '.08em',
-                      color: 'var(--gold)',
+                      color: 'var(--foreground)',
                     }}>
                       {pm.personName}
                     </span>
-                    <span style={S.badge('rgba(201,168,76,.06)', 'rgba(201,168,76,.15)', 'var(--gold3)')}>
+                    <span style={S.badge('rgba(201,168,76,.06)', 'var(--accent)', 'var(--muted-foreground)')}>
                       {pm.sharedPatterns} shared
                     </span>
                   </div>
 
-                  <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
                     <span style={{ color: '#60b030' }}>{'\u25B2'} </span>
                     {pm.topAlignment}
                   </div>
 
-                  <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
                     <span style={{ color: '#9050e0' }}>{'\u25BC'} </span>
                     {pm.tensionPoint}
                   </div>
@@ -342,7 +342,7 @@ export default function PatternsDetail() {
       <div>
         <div style={S.sectionTitle}>The Pattern Reading</div>
         <div style={S.interpretation}>
-          <span style={{ color: 'var(--gold)' }}>Your pattern signature</span> is dominated by the number 5 —
+          <span style={{ color: 'var(--foreground)' }}>Your pattern signature</span> is dominated by the number 5 —
           the seeker, the investigator, the one who must understand before acting. This frequency echoes across
           your Enneagram type, Life Path, and Gene Key profile lines with remarkable consistency, suggesting a
           soul whose primary orientation is toward{' '}
@@ -358,7 +358,7 @@ export default function PatternsDetail() {
           and your Galactic Tone of Integrity — positions you at the exact center point where these opposing
           forces can find harmony. Your incarnation is not about choosing between observation and participation,
           between the metal blade and the flowing water. It is about being the{' '}
-          <span style={{ color: 'var(--gold)' }}>living bridge</span> where both are held simultaneously.
+          <span style={{ color: 'var(--foreground)' }}>living bridge</span> where both are held simultaneously.
           <br /><br />
           The Cross of the Unexpected is the clearest statement of purpose: your life unfolds through surprise,
           through the willingness to be interrupted by what you could not have anticipated. The{' '}
@@ -372,7 +372,7 @@ export default function PatternsDetail() {
       {/* ═══ HIDDEN CONNECTIONS ═══ */}
       <div>
         <div style={S.sectionTitle}>Hidden Connections</div>
-        <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', marginBottom: 8 }}>
+        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 8 }}>
           Subtle numerological and symbolic coincidences that may carry meaning
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -414,11 +414,11 @@ export default function PatternsDetail() {
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 16,
-                  color: 'var(--gold)', minWidth: 22, textAlign: 'center',
+                  color: 'var(--foreground)', minWidth: 22, textAlign: 'center',
                 }}>{hc.sym}</span>
-                <span style={{ ...S.mono, fontSize: 12, color: 'var(--gold2)' }}>{hc.title}</span>
+                <span style={{ ...S.mono, fontSize: 12, color: 'var(--foreground)' }}>{hc.title}</span>
               </div>
-              <div style={{ fontSize: 12, color: 'var(--text3)', lineHeight: 1.5, paddingLeft: 32 }}>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5, paddingLeft: 32 }}>
                 {hc.detail}
               </div>
             </div>

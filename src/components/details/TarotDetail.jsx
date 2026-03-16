@@ -5,26 +5,26 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
   badge: (bg, border, color) => ({
     display: 'inline-block', padding: '3px 10px', borderRadius: 12,
@@ -43,7 +43,7 @@ const CARD_SYMBOLS = {
 }
 
 const CARD_COLORS = {
-  primary:  { main: 'rgba(201,168,76,1)',  bg: 'rgba(201,168,76,.07)', border: 'rgba(201,168,76,.25)' },
+  primary:  { main: 'rgba(201,168,76,1)',  bg: 'var(--secondary)', border: 'rgba(201,168,76,.25)' },
   pair:     { main: 'rgba(144,80,224,1)',  bg: 'rgba(144,80,224,.07)', border: 'rgba(144,80,224,.25)' },
   lifepath: { main: 'rgba(64,204,221,1)',  bg: 'rgba(64,204,221,.07)', border: 'rgba(64,204,221,.25)' },
 }
@@ -78,7 +78,7 @@ function TarotCard({ card, label, colorKey, large = false }) {
         {card.name}
       </div>
       <div style={{
-        fontSize: 12, color: 'var(--text2)', fontStyle: 'italic', marginBottom: 10,
+        fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 10,
       }}>
         {card.archetype}
       </div>
@@ -127,11 +127,11 @@ export default function TarotDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>🃏 Tarot Birth Cards</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Major Arcana soul cards derived from your birth date
         </div>
         <div style={{ display: 'flex', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
-          <span style={S.badge('rgba(201,168,76,.08)', 'rgba(201,168,76,.2)', 'var(--gold3)')}>
+          <span style={S.badge('var(--accent)', 'rgba(201,168,76,.2)', 'var(--muted-foreground)')}>
             Birth Number: {birthNumber}
           </span>
           <span style={S.badge('rgba(64,204,221,.08)', 'rgba(64,204,221,.2)', 'rgba(64,204,221,.9)')}>
@@ -187,28 +187,28 @@ export default function TarotDetail() {
               <div key={a} style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '7px 12px',
                 borderRadius: 8,
-                background: isActive ? 'rgba(201,168,76,.06)' : 'rgba(255,255,255,.02)',
-                border: `1px solid ${isActive ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.04)'}`,
+                background: isActive ? 'rgba(201,168,76,.06)' : 'var(--secondary)',
+                border: `1px solid ${isActive ? 'rgba(201,168,76,.2)' : 'var(--secondary)'}`,
               }}>
                 <span style={{
                   fontFamily: "'Cinzel', serif", fontSize: 10, minWidth: 30, textAlign: 'center',
-                  color: isActive ? 'var(--gold)' : 'var(--text3)',
+                  color: isActive ? 'var(--foreground)' : 'var(--muted-foreground)',
                 }}>{CARD_SYMBOLS[a]}</span>
                 <span style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 12, flex: 1,
-                  color: isActive ? 'var(--gold)' : 'var(--text2)',
+                  color: isActive ? 'var(--foreground)' : 'var(--muted-foreground)',
                 }}>
                   {['The Magician','The High Priestess','The Empress','The Emperor','The Hierophant',
                     'The Lovers','The Chariot','Strength','The Hermit'][a - 1]}
                 </span>
-                <span style={{ fontSize: 11, color: 'var(--text3)' }}>+</span>
+                <span style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>+</span>
                 <span style={{
                   fontFamily: "'Cinzel', serif", fontSize: 10, minWidth: 30, textAlign: 'center',
-                  color: isActive ? 'rgba(144,80,224,1)' : 'var(--text3)',
+                  color: isActive ? 'rgba(144,80,224,1)' : 'var(--muted-foreground)',
                 }}>{CARD_SYMBOLS[b]}</span>
                 <span style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 12, flex: 1,
-                  color: isActive ? 'rgba(144,80,224,1)' : 'var(--text2)',
+                  color: isActive ? 'rgba(144,80,224,1)' : 'var(--muted-foreground)',
                 }}>
                   {['Wheel of Fortune','Justice','The Hanged Man','Death','Temperance',
                     'The Devil','The Tower','The Star','The Moon'][b - 10]}
@@ -223,18 +223,18 @@ export default function TarotDetail() {
               <div key={n} style={{
                 display: 'flex', alignItems: 'center', gap: 10, padding: '7px 12px',
                 borderRadius: 8,
-                background: isActive ? 'rgba(201,168,76,.06)' : 'rgba(255,255,255,.02)',
-                border: `1px solid ${isActive ? 'rgba(201,168,76,.2)' : 'rgba(255,255,255,.04)'}`,
+                background: isActive ? 'rgba(201,168,76,.06)' : 'var(--secondary)',
+                border: `1px solid ${isActive ? 'rgba(201,168,76,.2)' : 'var(--secondary)'}`,
               }}>
                 <span style={{
                   fontFamily: "'Cinzel', serif", fontSize: 10, minWidth: 30, textAlign: 'center',
-                  color: isActive ? 'var(--gold)' : 'var(--text3)',
+                  color: isActive ? 'var(--foreground)' : 'var(--muted-foreground)',
                 }}>{CARD_SYMBOLS[n]}</span>
                 <span style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 12,
-                  color: isActive ? 'var(--gold)' : 'var(--text2)',
+                  color: isActive ? 'var(--foreground)' : 'var(--muted-foreground)',
                 }}>{names[n]}</span>
-                <span style={{ fontSize: 10, color: 'var(--text3)', fontStyle: 'italic' }}>— stands alone</span>
+                <span style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>— stands alone</span>
               </div>
             )
           })}

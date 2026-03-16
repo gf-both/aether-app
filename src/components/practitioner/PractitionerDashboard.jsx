@@ -9,8 +9,8 @@ const s = {
     marginBottom: '20px',
   },
   panel: {
-    background: 'var(--panel-bg)',
-    border: '1px solid var(--glass-border)',
+    background: 'var(--card)',
+    border: '1px solid var(--border)',
     borderRadius: '12px',
     padding: '20px',
   },
@@ -18,7 +18,7 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '11px',
     letterSpacing: '.2em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     textTransform: 'uppercase',
     marginBottom: '14px',
   },
@@ -28,7 +28,7 @@ const s = {
     gap: '10px',
     marginBottom: '10px',
     paddingBottom: '10px',
-    borderBottom: '1px solid rgba(255,255,255,.04)',
+    borderBottom: '1px solid var(--secondary)',
   },
   dot: {
     width: '6px',
@@ -41,7 +41,7 @@ const s = {
   sessionTime: {
     fontFamily: "'Cinzel',serif",
     fontSize: '12px',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
   },
   sessionClient: {
     fontFamily: "'Cormorant Garamond',serif",
@@ -51,13 +51,13 @@ const s = {
   sessionDuration: {
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '11px',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
   },
   dayLabel: {
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.15em',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     textTransform: 'uppercase',
     marginBottom: '8px',
     marginTop: '4px',
@@ -72,7 +72,7 @@ const s = {
     width: '24px',
     height: '24px',
     borderRadius: '50%',
-    background: 'rgba(201,168,76,.1)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.2)',
     display: 'flex',
     alignItems: 'center',
@@ -84,24 +84,24 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.1em',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     textTransform: 'uppercase',
     marginBottom: '2px',
   },
   activityText: {
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '13px',
-    color: 'var(--text2)',
+    color: 'var(--muted-foreground)',
   },
   calBtn: {
-    background: 'rgba(201,168,76,.08)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.2)',
     borderRadius: '6px',
     padding: '6px 14px',
     fontFamily: "'Cinzel',serif",
     fontSize: '9px',
     letterSpacing: '.12em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     cursor: 'pointer',
     textTransform: 'uppercase',
     marginTop: '10px',
@@ -152,7 +152,7 @@ export default function PractitionerDashboard({ onNewSession, onViewClient }) {
             <button
               style={s.calBtn}
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,168,76,.18)'}
-              onMouseLeave={e => e.currentTarget.style.background = 'rgba(201,168,76,.08)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'var(--accent)'}
             >
               View Calendar →
             </button>

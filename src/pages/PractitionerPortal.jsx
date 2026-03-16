@@ -26,20 +26,20 @@ const s = {
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '20px 24px 16px',
-    borderBottom: '1px solid rgba(201,168,76,.1)',
+    borderBottom: '1px solid var(--accent)',
     flexShrink: 0,
   },
   title: {
     fontFamily: "'Cinzel',serif",
     fontSize: '16px',
     letterSpacing: '.3em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     textTransform: 'uppercase',
   },
   subtitle: {
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '13px',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
     letterSpacing: '.05em',
     marginTop: '2px',
   },
@@ -48,14 +48,14 @@ const s = {
     gap: '10px',
   },
   actionBtn: {
-    background: 'rgba(201,168,76,.1)',
+    background: 'var(--accent)',
     border: '1px solid rgba(201,168,76,.3)',
     borderRadius: '8px',
     padding: '8px 16px',
     fontFamily: "'Cinzel',serif",
     fontSize: '10px',
     letterSpacing: '.15em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     cursor: 'pointer',
     textTransform: 'uppercase',
     transition: 'all .2s',
@@ -67,7 +67,7 @@ const s = {
   },
   sectionDivider: {
     height: '1px',
-    background: 'linear-gradient(90deg, rgba(201,168,76,.15), transparent)',
+    background: 'linear-gradient(90deg, var(--accent), transparent)',
     margin: '28px 0 20px',
   },
   sectionHeader: {
@@ -80,13 +80,13 @@ const s = {
     fontFamily: "'Cinzel',serif",
     fontSize: '11px',
     letterSpacing: '.25em',
-    color: 'var(--gold)',
+    color: 'var(--foreground)',
     textTransform: 'uppercase',
   },
   clientCount: {
     fontFamily: "'Cormorant Garamond',serif",
     fontSize: '12px',
-    color: 'var(--text3)',
+    color: 'var(--muted-foreground)',
   },
   navTabs: {
     display: 'flex',
@@ -103,8 +103,8 @@ const s = {
     cursor: 'pointer',
     border: 'none',
     background: 'none',
-    borderBottom: active ? '2px solid var(--gold)' : '2px solid transparent',
-    color: active ? 'var(--gold)' : 'var(--text3)',
+    borderBottom: active ? '2px solid var(--foreground)' : '2px solid transparent',
+    color: active ? 'var(--foreground)' : 'var(--muted-foreground)',
     marginBottom: '-1px',
     transition: 'all .2s',
     textTransform: 'uppercase',
@@ -164,7 +164,7 @@ export default function PractitionerPortal() {
           </div>
           <div style={s.headerActions}>
             <button
-              style={{ ...s.actionBtn, background: 'rgba(255,255,255,.04)', borderColor: 'rgba(255,255,255,.1)', color: 'var(--text2)' }}
+              style={{ ...s.actionBtn, background: 'var(--secondary)', borderColor: 'rgba(255,255,255,.1)', color: 'var(--muted-foreground)' }}
               onClick={handleBack}
             >
               ← Back
@@ -206,7 +206,7 @@ export default function PractitionerPortal() {
           <button
             style={s.actionBtn}
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(201,168,76,.2)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'rgba(201,168,76,.1)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'var(--accent)'}
           >
             + New Session
           </button>
@@ -219,9 +219,9 @@ export default function PractitionerPortal() {
             ⚖️ Compare
           </button>
           <button
-            style={{ ...s.actionBtn, background: 'rgba(255,255,255,.04)', borderColor: 'rgba(255,255,255,.1)', color: 'var(--text2)' }}
+            style={{ ...s.actionBtn, background: 'var(--secondary)', borderColor: 'rgba(255,255,255,.1)', color: 'var(--muted-foreground)' }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,.08)'; e.currentTarget.style.color = 'var(--text1)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,.04)'; e.currentTarget.style.color = 'var(--text2)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--secondary)'; e.currentTarget.style.color = 'var(--muted-foreground)' }}
           >
             + Client
           </button>

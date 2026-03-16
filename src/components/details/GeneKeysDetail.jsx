@@ -55,35 +55,35 @@ const S = {
   panel: {
     width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
     display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--panel-bg)', color: 'var(--text)',
+    background: 'var(--card)', color: 'var(--foreground)',
     fontFamily: "'Cormorant Garamond', Georgia, serif",
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--gold3)', paddingBottom: 8,
-    borderBottom: '1px solid rgba(201,168,76,.1)', marginBottom: 4,
+    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
     fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--gold)', marginBottom: 4,
+    color: 'var(--foreground)', marginBottom: 4,
   },
   subHeading: {
     fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--text)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
   },
   monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
   },
   row: {
     display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--row-bg)',
-    border: '1px solid var(--row-border)', transition: 'background .2s',
+    borderRadius: 8, background: 'var(--secondary)',
+    border: '1px solid var(--border)', transition: 'background .2s',
   },
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   badge: (bg, border, color) => ({
@@ -92,9 +92,9 @@ const S = {
     textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
   }),
   interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--text2)', fontStyle: 'italic',
+    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
     padding: '14px 18px', borderRadius: 10,
-    background: 'var(--interp-bg)', border: '1px solid var(--interp-border)',
+    background: 'var(--accent)', border: '1px solid var(--border)',
   },
 }
 
@@ -109,7 +109,7 @@ function SpectrumBar({ shadow, gift, siddhi, color }) {
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <span style={{ fontSize: 10, color: '#dc6060' }}>Shadow: {shadow}</span>
         <span style={{ fontSize: 10, color: color }}>{'\u2192'} Gift: {gift}</span>
-        <span style={{ fontSize: 10, color: 'var(--gold)' }}>{'\u2192'} Siddhi: {siddhi}</span>
+        <span style={{ fontSize: 10, color: 'var(--foreground)' }}>{'\u2192'} Siddhi: {siddhi}</span>
       </div>
     </div>
   )
@@ -121,7 +121,7 @@ export default function GeneKeysDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u2B21'} Gene Keys</div>
-        <div style={{ fontSize: 13, color: 'var(--text2)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Hologenetic Profile -- activation sequence, shadow/gift/siddhi spectrums, and contemplation
         </div>
       </div>
@@ -164,15 +164,15 @@ export default function GeneKeysDetail() {
                   <div style={{
                     position: 'absolute', bottom: -2, right: -2,
                     width: 20, height: 20, borderRadius: '50%',
-                    background: 'var(--panel-bg)', border: '1px solid ' + color + '44',
+                    background: 'var(--card)', border: '1px solid ' + color + '44',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                    fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)',
                   }}>
                     .{gk.line}
                   </div>
                 </div>
                 <div style={{
-                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)',
+                  fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)',
                 }}>Line {gk.line}</div>
               </div>
             )
@@ -205,7 +205,7 @@ export default function GeneKeysDetail() {
                     <div style={{
                       fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: '.1em', color,
                     }}>Gene Key {gk.num} -- {gk.sphere}</div>
-                    <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--text3)', marginTop: 2 }}>
+                    <div style={{ ...S.monoSm, fontSize: 10, color: 'var(--muted-foreground)', marginTop: 2 }}>
                       Line {gk.line} {'\u00B7'} {gk.iching}
                     </div>
                   </div>
@@ -232,7 +232,7 @@ export default function GeneKeysDetail() {
                     <div style={{ fontFamily: "'Cinzel', serif", fontSize: 13, color: '#dc6060', marginBottom: 4 }}>
                       {gk.shadow.name}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                    <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                       {gk.shadow.desc}
                     </div>
                   </div>
@@ -247,22 +247,22 @@ export default function GeneKeysDetail() {
                     <div style={{ fontFamily: "'Cinzel', serif", fontSize: 13, color, marginBottom: 4 }}>
                       {gk.gift.name}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                    <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                       {gk.gift.desc}
                     </div>
                   </div>
                   <div style={{
                     padding: '10px 12px', borderRadius: 8,
-                    background: 'rgba(201,168,76,.04)', border: '1px solid rgba(201,168,76,.12)',
+                    background: 'var(--secondary)', border: '1px solid var(--accent)',
                   }}>
                     <div style={{
                       fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
-                      textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 4,
+                      textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 4,
                     }}>Siddhi</div>
-                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 13, color: 'var(--gold)', marginBottom: 4 }}>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 13, color: 'var(--foreground)', marginBottom: 4 }}>
                       {gk.siddhi.name}
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4 }}>
+                    <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>
                       {gk.siddhi.desc}
                     </div>
                   </div>
@@ -271,15 +271,15 @@ export default function GeneKeysDetail() {
                 {/* I-Ching */}
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px',
-                  background: 'rgba(255,255,255,.02)', borderRadius: 6,
-                  border: '1px solid rgba(255,255,255,.04)',
+                  background: 'var(--secondary)', borderRadius: 6,
+                  border: '1px solid var(--secondary)',
                 }}>
                   <span style={{ fontSize: 18 }}>{'\u2630'}</span>
                   <div>
-                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--text3)' }}>
+                    <div style={{ fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--muted-foreground)' }}>
                       I-Ching Hexagram
                     </div>
-                    <div style={{ ...S.mono, color: 'var(--text2)', fontSize: 12 }}>{gk.iching}</div>
+                    <div style={{ ...S.mono, color: 'var(--muted-foreground)', fontSize: 12 }}>{gk.iching}</div>
                   </div>
                 </div>
 
@@ -325,12 +325,12 @@ export default function GeneKeysDetail() {
                     fontFamily: "'Cinzel', serif", fontSize: 20, color, fontWeight: 600,
                   }}>{gk.num}</div>
                   <div style={{
-                    fontSize: 10, color: 'var(--text3)', marginTop: 4,
+                    fontSize: 10, color: 'var(--muted-foreground)', marginTop: 4,
                   }}>{gk.gift.name}</div>
                 </div>
                 {i < GK_DETAIL.length - 1 && (
                   <div style={{
-                    fontSize: 16, color: 'var(--text3)', padding: '0 2px',
+                    fontSize: 16, color: 'var(--muted-foreground)', padding: '0 2px',
                     zIndex: 1, position: 'relative',
                   }}>{'\u2192'}</div>
                 )}
@@ -339,7 +339,7 @@ export default function GeneKeysDetail() {
           })}
         </div>
         <div style={{
-          marginTop: 12, fontSize: 12, color: 'var(--text3)', fontStyle: 'italic',
+          marginTop: 12, fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic',
           textAlign: 'center', lineHeight: 1.5,
         }}>
           The Activation Sequence traces the path from Life's Work through Evolution and Radiance to Purpose,
@@ -362,7 +362,7 @@ export default function GeneKeysDetail() {
                   fontFamily: "'Cinzel', serif", fontSize: 12, letterSpacing: '.12em',
                   color: colors[i], marginBottom: 6,
                 }}>{seq.label} Sequence</div>
-                <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.4, marginBottom: 10 }}>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4, marginBottom: 10 }}>
                   {seq.desc}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: 6 }}>
@@ -395,7 +395,7 @@ export default function GeneKeysDetail() {
           prompts are not questions to be answered intellectually but{' '}
           <span style={{ color: 'var(--violet2)' }}>koans to be lived</span>. Let them sit in your
           awareness without forcing resolution. The Gene Keys teach that{' '}
-          <span style={{ color: 'var(--gold)' }}>transformation happens through contemplation,
+          <span style={{ color: 'var(--foreground)' }}>transformation happens through contemplation,
           not effort</span> -- by simply holding awareness on a pattern, the pattern begins to shift
           on its own.
         </div>

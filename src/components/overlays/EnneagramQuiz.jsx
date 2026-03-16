@@ -76,35 +76,35 @@ const S = {
     padding: '16px',
   },
   modal: {
-    background: 'var(--panel-bg)', border: '1px solid rgba(201,168,76,.18)',
+    background: 'var(--card)', border: '1px solid rgba(201,168,76,.18)',
     borderRadius: 18, maxWidth: 540, width: '100%', maxHeight: '90vh',
     overflowY: 'auto', padding: '28px 28px 24px',
     display: 'flex', flexDirection: 'column', gap: 22,
     fontFamily: "'Cormorant Garamond', Georgia, serif",
-    color: 'var(--text)',
+    color: 'var(--foreground)',
     boxShadow: '0 24px 64px rgba(0,0,0,.6)',
   },
   title: {
     fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 600,
-    letterSpacing: '.18em', color: 'var(--gold)',
+    letterSpacing: '.18em', color: 'var(--foreground)',
   },
   subtitle: {
-    fontSize: 13, color: 'var(--text2)', fontStyle: 'italic', lineHeight: 1.5,
+    fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5,
   },
   sectionLabel: {
     fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 600,
     letterSpacing: '.25em', textTransform: 'uppercase',
-    color: 'var(--gold3)', marginBottom: 4,
+    color: 'var(--muted-foreground)', marginBottom: 4,
   },
   progress: {
-    height: 4, borderRadius: 2, background: 'rgba(255,255,255,.06)', overflow: 'hidden',
+    height: 4, borderRadius: 2, background: 'var(--border)', overflow: 'hidden',
   },
   progressFill: (pct) => ({
-    height: '100%', borderRadius: 2, background: 'var(--gold)',
+    height: '100%', borderRadius: 2, background: 'var(--foreground)',
     width: `${pct * 100}%`, transition: 'width .35s ease',
   }),
   question: {
-    fontSize: 15, lineHeight: 1.65, color: 'var(--text)', padding: '2px 0',
+    fontSize: 15, lineHeight: 1.65, color: 'var(--foreground)', padding: '2px 0',
   },
   ratingRow: {
     display: 'flex', gap: 10,
@@ -113,34 +113,34 @@ const S = {
     flex: 1, padding: '10px 8px', borderRadius: 10, cursor: 'pointer',
     fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.08em',
     textAlign: 'center', lineHeight: 1.4,
-    background: active ? 'rgba(201,168,76,.18)' : 'rgba(255,255,255,.03)',
+    background: active ? 'rgba(201,168,76,.18)' : 'var(--secondary)',
     border: `1px solid ${active ? 'rgba(201,168,76,.45)' : 'rgba(255,255,255,.07)'}`,
-    color: active ? 'var(--gold)' : 'var(--text3)',
+    color: active ? 'var(--foreground)' : 'var(--muted-foreground)',
     transition: 'all .18s',
   }),
   glass: {
-    background: 'var(--glass-bg)', border: '1px solid var(--glass-border)',
+    background: 'var(--card)', border: '1px solid var(--border)',
     borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
   },
   resultType: {
     fontFamily: "'Cinzel', serif", fontSize: 28, letterSpacing: '.15em',
-    color: 'var(--gold)', textAlign: 'center',
+    color: 'var(--foreground)', textAlign: 'center',
   },
   btn: (primary) => ({
     padding: primary ? '11px 28px' : '9px 22px',
     borderRadius: 10, cursor: 'pointer',
     fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.12em',
-    background: primary ? 'rgba(201,168,76,.14)' : 'rgba(255,255,255,.04)',
-    border: `1px solid ${primary ? 'rgba(201,168,76,.35)' : 'rgba(255,255,255,.08)'}`,
-    color: primary ? 'var(--gold)' : 'var(--text3)',
+    background: primary ? 'rgba(201,168,76,.14)' : 'var(--secondary)',
+    border: `1px solid ${primary ? 'var(--ring)' : 'rgba(255,255,255,.08)'}`,
+    color: primary ? 'var(--foreground)' : 'var(--muted-foreground)',
     transition: 'all .18s',
   }),
   keyVal: {
     display: 'flex', gap: 12, padding: '5px 0',
-    borderBottom: '1px solid rgba(255,255,255,.04)',
+    borderBottom: '1px solid var(--secondary)',
   },
   mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--text2)',
+    fontFamily: "'Inconsolata', monospace", fontSize: 12, color: 'var(--muted-foreground)',
   },
 }
 
@@ -160,9 +160,9 @@ function QuizResult({ result, onSave, onRetake, onClose }) {
         <div style={S.resultType}>{result.wingLabel}</div>
         <div style={{
           fontFamily: "'Cinzel', serif", fontSize: 13, letterSpacing: '.12em',
-          color: 'var(--gold2)',
+          color: 'var(--foreground)',
         }}>{typeData.name}</div>
-        <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Wing {result.wing}: {wingData.name}
         </div>
       </div>
@@ -176,9 +176,9 @@ function QuizResult({ result, onSave, onRetake, onClose }) {
           <div key={lbl} style={S.keyVal}>
             <span style={{
               fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-              textTransform: 'uppercase', color: 'var(--text3)', minWidth: 70,
+              textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 70,
             }}>{lbl}</span>
-            <span style={{ ...S.mono, color: 'var(--gold2)' }}>{val}</span>
+            <span style={{ ...S.mono, color: 'var(--foreground)' }}>{val}</span>
           </div>
         ))}
       </div>
@@ -192,7 +192,7 @@ function QuizResult({ result, onSave, onRetake, onClose }) {
             return (
               <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <span style={{
-                  fontFamily: "'Cinzel', serif", fontSize: 13, color: i === 0 ? 'var(--gold)' : 'var(--text3)',
+                  fontFamily: "'Cinzel', serif", fontSize: 13, color: i === 0 ? 'var(--foreground)' : 'var(--muted-foreground)',
                   minWidth: 20, textAlign: 'right',
                 }}>{type}</span>
                 <div style={{
@@ -202,11 +202,11 @@ function QuizResult({ result, onSave, onRetake, onClose }) {
                   <div style={{
                     height: '100%', borderRadius: 3,
                     width: `${(score / maxScore) * 100}%`,
-                    background: i === 0 ? 'var(--gold)' : 'rgba(201,168,76,.25)',
+                    background: i === 0 ? 'var(--foreground)' : 'rgba(201,168,76,.25)',
                     transition: 'width .6s ease',
                   }} />
                 </div>
-                <span style={{ ...S.mono, fontSize: 10, color: 'var(--text3)', minWidth: 26 }}>
+                <span style={{ ...S.mono, fontSize: 10, color: 'var(--muted-foreground)', minWidth: 26 }}>
                   {score}pts
                 </span>
               </div>
@@ -215,7 +215,7 @@ function QuizResult({ result, onSave, onRetake, onClose }) {
         </div>
       </div>
 
-      <div style={{ fontSize: 12, color: 'var(--text3)', fontStyle: 'italic', lineHeight: 1.6 }}>
+      <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.6 }}>
         This is a brief self-assessment indicator. For deeper accuracy, read the full type descriptions
         and reflect on which core fear resonates most.
       </div>
@@ -305,7 +305,7 @@ export default function EnneagramQuiz({ onClose }) {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                 <span style={{ ...S.sectionLabel, marginBottom: 0 }}>Progress</span>
-                <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--text3)' }}>
+                <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)' }}>
                   {step + 1} / {totalSteps}
                 </span>
               </div>
@@ -329,7 +329,7 @@ export default function EnneagramQuiz({ onClose }) {
                     style={S.ratingBtn(currentRating === val)}
                   >
                     <div>{label}</div>
-                    <div style={{ fontSize: 16, marginTop: 2, color: currentRating === val ? 'var(--gold)' : 'var(--text3)' }}>
+                    <div style={{ fontSize: 16, marginTop: 2, color: currentRating === val ? 'var(--foreground)' : 'var(--muted-foreground)' }}>
                       {val === 0 ? '○' : val === 1 ? '◑' : '●'}
                     </div>
                   </div>
@@ -361,7 +361,7 @@ export default function EnneagramQuiz({ onClose }) {
             <div style={{ textAlign: 'center' }}>
               <span
                 onClick={onClose}
-                style={{ fontSize: 11, color: 'var(--text3)', cursor: 'pointer', fontStyle: 'italic' }}
+                style={{ fontSize: 11, color: 'var(--muted-foreground)', cursor: 'pointer', fontStyle: 'italic' }}
               >
                 Close quiz
               </span>
