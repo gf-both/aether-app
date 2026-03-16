@@ -140,9 +140,10 @@ html.theme-manuscript-day { --accent-color: #8b6820; --accent-color2: #c9a84c; -
 }
 .sb-toggle:hover { background: var(--accent); color: var(--accent-foreground); border-color: var(--ring); }
 
-/* Scrollable nav area */
+/* Scrollable nav area — takes all remaining space, bottom section stays pinned */
 .sb-nav {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 6px 4px;

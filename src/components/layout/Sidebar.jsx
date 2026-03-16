@@ -130,8 +130,6 @@ export default function Sidebar() {
         })}
       </div>
 
-      <div style={{ flex: 1 }} />
-
       {/* Bottom: profile + settings */}
       <div className="sb-bottom">
         <div
