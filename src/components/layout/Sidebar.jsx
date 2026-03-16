@@ -29,7 +29,7 @@ const NAV_SECTIONS = [
   { type: 'section', label: 'IDENTITY' },
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
   { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
-  { type: 'item', icon: '✨', label: 'AETHER', id: 'aether', widget: 'aether' },
+  { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aether', widget: 'aether' },
 
   { type: 'section', label: 'TOOLS' },
   { type: 'item', icon: '💬', label: 'AI Guide', id: 'aichat', panel: 'aichat' },

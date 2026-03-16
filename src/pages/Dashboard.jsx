@@ -54,7 +54,7 @@ import TimelineWidget from '../components/canvas/TimelineWidget'
 import PricingPage from './PricingPage'
 import PractitionerPortal from './PractitionerPortal'
 import ClientPortal from './ClientPortal'
-import AetherProfileDesigner from './AetherProfileDesigner'
+import AIAgentsPage from './AIAgentsPage'
 import CompanyPage from './CompanyPage'
 import GolemPage from './GolemPage'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
@@ -197,24 +197,40 @@ const ROWS = [
     sub: 'Foundational Maps \u00B7 Birth Charts \u00B7 Energy Systems',
     color: 'var(--foreground)',
     border: 'rgba(201,168,76,.3)',
-    widgets: ['integral', 'natal', 'tr', 'hd', 'kab'],
-    cols: '1fr 1.5fr 1fr 1.5fr 1fr',
-  },
-  {
-    label: 'ARCHETYPAL SYSTEMS',
-    sub: 'Numbers \u00B7 Keys \u00B7 Calendars \u00B7 Types',
-    color: 'var(--violet2)',
-    border: 'rgba(144,80,224,.3)',
-    widgets: ['num', 'gk', 'mayan', 'enn', 'chi'],
-    cols: '1fr 1.3fr 1fr 1.3fr 1fr',
+    widgets: ['natal', 'tr', 'hd', 'kab'],
+    cols: '1.5fr 1fr 1.5fr 1fr',
   },
   {
     label: 'META SYSTEMS',
-    sub: 'Names \u00B7 Patterns \u00B7 Personality \u00B7 Ancient Wisdom',
+    sub: 'Consciousness Maps \u00B7 Gene Keys \u00B7 Cross-Framework Intelligence',
     color: 'var(--aqua2)',
     border: 'rgba(64,204,221,.3)',
-    widgets: ['gem', 'pat', 'mbti', 'egyptian'],
-    cols: 'repeat(4, 1fr)',
+    widgets: ['integral', 'gk', 'pat'],
+    cols: '1fr 1.3fr 1fr',
+  },
+  {
+    label: 'ARCHETYPAL SYSTEMS',
+    sub: 'Calendars \u00B7 Animals \u00B7 Ancient Wisdom \u00B7 Egyptian',
+    color: 'var(--violet2)',
+    border: 'rgba(144,80,224,.3)',
+    widgets: ['mayan', 'chi', 'egyptian'],
+    cols: '1fr 1fr 1fr',
+  },
+  {
+    label: 'SYMBOLIC LANGUAGE',
+    sub: 'Numbers \u00B7 Letters \u00B7 Sacred Vibration',
+    color: 'rgba(240,160,60,1)',
+    border: 'rgba(240,160,60,.3)',
+    widgets: ['num', 'gem'],
+    cols: '1fr 1fr',
+  },
+  {
+    label: 'SELF KNOWLEDGE',
+    sub: 'Personality \u00B7 Types \u00B7 Quizzes \u00B7 Dosha \u00B7 Archetypes',
+    color: '#a878e8',
+    border: 'rgba(168,120,232,.3)',
+    widgets: ['enn', 'mbti', 'dosha', 'archetype', 'lovelang'],
+    cols: 'repeat(5, 1fr)',
   },
   {
     label: 'EASTERN WISDOM',
@@ -249,15 +265,7 @@ const ROWS = [
     cols: '1fr 1fr',
   },
   {
-    label: 'SELF KNOWLEDGE',
-    sub: 'Dosha \u00B7 Archetype \u00B7 Love Languages \u00B7 Quizzes',
-    color: '#a878e8',
-    border: 'rgba(168,120,232,.3)',
-    widgets: ['dosha', 'archetype', 'lovelang'],
-    cols: 'repeat(3, 1fr)',
-  },
-  {
-    label: 'COSMIC TIMELINE',
+    label: 'LIFE TIMELINE',
     sub: 'Your Life Arc · Saturn Returns · Jupiter Cycles · Numerology Peaks',
     color: '#c9a84c',
     border: 'rgba(201,168,76,.3)',
@@ -306,7 +314,7 @@ const DETAIL_COMPONENTS = {
   pricing: PricingPage,
   practitioner: PractitionerPortal,
   client: ClientPortal,
-  aether: AetherProfileDesigner,
+  aether: AIAgentsPage,
   company: CompanyPage,
   golem: GolemPage,
 }
