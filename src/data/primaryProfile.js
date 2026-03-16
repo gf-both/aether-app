@@ -1,29 +1,25 @@
 export const DEFAULT_PRIMARY_PROFILE = {
-  name: 'Gaston Frydlewski',
-  dob: '1981-01-23',
-  tob: '22:10',
-  pob: 'Buenos Aires, Argentina',
-  gender: 'male',
-  emoji: '♒',
-  sign: 'Aquarius',
-  asc: 'Virgo',
-  moon: 'Virgo',
-  hdType: 'Projector',
-  hdProfile: '3/5',
-  hdAuth: 'Emotional',
-  hdDef: 'Split',
-  lifePath: 7,
-  crossGK: '41/31|28/27',
-  // Birth location for natal chart calculation
-  birthLat: -34.6037,
-  birthLon: -58.3816,
-  birthTimezone: -3,
+  name: '',
+  dob: '',
+  tob: '',
+  pob: '',
+  gender: '',
+  emoji: '✦',
+  sign: '?',
+  asc: '?',
+  moon: '?',
+  hdType: '?',
+  hdProfile: '?',
+  hdAuth: '?',
+  hdDef: '?',
+  lifePath: '?',
+  crossGK: '?',
+  birthLat: 0,
+  birthLon: 0,
+  birthTimezone: 0,
 }
 
-export const DEFAULT_PEOPLE = [
-  { id: 1, name: 'Father', dob: '1952-06-15', tob: '08:00', pob: 'Buenos Aires, AR', rel: 'father', gender: 'male', emoji: '♊', notes: '', sign: 'Gemini' },
-  { id: 2, name: 'Mother', dob: '1955-11-22', tob: '', pob: 'Rosario, AR', rel: 'mother', gender: 'female', emoji: '♏', notes: '', sign: 'Scorpio' },
-]
+export const DEFAULT_PEOPLE = []
 
 export const REL_CONFIG = {
   father:  { label: 'Father',  emoji: '👨', col: 'rgba(64,204,221,',  badge: 'family' },

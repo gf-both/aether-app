@@ -22,6 +22,8 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
 
+  const user = useAboveInsideStore((s) => s.user)
+  const loadProfilesFromDB = useAboveInsideStore((s) => s.loadProfilesFromDB)
   const updatePerson = useAboveInsideStore((s) => s.updatePerson)
   const mbtiType = useAboveInsideStore((s) => s.mbtiType)
   const setMbtiType = useAboveInsideStore((s) => s.setMbtiType)
@@ -62,14 +64,22 @@ export default function ProfilePanel({ open, onClose, embedded }) {
     window.location.reload()
   }
 
-  function handleSavePrimary() {
-    setPrimaryProfile({
+  async function handleSavePrimary() {
+    const updates = {
       name: nameRef.current?.value || profile.name,
       dob: dobRef.current?.value || profile.dob,
       tob: tobRef.current?.value || profile.tob,
       pob: pobRef.current?.value || profile.pob,
       gender: genderRef.current?.value || '',
-    })
+    }
+    setPrimaryProfile(updates)
+
+    if (user) {
+      const { upsertBirthProfile } = await import('../../lib/db')
+      await upsertBirthProfile(user.id, updates, true)
+      await loadProfilesFromDB(user.id)
+    }
+
     // Save MBTI and Enneagram types to store
     const mbtiVal = mbtiRef.current?.value || ''
     setMbtiType(mbtiVal || null)
@@ -154,6 +164,11 @@ export default function ProfilePanel({ open, onClose, embedded }) {
         {/* PRIMARY PROFILE */}
         <div className="pp-section">
           <div className="pp-sec-title">Primary Profile {'\u2014'} Self</div>
+          {!profile.dob && user && (
+            <div style={{ padding: '12px 0', fontSize: 11, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textAlign: 'center' }}>
+              ✦ Welcome! Fill in your birth data below to get started.
+            </div>
+          )}
           <div className="pp-grid">
             <div className="pp-field">
               <div className="pp-label">Full Name</div>
@@ -243,10 +258,15 @@ export default function ProfilePanel({ open, onClose, embedded }) {
               </select>
             </div>
           </div>
+          {!user && (
+            <div style={{ fontSize: 10, color: 'var(--text2)', fontStyle: 'italic', marginBottom: 8, textAlign: 'center' }}>
+              ✦ Guest mode — data saved locally. Sign in to sync across devices.
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
             <div
               className="btn btn-primary"
-              onClick={handleSavePrimary}
+              onClick={() => handleSavePrimary()}
               style={saveFlash ? { background: 'rgba(96,176,48,.2)', borderColor: 'rgba(96,176,48,.5)', color: 'var(--lime2)' } : {}}
             >
               {saveFlash ? '\u2713 Saved' : 'Save Primary Profile'}

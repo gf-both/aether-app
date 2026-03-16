@@ -231,7 +231,6 @@ function LayoutSwitcher() {
 function ProfileSwitcher() {
   const profile = useAboveInsideStore((s) => s.primaryProfile)
   const people = useAboveInsideStore((s) => s.people)
-  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
   const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
   const setActiveViewProfile = useAboveInsideStore((s) => s.setActiveViewProfile)
   const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
@@ -247,26 +246,34 @@ function ProfileSwitcher() {
     return () => document.removeEventListener('mousedown', close)
   }, [open])
 
-  const [originalPrimary] = useState(() => ({ ...profile }))
-
   const allProfiles = [
-    { ...originalPrimary, _isPrimary: true },
+    { ...profile, _isPrimary: true },
     ...people,
   ]
 
   function switchTo(p) {
-    // NEVER overwrite primaryProfile — it's permanent user data
-    // Instead, use setActiveViewProfile to temporarily view another person
     if (p._isPrimary) {
-      setActiveViewProfile(null) // reset to primary
+      setActiveViewProfile(null)
     } else {
       setActiveViewProfile({
-        name: p.name, dob: p.dob, tob: p.tob || '', pob: p.pob || '',
-        emoji: p.emoji || '\u2726', sign: p.sign || '?',
-        asc: p.asc || '?', moon: p.moon || '?',
-        hdType: p.hdType || '?', hdProfile: p.hdProfile || '?',
-        hdAuth: p.hdAuth || '?', hdDef: p.hdDef || '?',
-        lifePath: p.lifePath || '?', crossGK: p.crossGK || '?',
+        id: p.id,
+        name: p.name,
+        dob: p.dob || '',
+        tob: p.tob || '',
+        pob: p.pob || '',
+        birthLat: p.birthLat || 0,
+        birthLon: p.birthLon || 0,
+        birthTimezone: p.birthTimezone || 0,
+        emoji: p.emoji || '\u2726',
+        sign: p.sign || '?',
+        asc: p.asc || '?',
+        moon: p.moon || '?',
+        hdType: p.hdType || '?',
+        hdProfile: p.hdProfile || '?',
+        hdAuth: p.hdAuth || '?',
+        hdDef: p.hdDef || '?',
+        lifePath: p.lifePath || '?',
+        crossGK: p.crossGK || '?',
         _isPerson: true,
       })
     }
@@ -311,7 +318,7 @@ function ProfileSwitcher() {
               <span style={{ fontSize: 14 }}>↩</span>
               <div>
                 <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", color: 'var(--gold)', letterSpacing: '.04em' }}>Return to My Profile</div>
-                <div style={{ fontSize: 9, color: 'var(--text2)' }}>Clear cache & restore Gaston Frydlewski</div>
+                <div style={{ fontSize: 9, color: 'var(--text2)' }}>Switch back to primary profile</div>
               </div>
             </div>
           )}

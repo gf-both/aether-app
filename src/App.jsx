@@ -10,48 +10,29 @@ import AuthModal from './components/auth/AuthModal'
 import Starfield from './components/ui/Starfield'
 import Cursor from './components/ui/Cursor'
 import { onAuthStateChange, getUser } from './lib/auth'
-import { getPrimaryProfile } from './lib/db'
-
-function mapDbToProfile(dbProfile) {
-  if (!dbProfile) return {}
-  return {
-    name: dbProfile.full_name,
-    dob: dbProfile.birth_date,
-    birthHour: dbProfile.birth_time ? parseInt(dbProfile.birth_time.split(':')[0]) : 12,
-    birthMinute: dbProfile.birth_time ? parseInt(dbProfile.birth_time.split(':')[1]) : 0,
-    birthLat: dbProfile.birth_lat || -34.6037,
-    birthLon: dbProfile.birth_lon || -58.3816,
-    birthTimezone: dbProfile.birth_timezone || -3,
-    birthCity: dbProfile.birth_city || '',
-    enneagramType: dbProfile.enneagram_type,
-    mbtiType: dbProfile.mbti_type,
-  }
-}
+import { getUserProfile } from './lib/db'
 
 function AuthSync() {
-  const { setUser, setUserProfile, setAuthLoading, setPrimaryProfile } = useAboveInsideStore()
+  const { setUser, setUserProfile, setAuthLoading, loadProfilesFromDB } = useAboveInsideStore()
 
   useEffect(() => {
-    // Check initial session
-    getUser().then(user => {
+    getUser().then(async user => {
       setUser(user)
       if (user) {
-        getPrimaryProfile(user.id).then(({ data }) => {
-          if (data) setPrimaryProfile(mapDbToProfile(data))
-          setUserProfile(data)
-        })
+        const { data } = await getUserProfile(user.id)
+        setUserProfile(data)
+        await loadProfilesFromDB(user.id)
       }
       setAuthLoading(false)
     })
 
-    // Listen for auth changes
-    const { data: { subscription } } = onAuthStateChange((event, session) => {
-      setUser(session?.user || null)
-      if (session?.user) {
-        getPrimaryProfile(session.user.id).then(({ data }) => {
-          if (data) setPrimaryProfile(mapDbToProfile(data))
-          setUserProfile(data)
-        })
+    const { data: { subscription } } = onAuthStateChange(async (event, session) => {
+      const user = session?.user || null
+      setUser(user)
+      if (user) {
+        const { data } = await getUserProfile(user.id)
+        setUserProfile(data)
+        await loadProfilesFromDB(user.id)
       }
     })
 

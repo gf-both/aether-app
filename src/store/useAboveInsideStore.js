@@ -34,6 +34,54 @@ export const useAboveInsideStore = create(
         set((s) => ({ people: s.people.filter((p) => p.id !== id) })),
       updatePerson: (id, updates) =>
         set((s) => ({ people: s.people.map((p) => p.id === id ? { ...p, ...updates } : p) })),
+      setPeople: (people) => set({ people }),
+
+      // Load profiles from DB and populate store
+      loadProfilesFromDB: async (userId) => {
+        const { getAllBirthProfiles } = await import('../lib/db')
+        const { data, error } = await getAllBirthProfiles(userId)
+        if (error || !data) return
+
+        const primary = data.find(p => p.is_primary)
+        const others = data.filter(p => !p.is_primary)
+
+        if (primary) {
+          set({
+            primaryProfile: {
+              id: primary.id,
+              name: primary.full_name || '',
+              dob: primary.birth_date || '',
+              tob: primary.birth_time || '',
+              pob: primary.birth_city || '',
+              birthLat: primary.birth_lat || 0,
+              birthLon: primary.birth_lon || 0,
+              birthTimezone: primary.birth_timezone != null ? Number(primary.birth_timezone) : 0,
+              emoji: '✦',
+              sign: '?', asc: '?', moon: '?',
+              hdType: '?', hdProfile: '?', hdAuth: '?', hdDef: '?',
+              lifePath: '?', crossGK: '?',
+            }
+          })
+        }
+
+        if (others.length > 0) {
+          set({
+            people: others.map(p => ({
+              id: p.id,
+              name: p.full_name || '',
+              dob: p.birth_date || '',
+              tob: p.birth_time || '',
+              pob: p.birth_city || '',
+              birthLat: p.birth_lat || 0,
+              birthLon: p.birth_lon || 0,
+              birthTimezone: p.birth_timezone != null ? Number(p.birth_timezone) : 0,
+              rel: p.label || 'other',
+              emoji: '✦',
+              sign: '?',
+            }))
+          })
+        }
+      },
 
       activePanel: null,
       setActivePanel: (p) => set({ activePanel: p }),

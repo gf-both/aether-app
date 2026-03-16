@@ -85,3 +85,50 @@ export async function updateUserProfile(userId, updates) {
     .single();
   return { data, error };
 }
+
+// ── BIRTH PROFILE SYNC ───────────────────────────────────────────────────────
+
+// Save or update a birth profile (upsert by owner_id + is_primary for primary)
+export async function upsertBirthProfile(userId, profileData, isPrimary = false) {
+  const payload = {
+    owner_id: userId,
+    full_name: profileData.name || '',
+    birth_date: profileData.dob || null,
+    birth_time: profileData.tob || null,
+    birth_city: profileData.pob || '',
+    birth_lat: profileData.birthLat || null,
+    birth_lon: profileData.birthLon || null,
+    birth_timezone: profileData.birthTimezone != null ? String(profileData.birthTimezone) : null,
+    is_primary: isPrimary,
+    label: isPrimary ? 'Me' : (profileData.label || profileData.name || 'Person'),
+    updated_at: new Date().toISOString(),
+  }
+
+  if (isPrimary) {
+    // Try update first, then insert
+    const { data: existing } = await supabase
+      .from('birth_profiles')
+      .select('id')
+      .eq('owner_id', userId)
+      .eq('is_primary', true)
+      .single()
+
+    if (existing?.id) {
+      return supabase.from('birth_profiles').update(payload).eq('id', existing.id).select().single()
+    } else {
+      return supabase.from('birth_profiles').insert(payload).select().single()
+    }
+  } else {
+    return supabase.from('birth_profiles').upsert({ ...payload, id: profileData.id }).select().single()
+  }
+}
+
+// Get all birth profiles for a user (primary first)
+export async function getAllBirthProfiles(userId) {
+  return supabase
+    .from('birth_profiles')
+    .select('*')
+    .eq('owner_id', userId)
+    .order('is_primary', { ascending: false })
+    .order('created_at', { ascending: true })
+}
