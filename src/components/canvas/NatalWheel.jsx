@@ -231,7 +231,7 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
           const nextIdx = (i + 1) % 12
           const nextLon = ch.houses[nextIdx].lon
           const span = (nextLon - house.lon + 360) % 360
-          const midLon = house.lon + span / 2
+          const midLon = (house.lon + span / 2 + 360) % 360
           const numA = l2a(midLon)
           const numSz = Math.max(10, R * 0.070)
           ctx.font = `${numSz}px 'Cinzel',serif`

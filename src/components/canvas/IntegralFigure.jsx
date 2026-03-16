@@ -149,7 +149,9 @@ export default function IntegralFigure() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const hovRef = useRef(-1)
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   useCanvasResize(canvasRef)
 

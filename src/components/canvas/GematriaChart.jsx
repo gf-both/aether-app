@@ -2,10 +2,11 @@ import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { HEBREW_ALPHABET, GEMATRIA_PROFILE, getGematriaProfile } from '../../data/gematriaData'
 import { DEFAULT_PRIMARY_PROFILE } from '../../data/primaryProfile'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
-// Compute chart data from engine (dynamic, reads primaryProfile)
-function getChartData() {
-  const { name, dob } = DEFAULT_PRIMARY_PROFILE
+// Compute chart data from engine (dynamic, reads profile)
+function getChartData(activeProfile) {
+  const { name, dob } = activeProfile || DEFAULT_PRIMARY_PROFILE
   let day = 23, month = 1, year = 1981
   if (dob) {
     const parts = dob.split('-')
@@ -41,6 +42,10 @@ export default function GematriaChart() {
   const animRef = useRef(null)
   const hovRef = useRef(-1)
 
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
+
   useCanvasResize(canvasRef)
 
   useEffect(() => {
@@ -48,7 +53,7 @@ export default function GematriaChart() {
     if (!canvas) return
     let pulse = 0
 
-    const chartData = getChartData()
+    const chartData = getChartData(profile)
     const name = chartData.fullName.toUpperCase().replace(/\s/g, '')
     const breakdown = chartData.breakdown
     const totalHebrew = chartData.totalHebrew
@@ -334,7 +339,7 @@ export default function GematriaChart() {
       canvas.removeEventListener('mousemove', handleMouseMove)
       canvas.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [])
+  }, [profile])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }
