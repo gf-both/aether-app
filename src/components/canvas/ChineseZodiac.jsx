@@ -30,7 +30,7 @@ export default function ChineseZodiac() {
     if (!canvas) return
     let pulse = 0
 
-    const activeAnimal = CHINESE_PROFILE.animal
+    const activeAnimal = CHINESE_PROFILE?.animal || ''
     const activeIdx = CHINESE_ANIMALS.findIndex(a => a.name === activeAnimal)
 
     const handleMouseMove = (e) => {
