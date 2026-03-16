@@ -14,7 +14,7 @@ export default function ChineseZodiac() {
     try {
       const dob = profile?.dob || ''
       const tob = profile?.tob || '12:00'
-      if (!dob) return { animal: '', element: '', yinYang: '', stem: '', stemCn: '', branchCn: '', currentYear: { label: '', chinese_str: '' } }
+      if (!dob) return null
       const [hour, minute] = (tob || '12:00').split(':').map(Number)
       return getChineseProfileFromDob(dob, { hour: isNaN(hour) ? 12 : hour, minute: isNaN(minute) ? 0 : minute })
     } catch (e) {
