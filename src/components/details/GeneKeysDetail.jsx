@@ -1,8 +1,10 @@
-import { SPHERES, GK_LIST, computeGeneKeysData } from '../../data/geneKeysData'
+import { useMemo } from 'react'
+import { GK_LIST, computeGeneKeysData } from '../../data/geneKeysData'
 import GeneKeysWheel from '../canvas/GeneKeysWheel'
+import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 // computeGeneKeysData can be called with custom birth params to derive a live profile
 
-const GK_DETAIL = [
+const GK_DETAIL_STATIC = [
   {
     num: 41, sphere: "Life's Work", line: 3,
     shadow: { name: 'Fantasy', desc: 'Lost in dreams, unable to ground visions into reality' },
@@ -43,12 +45,6 @@ const SPHERE_COLORS = {
   'Radiance': '#dc5050',
   'Purpose': '#dc5050',
 }
-
-const SEQUENCE_STEPS = [
-  { label: 'Activation', desc: 'The awakening sequence that initiates your journey through the Gene Keys', keys: [41, 31, 28, 27] },
-  { label: 'Venus', desc: 'The love sequence revealing your relationship patterns', keys: [41, 31] },
-  { label: 'Pearl', desc: 'The prosperity sequence connecting purpose to abundance', keys: [28, 27] },
-]
 
 /* ---- shared styles ---- */
 const S = {
@@ -116,6 +112,72 @@ function SpectrumBar({ shadow, gift, siddhi, color }) {
 }
 
 export default function GeneKeysDetail() {
+  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+
+  const profileData = useMemo(() => {
+    if (!profile?.dob) return null
+    try {
+      const [year, month, day] = profile.dob.split('-').map(Number)
+      const tob = profile.tob || '12:00'
+      const [hour, minute] = tob.split(':').map(Number)
+      const timezone = profile.birthTimezone ?? -3
+      return computeGeneKeysData({ day, month, year, hour: hour || 12, minute: minute || 0, timezone })
+    } catch (e) {
+      console.error('GeneKeysDetail error:', e)
+      return null
+    }
+  }, [profile?.dob, profile?.tob, profile?.birthTimezone])
+
+  // Dynamic GK data from computed profile (falls back to static for missing keys)
+  const GK_DATA = useMemo(() => {
+    if (!profileData?.SPHERES) return null
+
+    // Map computed spheres to the full GK_DETAIL_STATIC lookup
+    return profileData.SPHERES
+      .filter(s => !s.center)
+      .map(s => {
+        const staticEntry = GK_DETAIL_STATIC.find(d => d.num === s.key)
+        return staticEntry
+          ? { ...staticEntry, num: s.key, sphere: s.role, line: s.line }
+          : {
+              num: s.key,
+              sphere: s.role || 'Key',
+              line: s.line,
+              shadow: { name: '\u2014', desc: 'Shadow state \u2014 unconscious pattern' },
+              gift: { name: s.gift || '\u2014', desc: 'Gift state \u2014 awakened potential' },
+              siddhi: { name: s.siddhi || '\u2014', desc: 'Highest expression' },
+              iching: `Gate ${s.key}`,
+              contemplation: `Contemplate the shadow and gift of Gate ${s.key}.`,
+            }
+      })
+  }, [profileData])
+
+  const activeGKData = GK_DATA || GK_DETAIL_STATIC // fallback to static if not computed
+
+  const SEQUENCES = useMemo(() => {
+    if (!profileData?.SPHERES) return [
+      { label: 'Activation', desc: 'The awakening sequence', keys: GK_DETAIL_STATIC.map(d => d.num) },
+      { label: 'Venus', desc: 'The love sequence revealing your relationship patterns', keys: GK_DETAIL_STATIC.slice(0, 2).map(d => d.num) },
+      { label: 'Pearl', desc: 'The prosperity sequence connecting purpose to abundance', keys: GK_DETAIL_STATIC.slice(2).map(d => d.num) },
+    ]
+    const keys = profileData.SPHERES.filter(s => !s.center).map(s => s.key)
+    return [
+      { label: 'Activation', desc: 'The awakening sequence that initiates your journey through the Gene Keys', keys },
+      { label: 'Venus', desc: 'The love sequence revealing your relationship patterns', keys: keys.slice(0, 2) },
+      { label: 'Pearl', desc: 'The prosperity sequence connecting purpose to abundance', keys: keys.slice(2) },
+    ]
+  }, [profileData])
+
+  // Empty state — no birth date
+  if (!profile?.dob) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', opacity: .5, flexDirection: 'column', gap: 12 }}>
+        <div style={{ fontSize: 40 }}>⬡</div>
+        <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--gold)' }}>Add birth date to see your Gene Keys</div>
+      </div>
+    )
+  }
+
   return (
     <div style={S.panel}>
       {/* HEADER */}
@@ -141,7 +203,7 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>Hologenetic Profile</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-          {GK_DETAIL.map((gk, i) => {
+          {activeGKData.map((gk, i) => {
             const color = SPHERE_COLORS[gk.sphere] || '#40ccdd'
             return (
               <div key={i} style={{
@@ -184,7 +246,7 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>Gene Key Profiles</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {GK_DETAIL.map((gk, i) => {
+          {activeGKData.map((gk, i) => {
             const color = SPHERE_COLORS[gk.sphere] || '#40ccdd'
             return (
               <div key={i} style={{
@@ -306,7 +368,7 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>The Activation Sequence</div>
         <div style={{ display: 'flex', alignItems: 'stretch', gap: 0 }}>
-          {GK_DETAIL.map((gk, i) => {
+          {activeGKData.map((gk, i) => {
             const color = SPHERE_COLORS[gk.sphere] || '#40ccdd'
             return (
               <div key={i} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
@@ -314,7 +376,7 @@ export default function GeneKeysDetail() {
                   flex: 1, textAlign: 'center',
                   padding: '16px 8px',
                   background: color + '06', border: '1px solid ' + color + '18',
-                  borderRadius: i === 0 ? '10px 0 0 10px' : i === GK_DETAIL.length - 1 ? '0 10px 10px 0' : '0',
+                  borderRadius: i === 0 ? '10px 0 0 10px' : i === activeGKData.length - 1 ? '0 10px 10px 0' : '0',
                   borderLeft: i === 0 ? undefined : 'none',
                 }}>
                   <div style={{
@@ -328,7 +390,7 @@ export default function GeneKeysDetail() {
                     fontSize: 10, color: 'var(--muted-foreground)', marginTop: 4,
                   }}>{gk.gift.name}</div>
                 </div>
-                {i < GK_DETAIL.length - 1 && (
+                {i < activeGKData.length - 1 && (
                   <div style={{
                     fontSize: 16, color: 'var(--muted-foreground)', padding: '0 2px',
                     zIndex: 1, position: 'relative',
@@ -351,7 +413,7 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>The Three Sequences</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-          {SEQUENCE_STEPS.map((seq, i) => {
+          {SEQUENCES.map((seq, i) => {
             const colors = ['#50b4dc', '#d43070', '#f0c040']
             return (
               <div key={i} style={{
@@ -385,11 +447,23 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>Hologenetic Contemplation</div>
         <div style={S.interpretation}>
-          Your hologenetic profile weaves a story of{' '}
-          <span style={{ color: '#50b4dc' }}>creative anticipation</span> (Gene Key 41) learning to
-          become <span style={{ color: '#dc5050' }}>humble leadership</span> (Gene Key 31) through the
-          crucible of <span style={{ color: '#dc5050' }}>total living</span> (Gene Key 28), ultimately
-          arriving at <span style={{ color: '#dc5050' }}>selfless service</span> (Gene Key 27).
+          {profile?.name || 'Your'} hologenetic profile weaves a story of{' '}
+          <span style={{ color: SPHERE_COLORS[activeGKData[0]?.sphere] || '#50b4dc' }}>
+            {activeGKData[0]?.gift?.name || 'creative anticipation'}
+          </span>{' '}
+          (Gene Key {activeGKData[0]?.num || 41}) learning to become{' '}
+          <span style={{ color: SPHERE_COLORS[activeGKData[1]?.sphere] || '#dc5050' }}>
+            {activeGKData[1]?.gift?.name || 'humble leadership'}
+          </span>{' '}
+          (Gene Key {activeGKData[1]?.num || 31}) through the crucible of{' '}
+          <span style={{ color: SPHERE_COLORS[activeGKData[2]?.sphere] || '#dc5050' }}>
+            {activeGKData[2]?.gift?.name || 'total living'}
+          </span>{' '}
+          (Gene Key {activeGKData[2]?.num || 28}), ultimately arriving at{' '}
+          <span style={{ color: SPHERE_COLORS[activeGKData[3]?.sphere] || '#dc5050' }}>
+            {activeGKData[3]?.gift?.name || 'selfless service'}
+          </span>{' '}
+          (Gene Key {activeGKData[3]?.num || 27}).
           The journey from Shadow to Siddhi in each key is not linear but spiral -- you will revisit
           each frequency many times, each time at a deeper level of integration. The contemplation
           prompts are not questions to be answered intellectually but{' '}
