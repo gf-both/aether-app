@@ -4,6 +4,7 @@ import { useClock } from '../../hooks/useClock'
 import { SEPHIROTH } from '../../data/kabbalahData'
 import { getNatalChart } from '../../engines/natalEngine'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
+import { resolvePob } from '../../utils/profileUtils'
 
 const HD_PROFILE_LABELS = {
   '1/3': 'Investigator/Martyr', '1/4': 'Investigator/Opportunist',
@@ -657,26 +658,7 @@ export default function TopBar() {
     try {
       const [y, m, d] = profile.dob.split('-').map(Number)
       const [h, min] = (profile.tob || '12:00').split(':').map(Number)
-      // Use stored lat/lon if available, otherwise estimate from pob string
-      let lat = profile.birthLat || 0
-      let lon = profile.birthLon || 0
-      let tz = profile.birthTimezone ?? 0
-      // If lat/lon are 0 (not set), try common city lookup from pob
-      if (!lat && !lon && profile.pob) {
-        const pob = profile.pob.toLowerCase()
-        if (pob.includes('buenos aires')) { lat=-34.6037; lon=-58.3816; tz=-3 }
-        else if (pob.includes('montevideo')) { lat=-34.9011; lon=-56.1645; tz=-3 }
-        else if (pob.includes('new york')) { lat=40.7128; lon=-74.0060; tz=-5 }
-        else if (pob.includes('london')) { lat=51.5074; lon=-0.1278; tz=0 }
-        else if (pob.includes('paris')) { lat=48.8566; lon=2.3522; tz=1 }
-        else if (pob.includes('madrid')) { lat=40.4168; lon=-3.7038; tz=1 }
-        else if (pob.includes('mexico')) { lat=19.4326; lon=-99.1332; tz=-6 }
-        else if (pob.includes('bogota')) { lat=4.7110; lon=-74.0721; tz=-5 }
-        else if (pob.includes('lima')) { lat=-12.0464; lon=-77.0428; tz=-5 }
-        else if (pob.includes('santiago')) { lat=-33.4489; lon=-70.6693; tz=-3 }
-        else if (pob.includes('sao paulo') || pob.includes('são paulo')) { lat=-23.5505; lon=-46.6333; tz=-3 }
-        else if (pob.includes('rio')) { lat=-22.9068; lon=-43.1729; tz=-3 }
-      }
+      const { lat, lon, tz } = resolvePob(profile)
       return getNatalChart({ day: d, month: m, year: y, hour: h||12, minute: min||0, lat, lon, timezone: tz })
     } catch { return null }
   }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.sign, profile?.pob])

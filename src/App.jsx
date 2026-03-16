@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useAboveInsideStore } from './store/useAboveInsideStore'
+import ErrorBoundary from './components/ui/ErrorBoundary'
 import Dashboard from './pages/Dashboard'
 import ProfilePanel from './components/overlays/ProfilePanel'
 import SynastryPanel from './components/overlays/SynastryPanel'
@@ -84,13 +85,13 @@ function ThemeSync() {
 
 export default function App() {
   return (
-    <>
+    <ErrorBoundary>
       <AuthSync />
       <ThemeSync />
       <Starfield />
       <Dashboard />
       <OverlayManager />
       <Cursor />
-    </>
+    </ErrorBoundary>
   )
 }

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
 import { getNatalChart } from '../engines/natalEngine'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
+import { resolvePob, safeVal } from '../utils/profileUtils'
 
 // Build complement profile (opposite of primary profile — what completes you)
 function buildComplementProfile(p) {
@@ -119,23 +120,7 @@ export default function GolemPage() {
 
   const activeProfile = editProfile || selectedGolem.profile
 
-  // Resolve lat/lon from pob if not set
-  function resolvePob(p) {
-    if (p?.birthLat && p.birthLat !== 0) return { lat: p.birthLat, lon: p.birthLon || 0, tz: p.birthTimezone ?? 0 }
-    const pob = (p?.pob || '').toLowerCase()
-    if (pob.includes('buenos aires')) return { lat:-34.6037, lon:-58.3816, tz:-3 }
-    if (pob.includes('montevideo')) return { lat:-34.9011, lon:-56.1645, tz:-3 }
-    if (pob.includes('new york')) return { lat:40.7128, lon:-74.0060, tz:-5 }
-    if (pob.includes('london')) return { lat:51.5074, lon:-0.1278, tz:0 }
-    if (pob.includes('paris')) return { lat:48.8566, lon:2.3522, tz:1 }
-    if (pob.includes('madrid')) return { lat:40.4168, lon:-3.7038, tz:1 }
-    if (pob.includes('bogota')) return { lat:4.7110, lon:-74.0721, tz:-5 }
-    if (pob.includes('lima')) return { lat:-12.0464, lon:-77.0428, tz:-5 }
-    if (pob.includes('santiago')) return { lat:-33.4489, lon:-70.6693, tz:-3 }
-    if (pob.includes('mexico')) return { lat:19.4326, lon:-99.1332, tz:-6 }
-    if (pob.includes('sao paulo') || pob.includes('são paulo')) return { lat:-23.5505, lon:-46.6333, tz:-3 }
-    return { lat: 0, lon: 0, tz: p?.birthTimezone ?? 0 }
-  }
+  // resolvePob imported from utils/profileUtils — not inline (prevents stale closure)
 
   const computedChart = useMemo(() => {
     const p = profile
@@ -154,7 +139,7 @@ export default function GolemPage() {
     catch { return null }
   }, [profile?.dob, profile?.name])
 
-  const val = (v) => (v && v !== '?' && v !== '??' ? v : null)
+  const val = safeVal // imported from utils/profileUtils
   const displaySign = val(profile?.sign) || computedChart?.planets?.sun?.sign || '?'
   const displayMoon = val(profile?.moon) || computedChart?.planets?.moon?.sign || '?'
   const displayAsc  = val(profile?.asc)  || computedChart?.angles?.asc?.sign  || '?'
