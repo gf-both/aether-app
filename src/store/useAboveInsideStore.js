@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { DEFAULT_PRIMARY_PROFILE, DEFAULT_PEOPLE } from '../data/primaryProfile'
 
-const DEFAULT_WIDGET_ORDER = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang']
+const DEFAULT_WIDGET_ORDER = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang', 'timeline']
 
 export const useAboveInsideStore = create(
   persist(
@@ -303,17 +303,16 @@ export const useAboveInsideStore = create(
     }),
     { 
       name: 'above-inside-store',
-      version: 4,
+      version: 5,
       migrate: (persistedState, version) => {
         if (version < 2) {
           return { ...persistedState, primaryProfile: undefined }
         }
-        if (version < 4) {
-          // Reset hidden widgets and widget order so all widgets are visible
-          return { 
-            ...persistedState, 
+        if (version < 5) {
+          return {
+            ...persistedState,
             hiddenWidgets: [],
-            widgetOrder: ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang']
+            widgetOrder: ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang', 'timeline']
           }
         }
         return persistedState
