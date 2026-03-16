@@ -68,7 +68,9 @@ const SIGN_GLYPHS = {
 }
 
 export default function EgyptianDetail() {
-  const profile = useAboveInsideStore(s => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   // Compute Egyptian sign dynamically from birth data
   const computedSign = useMemo(() => {

@@ -55,11 +55,13 @@ const ELEM_COLORS = { Wood: '#4caf50', Fire: '#e53935', Earth: '#d4a017', Metal:
 
 export default function ChineseDetail() {
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   const P = useMemo(() => {
     try {
-      const dob = primaryProfile?.dob || '1981-01-23'
-      const tob = primaryProfile?.tob || '22:10'
+      const dob = profile?.dob || '1981-01-23'
+      const tob = profile?.tob || '22:10'
       const [hour, minute] = (tob || '12:00').split(':').map(Number)
       const computed = getChineseProfileFromDob(dob, { hour: isNaN(hour) ? 12 : hour, minute: isNaN(minute) ? 0 : minute })
 
@@ -70,7 +72,7 @@ export default function ChineseDetail() {
       return {
         // From engine
         ...computed,
-        dob: primaryProfile?.dob || '1981-01-23',
+        dob: profile?.dob || '1981-01-23',
         // Compatibility & lucky from static animal data
         compatible:    staticAnimalEntry?.compatible   || STATIC_PROFILE.compatible,
         incompatible:  staticAnimalEntry?.incompatible || STATIC_PROFILE.incompatible,
@@ -123,7 +125,7 @@ export default function ChineseDetail() {
       console.error('ChineseEngine error:', e)
       return null
     }
-  }, [primaryProfile?.dob, primaryProfile?.tob])
+  }, [profile?.dob, profile?.tob])
 
   if (!P) return <div style={S.panel}>Error computing Chinese profile.</div>
 

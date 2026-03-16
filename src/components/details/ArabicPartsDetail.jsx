@@ -110,7 +110,9 @@ const S = {
 }
 
 export default function ArabicPartsDetail() {
-  const profile = useAboveInsideStore(s => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   const result = useMemo(() => {
     const chart = computeChart(profile)

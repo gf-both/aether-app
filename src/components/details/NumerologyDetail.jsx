@@ -83,14 +83,16 @@ function parseProfileInputs(profile) {
 
 export default function NumerologyDetail() {
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const activeProfile = activeViewProfile || primaryProfile
 
   const now = new Date()
-  const { day, month, year, fullName } = parseProfileInputs(primaryProfile)
+  const { day, month, year, fullName } = parseProfileInputs(activeProfile)
 
   const profile = useMemo(() => {
     try {
       return getNumerologyProfileFromDob(
-        primaryProfile?.dob || '1981-01-23',
+        activeProfile?.dob || '1981-01-23',
         fullName,
         {
           currentYear:  now.getFullYear(),
@@ -102,7 +104,7 @@ export default function NumerologyDetail() {
       console.error('NumerologyEngine error:', e)
       return null
     }
-  }, [primaryProfile?.dob, fullName])
+  }, [activeProfile?.dob, fullName])
 
   if (!profile) return <div style={S.panel}>Error computing profile.</div>
 

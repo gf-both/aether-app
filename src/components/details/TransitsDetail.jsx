@@ -43,7 +43,9 @@ function findAspect(transitLon, natalLon) {
 
 /** Compute live transits against natal chart */
 function useCurrentTransits() {
-  const profile = useAboveInsideStore(s => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
   return useMemo(() => {
     const dob = parseDOB(profile.dob)
     const tob = parseTOB(profile.tob)

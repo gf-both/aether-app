@@ -24,6 +24,8 @@ export const useAboveInsideStore = create(
       // View another person's chart without overwriting primary
       activeViewProfile: null,
       setActiveViewProfile: (profile) => set({ activeViewProfile: profile }),
+      // Derived: the profile currently being viewed (activeViewProfile ?? primaryProfile)
+      getActiveProfile: () => get().activeViewProfile || get().primaryProfile,
 
       people: [...DEFAULT_PEOPLE],
       addPerson: (person) =>

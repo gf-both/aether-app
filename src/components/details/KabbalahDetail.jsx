@@ -118,12 +118,14 @@ const S = {
 
 export default function KabbalahDetail() {
   const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   // Compute live active states from birth data
   const { SEPHIROTH_DETAIL, PILLARS_LIVE, ACTIVE_PATHS_LIVE } = useMemo(() => {
     let liveResult = null
     try {
-      liveResult = getKabbalahProfile(profileToKabArgs(primaryProfile))
+      liveResult = getKabbalahProfile(profileToKabArgs(profile))
     } catch (e) {
       // fall back to static data
     }
@@ -173,7 +175,7 @@ export default function KabbalahDetail() {
     })) ?? ACTIVE_PATHS
 
     return { SEPHIROTH_DETAIL: detail, PILLARS_LIVE: pillars, ACTIVE_PATHS_LIVE: activePaths }
-  }, [primaryProfile])
+  }, [profile])
 
   const activeCount = SEPHIROTH_DETAIL.filter(s => s.active).length
 

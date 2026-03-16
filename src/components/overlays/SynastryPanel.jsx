@@ -221,17 +221,19 @@ function FamilyContent({ a, b, aName, bName, report }) {
 
 export function SynastryInner({ onClose }) {
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
   const people = useAboveInsideStore((s) => s.people)
   const synSelA = useAboveInsideStore((s) => s.synSelA)
   const synSelB = useAboveInsideStore((s) => s.synSelB)
   const setSynSel = useAboveInsideStore((s) => s.setSynSel)
 
-  const a = getProfile(synSelA, primaryProfile, people)
-  const b = synSelB !== null ? getProfile(synSelB, primaryProfile, people) : null
+  const a = getProfile(synSelA, profile, people)
+  const b = synSelB !== null ? getProfile(synSelB, profile, people) : null
   const aName = a.name.split(' ')[0]
   const bName = b ? b.name.split(' ')[0] : 'Select Person'
 
-  const cfgA = a === primaryProfile ? null : (REL_CONFIG[a.rel] || REL_CONFIG.other)
+  const cfgA = a === profile ? null : (REL_CONFIG[a.rel] || REL_CONFIG.other)
   const cfgB = b ? (REL_CONFIG[b.rel] || REL_CONFIG.other) : null
 
   const hasSelection = b && synSelA !== synSelB
@@ -263,7 +265,7 @@ export function SynastryInner({ onClose }) {
           </div>
           <div>
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--gold2)' }}>{aName}</div>
-            <SelectorChips slot="A" currentId={synSelA} primaryProfile={primaryProfile} people={people} onSelect={setSynSel} />
+            <SelectorChips slot="A" currentId={synSelA} primaryProfile={profile} people={people} onSelect={setSynSel} />
           </div>
         </div>
 
@@ -276,7 +278,7 @@ export function SynastryInner({ onClose }) {
           </div>
           <div>
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: '10px', color: 'var(--rose2)' }}>{bName}</div>
-            <SelectorChips slot="B" currentId={synSelB} primaryProfile={primaryProfile} people={people} onSelect={setSynSel} />
+            <SelectorChips slot="B" currentId={synSelB} primaryProfile={profile} people={people} onSelect={setSynSel} />
           </div>
         </div>
 

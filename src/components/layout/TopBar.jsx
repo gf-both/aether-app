@@ -302,7 +302,7 @@ function ProfileSwitcher() {
           {/* Reset to primary */}
           {activeViewProfile && (
             <div
-              onClick={() => { setActiveViewProfile(null); localStorage.removeItem('above-inside-store'); window.location.reload(); }}
+              onClick={() => { setActiveViewProfile(null); setOpen(false); }}
               style={{
                 padding: '10px 14px', cursor: 'pointer', borderBottom: '1px solid var(--panel-border)',
                 background: 'rgba(201,168,76,0.08)', display: 'flex', alignItems: 'center', gap: 8,
@@ -624,7 +624,9 @@ function SignInButton() {
 }
 
 export default function TopBar() {
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
   const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)

@@ -30,7 +30,9 @@ function getQuickResponse(text) {
 }
 
 export default function Oracle({ open, onClose }) {
-  const profile = useAboveInsideStore(s => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
   const activeDetail = useAboveInsideStore(s => s.activeDetail)
 
   const hdType = profile?.hdType || 'Projector'

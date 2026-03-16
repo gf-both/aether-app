@@ -106,10 +106,12 @@ function TreeCard({ tree, label, accent = false }) {
 
 export default function CelticTreeDetail() {
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const activeProfile = activeViewProfile || primaryProfile
 
   let profile
-  if (primaryProfile?.dob) {
-    const [y, m, d] = primaryProfile.dob.split('-').map(Number)
+  if (activeProfile?.dob) {
+    const [y, m, d] = activeProfile.dob.split('-').map(Number)
     profile = getCelticTreeProfile({ day: d, month: m, year: y })
   } else {
     profile = getCelticTreeProfile({ day: 23, month: 1, year: 1981 })

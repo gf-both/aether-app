@@ -92,10 +92,12 @@ function CycleBar({ label, cycle, color }) {
 
 export default function BiorhythmDetail() {
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   let bio
-  if (primaryProfile?.dob) {
-    const [y, m, d] = primaryProfile.dob.split('-').map(Number)
+  if (profile?.dob) {
+    const [y, m, d] = profile.dob.split('-').map(Number)
     bio = getBiorhythms({ day: d, month: m, year: y })
   } else {
     bio = getBiorhythms({ day: 23, month: 1, year: 1981 })

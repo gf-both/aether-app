@@ -87,7 +87,9 @@ function formatDasha(d) {
 }
 
 export default function VedicDetail() {
-  const profile = useAboveInsideStore(s => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   const chart = useMemo(() => {
     try { return computeChart(profile) } catch { return null }

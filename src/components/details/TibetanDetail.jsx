@@ -59,16 +59,18 @@ const S = {
 
 export default function TibetanDetail() {
   const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const activeProfile = activeViewProfile || primaryProfile
 
   const profile = useMemo(() => {
     try {
-      const dob = primaryProfile?.dob || '1981-01-23'
+      const dob = activeProfile?.dob || '1981-01-23'
       const [year, month, day] = dob.split('-').map(Number)
       return getTibetanProfile({ day, month, year })
     } catch (e) {
       return null
     }
-  }, [primaryProfile?.dob])
+  }, [activeProfile?.dob])
 
   if (!profile) return null
 

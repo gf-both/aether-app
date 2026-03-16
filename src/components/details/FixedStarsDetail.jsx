@@ -68,24 +68,26 @@ const S = {
 
 export default function FixedStarsDetail() {
   const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   const conjunctions = useMemo(() => {
     try {
-      const dob = primaryProfile?.dob || '1981-01-23'
-      const tob = primaryProfile?.tob || '22:10'
-      const lat = primaryProfile?.lat ?? -34.6037
-      const lon = primaryProfile?.lon ?? -58.3816
+      const dob = profile?.dob || '1981-01-23'
+      const tob = profile?.tob || '22:10'
+      const lat = profile?.lat ?? -34.6037
+      const lon = profile?.lon ?? -58.3816
 
       const [y, m, d] = dob.split('-').map(Number)
       const [h, min] = (tob || '12:00').split(':').map(Number)
-      const timezone = primaryProfile?.timezone ?? -3
+      const timezone = profile?.timezone ?? -3
 
       const chart = getNatalChart({ year: y, month: m, day: d, hour: h, minute: min, lat, lon, timezone })
       return getFixedStars(chart)
     } catch (e) {
       return []
     }
-  }, [primaryProfile])
+  }, [profile])
 
   const exactCount = conjunctions.filter(c => c.exact).length
 

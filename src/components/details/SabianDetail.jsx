@@ -123,7 +123,9 @@ const S = {
 }
 
 export default function SabianDetail() {
-  const profile = useAboveInsideStore(s => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   const sabianProfile = useMemo(() => {
     const chart = computeChart(profile)

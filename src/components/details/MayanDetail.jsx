@@ -238,11 +238,13 @@ function OracleCard({ entry, label, desc, col, isCenter }) {
 
 export default function MayanDetail() {
   const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   let P = MAYAN_PROFILE
   let classicalProfile = null
-  if (primaryProfile?.dob) {
-    const [y, m, d] = primaryProfile.dob.split('-').map(Number)
+  if (profile?.dob) {
+    const [y, m, d] = profile.dob.split('-').map(Number)
     if (y && m && d) {
       P = computeFullProfile(y, m, d)
       classicalProfile = getMayanProfile(d, m, y)

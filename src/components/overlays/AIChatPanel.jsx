@@ -201,7 +201,9 @@ const styles = {
 }
 
 export default function AIChatPanel({ open, onClose }) {
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
   const userPlan = useAboveInsideStore((s) => s.userPlan)
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)

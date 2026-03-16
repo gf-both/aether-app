@@ -269,9 +269,11 @@ function NatalWidget() {
 
 function TarotWidget() {
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
   let result
-  if (primaryProfile?.dob) {
-    const [y, m, d] = primaryProfile.dob.split('-').map(Number)
+  if (profile?.dob) {
+    const [y, m, d] = profile.dob.split('-').map(Number)
     result = getTarotBirthCards({ day: d, month: m, year: y })
   } else {
     result = getTarotBirthCards({ day: 23, month: 1, year: 1981 })
@@ -307,9 +309,11 @@ function TarotWidget() {
 
 function CelticWidget() {
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
   let tree
-  if (primaryProfile?.dob) {
-    const [, m, d] = primaryProfile.dob.split('-').map(Number)
+  if (profile?.dob) {
+    const [, m, d] = profile.dob.split('-').map(Number)
     tree = getCelticTree({ day: d, month: m })
   } else {
     tree = getCelticTree({ day: 23, month: 1 })
@@ -355,7 +359,9 @@ function WidgetContent({ widgetId }) {
   const doshaType = useAboveInsideStore((s) => s.doshaType)
   const archetypeType = useAboveInsideStore((s) => s.archetypeType)
   const loveLanguage = useAboveInsideStore((s) => s.loveLanguage)
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
   const hdChartLocal = useMemo(() => {
     try {
       const { dob, tob } = profile || {}
@@ -760,7 +766,9 @@ function CategoryBadge({ widgetId }) {
 
 /* ── Demo Mode Banner ── */
 function DemoBanner() {
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
   const [dismissed, setDismissed] = useState(false)
@@ -1072,7 +1080,9 @@ export default function Dashboard() {
   const setOracleOpen = useAboveInsideStore((s) => s.setOracleOpen)
   const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const layoutMode = useAboveInsideStore((s) => s.layoutMode)
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768)
 

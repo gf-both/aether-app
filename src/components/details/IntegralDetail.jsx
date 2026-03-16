@@ -116,7 +116,9 @@ const S = {
 }
 
 export default function IntegralDetail() {
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   // Fill in dynamic values
   const filledZones = ZONES.map(z => {

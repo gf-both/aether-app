@@ -442,17 +442,19 @@ function VariablesTab({ chart }) {
 export default function HDDetail() {
   const [activeTab, setActiveTab] = useState('ravechart')
   const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
+  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const profile = activeViewProfile || primaryProfile
 
   const chart = useMemo(() => {
     try {
-      const { dob, tob } = primaryProfile
+      const { dob, tob } = profile
       if (!dob) return null
       return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: -3 })
     } catch (e) {
       console.error('HDDetail chart error:', e)
       return null
     }
-  }, [primaryProfile])
+  }, [profile])
 
   const TABS = [
     { id: 'ravechart',   label: 'Ravechart' },
