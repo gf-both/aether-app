@@ -14,9 +14,9 @@ export default function EgyptianChart() {
 
   // Compute active sign dynamically from birth data
   const activeSign = useMemo(() => {
-    if (!profile.dob) return EGYPTIAN_PROFILE.sign
+    if (!profile.dob) return null
     const [, m, d] = profile.dob.split('-').map(Number)
-    return getEgyptianSign(d, m)?.name || EGYPTIAN_PROFILE.sign
+    return getEgyptianSign(d, m)?.name || null
   }, [profile.dob])
 
   const activeSignRef = useRef(activeSign)
@@ -82,6 +82,24 @@ export default function EgyptianChart() {
       pulse += .008
 
       const activeSign = getActiveSign()
+
+      // Empty state when no birth date
+      if (!activeSign) {
+        const cx = W / 2, cy = H / 2
+        const R = Math.min(W, H) * .38
+        ctx.font = `bold ${Math.max(11, R * .06)}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('Add birth date to activate', cx, cy - 10)
+        ctx.font = `${Math.max(9, R * .04)}px ui-sans-serif, system-ui`
+        ctx.fillStyle = 'rgba(201,168,76,0.25)'
+        ctx.fillText('Egyptian Calendar', cx, cy + 14)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(draw)
+        return
+      }
+
       const activeIdx = EGYPTIAN_SIGNS.findIndex(s => s.name === activeSign)
 
       const cx = W / 2, cy = H / 2

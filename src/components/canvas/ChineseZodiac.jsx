@@ -19,8 +19,7 @@ export default function ChineseZodiac() {
       return getChineseProfileFromDob(dob, { hour: isNaN(hour) ? 12 : hour, minute: isNaN(minute) ? 0 : minute })
     } catch (e) {
       console.error('ChineseEngine error:', e)
-      return { animal: 'Monkey', element: 'Metal', yinYang: 'Yang', stem: 'Gēng', stemCn: '庚', branchCn: '申',
-               currentYear: { label: 'Fire Horse', chinese_str: '丙午' } }
+      return null
     }
   }, [profile?.dob, profile?.tob])
 
@@ -68,6 +67,21 @@ export default function ChineseZodiac() {
       const cx = W / 2, cy = H / 2
       const R = Math.min(W, H) * .38
       const hovS = hovRef.current
+
+      // Empty state when no birth date / profile
+      if (!CHINESE_PROFILE || !CHINESE_PROFILE.animal) {
+        ctx.font = `bold ${Math.max(11, R * .06)}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('Add birth date to activate', cx, cy - 10)
+        ctx.font = `${Math.max(9, R * .04)}px ui-sans-serif, system-ui`
+        ctx.fillStyle = 'rgba(201,168,76,0.25)'
+        ctx.fillText('Chinese Zodiac', cx, cy + 14)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(draw)
+        return
+      }
 
       /* ---- Outer ring (12 segments) ---- */
       const segArc = (Math.PI * 2) / 12

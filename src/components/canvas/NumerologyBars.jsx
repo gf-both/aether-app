@@ -27,7 +27,7 @@ export default function NumerologyBars() {
       const fullName = profile?.name
         ? profile.name.toUpperCase()
         : ''
-      if (!dob || !fullName) return { nums: new Array(10).fill(0), labs: ['LP','Ex','SU','M—','BD','Mt','Pn','Pe','P1','P2'] }
+      if (!dob || !fullName) return { nums: null, labs: null }
 
       const p = getNumerologyProfileFromDob(dob, fullName, {
         currentYear:  now.getFullYear(),
@@ -59,11 +59,7 @@ export default function NumerologyBars() {
       }
     } catch (e) {
       console.error('NumerologyBars engine error:', e)
-      // Fallback to hardcoded values
-      return {
-        nums: [7, 1, 3, 22, 5, 8, 6, 7, 6, 6],
-        labs: ['LP', 'Ex', 'SU', 'M22', 'BD', 'Mt', 'Pn', 'Pe', 'P1', 'P2'],
-      }
+      return { nums: null, labs: null }
     }
   }, [profile?.dob, profile?.name])
 
@@ -83,6 +79,7 @@ export default function NumerologyBars() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
 
+      if (!nums) { ctx.restore(); return }
       const bw = W / nums.length
       const pad = 3
 
@@ -120,6 +117,18 @@ export default function NumerologyBars() {
     draw()
     return () => { ro.disconnect() }
   }, [nums, labs])
+
+  if (!nums) {
+    return (
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'center',
+                    height:'50px', flexDirection:'column', gap:8, opacity:.5 }}>
+        <div style={{fontSize:11, color:'var(--gold)', fontFamily:"'Cinzel',serif",
+                     textTransform:'uppercase', letterSpacing:'.1em'}}>
+          Add name &amp; birth date
+        </div>
+      </div>
+    )
+  }
 
   return (
     <canvas

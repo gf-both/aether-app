@@ -94,6 +94,21 @@ export default function EnneagramSymbol({ typeOverride, wingOverride } = {}) {
       const R = Math.min(W, H) * .38
       const hovT = hovRef.current
 
+      // Empty state when no type in store
+      if (!typeOverride) {
+        ctx.font = `bold ${Math.max(11, R * .06)}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('Take the Enneagram Quiz', cx, cy - 10)
+        ctx.font = `${Math.max(9, R * .04)}px ui-sans-serif, system-ui`
+        ctx.fillStyle = 'rgba(201,168,76,0.25)'
+        ctx.fillText('to activate', cx, cy + 14)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(draw)
+        return
+      }
+
       // Subtle radial background glow
       const bgGrad = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.4)
       bgGrad.addColorStop(0, 'rgba(201,168,76,.03)')
