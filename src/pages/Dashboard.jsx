@@ -65,11 +65,13 @@ import { getTarotBirthCards } from '../engines/tarotEngine'
 import { getCelticTree } from '../engines/celticTreeEngine'
 import { GK_LIST } from '../data/geneKeysData'
 import { MAYAN_PROFILE, computeFullProfile as computeMayanProfile } from '../data/mayanData'
+import { getChineseProfileFromDob } from '../engines/chineseEngine'
 import { ENNEAGRAM_PROFILE, ENNEAGRAM_TYPES } from '../data/enneagramData'
 import { CHINESE_PROFILE } from '../data/chineseData'
 import { GEMATRIA_PROFILE } from '../data/gematriaData'
 import { CROSS_FRAMEWORK_ALIGNMENTS } from '../data/patternsData'
 import { EGYPTIAN_PROFILE } from '../data/egyptianData'
+import { getEgyptianSign } from '../engines/egyptianEngine'
 
 // ── Drag-to-reorder hook (pointer events, works on mouse + touch) ──
 function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
@@ -515,6 +517,31 @@ function WidgetContent({ widgetId }) {
     ? PLANET_ORDER.map(k => ({ sym: PLANET_SYMBOLS[k], val: hdChartLocal.personality[k] ? `${hdChartLocal.personality[k].gate}.${hdChartLocal.personality[k].line}` : '' }))
     : []
   const hdTags = hdChartLocal ? buildHDTags(hdChartLocal) : []
+  const mayanLocal = useMemo(() => {
+    try {
+      const dob = profile?.dob
+      if (!dob) return MAYAN_PROFILE
+      const [y, m, d] = dob.split('-').map(Number)
+      if (!y || !m || !d) return MAYAN_PROFILE
+      return computeMayanProfile(y, m, d)
+    } catch (e) { return MAYAN_PROFILE }
+  }, [profile])
+  const chineseLocal = useMemo(() => {
+    try {
+      const dob = profile?.dob
+      if (!dob) return CHINESE_PROFILE
+      return getChineseProfileFromDob(dob) || CHINESE_PROFILE
+    } catch (e) { return CHINESE_PROFILE }
+  }, [profile])
+  const egyptianLocal = useMemo(() => {
+    try {
+      const dob = profile?.dob
+      if (!dob) return EGYPTIAN_PROFILE
+      const [, m, d] = dob.split('-').map(Number)
+      if (!m || !d) return EGYPTIAN_PROFILE
+      return getEgyptianSign(d, m) || EGYPTIAN_PROFILE
+    } catch (e) { return EGYPTIAN_PROFILE }
+  }, [profile])
   switch (widgetId) {
     case 'integral':
       return (
@@ -646,7 +673,7 @@ function WidgetContent({ widgetId }) {
     case 'mayan':
       return (
         <>
-          <div className="ch"><span className="ct">Mayan Dreamspell &middot; Kin {MAYAN_PROFILE.kin} &middot; {MAYAN_PROFILE.signature}</span><span className="ci">{'\u{1F4AE}'}</span></div>
+          <div className="ch"><span className="ct">Mayan Dreamspell &middot; Kin {mayanLocal.kin} &middot; {mayanLocal.signature}</span><span className="ci">{'\u{1F4AE}'}</span></div>
           <div className="cb"><MayanWheel /></div>
         </>
       )
@@ -660,7 +687,7 @@ function WidgetContent({ widgetId }) {
     case 'chi':
       return (
         <>
-          <div className="ch"><span className="ct">Chinese Zodiac &middot; {CHINESE_PROFILE.element} {CHINESE_PROFILE.animal}</span><span className="ci">{'\u{1F409}'}</span></div>
+          <div className="ch"><span className="ct">Chinese Zodiac &middot; {chineseLocal.element} {chineseLocal.animal}</span><span className="ci">{'\u{1F409}'}</span></div>
           <div className="cb"><ChineseZodiac /></div>
         </>
       )
@@ -688,7 +715,7 @@ function WidgetContent({ widgetId }) {
     case 'egyptian':
       return (
         <>
-          <div className="ch"><span className="ct">Egyptian &middot; {EGYPTIAN_PROFILE.sign} &middot; {EGYPTIAN_PROFILE.symbol}</span><span className="ci">{'\u{1F3DB}'}</span></div>
+          <div className="ch"><span className="ct">Egyptian &middot; {egyptianLocal.sign} &middot; {egyptianLocal.symbol}</span><span className="ci">{'\u{1F3DB}'}</span></div>
           <div className="cb"><EgyptianChart /></div>
         </>
       )
