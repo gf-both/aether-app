@@ -135,112 +135,193 @@ function MiniNatalChart({ expressionNum, archetypeColor }) {
   return <canvas ref={canvasRef} width={200} height={200} style={{ display:'block', width:200, height:200 }} />
 }
 
-// Constellation map canvas
+// Constellation map canvas — orbital star map
 function ConstellationMap({ agents, selected, onSelect }) {
   const canvasRef = useRef(null)
-  const CANVAS_W = 500, CANVAS_H = 220
+  const animRef = useRef(null)
 
-  // Stable jitter per agent (use index as seed substitute)
-  const getJitter = (id) => {
-    let hash = 0
-    for (let c of id) hash = (hash * 31 + c.charCodeAt(0)) & 0xffff
-    return ((hash % 1000) / 1000) * 16 - 8
-  }
+  const RINGS = [
+    { ids: ['ceo','cto','cmo','pm'], radius: 0.25 },
+    { ids: ['dev-fullstack','support','researcher','designer','frontend','backend','qa','ux-research'], radius: 0.42 },
+    { ids: ['content-mgr','seo','reddit','twitter','influencer','tiktok','pricing','campaign','producthunt','email','affiliate','astrologer','visual','community','hd-specialist'], radius: 0.57 },
+  ]
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const dpr = window.devicePixelRatio || 1
-    canvas.width = CANVAS_W * dpr
-    canvas.height = CANVAS_H * dpr
-    const ctx = canvas.getContext('2d')
-    ctx.save()
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H)
+    let pulse = 0
 
-    // Grid lines
-    ctx.strokeStyle = 'rgba(201,168,76,.06)'; ctx.lineWidth = 0.5
-    for (const e of [1,2,3,4,5,6,7,8,9,11]) {
-      const xNorm = [1,2,3,4,5,6,7,8,9,10,11].indexOf(e) / 10
-      const x = 40 + xNorm * (CANVAS_W - 60)
-      ctx.beginPath(); ctx.moveTo(x, 20); ctx.lineTo(x, CANVAS_H-20); ctx.stroke()
-      ctx.font = `9px Cinzel,serif`; ctx.fillStyle = 'rgba(201,168,76,.3)'
-      ctx.textAlign = 'center'; ctx.fillText(String(e), x, CANVAS_H-8)
+    function draw() {
+      const dpr = window.devicePixelRatio || 1
+      const W = canvas.offsetWidth, H = canvas.offsetHeight
+      canvas.width = W * dpr
+      canvas.height = H * dpr
+      const ctx = canvas.getContext('2d')
+      ctx.save()
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.clearRect(0, 0, W, H)
+      pulse += 0.025
+
+      const cx = W / 2, cy = H / 2
+      const maxR = Math.min(W, H) * 0.5
+
+      // Deep space background
+      const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, maxR)
+      bg.addColorStop(0, 'rgba(8,6,20,.0)')
+      bg.addColorStop(1, 'rgba(4,3,12,.0)')
+      ctx.fillStyle = bg
+      ctx.fillRect(0, 0, W, H)
+
+      // Orbital rings
+      RINGS.forEach(ring => {
+        ctx.beginPath()
+        ctx.arc(cx, cy, maxR * ring.radius, 0, Math.PI * 2)
+        ctx.strokeStyle = 'rgba(201,168,76,.08)'
+        ctx.lineWidth = 0.5
+        ctx.setLineDash([3, 6])
+        ctx.stroke()
+        ctx.setLineDash([])
+      })
+
+      // Position agents
+      const agentPositions = {}
+      RINGS.forEach(ring => {
+        ring.ids.forEach((id, i) => {
+          const angle = (i / ring.ids.length) * Math.PI * 2 - Math.PI / 2
+          const r = maxR * ring.radius
+          agentPositions[id] = {
+            x: cx + r * Math.cos(angle),
+            y: cy + r * Math.sin(angle),
+          }
+        })
+      })
+
+      // Connection lines between same-archetype agents
+      const expressionGroups = {}
+      agents.forEach(a => {
+        if (!expressionGroups[a.expression]) expressionGroups[a.expression] = []
+        expressionGroups[a.expression].push(a)
+      })
+      Object.entries(expressionGroups).forEach(([exp, group]) => {
+        if (group.length < 2) return
+        const col = ARCHETYPE_COLORS[exp] || '#888'
+        for (let i = 0; i < group.length; i++) {
+          for (let j = i + 1; j < group.length; j++) {
+            const a = agentPositions[group[i].id]
+            const b = agentPositions[group[j].id]
+            if (!a || !b) continue
+            ctx.beginPath()
+            ctx.moveTo(a.x, a.y)
+            ctx.lineTo(b.x, b.y)
+            ctx.strokeStyle = col + '18'
+            ctx.lineWidth = 0.5
+            ctx.stroke()
+          }
+        }
+      })
+
+      // Draw agent nodes
+      agents.forEach(agent => {
+        const pos = agentPositions[agent.id]
+        if (!pos) return
+        const isSelected = selected?.id === agent.id
+        const col = ARCHETYPE_COLORS[agent.expression] || '#888888'
+        const baseR = isSelected ? 18 : 13
+        const glow = Math.sin(pulse * 2 + agent.expression) * 0.15 + 0.85
+
+        // Glow aura
+        if (isSelected) {
+          const pulseR = baseR + 6 + Math.sin(pulse * 3) * 3
+          const aura = ctx.createRadialGradient(pos.x, pos.y, baseR, pos.x, pos.y, pulseR + 8)
+          aura.addColorStop(0, col + 'aa')
+          aura.addColorStop(1, col + '00')
+          ctx.beginPath()
+          ctx.arc(pos.x, pos.y, pulseR + 8, 0, Math.PI * 2)
+          ctx.fillStyle = aura
+          ctx.fill()
+        }
+
+        // Star body
+        const starGrad = ctx.createRadialGradient(pos.x - baseR*0.2, pos.y - baseR*0.2, 0, pos.x, pos.y, baseR)
+        starGrad.addColorStop(0, col + 'ff')
+        starGrad.addColorStop(0.5, col + 'cc')
+        starGrad.addColorStop(1, col + '44')
+        ctx.beginPath()
+        ctx.arc(pos.x, pos.y, baseR * glow, 0, Math.PI * 2)
+        ctx.fillStyle = starGrad
+        ctx.fill()
+
+        // Emoji
+        ctx.font = `${isSelected ? 14 : 11}px serif`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText(agent.emoji, pos.x, pos.y)
+
+        // Name label (only for selected)
+        if (isSelected) {
+          ctx.font = `bold 9px 'Cinzel', serif`
+          ctx.fillStyle = col
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'top'
+          ctx.fillText(agent.role, pos.x, pos.y + baseR + 4)
+        }
+      })
+
+      // Center: AETHER label
+      ctx.font = `bold 10px 'Cinzel', serif`
+      ctx.fillStyle = 'rgba(201,168,76,.4)'
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('AETHER', cx, cy - 8)
+      ctx.font = `8px 'Cinzel', serif`
+      ctx.fillStyle = 'rgba(201,168,76,.25)'
+      ctx.fillText('27 AGENTS', cx, cy + 6)
+
+      animRef.current = requestAnimationFrame(draw)
     }
 
-    // Dept labels + lines
-    DEPARTMENTS.forEach(d => {
-      const y = DEPT_Y[d.label] * CANVAS_H
-      ctx.beginPath(); ctx.moveTo(30, y); ctx.lineTo(CANVAS_W-10, y)
-      ctx.strokeStyle = 'rgba(201,168,76,.06)'; ctx.lineWidth = 0.5; ctx.stroke()
-      ctx.font = '8px Cinzel,serif'; ctx.fillStyle = 'rgba(201,168,76,.25)'
-      ctx.textAlign = 'left'; ctx.fillText(d.label, 4, y-2)
-    })
-
-    // Agent dots
-    agents.forEach(agent => {
-      const deptIdx = DEPARTMENTS.findIndex(d => d.ids.includes(agent.id))
-      const deptLabel = DEPARTMENTS[deptIdx]?.label || 'MARKETING'
-      const yFrac = DEPT_Y[deptLabel] || 0.5
-      const exps = [1,2,3,4,5,6,7,8,9,10,11]
-      const expNorm = exps.indexOf(agent.expression) / 10
-      const x = 40 + expNorm * (CANVAS_W - 60)
-      const y = yFrac * CANVAS_H + getJitter(agent.id)
-      const isSelected = selected?.id === agent.id
-      const col = ARCHETYPE_COLORS[agent.expression] || '#888'
-
-      if (isSelected) {
-        ctx.beginPath(); ctx.arc(x, y, 16, 0, Math.PI*2)
-        ctx.fillStyle = col + '22'; ctx.fill()
-        ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI*2)
-        ctx.strokeStyle = col + '88'; ctx.lineWidth = 1.5; ctx.stroke()
-      }
-
-      ctx.font = `${isSelected ? 16 : 13}px serif`
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-      ctx.fillText(agent.emoji, x, y)
-
-      if (isSelected) {
-        ctx.font = `bold 8px Cinzel,serif`
-        ctx.fillStyle = col
-        ctx.fillText(agent.role, x, y + 16)
-      }
-    })
-
-    // X axis label
-    ctx.font = '8px Cinzel,serif'; ctx.fillStyle = 'rgba(201,168,76,.3)'
-    ctx.textAlign = 'center'; ctx.fillText('EXPRESSION NUMBER', CANVAS_W/2, CANVAS_H-1)
-
-    ctx.restore()
+    draw()
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
   }, [agents, selected])
 
-  const handleClick = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const scaleX = CANVAS_W / rect.width
-    const scaleY = CANVAS_H / rect.height
-    const mx = (e.clientX - rect.left) * scaleX
-    const my = (e.clientY - rect.top) * scaleY
-    let closest = null, minDist = 24
-    agents.forEach(agent => {
-      const deptIdx = DEPARTMENTS.findIndex(d => d.ids.includes(agent.id))
-      const deptLabel = DEPARTMENTS[deptIdx]?.label || 'MARKETING'
-      const yFrac = DEPT_Y[deptLabel] || 0.5
-      const exps = [1,2,3,4,5,6,7,8,9,10,11]
-      const expNorm = exps.indexOf(agent.expression) / 10
-      const ax = 40 + expNorm * (CANVAS_W - 60)
-      const ay = yFrac * CANVAS_H
-      const dist = Math.hypot(mx - ax, my - ay)
-      if (dist < minDist) { minDist = dist; closest = agent }
+  function handleClick(e) {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const mx = e.clientX - rect.left
+    const my = e.clientY - rect.top
+    const W = canvas.offsetWidth, H = canvas.offsetHeight
+    const cx = W / 2, cy = H / 2
+    const maxR = Math.min(W, H) * 0.5
+
+    const RINGS_CONST = [
+      { ids: ['ceo','cto','cmo','pm'], radius: 0.25 },
+      { ids: ['dev-fullstack','support','researcher','designer','frontend','backend','qa','ux-research'], radius: 0.42 },
+      { ids: ['content-mgr','seo','reddit','twitter','influencer','tiktok','pricing','campaign','producthunt','email','affiliate','astrologer','visual','community','hd-specialist'], radius: 0.57 },
+    ]
+
+    let closest = null, minDist = 25
+    RINGS_CONST.forEach(ring => {
+      ring.ids.forEach((id, i) => {
+        const angle = (i / ring.ids.length) * Math.PI * 2 - Math.PI / 2
+        const r = maxR * ring.radius
+        const ax = cx + r * Math.cos(angle)
+        const ay = cy + r * Math.sin(angle)
+        const dist = Math.hypot(mx - ax, my - ay)
+        if (dist < minDist) { minDist = dist; closest = id }
+      })
     })
-    if (closest) onSelect(closest)
+    if (closest) {
+      const agent = agents.find(a => a.id === closest)
+      if (agent) onSelect(agent)
+    }
   }
 
   return (
     <canvas
       ref={canvasRef}
-      width={CANVAS_W} height={CANVAS_H}
-      style={{ display:'block', width:'100%', height:'auto', cursor:'pointer' }}
       onClick={handleClick}
+      style={{ display: 'block', width: '100%', height: '100%', cursor: 'pointer', borderRadius: 8 }}
     />
   )
 }
@@ -353,7 +434,9 @@ export default function AIAgentsPage() {
             {/* Constellation map */}
             <div>
               <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", marginBottom:10 }}>Team Constellation — Archetype Map</div>
-              <ConstellationMap agents={PAPERCLIP_AGENTS} selected={selected} onSelect={setSelected} />
+              <div style={{ marginTop:20, height: 460, borderRadius:8, background:'rgba(0,0,0,.3)', border:'1px solid rgba(201,168,76,.1)', overflow:'hidden' }}>
+                <ConstellationMap agents={PAPERCLIP_AGENTS} selected={selected} onSelect={setSelected} />
+              </div>
             </div>
           </>
         ) : (
@@ -361,7 +444,9 @@ export default function AIAgentsPage() {
             <div style={{ textAlign:'center', opacity:0.4, fontFamily:"'Cinzel',serif", fontSize:12, textTransform:'uppercase', letterSpacing:'.1em', paddingTop:40 }}>
               Select an agent to view their profile
             </div>
-            <ConstellationMap agents={PAPERCLIP_AGENTS} selected={null} onSelect={setSelected} />
+            <div style={{ height: 460, borderRadius:8, background:'rgba(0,0,0,.3)', border:'1px solid rgba(201,168,76,.1)', overflow:'hidden' }}>
+              <ConstellationMap agents={PAPERCLIP_AGENTS} selected={null} onSelect={setSelected} />
+            </div>
           </div>
         )}
       </div>

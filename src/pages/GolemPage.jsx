@@ -6,54 +6,91 @@ import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 // Build complement profile (opposite of primary profile — what completes you)
 function buildComplementProfile(p) {
   const complementHD = {
-    'Generator': 'Projector',
-    'Manifesting Generator': 'Projector',
-    'Projector': 'Generator',
-    'Manifestor': 'Reflector',
-    'Reflector': 'Manifestor',
+    'Generator': 'Projector', 'Manifesting Generator': 'Projector',
+    'Projector': 'Generator', 'Manifestor': 'Reflector', 'Reflector': 'Manifestor',
   }
-  const complementLP = { 1:2, 2:1, 3:9, 4:8, 5:6, 6:5, 7:3, 8:4, 9:7, 11:22, 22:11 }
   const complementSign = {
     'Aquarius':'Leo', 'Leo':'Aquarius', 'Aries':'Libra', 'Libra':'Aries',
     'Taurus':'Scorpio', 'Scorpio':'Taurus', 'Gemini':'Sagittarius', 'Sagittarius':'Gemini',
-    'Cancer':'Capricorn', 'Capricorn':'Cancer', 'Virgo':'Pisces', 'Pisces':'Virgo'
+    'Cancer':'Capricorn', 'Capricorn':'Cancer', 'Virgo':'Pisces', 'Pisces':'Virgo',
   }
+  const complementMoon = {
+    'Virgo':'Pisces', 'Pisces':'Virgo', 'Aries':'Libra', 'Libra':'Aries',
+    'Taurus':'Scorpio', 'Scorpio':'Taurus', 'Gemini':'Sagittarius', 'Sagittarius':'Gemini',
+    'Cancer':'Capricorn', 'Capricorn':'Cancer', 'Leo':'Aquarius', 'Aquarius':'Leo',
+  }
+  const complementLP = { 1:2, 2:1, 3:9, 4:8, 5:6, 6:5, 7:3, 8:4, 9:7, 11:22, 22:11 }
+  const complementHDProfile = { '1/3':'4/6', '2/4':'5/1', '3/5':'6/2', '4/6':'1/3', '5/1':'2/4', '6/2':'3/5', '1/4':'4/1', '2/5':'5/2', '3/6':'6/3' }
+  const complementAuth = {
+    'Emotional': 'Sacral', 'Sacral': 'Emotional', 'Splenic': 'Ego/Heart',
+    'Ego/Heart': 'Splenic', 'Self-Projected': 'Mental', 'Mental': 'Self-Projected', 'Lunar': 'Sacral',
+  }
+
+  const sign = complementSign[p.sign] || 'Leo'
+  const moon = complementMoon[p.moon] || 'Pisces'
+  const asc = complementSign[p.asc] || 'Pisces'
+  const hdType = complementHD[p.hdType] || 'Generator'
+  const lp = complementLP[Number(p.lifePath)] || 2
+  const expr = complementLP[Number(p.expression)] || 2
+
   return {
-    ...p,
-    name: `${p.name || 'Your'}'s Complement`,
-    sign: complementSign[p.sign] || p.sign,
-    hdType: complementHD[p.hdType] || p.hdType,
-    lifePath: complementLP[p.lifePath] || p.lifePath,
-    expression: complementLP[p.expression] || p.expression,
+    name: 'Your Complement',
+    sign, moon, asc,
+    hdType,
+    hdProfile: complementHDProfile[p.hdProfile] || '2/4',
+    hdAuth: complementAuth[p.hdAuth] || 'Sacral',
+    hdDef: p.hdDef === 'Split' ? 'Single' : 'Split',
+    lifePath: lp,
+    expression: expr,
+    crossGK: null,
+    // No DOB, pob, lat/lon — complement is a derived archetype, not a real person
   }
 }
 
 // Build antagonist profile (shadow — what opposes or challenges you)
 function buildAntagonistProfile(p) {
   const antagonistHD = {
-    'Generator': 'Manifestor',
-    'Manifesting Generator': 'Reflector',
-    'Projector': 'Manifesting Generator',
-    'Manifestor': 'Generator',
-    'Reflector': 'Manifesting Generator',
+    'Generator': 'Manifestor', 'Manifesting Generator': 'Reflector',
+    'Projector': 'Manifesting Generator', 'Manifestor': 'Generator', 'Reflector': 'Projector',
   }
   const squareSign = {
     'Aquarius':'Taurus', 'Leo':'Scorpio', 'Aries':'Cancer', 'Libra':'Capricorn',
     'Taurus':'Leo', 'Scorpio':'Aquarius', 'Gemini':'Virgo', 'Sagittarius':'Pisces',
-    'Cancer':'Aries', 'Capricorn':'Libra', 'Virgo':'Gemini', 'Pisces':'Sagittarius'
+    'Cancer':'Aries', 'Capricorn':'Libra', 'Virgo':'Gemini', 'Pisces':'Sagittarius',
   }
+  const squareMoon = {
+    'Virgo':'Sagittarius', 'Pisces':'Gemini', 'Aquarius':'Taurus', 'Leo':'Scorpio',
+    'Aries':'Cancer', 'Libra':'Capricorn', 'Taurus':'Leo', 'Scorpio':'Aquarius',
+    'Gemini':'Pisces', 'Sagittarius':'Virgo', 'Cancer':'Aries', 'Capricorn':'Libra',
+  }
+  const antagonistAuth = {
+    'Emotional': 'Splenic', 'Sacral': 'Ego/Heart', 'Splenic': 'Emotional',
+    'Ego/Heart': 'Sacral', 'Self-Projected': 'Lunar', 'Mental': 'Sacral', 'Lunar': 'Splenic',
+  }
+
+  const sign = squareSign[p.sign] || 'Taurus'
+  const moon = squareMoon[p.moon] || 'Sagittarius'
+  const asc = squareSign[p.asc] || 'Gemini'
+  const hdType = antagonistHD[p.hdType] || 'Manifestor'
+  const lp = p.lifePath ? (((Number(p.lifePath) + 4) % 9) || 9) : 2
+
   return {
-    ...p,
-    name: `${p.name || 'Your'}'s Antagonist`,
-    sign: squareSign[p.sign] || p.sign,
-    hdType: antagonistHD[p.hdType] || p.hdType,
-    lifePath: p.lifePath ? (((Number(p.lifePath) + 4) % 9) || 9) : p.lifePath,
+    name: 'Your Antagonist',
+    sign, moon, asc,
+    hdType,
+    hdProfile: '5/1',
+    hdAuth: antagonistAuth[p.hdAuth] || 'Splenic',
+    hdDef: 'Triple Split',
+    lifePath: lp,
+    expression: ((Number(p.expression) + 3) % 9) || 9,
+    crossGK: null,
   }
 }
 
 export default function GolemPage() {
   const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
   const setPrimaryProfile = useAboveInsideStore(s => s.setPrimaryProfile)
+  const people = useAboveInsideStore(s => s.people)
 
   // Fixed golems (read-only)
   const cloneGolem = { id: 'clone', label: 'Your Clone', emoji: '🪬', readonly: true, profile: profile }
@@ -143,17 +180,26 @@ export default function GolemPage() {
   function buildSystemPrompt(p, label) {
     const roleDesc = {
       'Your Clone': `You ARE ${p?.name || 'this person'}. Speak exactly as they would — first person, their values, their blind spots.`,
-      'Complement': `You are ${p?.name}. You complement the user — where they go alone, you partner. Where they are rigid, you are fluid. You speak from a perspective that completes them.`,
-      'Antagonist': `You are ${p?.name}. You challenge the user. You push back on their assumptions. You play devil's advocate. You're not hostile — you're the worthy opponent that makes them stronger.`,
+      'Complement': `You are Your Complement — an archetype that completes the user. Where they go alone, you partner. Where they are rigid, you are fluid. You speak from a perspective that completes them.`,
+      'Antagonist': `You are Your Antagonist — an archetype that challenges the user. You push back on their assumptions. You play devil's advocate. You're not hostile — you're the worthy opponent that makes them stronger.`,
     }[label] || `You are ${p?.name || 'a custom Golem'}. Speak from this profile.`
 
-    return `${roleDesc}
+    const existingPrompt = `${roleDesc}
 
 Profile:
 - Sun: ${p?.sign || '?'}, Moon: ${p?.moon || '?'}, Rising: ${p?.asc || '?'}
 - HD: ${p?.hdType || '?'} ${p?.hdProfile || ''} | Authority: ${p?.hdAuth || '?'}
 - Life Path: ${p?.lifePath || '?'} | Expression: ${p?.expression || '?'}
 Keep responses 2-4 sentences. Be direct.`
+
+    let peopleContext = ''
+    if (people?.length > 0) {
+      peopleContext = `\n\nPeople in the user's life:\n${people.map(person =>
+        `- ${person.name} (${person.rel || 'other'}): ${person.sign || '?'} Sun, ${person.dob ? `born ${person.dob}` : 'DOB unknown'}${person.hdType && person.hdType !== '?' ? `, HD ${person.hdType}` : ''}`
+      ).join('\n')}`
+    }
+
+    return `${existingPrompt}${peopleContext}`
   }
 
   async function send() {
