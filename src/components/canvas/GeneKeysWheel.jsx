@@ -209,7 +209,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
     }
     draw()
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
-  }, [computedSpheres])
+  }, [profile?.dob, profile?.tob, profile?.birthTimezone])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }
