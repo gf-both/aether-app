@@ -1,0 +1,1072 @@
+{
+  "CEO / Founder": {
+    "description": "Sets direction, inspires, makes final calls. Needs vision + execution capacity.",
+    "systems": {
+      "natal": {
+        "sun": {
+          "ideal": [
+            "Aries",
+            "Leo",
+            "Aquarius",
+            "Sagittarius"
+          ],
+          "why": "Aries initiates without asking permission. Leo commands naturally. Aquarius sees the future. Sag sees the big picture."
+        },
+        "moon": {
+          "ideal": [
+            "Leo",
+            "Sagittarius",
+            "Aries",
+            "Capricorn"
+          ],
+          "why": "Emotional fuel for leadership. Leo moon = needs to lead. Sag moon = emotionally expansive. Cap moon = emotionally disciplined."
+        },
+        "asc": {
+          "ideal": [
+            "Leo",
+            "Aries",
+            "Sagittarius",
+            "Capricorn"
+          ],
+          "why": "The face you show the world. Leo ASC = born to lead. Aries = confident first impression. Sag = inspiring presence."
+        },
+        "mercury": {
+          "ideal": [
+            "Aries",
+            "Leo",
+            "Aquarius"
+          ],
+          "why": "Decisive communication. Aries Mercury acts fast. Aquarius Mercury thinks differently."
+        },
+        "mars": {
+          "ideal": [
+            "Aries",
+            "Leo",
+            "Capricorn",
+            "Scorpio"
+          ],
+          "why": "How you fight. Strong Mars = can hold ground, protect the mission."
+        },
+        "saturn": {
+          "ideal": [
+            "Capricorn",
+            "Aquarius",
+            "10th house"
+          ],
+          "why": "Saturn well-placed = long-term thinking, disciplined leadership."
+        },
+        "avoid": [
+          "Libra Moon (indecisive under pressure)",
+          "Pisces Mars (lacks follow-through on confrontation)"
+        ]
+      },
+      "humanDesign": {
+        "type": {
+          "ideal": [
+            "Manifestor",
+            "Manifesting Generator"
+          ],
+          "why": "Manifestors initiate without waiting — pure CEO energy. ManGen has energy + decisiveness."
+        },
+        "profile": {
+          "ideal": [
+            "1/3",
+            "5/1",
+            "5/2",
+            "4/6"
+          ],
+          "why": "5/1 is the Heretic/Investigator — people project authority onto them. 4/6 Role Model inspires through lived example. 1/3 grounds everything in research + trial."
+        },
+        "authority": {
+          "ideal": [
+            "Sacral",
+            "Splenic",
+            "Ego/Heart"
+          ],
+          "why": "Sacral = immediate yes/no gut response. Splenic = spontaneous intuitive knowing. Ego = willpower and making promises."
+        },
+        "definition": {
+          "ideal": [
+            "Single",
+            "Split"
+          ],
+          "why": "Single definition = consistent, predictable energy — reliable leadership. Split = adaptable to different team members."
+        },
+        "channels": {
+          "ideal": [
+            "Channel 34-57 (Power)",
+            "Channel 20-57 (Brainwave)",
+            "Channel 1-8 (Inspiration)"
+          ],
+          "why": "Power channel = natural energy field. Brainwave = spontaneous insight. Inspiration = creative leadership."
+        }
+      },
+      "geneKeys": {
+        "lifesWork": {
+          "ideal": [
+            1,
+            14,
+            31,
+            43,
+            64
+          ],
+          "why": "GK1 Freshness/Beauty — creative initiation. GK14 Competence/Bounteousness — prosperity consciousness. GK31 Leadership/Humility — natural democratic leadership. GK43 Breakthrough/Epiphany — revolutionary insight. GK64 Imagination/Illumination — before completion visionary."
+        },
+        "evolution": {
+          "ideal": [
+            8,
+            15,
+            42,
+            50
+          ],
+          "why": "GK8 Style/Exquisiteness — elegance in execution. GK15 Magnetism/Florescence — naturally magnetic. GK42 Detachment/Celebration — embraces completion cycles."
+        }
+      },
+      "mayan": {
+        "daySign": {
+          "ideal": [
+            "Chicchan",
+            "Ben",
+            "Ahau",
+            "Cauac"
+          ],
+          "why": "Chicchan (Serpent) = primal life force, kundalini leadership. Ben (Reed) = royal staff, template for others. Ahau (Sun) = the enlightened leader. Cauac (Storm) = catalytic change agent."
+        },
+        "tone": {
+          "ideal": [
+            1,
+            9,
+            11,
+            13
+          ],
+          "why": "Tone 1 Magnetic = unifies and attracts. Tone 9 Solar = pulsates with purpose. Tone 11 Spectral = releases and liberates. Tone 13 Cosmic = endures all cycles."
+        }
+      },
+      "numerology": {
+        "lifePath": {
+          "ideal": [
+            1,
+            8,
+            11,
+            22
+          ],
+          "why": "LP1 = the initiator. LP8 = material mastery and authority. LP11 = Master Intuitive who inspires. LP22 = Master Builder who creates at scale."
+        },
+        "expression": {
+          "ideal": [
+            1,
+            8,
+            11,
+            22
+          ],
+          "why": "How you express your mission. These create natural authority and direction."
+        }
+      },
+      "celtic": {
+        "ideal": [
+          "Oak",
+          "Holly",
+          "Rowan"
+        ],
+        "why": "Oak = the World Tree, endurance and sovereignty. Holly = warrior balance. Rowan = protection and quickening."
+      },
+      "tibetan": {
+        "mewa": [
+          1,
+          6,
+          8
+        ],
+        "why": "Mewa 1 White Iron = clarity, precision, sovereign strength. Mewa 6 White = purity, reflection, completion. Mewa 8 White = achievement, accumulation, power."
+      },
+      "chinese": {
+        "animal": [
+          "Dragon",
+          "Tiger",
+          "Horse"
+        ],
+        "why": "Dragon = most powerful animal, charismatic visionary. Tiger = brave, passionate, fearless. Horse = spirited, independent, magnetic."
+      },
+      "egyptian": {
+        "ideal": [
+          "Horus",
+          "Amun-Ra",
+          "Osiris"
+        ],
+        "why": "Horus = the divine king. Amun-Ra = the sun god, leadership and confidence. Osiris = death/rebirth transformation leader."
+      }
+    },
+    "idealProfile": "Dragon-Sun Sagittarius, Leo Moon, Aries Rising, Manifestor 5/1, LP22, GK1 Life's Work, Ben Tone 1, Oak Tree, Dragon Year, Horus Egyptian"
+  },
+  "CTO / Principal Engineer": {
+    "description": "Owns technical vision, architecture decisions, system design.",
+    "systems": {
+      "natal": {
+        "sun": {
+          "ideal": [
+            "Aquarius",
+            "Virgo",
+            "Gemini",
+            "Scorpio"
+          ],
+          "why": "Aquarius = systems thinker, sees the future. Virgo = precision engineering. Gemini = connects multiple domains. Scorpio = digs deep, sees hidden patterns."
+        },
+        "moon": {
+          "ideal": [
+            "Aquarius",
+            "Gemini",
+            "Capricorn",
+            "Virgo"
+          ],
+          "why": "Aquarius Moon = innovative feeling. Gemini Moon = curious, rapid synthesis. Capricorn Moon = disciplined, long-term."
+        },
+        "mercury": {
+          "ideal": [
+            "Aquarius",
+            "Gemini",
+            "Virgo"
+          ],
+          "why": "Mercury is communication/thinking. Aquarius = systems thinking. Gemini = multiple streams simultaneously. Virgo = precise, analytical."
+        },
+        "uranus": {
+          "ideal": [
+            "strong aspects to Sun/Mercury",
+            "Aquarius"
+          ],
+          "why": "Uranus = innovation, breakthrough technology. Strong Uranus = natural tech visionary."
+        }
+      },
+      "humanDesign": {
+        "type": {
+          "ideal": [
+            "Projector",
+            "Generator"
+          ],
+          "why": "Projectors see systems and guide others' energy efficiently — perfect for architecture roles. Generators have sustained energy to dive deep."
+        },
+        "profile": {
+          "ideal": [
+            "1/3",
+            "3/5",
+            "1/4"
+          ],
+          "why": "1/3 Investigator/Martyr = researches foundations, learns through experimentation. 1/4 = builds knowledge base, shares through network."
+        },
+        "authority": {
+          "ideal": [
+            "Splenic",
+            "Mental",
+            "None (Reflector)"
+          ],
+          "why": "Splenic = immediate knowing about what works technically. Mental = needs to talk through before deciding."
+        },
+        "channels": {
+          "ideal": [
+            "Channel 11-56 (Curiosity)",
+            "Channel 43-23 (Structuring)",
+            "Channel 17-62 (Acceptance)"
+          ],
+          "why": "Curiosity = natural researcher. Structuring = translates abstraction to specifics. Acceptance = organizational thinking."
+        }
+      },
+      "geneKeys": {
+        "lifesWork": {
+          "ideal": [
+            4,
+            11,
+            43,
+            47,
+            48,
+            63
+          ],
+          "why": "GK4 Forgiveness/Understanding — intellectual insight. GK11 Idealism/Light — visionary ideas. GK43 Epiphany/Insight — breakthrough moments. GK47 Transmutation — transforms problems into solutions. GK48 Wisdom/Resourcefulness — deep technical depth. GK63 Inquiry/Truth — rigorous truth-seeking."
+        }
+      },
+      "mayan": {
+        "daySign": {
+          "ideal": [
+            "Caban",
+            "Etznab",
+            "Oc",
+            "Akbal"
+          ],
+          "why": "Caban (Earth) = practical systems, stability patterns. Etznab (Mirror) = clarity, decisive cutting through complexity. Oc (Dog) = loyal systematic builder. Akbal (Night) = understands hidden structure."
+        },
+        "tone": {
+          "ideal": [
+            4,
+            7,
+            12
+          ],
+          "why": "Tone 4 Self-Existing = defines form and measure. Tone 7 Resonant = channels and attunes. Tone 12 Crystal = cooperates and universalizes."
+        }
+      },
+      "numerology": {
+        "lifePath": {
+          "ideal": [
+            7,
+            11,
+            22,
+            4
+          ],
+          "why": "LP7 = deep analytical seeker. LP11 = visionary intuitor. LP22 = master builder at scale. LP4 = systematic, thorough foundation-builder."
+        }
+      },
+      "celtic": {
+        "ideal": [
+          "Hazel",
+          "Ash",
+          "Yew"
+        ],
+        "why": "Hazel = wisdom, knowledge, deep learning. Ash = connects different domains. Yew = long-lived, penetrates depths."
+      },
+      "egyptian": {
+        "ideal": [
+          "Thoth",
+          "Geb"
+        ],
+        "why": "Thoth = the master of knowledge, writing, and systems. Geb = the earth god, solid foundations."
+      }
+    },
+    "idealProfile": "Aquarius Sun, Gemini Moon, Virgo Rising, Projector 1/3, LP7, GK48 Life's Work (Wisdom), Etznab Tone 4, Hazel Tree, Thoth Egyptian"
+  },
+  "Frontend Engineer / UX Engineer": {
+    "description": "Builds the interface between human experience and code.",
+    "systems": {
+      "natal": {
+        "sun": {
+          "ideal": [
+            "Libra",
+            "Gemini",
+            "Taurus",
+            "Pisces"
+          ],
+          "why": "Libra = aesthetics and balance. Gemini = user perspective switching. Taurus = sensory beauty. Pisces = emotional empathy in design."
+        },
+        "moon": {
+          "ideal": [
+            "Libra",
+            "Pisces",
+            "Taurus",
+            "Cancer"
+          ],
+          "why": "Moon in Libra = feels what's beautiful/ugly. Pisces = deeply empathetic to user experience. Cancer = protective of user feelings."
+        },
+        "venus": {
+          "ideal": [
+            "Taurus",
+            "Libra",
+            "Pisces"
+          ],
+          "why": "Venus rules aesthetics. Dignified Venus = natural sense of beauty and proportion."
+        },
+        "neptune": {
+          "ideal": [
+            "strong in chart",
+            "good aspects to Sun/Venus"
+          ],
+          "why": "Neptune = imagination, vision, the ideal. Strong Neptune = sees what could be, not just what is."
+        }
+      },
+      "humanDesign": {
+        "type": {
+          "ideal": [
+            "Manifesting Generator",
+            "Generator"
+          ],
+          "why": "ManGen = can multi-task, moves fast, responsive. Generator = sustained energy to polish and perfect."
+        },
+        "profile": {
+          "ideal": [
+            "2/4",
+            "4/6",
+            "2/5"
+          ],
+          "why": "2/4 = natural talent (Hermit line) + shares through network. 4/6 = Opportunist/Role Model, learns by doing, becomes exemplary over time."
+        },
+        "channels": {
+          "ideal": [
+            "Channel 15-5 (Rhythm)",
+            "Channel 46-29 (Discovery)"
+          ],
+          "why": "Rhythm = natural aesthetic timing. Discovery = finds joy in the work itself."
+        }
+      },
+      "geneKeys": {
+        "lifesWork": {
+          "ideal": [
+            8,
+            15,
+            46,
+            55,
+            16
+          ],
+          "why": "GK8 Style/Exquisiteness — aesthetic mastery. GK15 Magnetism/Florescence — natural beauty magnetism. GK46 Delight/Ecstasy — finds joy in creation. GK55 Freedom — creates from genuine feeling. GK16 Versatility/Mastery — multi-skilled craftsperson."
+        }
+      },
+      "mayan": {
+        "daySign": {
+          "ideal": [
+            "Ix",
+            "Lamat",
+            "Manik",
+            "Chuen"
+          ],
+          "why": "Ix (Jaguar) = beauty, elegance, earth magic. Lamat (Star) = harmony and abundance. Manik (Deer) = graceful, artistic. Chuen (Monkey) = playful, creative craftsperson."
+        },
+        "tone": {
+          "ideal": [
+            6,
+            8,
+            10
+          ],
+          "why": "Tone 6 Rhythmic = organizes and balances. Tone 8 Galactic = models integrity. Tone 10 Planetary = manifests form perfectly."
+        }
+      },
+      "numerology": {
+        "lifePath": {
+          "ideal": [
+            3,
+            6,
+            9,
+            2
+          ],
+          "why": "LP3 = creative communicator. LP6 = aesthetics and service. LP9 = universal love and completion. LP2 = partnership and sensitivity to others."
+        }
+      },
+      "celtic": {
+        "ideal": [
+          "Willow",
+          "Vine",
+          "Ivy"
+        ],
+        "why": "Willow = lunar mystery, dream-weaving. Vine = aesthetic harvest. Ivy = patience and beautiful persistence."
+      },
+      "egyptian": {
+        "ideal": [
+          "Bastet",
+          "Mut",
+          "Isis"
+        ],
+        "why": "Bastet = beauty, grace, creativity. Mut = nurturing protection. Isis = healing through beautiful form."
+      }
+    },
+    "idealProfile": "Libra Sun, Taurus Moon, Pisces Rising, ManGen 2/4, LP6, GK8 Life's Work (Style), Ix Tone 6, Willow Tree, Bastet Egyptian"
+  },
+  "Content Marketing / Storyteller": {
+    "description": "Creates narratives that make people feel understood and inspired to act.",
+    "systems": {
+      "natal": {
+        "sun": {
+          "ideal": [
+            "Gemini",
+            "Sagittarius",
+            "Leo",
+            "Pisces"
+          ],
+          "why": "Gemini = master of language and ideas. Sag = big picture storytelling. Leo = dramatic, memorable. Pisces = emotionally resonant, mythic."
+        },
+        "moon": {
+          "ideal": [
+            "Pisces",
+            "Sagittarius",
+            "Gemini",
+            "Cancer"
+          ],
+          "why": "Pisces Moon = channels emotional truth. Sag Moon = optimistic, expansive feeling. Gemini Moon = emotionally mercurial, many voices."
+        },
+        "mercury": {
+          "ideal": [
+            "Gemini",
+            "Sagittarius",
+            "Aquarius",
+            "Pisces"
+          ],
+          "why": "Mercury is THE content planet. Gemini = versatile writer. Sag = inspiring vision. Aquarius = original voice. Pisces = poetic, metaphorical."
+        },
+        "jupiter": {
+          "ideal": [
+            "Gemini",
+            "Sagittarius",
+            "9th house"
+          ],
+          "why": "Jupiter expands everything. In Gemini/Sag = expanded communication, publishing, broadcasting."
+        }
+      },
+      "humanDesign": {
+        "type": {
+          "ideal": [
+            "Manifestor",
+            "Generator",
+            "Manifesting Generator"
+          ],
+          "why": "Manifestors IMPACT — their words land with force. Generators/ManGens sustain the creative output."
+        },
+        "profile": {
+          "ideal": [
+            "3/5",
+            "5/1",
+            "4/6"
+          ],
+          "why": "3/5 Martyr/Heretic = controversial, provocative, transforms through story. 5/1 = people project their hopes onto them. 4/6 = the role model whose life IS the content."
+        },
+        "channels": {
+          "ideal": [
+            "Channel 35-36 (Transitoriness)",
+            "Channel 12-22 (Openness)"
+          ],
+          "why": "Transitoriness = all about new experiences to share. Openness = deeply emotional expression."
+        }
+      },
+      "geneKeys": {
+        "lifesWork": {
+          "ideal": [
+            41,
+            13,
+            33,
+            56,
+            35
+          ],
+          "why": "GK41 Anticipation — the dreamer/storyteller. GK13 Cosmic Memory — holds and shares the collective story. GK33 Mindfulness/Revelation — the contemplator who reveals. GK56 Enrichment — the storyteller enriches all they touch. GK35 Adventure — constant fresh experiences to share."
+        }
+      },
+      "mayan": {
+        "daySign": {
+          "ideal": [
+            "Ik",
+            "Ben",
+            "Chuen",
+            "Ix"
+          ],
+          "why": "Ik (Wind) = breath, communication, the sacred messenger. Ben (Reed) = channels divine through self. Chuen (Monkey) = the trickster artist. Ix (Jaguar) = the shaman storyteller."
+        },
+        "tone": {
+          "ideal": [
+            3,
+            5,
+            11
+          ],
+          "why": "Tone 3 Electric = activates and bonds. Tone 5 Overtone = empowers and radiates. Tone 11 Spectral = dissolves and liberates through story."
+        }
+      },
+      "numerology": {
+        "lifePath": {
+          "ideal": [
+            3,
+            9,
+            11,
+            6
+          ],
+          "why": "LP3 = the creative communicator. LP9 = universal voice. LP11 = inspired channel. LP6 = creates beauty and service."
+        },
+        "expression": {
+          "ideal": [
+            3,
+            9,
+            11
+          ],
+          "why": "How the story comes through in their name-identity."
+        }
+      },
+      "celtic": {
+        "ideal": [
+          "Birch",
+          "Hawthorn",
+          "Reed"
+        ],
+        "why": "Birch = new beginnings, first voice. Hawthorn = cleansing truth. Reed = the hollow channel for divine song."
+      },
+      "egyptian": {
+        "ideal": [
+          "Thoth",
+          "Isis",
+          "Mut"
+        ],
+        "why": "Thoth = master of language, hieroglyphs, story. Isis = the great enchantress, weaves reality through words."
+      }
+    },
+    "idealProfile": "Gemini Sun, Pisces Moon, Sagittarius Rising, Manifestor 3/5, LP11, GK41 Life's Work (Anticipation), Ik Tone 3, Reed Tree, Thoth Egyptian"
+  },
+  "Community Manager / Growth": {
+    "description": "Builds belonging. Turns strangers into believers into evangelists.",
+    "systems": {
+      "natal": {
+        "sun": {
+          "ideal": [
+            "Libra",
+            "Cancer",
+            "Leo",
+            "Aquarius"
+          ],
+          "why": "Libra = creates harmony and belonging. Cancer = protective mother of community. Leo = the warm host. Aquarius = builds the collective."
+        },
+        "moon": {
+          "ideal": [
+            "Cancer",
+            "Libra",
+            "Pisces",
+            "Gemini"
+          ],
+          "why": "Cancer Moon = deeply nurturing. Libra Moon = feels when harmony is off. Pisces = absorbs collective feeling."
+        },
+        "venus": {
+          "ideal": [
+            "Libra",
+            "Leo",
+            "Cancer",
+            "Pisces"
+          ],
+          "why": "Venus rules relationships. These placements create genuine warmth and connection."
+        },
+        "jupiter": {
+          "ideal": [
+            "Cancer",
+            "Libra",
+            "Pisces",
+            "Sagittarius"
+          ],
+          "why": "Jupiter in Cancer = generous nurturer. Libra = expands relationships. Sag = expansive community building."
+        }
+      },
+      "humanDesign": {
+        "type": {
+          "ideal": [
+            "Projector",
+            "Generator"
+          ],
+          "why": "Projectors guide community energy. Generators sustain the relational output."
+        },
+        "profile": {
+          "ideal": [
+            "2/4",
+            "4/6",
+            "6/2"
+          ],
+          "why": "2/4 = natural talent for connection shared through network. 4/6 = the opportunist who becomes the role model people trust."
+        },
+        "authority": {
+          "ideal": [
+            "Emotional",
+            "Sacral"
+          ],
+          "why": "Emotional = feels community rhythms and needs. Sacral = gut-knows who to connect with."
+        },
+        "channels": {
+          "ideal": [
+            "Channel 37-40 (Community)",
+            "Channel 27-50 (Preservation)"
+          ],
+          "why": "Community channel = IS the community energy. Preservation = protects and nurtures the collective."
+        }
+      },
+      "geneKeys": {
+        "lifesWork": {
+          "ideal": [
+            2,
+            10,
+            15,
+            19,
+            46
+          ],
+          "why": "GK2 Unity/Orientation — guides toward home. GK10 Being/Naturalness — genuine self creates genuine community. GK15 Magnetism — naturally draws people. GK19 Sensitivity/Sacrifice — feels what community needs. GK46 Delight — the joy magnet."
+        }
+      },
+      "mayan": {
+        "daySign": {
+          "ideal": [
+            "Muluc",
+            "Oc",
+            "Lamat",
+            "Kan"
+          ],
+          "why": "Muluc (Moon) = emotional community wisdom. Oc (Dog) = loyalty and tribe. Lamat (Star) = harmony and abundance. Kan (Seed) = fertility and growth of community."
+        },
+        "tone": {
+          "ideal": [
+            2,
+            6,
+            10
+          ],
+          "why": "Tone 2 Lunar = polarizes and identifies community edges. Tone 6 Rhythmic = creates organizational rhythm. Tone 10 Planetary = manifests the gathering."
+        }
+      },
+      "numerology": {
+        "lifePath": {
+          "ideal": [
+            2,
+            6,
+            9,
+            3
+          ],
+          "why": "LP2 = the diplomat of relationships. LP6 = the nurturer. LP9 = the humanitarian who serves all. LP3 = the social communicator."
+        }
+      },
+      "celtic": {
+        "ideal": [
+          "Willow",
+          "Ivy",
+          "Oak"
+        ],
+        "why": "Willow = community healing. Ivy = persistent connection. Oak = strong protective presence that others gather under."
+      },
+      "egyptian": {
+        "ideal": [
+          "Isis",
+          "Bastet",
+          "Mut",
+          "Horus"
+        ],
+        "why": "Isis = healer who reassembles. Bastet = warmth, protection, playfulness. Mut = the great mother."
+      }
+    },
+    "idealProfile": "Cancer Sun, Libra Moon, Pisces Rising, Projector 4/6, LP6, GK15 Life's Work (Magnetism), Muluc Tone 2, Willow Tree, Isis Egyptian"
+  },
+  "Research Analyst / Data Scientist": {
+    "description": "Finds truth in complexity. Turns data into wisdom.",
+    "systems": {
+      "natal": {
+        "sun": {
+          "ideal": [
+            "Virgo",
+            "Scorpio",
+            "Capricorn",
+            "Aquarius"
+          ],
+          "why": "Virgo = precision analysis. Scorpio = digs to the buried truth. Capricorn = structured investigation. Aquarius = sees patterns others miss."
+        },
+        "moon": {
+          "ideal": [
+            "Scorpio",
+            "Virgo",
+            "Capricorn",
+            "Aquarius"
+          ],
+          "why": "Scorpio Moon = emotionally compelled to find what's hidden. Virgo = feels unsafe until everything is verified."
+        },
+        "mercury": {
+          "ideal": [
+            "Virgo",
+            "Scorpio",
+            "Aquarius",
+            "Gemini"
+          ],
+          "why": "Virgo Mercury = analytical precision. Scorpio = penetrating insight. Aquarius = original frameworks."
+        },
+        "pluto": {
+          "ideal": [
+            "strong aspects to Sun/Mercury"
+          ],
+          "why": "Pluto = transformation through deep investigation. Strong Pluto = research that transforms."
+        }
+      },
+      "humanDesign": {
+        "type": {
+          "ideal": [
+            "Projector",
+            "Reflector"
+          ],
+          "why": "Projectors see what others miss. Reflectors take 29 days to know — they're the deepest processors."
+        },
+        "profile": {
+          "ideal": [
+            "1/3",
+            "1/4",
+            "3/6"
+          ],
+          "why": "1/3 = researches foundations obsessively, learns by discovery. 1/4 = builds knowledge base, shares through trusted network."
+        },
+        "channels": {
+          "ideal": [
+            "Channel 64-47 (Abstraction)",
+            "Channel 61-24 (Awareness)",
+            "Channel 63-4 (Logic)"
+          ],
+          "why": "Abstraction = mental processing of experience. Awareness = investigates universal principles. Logic = sequential analysis."
+        }
+      },
+      "geneKeys": {
+        "lifesWork": {
+          "ideal": [
+            48,
+            57,
+            17,
+            62,
+            63
+          ],
+          "why": "GK48 Wisdom/Resourcefulness — the deep well. GK57 Clarity/Intuition — penetrating clarity. GK17 Omniscience/Far-Sightedness — sees ahead. GK62 Impeccability/Precision — perfects the details. GK63 Truth/Inquiry — truth-seeker."
+        }
+      },
+      "mayan": {
+        "daySign": {
+          "ideal": [
+            "Caban",
+            "Etznab",
+            "Muluc",
+            "Akbal"
+          ],
+          "why": "Caban (Earth) = understands natural patterns. Etznab (Mirror) = cuts through to clear truth. Muluc (Moon) = reads emotional data. Akbal (Night) = the deep unconscious researcher."
+        },
+        "tone": {
+          "ideal": [
+            4,
+            7,
+            9
+          ],
+          "why": "Tone 4 Self-Existing = measures and defines. Tone 7 Resonant = attunes to the signal. Tone 9 Solar = pulsates with pure intent."
+        }
+      },
+      "numerology": {
+        "lifePath": {
+          "ideal": [
+            7,
+            4,
+            8,
+            11
+          ],
+          "why": "LP7 = the seeker, truth-finder, analyst. LP4 = systematic builder of knowledge. LP8 = strategic, results-focused. LP11 = visionary insight."
+        }
+      },
+      "celtic": {
+        "ideal": [
+          "Hazel",
+          "Yew",
+          "Ivy"
+        ],
+        "why": "Hazel = wisdom and inspiration. Yew = penetrates deepest into time. Ivy = persistent patient investigator."
+      },
+      "tibetan": {
+        "mewa": [
+          2,
+          3,
+          7
+        ],
+        "why": "Mewa 2 Black Water = depth, mystery, introspection. Mewa 3 Blue Water = wisdom, communication. Mewa 7 Red Fire = passion for truth."
+      },
+      "egyptian": {
+        "ideal": [
+          "Thoth",
+          "Anubis",
+          "Isis"
+        ],
+        "why": "Thoth = knowledge, measurement, record. Anubis = guides through the underworld of data. Isis = reconstructs from fragments."
+      }
+    },
+    "idealProfile": "Virgo Sun, Scorpio Moon, Capricorn Rising, Projector 1/3, LP7, GK48 Life's Work (Wisdom), Etznab Tone 7, Hazel Tree, Thoth Egyptian"
+  },
+  "Product Manager": {
+    "description": "Holds the product vision, prioritizes ruthlessly, speaks for the user.",
+    "systems": {
+      "natal": {
+        "sun": {
+          "ideal": [
+            "Virgo",
+            "Libra",
+            "Scorpio",
+            "Sagittarius"
+          ],
+          "why": "Virgo = detail-oriented, user-focused. Libra = balances competing priorities. Scorpio = digs for the real user need. Sag = sees the big product vision."
+        },
+        "moon": {
+          "ideal": [
+            "Cancer",
+            "Virgo",
+            "Libra",
+            "Scorpio"
+          ],
+          "why": "Cancer = deeply empathizes with users. Virgo = emotionally triggered by poor UX. Libra = feels the balance between stakeholders."
+        },
+        "saturn": {
+          "ideal": [
+            "well-placed, not afflicted"
+          ],
+          "why": "Saturn = discipline, structure, prioritization — core PM skills."
+        }
+      },
+      "humanDesign": {
+        "type": {
+          "ideal": [
+            "Projector",
+            "Generator"
+          ],
+          "why": "Projectors see the whole system and what needs to change. Generators sustain the constant prioritization work."
+        },
+        "profile": {
+          "ideal": [
+            "4/6",
+            "5/1",
+            "3/5"
+          ],
+          "why": "4/6 Role Model — eventually becomes the exemplary PM through lived experience. 5/1 Heretic/Investigator — people come to them with problems."
+        },
+        "channels": {
+          "ideal": [
+            "Channel 37-40 (Community)",
+            "Channel 29-46 (Discovery)"
+          ],
+          "why": "Community = understands team dynamics. Discovery = finds joy in learning what users need."
+        }
+      },
+      "geneKeys": {
+        "lifesWork": {
+          "ideal": [
+            14,
+            25,
+            30,
+            42,
+            45
+          ],
+          "why": "GK14 Competence/Bounteousness — manages resources well. GK25 Acceptance/Universal Love — inclusive vision. GK30 Lightness/Rapture — embraces the unknown. GK42 Celebration/Detachment — completes without clinging. GK45 Synergy/Communion — builds towards collective vision."
+        }
+      },
+      "mayan": {
+        "daySign": {
+          "ideal": [
+            "Ben",
+            "Oc",
+            "Kan",
+            "Eb"
+          ],
+          "why": "Ben (Reed) = the template-keeper. Oc (Dog) = loyal systematic executor. Kan (Seed) = facilitates growth. Eb (Road) = the path-finder for others."
+        },
+        "tone": {
+          "ideal": [
+            4,
+            8,
+            12
+          ],
+          "why": "Tone 4 Self-Existing = defines and measures. Tone 8 Galactic = models integrity in prioritization. Tone 12 Crystal = cooperates and universalizes."
+        }
+      },
+      "numerology": {
+        "lifePath": {
+          "ideal": [
+            9,
+            6,
+            2,
+            8
+          ],
+          "why": "LP9 = sees the whole picture, inclusive. LP6 = serves and creates harmony. LP2 = partnership and sensing what others need. LP8 = strategic resource management."
+        }
+      }
+    },
+    "idealProfile": "Libra Sun, Cancer Moon, Virgo Rising, Projector 4/6, LP9, GK14 Life's Work (Competence), Ben Tone 4, Reed Celtic, Isis Egyptian"
+  },
+  "QA Engineer / Quality Assurance": {
+    "description": "The guardian of quality. Finds what's broken before anyone else.",
+    "systems": {
+      "natal": {
+        "sun": {
+          "ideal": [
+            "Virgo",
+            "Scorpio",
+            "Capricorn"
+          ],
+          "why": "Virgo = THE quality sign. Scorpio = investigates the hidden bug. Capricorn = methodical systematic testing."
+        },
+        "moon": {
+          "ideal": [
+            "Virgo",
+            "Scorpio",
+            "Capricorn"
+          ],
+          "why": "Same. Virgo Moon = emotionally triggered by imperfection. A gift for QA."
+        },
+        "mercury": {
+          "ideal": [
+            "Virgo",
+            "Scorpio",
+            "Gemini"
+          ],
+          "why": "Virgo Mercury = detailed, precise communication about bugs. Scorpio = penetrates to the root cause."
+        },
+        "saturn": {
+          "ideal": [
+            "strong",
+            "Virgo",
+            "Capricorn"
+          ],
+          "why": "Saturn = discipline, structure, systematic. Core QA energy."
+        }
+      },
+      "humanDesign": {
+        "type": {
+          "ideal": [
+            "Projector",
+            "Generator"
+          ],
+          "why": "Projectors see the system and spot what's off. Generators have energy to test exhaustively."
+        },
+        "profile": {
+          "ideal": [
+            "1/3",
+            "4/1"
+          ],
+          "why": "1/3 = researches foundations, discovers through trial and error. 1/4 = systematic knowledge builder."
+        },
+        "channels": {
+          "ideal": [
+            "Channel 17-62 (Acceptance)",
+            "Channel 43-23 (Structuring)"
+          ],
+          "why": "Acceptance = organizational thinking, sequential testing. Structuring = translates complexity to specifics."
+        }
+      },
+      "geneKeys": {
+        "lifesWork": {
+          "ideal": [
+            18,
+            44,
+            48,
+            57,
+            62
+          ],
+          "why": "GK18 Perfection/Integrity — the quality seeker. GK44 Synarchy/Teamwork — systematic cooperation. GK48 Wisdom/Resourcefulness — deep technical depth. GK62 Impeccability — the precision master."
+        }
+      },
+      "mayan": {
+        "daySign": {
+          "ideal": [
+            "Etznab",
+            "Caban",
+            "Muluc"
+          ],
+          "why": "Etznab (Mirror) = sees flaws clearly, cutting knife of truth. Caban (Earth) = stable, systematic, earthed. Muluc (Moon) = reads the data stream emotionally."
+        },
+        "tone": {
+          "ideal": [
+            4,
+            9,
+            12
+          ],
+          "why": "Tone 4 = defines and measures. Tone 9 = pulsates with pure intent to find truth. Tone 12 = cooperates universally."
+        }
+      },
+      "numerology": {
+        "lifePath": {
+          "ideal": [
+            4,
+            7,
+            8
+          ],
+          "why": "LP4 = systematic, thorough, no skipping steps. LP7 = analytical seeker of truth. LP8 = strategic results-focus."
+        }
+      },
+      "celtic": {
+        "ideal": [
+          "Hazel",
+          "Elder",
+          "Yew"
+        ],
+        "why": "Hazel = wisdom and discernment. Elder = endings and transformation. Yew = sees through to the longest time horizon."
+      },
+      "egyptian": {
+        "ideal": [
+          "Anubis",
+          "Thoth",
+          "Geb"
+        ],
+        "why": "Anubis = weighs souls/code on the scale of truth. Thoth = records everything precisely."
+      }
+    },
+    "idealProfile": "Virgo Sun, Scorpio Moon, Virgo Rising, Projector 1/3, LP4, GK18 Life's Work (Perfection/Integrity), Etznab Tone 4, Hazel Tree, Anubis Egyptian"
+  }
+}
