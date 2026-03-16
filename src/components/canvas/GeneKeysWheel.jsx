@@ -14,7 +14,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
 
   const computedSpheres = useMemo(() => {
     if (spheresProp) return spheresProp
-    if (!profile?.dob) return SPHERES
+    if (!profile?.dob) return null
     try {
       const [year, month, day] = (profile.dob || '').split('-').map(Number)
       const tob = profile.tob || '00:00'
@@ -49,6 +49,19 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
 
       const cx = W / 2, cy = H / 2
       const R = Math.min(W, H) * .42
+
+      // Empty state when no profile
+      if (!activeSpheres) {
+        ctx.font = `bold ${Math.max(11, R * .1)}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+        ctx.fillText('⬡', cx, cy - R * .15)
+        ctx.font = `${Math.max(9, R * .06)}px 'Cinzel',serif`
+        ctx.fillText('Add birth date to activate', cx, cy + R * .1)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(draw)
+        return
+      }
 
       // Flower of life background
       ctx.save()
