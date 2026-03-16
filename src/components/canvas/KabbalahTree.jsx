@@ -13,16 +13,16 @@ export default function KabbalahTree() {
 
   // Compute live active states from birth data; fall back to static SEPHIROTH if engine throws
   const sephirothLive = useMemo(() => {
+    const args = profileToKabArgs(profile)
+    if (!args) return null // no profile data — show empty state
     try {
-      const args = profileToKabArgs(profile)
       const result = getKabbalahProfile(args)
-      // Merge computed active states into the static visual SEPHIROTH array
       return SEPHIROTH.map(s => {
         const computed = result.sephiroth.find(r => r.name === s.name)
         return computed ? { ...s, active: computed.active } : s
       })
     } catch (e) {
-      return SEPHIROTH
+      return null
     }
   }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone])
 
@@ -54,6 +54,21 @@ export default function KabbalahTree() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
       pulse += .018
+
+      // Empty state when no profile
+      if (!sephirothLive) {
+        const R = Math.min(W, H) * .4
+        ctx.font = `bold ${Math.max(11, R * .12)}px 'Cinzel',serif`
+        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+        ctx.fillText('✡', W/2, H/2 - R * .15)
+        ctx.font = `${Math.max(9, R * .07)}px 'Cinzel',serif`
+        ctx.fillText('Add birth date to activate', W/2, H/2 + R * .1)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(draw)
+        return
+      }
+
       const sr = Math.min(W, H) * .05
       const hovS = hovRef.current
 

@@ -248,8 +248,9 @@ export function getKabbalahProfile({ day, month, year, hour, minute, timezone })
  * Defaults timezone to -3 (Buenos Aires) if not present.
  */
 export function profileToKabArgs(profile) {
-  const [year, month, day] = (profile.dob || '1981-01-23').split('-').map(Number);
-  const [hour, minute]     = (profile.tob || '22:10').split(':').map(Number);
-  const timezone           = profile.tz != null ? profile.tz : -3;
+  if (!profile?.dob) return null // no fallback — require real data
+  const [year, month, day] = profile.dob.split('-').map(Number);
+  const [hour, minute]     = (profile.tob || '12:00').split(':').map(Number);
+  const timezone           = profile.birthTimezone ?? profile.tz ?? 0;
   return { day, month, year, hour, minute, timezone };
 }
