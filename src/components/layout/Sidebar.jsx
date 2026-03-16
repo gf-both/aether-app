@@ -39,6 +39,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '🏥', label: 'Practitioner', id: 'practitioner', widget: 'practitioner' },
   { type: 'item', icon: '📋', label: 'Client Portal', id: 'client', widget: 'client' },
   { type: 'item', icon: '🏛️', label: 'Company', id: 'company', widget: 'company' },
+  { type: 'item', icon: '⚡', label: 'Admin', id: 'admin', widget: 'admin' },
 ]
 
 export default function Sidebar() {

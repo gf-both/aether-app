@@ -61,6 +61,7 @@ import GolemPage from './GolemPage'
 import WendyPage from './WendyPage'
 import DatingPage from './DatingPage'
 import SettingsPage from './SettingsPage'
+import AdminPanel from './AdminPanel'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
 import { getBiorhythms } from '../engines/biorhythmEngine'
@@ -336,6 +337,7 @@ const DETAIL_COMPONENTS = {
   wendy: WendyPage,
   dating: DatingPage,
   settings: SettingsPage,
+  admin: AdminPanel,
 }
 
 const DETAIL_TITLES = {
@@ -377,6 +379,7 @@ const DETAIL_TITLES = {
   wendy: 'Wendy \u2014 Org Intelligence',
   dating: 'Dating \u2014 Golem Matching',
   settings: 'Settings',
+  admin: 'Admin Panel \u2014 Product Architecture',
 }
 
 function NatalWidget() {
