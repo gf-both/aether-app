@@ -55,16 +55,30 @@ function parseTOB(tob) {
   return { hour: h || 0, minute: m || 0 }
 }
 function computeChart(profile) {
+  if (!profile?.dob) return null
   const dob = parseDOB(profile.dob)
   const tob = parseTOB(profile.tob)
   if (!dob) return null
-  return getNatalChart({
-    day: dob.day, month: dob.month, year: dob.year,
-    hour: tob.hour, minute: tob.minute,
-    lat: profile.birthLat ?? -34.6037,
-    lon: profile.birthLon ?? -58.3816,
-    timezone: profile.birthTimezone ?? -3,
-  })
+  // Resolve coords from pob if lat/lon not set
+  let lat = profile.birthLat || 0
+  let lon = profile.birthLon || 0
+  let tz  = profile.birthTimezone ?? 0
+  if (!lat && !lon && profile.pob) {
+    const pob = (profile.pob || '').toLowerCase()
+    if (pob.includes('buenos aires')) { lat=-34.6037; lon=-58.3816; tz=-3 }
+    else if (pob.includes('montevideo')) { lat=-34.9011; lon=-56.1645; tz=-3 }
+    else if (pob.includes('new york')) { lat=40.7128; lon=-74.0060; tz=-5 }
+    else if (pob.includes('london')) { lat=51.5074; lon=-0.1278; tz=0 }
+    else if (pob.includes('paris')) { lat=48.8566; lon=2.3522; tz=1 }
+    else if (pob.includes('madrid')) { lat=40.4168; lon=-3.7038; tz=1 }
+    else if (pob.includes('mexico')) { lat=19.4326; lon=-99.1332; tz=-6 }
+    else if (pob.includes('bogota')) { lat=4.7110; lon=-74.0721; tz=-5 }
+    else if (pob.includes('lima')) { lat=-12.0464; lon=-77.0428; tz=-5 }
+    else if (pob.includes('santiago')) { lat=-33.4489; lon=-70.6693; tz=-3 }
+  }
+  try {
+    return getNatalChart({ day: dob.day, month: dob.month, year: dob.year, hour: tob.hour, minute: tob.minute, lat, lon, timezone: tz })
+  } catch { return null }
 }
 
 export default function NatalWheel({ showAspects = true, showHouses = true }) {
@@ -78,7 +92,7 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
   const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
   const chart = useMemo(() => {
     try { return computeChart(profile) } catch { return null }
-  }, [profile.dob, profile.tob, profile.birthLat, profile.birthLon, profile.birthTimezone])
+  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.pob])
 
   useEffect(() => { chartRef.current = chart }, [chart])
   useCanvasResize(canvasRef)
@@ -133,6 +147,16 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
         return
       }
 
+      // Safety check: ensure chart has the expected structure
+      if (!ch.angles?.asc?.lon || !ch.planets || !ch.houses) {
+        ctx.font = `${R * .07}px sans-serif`
+        ctx.fillStyle = 'rgba(100,80,40,.7)'
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+        ctx.fillText('Computing chart...', cx, cy)
+        ctx.restore()
+        animRef.current = requestAnimationFrame(draw)
+        return
+      }
       const ascLon = ch.angles.asc.lon
       // Standard Western chart: ASC at left, zodiac counter-clockwise, MC at top
       // Formula: canvas_angle = (ascLon - lon + 180) = (rot + 90 - lon) where rot = ascLon + 90
