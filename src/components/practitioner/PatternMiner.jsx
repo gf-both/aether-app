@@ -1,6 +1,17 @@
 import { useState, useMemo } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
+function renderBoldMarkdown(text) {
+  const parts = text.split(/(\*\*.*?\*\*)/g)
+  return parts.map((part, i) => {
+    const match = part.match(/^\*\*(.*?)\*\*$/)
+    if (match) {
+      return <strong key={i} style={{ color: 'var(--gold, #c9a84c)' }}>{match[1]}</strong>
+    }
+    return part
+  })
+}
+
 const THEME_KEYWORDS = [
   'sacral', 'authority', 'emotional', 'wave', 'gate', 'channel', 'profile',
   'shadow', 'gift', 'siddhi', 'conditioning', 'not-self', 'strategy',
