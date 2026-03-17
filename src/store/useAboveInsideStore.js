@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { getAllBirthProfiles } from '../lib/db'
 import { persist } from 'zustand/middleware'
 import { DEFAULT_PRIMARY_PROFILE, DEFAULT_PEOPLE } from '../data/primaryProfile'
 
@@ -44,7 +45,6 @@ export const useAboveInsideStore = create(
 
       // Load profiles from DB and populate store
       loadProfilesFromDB: async (userId) => {
-        const { getAllBirthProfiles } = await import('../lib/db')
         const { data, error } = await getAllBirthProfiles(userId)
         if (error || !data) return
 
