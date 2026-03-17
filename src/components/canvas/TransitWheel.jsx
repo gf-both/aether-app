@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { getNatalChart } from '../../engines/natalEngine'
 
 const signs = ['\u2648','\u2649','\u264A','\u264B','\u264C','\u264D','\u264E','\u264F','\u2650','\u2651','\u2652','\u2653']
@@ -86,7 +86,7 @@ export default function TransitWheel() {
   const animRef = useRef(null)
   const hovRef = useRef({ ring: null, idx: -1 })
 
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
 
   const { natalPlanets, transitPlanets, ascLon } = useMemo(() => {
     let chart = null

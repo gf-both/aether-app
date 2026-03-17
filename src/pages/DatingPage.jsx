@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 import { computeCompatibility, getCompatibilityDescription } from '../engines/compatibilityEngine'
 import { getNatalChart } from '../engines/natalEngine'
 import { computeHDChart } from '../engines/hdEngine'
@@ -15,7 +15,7 @@ const CONNECTION_TYPES = [
 ]
 
 export default function DatingPage() {
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
   // Compute chart values dynamically when profile fields show '?'
   const computed = useMemo(() => {
     if (!profile?.dob) return {}
@@ -80,7 +80,7 @@ export default function DatingPage() {
   }
 
   // Real matches computed from the people in the store
-  const people = useAboveInsideStore(s => s.people)
+  const people = useGolemStore(s => s.people)
 
   const realMatches = useMemo(() => {
     if (!profile?.dob || !people?.length) return []

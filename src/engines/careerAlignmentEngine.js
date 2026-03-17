@@ -2,7 +2,7 @@ import ROLE_BLUEPRINTS from '../../docs/role-blueprints.json' with { type: 'json
 
 // Score a user's chart against each role blueprint
 export function getCareerAlignment(userProfile) {
-  // userProfile = { natal, hd, geneKeys, numerology, mayan, celtic, ... }
+  // userProfile = { natal, hd, geneKeys, numerology, mayan, ... }
   // (same shape as what getNatalChart + other engines return)
 
   const scores = [];
@@ -105,14 +105,6 @@ export function getCareerAlignment(userProfile) {
       if (sys.mayan.tone?.ideal?.includes(mayan.tzolkin?.tone)) {
         score += 5;
         matches.push(`Tone ${mayan.tzolkin.tone} ✓`);
-      }
-    }
-
-    // ── CELTIC SCORING ────────────────────────────────────
-    if (userProfile.celtic && sys.celtic?.ideal) {
-      if (sys.celtic.ideal.includes(userProfile.celtic.birthTree?.name)) {
-        score += 5;
-        matches.push(`${userProfile.celtic.birthTree.name} Celtic Tree ✓`);
       }
     }
 

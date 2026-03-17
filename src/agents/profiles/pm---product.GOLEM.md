@@ -18,7 +18,6 @@
 | ∞ Life Path | 9 |
 | ⬡ Gene Keys | Gate 14 — Compromise → Competence (Bounteousness) |
 | 🌀 Mayan | Ben 4 (Reed, Self-Existing) |
-| 🌿 Celtic | Reed — Template-keeper |
 
 ## Personality
 

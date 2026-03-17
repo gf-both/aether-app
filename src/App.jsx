@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { useAboveInsideStore } from './store/useAboveInsideStore'
+import { useGolemStore } from './store/useGolemStore'
 import ErrorBoundary from './components/ui/ErrorBoundary'
 import Dashboard from './pages/Dashboard'
 import ProfilePanel from './components/overlays/ProfilePanel'
@@ -14,37 +14,43 @@ import { onAuthStateChange, getUser } from './lib/auth'
 import { getUserProfile } from './lib/db'
 
 function AuthSync() {
-  const { setUser, setUserProfile, setAuthLoading, loadProfilesFromDB } = useAboveInsideStore()
+  const { setUser, setUserProfile, setAuthLoading, loadProfilesFromDB } = useGolemStore()
 
   useEffect(() => {
+    let cancelled = false
+
     getUser().then(async user => {
+      if (cancelled) return
       setUser(user)
       if (user) {
         const { data } = await getUserProfile(user.id)
+        if (cancelled) return
         setUserProfile(data)
         await loadProfilesFromDB(user.id)
       }
-      setAuthLoading(false)
+      if (!cancelled) setAuthLoading(false)
     })
 
     const { data: { subscription } } = onAuthStateChange(async (event, session) => {
+      if (cancelled) return
       const user = session?.user || null
       setUser(user)
       if (user) {
         const { data } = await getUserProfile(user.id)
+        if (cancelled) return
         setUserProfile(data)
         await loadProfilesFromDB(user.id)
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => { cancelled = true; subscription.unsubscribe() }
   }, [])
 
   return null
 }
 
 function OverlayManager() {
-  const { activePanel, setActivePanel, showAuthModal, setShowAuthModal, oracleOpen, setOracleOpen } = useAboveInsideStore()
+  const { activePanel, setActivePanel, showAuthModal, setShowAuthModal, oracleOpen, setOracleOpen } = useGolemStore()
   return createPortal(
     <>
       <ProfilePanel open={activePanel === 'profile'} onClose={() => setActivePanel(null)} />
@@ -58,7 +64,7 @@ function OverlayManager() {
 }
 
 function ThemeSync() {
-  const theme = useAboveInsideStore((s) => s.theme)
+  const theme = useGolemStore((s) => s.theme)
   useEffect(() => {
     const html = document.documentElement
 

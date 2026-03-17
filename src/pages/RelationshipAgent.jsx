@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useActiveProfile } from '../hooks/useActiveProfile'
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 import { callAI } from '../lib/ai'
 
 export default function RelationshipAgent() {
   const profile = useActiveProfile()
-  const people = useAboveInsideStore(s => s.people)
+  const people = useGolemStore(s => s.people)
   const [selectedPersonId, setSelectedPersonId] = useState(null)
   const [relType, setRelType] = useState('romantic')
   const [result, setResult] = useState(null)

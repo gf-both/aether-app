@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { getNatalChart } from '../../engines/natalEngine'
 
 const SIGN_GLYPHS = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓']
@@ -89,7 +89,7 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
   const showHousesRef = useRef(showHouses)
   const chartRef = useRef(null)
 
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
   const chart = useMemo(() => {
     try { return computeChart(profile) } catch { return null }
   }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.pob])

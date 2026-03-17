@@ -496,8 +496,6 @@ function AllSystemsGrid({ fullProfile, client }) {
     { label: 'Vedic Nakshatra', icon: '🌙', color: 'rgba(64,204,221,', primary: '—', secondary: 'Moon nakshatra' },
     { label: 'Kabbalah', icon: '✡', color: 'rgba(201,168,76,', primary: '—', secondary: 'Tree of Life' },
     { label: 'Chinese BaZi', icon: '☯', color: 'rgba(212,48,112,', primary: '—', secondary: 'Four pillars' },
-    { label: 'Tarot Birth Card', icon: '🃏', color: 'rgba(144,80,224,', primary: '—', secondary: 'Major arcana' },
-    { label: 'Celtic Tree', icon: '🌿', color: 'rgba(96,176,48,', primary: '—', secondary: 'Celtic calendar' },
     { label: 'Egyptian Sign', icon: '𓂀', color: 'rgba(240,160,60,', primary: '—', secondary: 'Egyptian astrology' },
   ]
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { getVedicChart, VEDIC_SIGNS } from '../../engines/vedicEngine'
 import { resolvePob } from '../../utils/profileUtils'
 
@@ -75,7 +75,7 @@ export default function VedicChart() {
   const animRef = useRef(null)
   const chartRef = useRef(null)
 
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
   const chart = useMemo(() => computeChart(profile),
     [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.pob])
 

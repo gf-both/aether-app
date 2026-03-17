@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 // Note: setActiveDetail / setActiveNav used for paywall navigation
 
 /* ── Canned AI responses based on profile data ── */
@@ -21,7 +21,7 @@ const CANNED_RESPONSES = [
  * Anthropic Messages API to keep the API key secure.
  *
  * @param {Array} messages - Chat message history [{role, content}]
- * @param {Object} profileContext - User profile data from useAboveInsideStore
+ * @param {Object} profileContext - User profile data from useGolemStore
  * @returns {Promise<string>} AI response text
  */
 async function sendToClaudeAPI(messages, profileContext) {
@@ -201,12 +201,12 @@ const styles = {
 }
 
 export default function AIChatPanel({ open, onClose }) {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
+  const primaryProfile = useGolemStore((s) => s.primaryProfile)
+  const activeViewProfile = useGolemStore((s) => s.activeViewProfile)
   const profile = activeViewProfile || primaryProfile
-  const userPlan = useAboveInsideStore((s) => s.userPlan)
-  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
-  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const userPlan = useGolemStore((s) => s.userPlan)
+  const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
+  const setActiveNav = useGolemStore((s) => s.setActiveNav)
 
   const [messages, setMessages] = useState(() => [buildWelcomeMessage(profile)])
   const [input, setInput] = useState('')

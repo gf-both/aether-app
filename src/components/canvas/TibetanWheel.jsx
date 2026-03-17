@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { getTibetanProfile, TIBETAN_ELEMENT_NAMES_TIB } from '../../engines/tibetanEngine'
 
 const ANIMALS = ['Horse','Sheep','Monkey','Bird','Dog','Pig','Mouse','Ox','Tiger','Rabbit','Dragon','Snake']
@@ -18,7 +18,7 @@ const MEWA_COLORS = {
 export default function TibetanWheel() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
-  const profile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore((s) => s.activeViewProfile || s.primaryProfile)
 
   const tib = useMemo(() => {
     if (!profile?.dob) return null

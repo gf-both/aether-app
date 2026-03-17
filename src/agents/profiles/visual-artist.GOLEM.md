@@ -18,7 +18,6 @@
 | ∞ Life Path | 6 |
 | ⬡ Gene Keys | Gate 15 — Dullness → Magnetism (Florescence) |
 | 🌀 Mayan | Ix 6 (Jaguar, Rhythmic) |
-| 🌿 Celtic | Willow — Lunar mystery |
 
 ## Personality
 

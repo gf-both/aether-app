@@ -18,7 +18,6 @@
 | ∞ Life Path | 4 |
 | ⬡ Gene Keys | Gate 18 — Judgment → Integrity (Perfection) |
 | 🌀 Mayan | Etznab 7 (Mirror, Resonant) |
-| 🌿 Celtic | Hazel — Discernment |
 
 ## Personality
 

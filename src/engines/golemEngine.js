@@ -11,7 +11,6 @@ import { getNatalChart } from './natalEngine.js'
 import { getMayanProfile } from './mayanEngine.js'
 import { getNumerologyProfile } from './numerologyEngine.js'
 import { getGeneKeysProfile } from './geneKeysEngine.js'
-import { getCelticTreeProfile } from './celticTreeEngine.js'
 import { getTibetanProfile } from './tibetanEngine.js'
 import { getChineseProfile } from './chineseEngine.js'
 import { getEgyptianSign } from './egyptianEngine.js'
@@ -151,8 +150,6 @@ export function generateGolemProfile({
 
   const geneKeys = getGeneKeysProfile({ day, month, year, hour, minute, lat, lon, timezone })
 
-  const celtic = getCelticTreeProfile({ day, month, year })
-
   const tibetan = getTibetanProfile({ day, month, year })
 
   const chinese = getChineseProfile({ day, month, year, hour, minute })
@@ -221,7 +218,6 @@ export function generateGolemProfile({
       expression: numerology.core.expression.val,
       soulUrge: numerology.core.soulUrge.val,
     },
-    celticTree: `${celtic.birthTree.name} — ${celtic.birthTree.meaning}`,
     tibetan: tibetan.fullLabel,
     chinese: `${chinese.yearPillar?.animal || chinese.animal || ''} ${chinese.yearPillar?.element || chinese.element || ''}`.trim(),
     egyptian: egyptian.name,
@@ -288,7 +284,6 @@ export function generateGolemMd(profile) {
 ## Other Systems
 - 🌀 **Mayan:** ${p.mayan.daySign} Tone ${p.mayan.tone} / Kin ${p.mayan.kin} — *${p.mayan.meaning}*
 - ∞ **Numerology:** Life Path ${p.numerology.lifePath} | Expression ${p.numerology.expression} | Soul Urge ${p.numerology.soulUrge}
-- 🌿 **Celtic Tree:** ${p.celticTree}
 - 🐑 **Tibetan:** ${p.tibetan}
 - 🐉 **Chinese:** ${p.chinese}
 - ☥ **Egyptian:** ${p.egyptian}

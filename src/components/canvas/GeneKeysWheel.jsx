@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { SPHERES, computeGeneKeysData } from '../../data/geneKeysData'
 
 // GeneKeysWheel uses SPHERES derived from the engine (via geneKeysData.js).
@@ -10,7 +10,7 @@ import { SPHERES, computeGeneKeysData } from '../../data/geneKeysData'
 export default function GeneKeysWheel({ spheres: spheresProp }) {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
-  const profile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore((s) => s.activeViewProfile || s.primaryProfile)
 
   const computedSpheres = useMemo(() => {
     if (spheresProp) return spheresProp

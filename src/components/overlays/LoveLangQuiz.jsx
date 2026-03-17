@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { LOVE_LANG_QUESTIONS, LOVE_LANGUAGES, getLoveLanguageProfile } from '../../engines/loveLangEngine'
 
 const LANG_COLORS = {
@@ -69,7 +69,7 @@ const S = {
 }
 
 export default function LoveLangQuiz({ onClose }) {
-  const setLoveLanguage = useAboveInsideStore(s => s.setLoveLanguage)
+  const setLoveLanguage = useGolemStore(s => s.setLoveLanguage)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState([])
   const [result, setResult] = useState(null)

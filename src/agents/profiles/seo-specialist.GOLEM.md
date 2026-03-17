@@ -18,7 +18,6 @@
 | ∞ Life Path | 6 |
 | ⬡ Gene Keys | Gate 15 — Dullness → Magnetism (Florescence) |
 | 🌀 Mayan | Muluc 2 (Moon, Lunar) |
-| 🌿 Celtic | Willow — Community healing |
 
 ## Personality
 

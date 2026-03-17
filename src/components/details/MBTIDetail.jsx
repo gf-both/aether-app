@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { MBTI_TYPES, MBTI_FUNCTIONS, MBTI_QUIZ_QUESTIONS } from '../../data/mbtiData'
 import MBTIQuizOverlay from '../overlays/MBTIQuiz'
@@ -432,7 +432,7 @@ function MBTIResults({ typeCode, onRetake }) {
 /* ============ MAIN DETAIL COMPONENT ============ */
 export default function MBTIDetail() {
   const primaryProfile = useActiveProfile()
-  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
+  const setPrimaryProfile = useGolemStore((s) => s.setPrimaryProfile)
   const storeType = primaryProfile?.mbtiType || null
   const [quizType, setQuizType] = useState(null)
   const [showQuiz, setShowQuiz] = useState(true)

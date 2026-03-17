@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 
 function renderBoldMarkdown(text) {
   const parts = text.split(/(\*\*.*?\*\*)/g)
@@ -158,7 +158,7 @@ const DEMO_SESSIONS = [
 ]
 
 export default function PatternMiner({ clientId, _clientProfile = {} }) {
-  const { sessionHistory } = useAboveInsideStore()
+  const { sessionHistory } = useGolemStore()
   const sessions = (sessionHistory?.[clientId] || []).length > 0
     ? sessionHistory[clientId]
     : DEMO_SESSIONS

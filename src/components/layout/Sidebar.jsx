@@ -1,4 +1,4 @@
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 
 // Section-grouped nav structure
 const NAV_SECTIONS = [
@@ -64,13 +64,13 @@ const NAV_SECTIONS = [
 ]
 
 export default function Sidebar() {
-  const activeNav = useAboveInsideStore((s) => s.activeNav)
-  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
-  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
-  const activeDetail = useAboveInsideStore((s) => s.activeDetail)
-  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
-  const sidebarCollapsed = useAboveInsideStore((s) => s.sidebarCollapsed)
-  const setSidebarCollapsed = useAboveInsideStore((s) => s.setSidebarCollapsed)
+  const activeNav = useGolemStore((s) => s.activeNav)
+  const setActiveNav = useGolemStore((s) => s.setActiveNav)
+  const setActivePanel = useGolemStore((s) => s.setActivePanel)
+  const activeDetail = useGolemStore((s) => s.activeDetail)
+  const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
+  const sidebarCollapsed = useGolemStore((s) => s.sidebarCollapsed)
+  const setSidebarCollapsed = useGolemStore((s) => s.setSidebarCollapsed)
 
   function handleClick(item) {
     if (item.id === 'dashboard') {

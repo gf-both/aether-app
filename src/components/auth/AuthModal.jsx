@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { signIn, signUp, signInWithGoogle } from '../../lib/auth'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 
 export default function AuthModal({ open, onClose }) {
   const [tab, setTab] = useState('signin')
@@ -11,7 +11,7 @@ export default function AuthModal({ open, onClose }) {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
 
-  const setUser = useAboveInsideStore((s) => s.setUser)
+  const setUser = useGolemStore((s) => s.setUser)
 
   if (!open) return null
 

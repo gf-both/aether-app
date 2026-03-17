@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from 'react'
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 
 const ADMIN_EMAIL = 'gf@both.ventures'
 
@@ -63,18 +63,12 @@ function ArchitectureDiagram() {
       { name: 'Transits',   col: GOLD,   x: 0.18 },
       { name: 'Vedic',      col: GOLD,   x: 0.28 },
       { name: 'Synastry',   col: GOLD,   x: 0.38 },
-      { name: 'Arabic',     col: GOLD,   x: 0.48 },
-      { name: 'Sabian',     col: GOLD,   x: 0.58 },
-      { name: 'Fixed★',    col: GOLD,   x: 0.68 },
-      { name: 'Biorhythm',  col: GOLD,   x: 0.80 },
       // Row 2: Symbolic
       { name: 'Numerology', col: AQUA,   x: 0.08 },
       { name: 'Gematria',   col: AQUA,   x: 0.20 },
       { name: 'Mayan',      col: AQUA,   x: 0.31 },
       { name: 'Chinese',    col: AQUA,   x: 0.42 },
       { name: 'Egyptian',   col: AQUA,   x: 0.53 },
-      { name: 'Tarot',      col: AQUA,   x: 0.63 },
-      { name: 'Celtic',     col: AQUA,   x: 0.72 },
       { name: 'Tibetan',    col: AQUA,   x: 0.82 },
       // Row 3: Energy + Pattern
       { name: 'HD',         col: VIOLET, x: 0.08 },
@@ -157,16 +151,10 @@ const ENGINES = [
   { name: 'egyptianEngine',        status: '✅', input: 'month/day',                                 output: 'Egyptian sign + deity',                                               notes: 'Date-range lookup' },
   { name: 'gematriaEngine',        status: '✅', input: 'fullName/day/month/year',                   output: 'Hebrew/Pythagorean/Chaldean/Ordinal totals, letter breakdown',          notes: '' },
   { name: 'synastryEngine',        status: '✅', input: 'two profiles',                              output: 'cross aspects, composite, compatibility %',                            notes: '' },
-  { name: 'sabianEngine',          status: '✅', input: 'natal chart',                               output: '360 Sabian Symbols per degree',                                        notes: '' },
-  { name: 'arabicPartsEngine',     status: '✅', input: 'natal chart',                               output: '10 Lots (Fortune, Spirit, Love...)',                                   notes: '' },
   { name: 'vedicEngine',           status: '✅', input: 'day/month/year/hour/minute/lat/lon/tz',     output: 'Lahiri ayanamsa, nakshatras, Vimshottari Dasha',                       notes: '' },
   { name: 'patternEngine',         status: '✅', input: 'full profile',                              output: 'cross-framework alignments, patterns',                                 notes: '' },
   { name: 'compatibilityEngine',   status: '✅', input: 'two profiles',                              output: 'score 0-100, breakdown, match story',                                  notes: '6 dimensions, weighted' },
-  { name: 'biorhythmEngine',       status: '✅', input: 'dob/date',                                  output: 'physical/emotional/intellectual cycles',                               notes: '23/28/33 day cycles' },
-  { name: 'tarotEngine',           status: '✅', input: 'dob',                                       output: 'Major Arcana birth cards',                                             notes: '' },
-  { name: 'celticTreeEngine',      status: '✅', input: 'month/day',                                 output: 'Ogham tree sign',                                                      notes: '13 months' },
   { name: 'tibetanEngine',         status: '⚠️', input: 'dob',                                       output: 'Losar calendar, mewa square',                                          notes: 'Basic implementation' },
-  { name: 'fixedStarsEngine',      status: '✅', input: 'natal chart',                               output: '20 major star conjunctions',                                           notes: '1.5° orb' },
   { name: 'golemEngine',          status: '✅', input: 'creation timestamp + location',             output: 'Full GOLEM profile for AI agents',                                    notes: 'GOLEM identity system' },
   { name: 'careerAlignmentEngine', status: '✅', input: 'profile',                                   output: 'role recommendations by HD+LP',                                        notes: '' },
 ]
@@ -395,7 +383,7 @@ const s = {
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState('architecture')
-  const userEmail = useAboveInsideStore((s) => s.user?.email || '')
+  const userEmail = useGolemStore((s) => s.user?.email || '')
 
   if (userEmail && userEmail.toLowerCase() !== ADMIN_EMAIL) {
     return (

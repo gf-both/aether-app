@@ -2,7 +2,7 @@
  * ThemePicker — full-modal theme selection with 5 theme families (10 variants).
  * Can be used anywhere: pass `onClose` to dismiss.
  */
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 
 export const THEMES = [
   {
@@ -48,9 +48,9 @@ export const THEMES = [
 ]
 
 export default function ThemePicker({ onClose }) {
-  const themeStyle = useAboveInsideStore((s) => s.themeStyle)
-  const themeMode = useAboveInsideStore((s) => s.themeMode)
-  const setTheme = useAboveInsideStore((s) => s.setTheme)
+  const themeStyle = useGolemStore((s) => s.themeStyle)
+  const themeMode = useGolemStore((s) => s.themeMode)
+  const setTheme = useGolemStore((s) => s.setTheme)
 
   function pick(style, mode) {
     setTheme(style, mode)

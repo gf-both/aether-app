@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { computeHDChart } from '../../engines/hdEngine'
 import { CENTERS, GATES } from '../../data/hdData'
 
@@ -69,7 +69,7 @@ function isChannelDefined(activeChs, c1, c2) {
 export default function HumanDesign() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
 
   // Compute HD chart from stored birth data
   const chart = useMemo(() => {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 import { callAI } from '../lib/ai'
 import { getNatalChart } from '../engines/natalEngine'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
@@ -91,9 +91,9 @@ function buildAntagonistProfile(p) {
 }
 
 export default function GolemPage() {
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
-  const setPrimaryProfile = useAboveInsideStore(s => s.setPrimaryProfile)
-  const people = useAboveInsideStore(s => s.people)
+  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
+  const setPrimaryProfile = useGolemStore(s => s.setPrimaryProfile)
+  const people = useGolemStore(s => s.people)
 
   // Custom golems
   const [customGolems, setCustomGolems] = useState([])

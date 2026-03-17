@@ -95,7 +95,7 @@ const ARCHETYPE_DESCS = {
   11: 'The Illuminator — channels insight others cannot access',
 }
 
-function buildAETHERPrompt(agent) {
+function buildGolemPrompt(agent) {
   const archDesc = ARCHETYPE_DESCS[agent.expression] || 'Unknown archetype'
   return `You are the ${agent.role} at GOLEM.
 
@@ -154,7 +154,7 @@ async function runRealBenchmark(agent, prompt) {
   // Run both configs in parallel
   const [responseA, responseB] = await Promise.all([
     callAI({
-      systemPrompt: buildAETHERPrompt(agent),
+      systemPrompt: buildGolemPrompt(agent),
       messages: [{ role: 'user', content: prompt }],
       maxTokens: 300,
     }),

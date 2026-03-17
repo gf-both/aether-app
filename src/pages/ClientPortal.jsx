@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 
 /* ── Mock Data ── */
 const MOCK_SESSION_HISTORY = [
@@ -124,7 +124,7 @@ function formatDate(dateStr) {
 
 /* ── Main Component ── */
 export default function ClientPortal() {
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
+  const profile = useGolemStore((s) => s.primaryProfile)
   const [todos, setTodos] = useState(MOCK_TODOS)
   const [msgInput, setMsgInput] = useState('')
   const [messages, setMessages] = useState(MOCK_MESSAGES)

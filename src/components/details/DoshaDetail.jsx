@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { DOSHA_DATA, DOSHA_QUESTIONS, getDoshaProfile } from '../../engines/doshaEngine'
 import DoshaSymbol from '../canvas/DoshaSymbol'
 
@@ -77,7 +77,7 @@ const DIETARY_RECS = {
 
 /* ---- Quiz sub-component ---- */
 function DoshaQuiz() {
-  const setDoshaType = useAboveInsideStore(s => s.setDoshaType)
+  const setDoshaType = useGolemStore(s => s.setDoshaType)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState([])
   const [result, setResult] = useState(null)
@@ -257,7 +257,7 @@ function DoshaCard({ doshaKey, isPrimary, isSecondary }) {
 
 /* ---- Main Detail Component ---- */
 export default function DoshaDetail() {
-  const doshaType = useAboveInsideStore(s => s.doshaType)
+  const doshaType = useGolemStore(s => s.doshaType)
   const [showQuiz, setShowQuiz] = useState(false)
 
   // Parse dosha type

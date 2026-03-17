@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { getArchetypeQuestions, getArchetypeProfile, ARCHETYPES } from '../../engines/archetypeEngine'
 
 const QUESTIONS = getArchetypeQuestions()
@@ -63,7 +63,7 @@ const S = {
 }
 
 export default function ArchetypeQuiz({ onClose }) {
-  const setArchetypeType = useAboveInsideStore(s => s.setArchetypeType)
+  const setArchetypeType = useGolemStore(s => s.setArchetypeType)
   const [step, setStep] = useState(0)
   const [selections, setSelections] = useState([])
   const [selected, setSelected] = useState(null)

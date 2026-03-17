@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { ENNEAGRAM_TYPES, ENNEAGRAM_PROFILE, ENNEAGRAM_QUIZ, INSTINCTUAL_VARIANTS, TRIAD_COLORS } from '../../data/enneagramData'
 import EnneagramSymbol from '../canvas/EnneagramSymbol'
@@ -58,7 +58,7 @@ const S = {
 }
 
 function EnneagramQuiz() {
-  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
+  const setPrimaryProfile = useGolemStore((s) => s.setPrimaryProfile)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState({})
   const [result, setResult] = useState(null)
@@ -193,7 +193,7 @@ export default function EnneagramDetail() {
   const activeProfile = useActiveProfile()
   const storeType = activeProfile?.enneagramType || null
   const storeWing = activeProfile?.enneagramWing || null
-  const globalInstinct = useAboveInsideStore((s) => s.enneagramInstinct)
+  const globalInstinct = useGolemStore((s) => s.enneagramInstinct)
   const storeInstinct = activeProfile?.enneagramInstinct || globalInstinct
   const useStaticInstinct = !storeInstinct
   const [showQuizOverlay, setShowQuizOverlay] = useState(false)

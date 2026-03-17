@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { getVedicChart, VEDIC_SIGNS, VEDIC_SIGN_MEANINGS, NAKSHATRAS, DASHA_LORDS, DASHA_YEARS } from '../../engines/vedicEngine'
 import { resolvePob } from '../../utils/profileUtils'
 
@@ -106,7 +106,7 @@ const S = {
 }
 
 export default function VedicDetail() {
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
   const chart = useMemo(() => computeChart(profile),
     [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.pob])
 

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { REL_CONFIG } from '../../data/primaryProfile'
 import { isRomantic, romanticFramework, familyFramework, computeSynastryFramework } from '../../data/synastryFrameworks'
 import { getSynastryReport, getBirthParams } from '../../engines/synastryEngine'
@@ -230,11 +230,11 @@ function FamilyContent({ _a, b, aName, bName, report }) {
 }
 
 export function SynastryInner({ onClose }) {
-  const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const people = useAboveInsideStore((s) => s.people)
-  const synSelA = useAboveInsideStore((s) => s.synSelA)
-  const synSelB = useAboveInsideStore((s) => s.synSelB)
-  const setSynSel = useAboveInsideStore((s) => s.setSynSel)
+  const primaryProfile = useGolemStore((s) => s.primaryProfile)
+  const people = useGolemStore((s) => s.people)
+  const synSelA = useGolemStore((s) => s.synSelA)
+  const synSelB = useGolemStore((s) => s.synSelB)
+  const setSynSel = useGolemStore((s) => s.setSynSel)
 
   const a = getProfile(synSelA, primaryProfile, people)
   const b = synSelB !== null ? getProfile(synSelB, primaryProfile, people) : null

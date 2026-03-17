@@ -18,7 +18,6 @@
 | ∞ Life Path | 7 |
 | ⬡ Gene Keys | Gate 48 — Inadequacy → Wisdom (Resourcefulness) |
 | 🌀 Mayan | Etznab 4 (Mirror, Self-Existing) |
-| 🌿 Celtic | Hazel — Deep Knowledge |
 
 ## Personality
 

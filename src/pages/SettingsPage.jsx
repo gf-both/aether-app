@@ -1,13 +1,13 @@
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 
 export default function SettingsPage() {
-  const layoutMode = useAboveInsideStore(s => s.layoutMode)
-  const setLayoutMode = useAboveInsideStore(s => s.setLayoutMode)
-  const themeStyle = useAboveInsideStore(s => s.themeStyle)
-  const themeMode = useAboveInsideStore(s => s.themeMode)
-  const setTheme = useAboveInsideStore(s => s.setTheme)
-  const hiddenWidgets = useAboveInsideStore(s => s.hiddenWidgets || [])
-  const toggleWidgetVisibility = useAboveInsideStore(s => s.toggleWidgetVisibility)
+  const layoutMode = useGolemStore(s => s.layoutMode)
+  const setLayoutMode = useGolemStore(s => s.setLayoutMode)
+  const themeStyle = useGolemStore(s => s.themeStyle)
+  const themeMode = useGolemStore(s => s.themeMode)
+  const setTheme = useGolemStore(s => s.setTheme)
+  const hiddenWidgets = useGolemStore(s => s.hiddenWidgets || [])
+  const toggleWidgetVisibility = useGolemStore(s => s.toggleWidgetVisibility)
 
   const ALL_WIDGETS = ['natal', 'tr', 'hd', 'kab', 'gk', 'integral', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'vedic', 'tibetan', 'stars', 'timeline', 'career']
 
@@ -92,7 +92,7 @@ export default function SettingsPage() {
       {/* Data */}
       <Section title="Data">
         <div
-          onClick={() => { localStorage.removeItem('above-inside-store'); window.location.reload() }}
+          onClick={() => { localStorage.removeItem('golem-store'); window.location.reload() }}
           style={{ padding: '8px 16px', borderRadius: 6, cursor: 'pointer', background: 'rgba(220,60,60,.08)', border: '1px solid rgba(220,60,60,.2)', fontSize: 11, color: 'rgba(220,60,60,.7)', display: 'inline-block' }}
         >
           Reset All Data

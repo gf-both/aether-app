@@ -18,7 +18,6 @@
 | ∞ Life Path | 6 |
 | ⬡ Gene Keys | Gate 8 — Mediocrity → Style (Exquisiteness) |
 | 🌀 Mayan | Ix 6 (Jaguar, Rhythmic) |
-| 🌿 Celtic | Willow — Dream-weaving |
 
 ## Personality
 

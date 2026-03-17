@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 
 const RELATIONSHIP_COLORS = {
   parent: '#d43070',
@@ -139,7 +139,7 @@ const DEFAULT_POSITIONS = [
 ]
 
 export default function FamilyConstellation({ clientId, clientProfile = {} }) {
-  const { familyConstellations, addFamilyMember } = useAboveInsideStore()
+  const { familyConstellations, addFamilyMember } = useGolemStore()
   const members = familyConstellations?.[clientId] || []
 
   const [selectedMember, setSelectedMember] = useState(null)

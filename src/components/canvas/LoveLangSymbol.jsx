@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { LOVE_LANGUAGES } from '../../engines/loveLangEngine'
 
 const COLORS = {
@@ -15,7 +15,7 @@ export default function LoveLangSymbol() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const hovRef = useRef(-1)
-  const loveLanguage = useAboveInsideStore((s) => s.loveLanguage)
+  const loveLanguage = useGolemStore((s) => s.loveLanguage)
 
   useCanvasResize(canvasRef)
 

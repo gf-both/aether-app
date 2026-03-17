@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, useMemo, lazy, Suspense } from 'react'
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 import { useActiveProfile } from '../hooks/useActiveProfile'
 import { DEFAULT_PRIMARY_PROFILE } from '../data/primaryProfile'
 import Sidebar from '../components/layout/Sidebar'
 import TopBar from '../components/layout/TopBar'
 import StatusBar from '../components/layout/StatusBar'
-import Starfield from '../components/Starfield'
+import Starfield from '../components/ui/Starfield'
 import NatalWheel from '../components/canvas/NatalWheel'
 import HumanDesign from '../components/canvas/HumanDesign'
 import KabbalahTree from '../components/canvas/KabbalahTree'
@@ -56,12 +56,12 @@ const AIAgentsPage = lazy(() => import('./AIAgentsPage'))
 const IdentityAgent = lazy(() => import('./IdentityAgent'))
 const RelationshipAgent = lazy(() => import('./RelationshipAgent'))
 const LifeDirectionAgent = lazy(() => import('./LifeDirectionAgent'))
-import CompanyPage from './CompanyPage'
+const CompanyPage = lazy(() => import('./CompanyPage'))
 const GolemPage = lazy(() => import('./GolemPage'))
 const WendyPage = lazy(() => import('./WendyPage'))
 const DatingPage = lazy(() => import('./DatingPage'))
 const GolemSimulation = lazy(() => import('./GolemSimulation'))
-import SettingsPage from './SettingsPage'
+const SettingsPage = lazy(() => import('./SettingsPage'))
 const AdminPanel = lazy(() => import('./AdminPanel'))
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
@@ -401,9 +401,9 @@ function NatalWidget() {
 function WidgetContent({ widgetId }) {
   const profile = useActiveProfile()
   // quiz-based types: prefer per-profile values, fall back to global store
-  const globalDoshaType = useAboveInsideStore((s) => s.doshaType)
-  const globalArchetypeType = useAboveInsideStore((s) => s.archetypeType)
-  const globalLoveLanguage = useAboveInsideStore((s) => s.loveLanguage)
+  const globalDoshaType = useGolemStore((s) => s.doshaType)
+  const globalArchetypeType = useGolemStore((s) => s.archetypeType)
+  const globalLoveLanguage = useGolemStore((s) => s.loveLanguage)
   const doshaType = profile?.doshaType ?? globalDoshaType
   const archetypeType = profile?.archetypeType ?? globalArchetypeType
   const loveLanguage = profile?.loveLanguage ?? globalLoveLanguage
@@ -773,8 +773,8 @@ function CategoryBadge({ widgetId }) {
 /* ── Demo Mode Banner ── */
 function DemoBanner() {
   const profile = useActiveProfile()
-  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
-  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
+  const setActiveNav = useGolemStore((s) => s.setActiveNav)
   const [dismissed, setDismissed] = useState(false)
 
   const isDemo = profile.name === DEFAULT_PRIMARY_PROFILE.name &&
@@ -819,12 +819,12 @@ function DemoBanner() {
 const ALL_WIDGET_IDS = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'dosha', 'archetype', 'lovelang', 'timeline', 'career']
 
 function WidgetManagerBar() {
-  const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
-  const hiddenWidgets = useAboveInsideStore((s) => s.hiddenWidgets)
-  const toggleWidgetVisibility = useAboveInsideStore((s) => s.toggleWidgetVisibility)
-  const setHiddenWidgets = useAboveInsideStore((s) => s.setHiddenWidgets)
-  const setWidgetOrder = useAboveInsideStore((s) => s.setWidgetOrder)
-  const showWidgetManager = useAboveInsideStore((s) => s.showWidgetManager)
+  const widgetOrder = useGolemStore((s) => s.widgetOrder)
+  const hiddenWidgets = useGolemStore((s) => s.hiddenWidgets)
+  const toggleWidgetVisibility = useGolemStore((s) => s.toggleWidgetVisibility)
+  const setHiddenWidgets = useGolemStore((s) => s.setHiddenWidgets)
+  const setWidgetOrder = useGolemStore((s) => s.setWidgetOrder)
+  const showWidgetManager = useGolemStore((s) => s.showWidgetManager)
 
   if (!showWidgetManager) return null
 
@@ -1056,18 +1056,18 @@ function MobileBottomNav({ activeNav, setActiveNav, setActiveDetail, setOracleOp
 }
 
 export default function Dashboard() {
-  const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
-  const setWidgetOrder = useAboveInsideStore((s) => s.setWidgetOrder)
-  const hiddenWidgets = useAboveInsideStore((s) => s.hiddenWidgets)
-  const toggleWidgetVisibility = useAboveInsideStore((s) => s.toggleWidgetVisibility)
-  const activeDetail = useAboveInsideStore((s) => s.activeDetail)
-  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
-  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
-  const activeNav = useAboveInsideStore((s) => s.activeNav)
-  const setOracleOpen = useAboveInsideStore((s) => s.setOracleOpen)
-  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
-  const layoutMode = useAboveInsideStore((s) => s.layoutMode)
-  const sidebarCollapsed = useAboveInsideStore((s) => s.sidebarCollapsed)
+  const widgetOrder = useGolemStore((s) => s.widgetOrder)
+  const setWidgetOrder = useGolemStore((s) => s.setWidgetOrder)
+  const hiddenWidgets = useGolemStore((s) => s.hiddenWidgets)
+  const toggleWidgetVisibility = useGolemStore((s) => s.toggleWidgetVisibility)
+  const activeDetail = useGolemStore((s) => s.activeDetail)
+  const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
+  const setActiveNav = useGolemStore((s) => s.setActiveNav)
+  const activeNav = useGolemStore((s) => s.activeNav)
+  const setOracleOpen = useGolemStore((s) => s.setOracleOpen)
+  const setActivePanel = useGolemStore((s) => s.setActivePanel)
+  const layoutMode = useGolemStore((s) => s.layoutMode)
+  const sidebarCollapsed = useGolemStore((s) => s.sidebarCollapsed)
   const profile = useActiveProfile()
   const sbWidth = sidebarCollapsed ? '48px' : '200px'
 
@@ -1088,8 +1088,8 @@ export default function Dashboard() {
       const { dob, tob } = profile
       if (!dob) return null
       return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: -3 })
-    } catch {
-      console.error('HD chart error in Dashboard:', e)
+    } catch (err) {
+      console.error('HD chart error in Dashboard:', err)
       return null
     }
   }, [profile?.dob, profile?.tob])

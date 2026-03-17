@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { ARCHETYPES, getArchetypeQuestions, getArchetypeProfile } from '../../engines/archetypeEngine'
 import ArchetypeSymbol from '../canvas/ArchetypeSymbol'
 
@@ -167,7 +167,7 @@ function getQuadrant(archetypeName) {
 
 /* ── Mini Quiz ── */
 function ArchetypeQuiz() {
-  const setArchetypeType = useAboveInsideStore((s) => s.setArchetypeType)
+  const setArchetypeType = useGolemStore((s) => s.setArchetypeType)
   const questions = getArchetypeQuestions()
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState([])
@@ -285,8 +285,8 @@ function ArchetypeQuiz() {
 }
 
 export default function ArchetypeDetail() {
-  const archetypeType = useAboveInsideStore((s) => s.archetypeType)
-  const setArchetypeType = useAboveInsideStore((s) => s.setArchetypeType)
+  const archetypeType = useGolemStore((s) => s.archetypeType)
+  const setArchetypeType = useGolemStore((s) => s.setArchetypeType)
   const [showQuiz, setShowQuiz] = useState(false)
 
   // No archetype type -- show empty state with quiz

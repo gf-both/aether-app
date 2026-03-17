@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { signOut } from '../../lib/auth'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { useClock } from '../../hooks/useClock'
 
 const NAV_SECTIONS = [
@@ -44,10 +44,10 @@ const NAV_SECTIONS = [
 function HamburgerMenu() {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
-  const activeDetail = useAboveInsideStore((s) => s.activeDetail)
-  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
-  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
-  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
+  const activeDetail = useGolemStore((s) => s.activeDetail)
+  const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
+  const setActiveNav = useGolemStore((s) => s.setActiveNav)
+  const setActivePanel = useGolemStore((s) => s.setActivePanel)
 
   useEffect(() => {
     if (!open) return
@@ -152,12 +152,12 @@ function formatDOB(dob) {
 }
 
 function ProfileSwitcher() {
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
-  const people = useAboveInsideStore((s) => s.people)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const setActiveViewProfile = useAboveInsideStore((s) => s.setActiveViewProfile)
-  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
-  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const profile = useGolemStore((s) => s.primaryProfile)
+  const people = useGolemStore((s) => s.people)
+  const activeViewProfile = useGolemStore((s) => s.activeViewProfile)
+  const setActiveViewProfile = useGolemStore((s) => s.setActiveViewProfile)
+  const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
+  const setActiveNav = useGolemStore((s) => s.setActiveNav)
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -302,14 +302,14 @@ function ProfileSwitcher() {
 }
 
 function ControlCenter() {
-  const layoutMode = useAboveInsideStore((s) => s.layoutMode)
-  const setLayoutMode = useAboveInsideStore((s) => s.setLayoutMode)
-  const theme = useAboveInsideStore((s) => s.theme)
-  const themeStyle = useAboveInsideStore((s) => s.themeStyle)
-  const themeMode = useAboveInsideStore((s) => s.themeMode)
-  const setTheme = useAboveInsideStore((s) => s.setTheme)
-  const showWidgetManager = useAboveInsideStore((s) => s.showWidgetManager)
-  const setShowWidgetManager = useAboveInsideStore((s) => s.setShowWidgetManager)
+  const layoutMode = useGolemStore((s) => s.layoutMode)
+  const setLayoutMode = useGolemStore((s) => s.setLayoutMode)
+  const theme = useGolemStore((s) => s.theme)
+  const themeStyle = useGolemStore((s) => s.themeStyle)
+  const themeMode = useGolemStore((s) => s.themeMode)
+  const setTheme = useGolemStore((s) => s.setTheme)
+  const showWidgetManager = useGolemStore((s) => s.showWidgetManager)
+  const setShowWidgetManager = useGolemStore((s) => s.setShowWidgetManager)
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
 
@@ -444,9 +444,9 @@ function ControlCenter() {
 }
 
 function SignInButton() {
-  const user = useAboveInsideStore((s) => s.user)
-  const setShowAuthModal = useAboveInsideStore((s) => s.setShowAuthModal)
-  const setUser = useAboveInsideStore((s) => s.setUser)
+  const user = useGolemStore((s) => s.user)
+  const setShowAuthModal = useGolemStore((s) => s.setShowAuthModal)
+  const setUser = useGolemStore((s) => s.setUser)
   const [menuOpen, setMenuOpen] = useState(false)
   const ref = useRef(null)
 
@@ -532,10 +532,10 @@ function SignInButton() {
 }
 
 export default function TopBar() {
-  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
-  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
-  const oracleOpen = useAboveInsideStore((s) => s.oracleOpen)
-  const setOracleOpen = useAboveInsideStore((s) => s.setOracleOpen)
+  const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
+  const setActiveNav = useGolemStore((s) => s.setActiveNav)
+  const oracleOpen = useGolemStore((s) => s.oracleOpen)
+  const setOracleOpen = useGolemStore((s) => s.setOracleOpen)
   const time = useClock()
 
   return (

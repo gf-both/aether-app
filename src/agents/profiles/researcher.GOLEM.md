@@ -18,7 +18,6 @@
 | ∞ Life Path | 7 |
 | ⬡ Gene Keys | Gate 48 — Inadequacy → Wisdom (Resourcefulness) |
 | 🌀 Mayan | Caban 7 (Earth, Resonant) |
-| 🌿 Celtic | Hazel — Wisdom |
 
 ## Personality
 

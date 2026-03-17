@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
 
@@ -18,7 +18,7 @@ const COLORS = [
 
 export default function NumerologyBars() {
   const canvasRef = useRef(null)
-  const profile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore((s) => s.activeViewProfile || s.primaryProfile)
 
   const { nums, labs } = useMemo(() => {
     try {

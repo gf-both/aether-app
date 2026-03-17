@@ -1,4 +1,4 @@
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 import { createCheckoutSession, createPortalSession, PLANS } from '../services/stripe'
 
 function handleSubscribe(planId) {
@@ -296,7 +296,7 @@ const S = {
 }
 
 export default function PricingPage() {
-  const subscription = useAboveInsideStore((s) => s.subscription)
+  const subscription = useGolemStore((s) => s.subscription)
 
   return (
     <div style={S.panel}>

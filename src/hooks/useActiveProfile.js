@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 import { getNatalChart } from '../engines/natalEngine'
 
 /**
@@ -9,7 +9,7 @@ import { getNatalChart } from '../engines/natalEngine'
  * Use this hook in ALL components instead of reading store directly.
  */
 export function useActiveProfile() {
-  return useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  return useGolemStore(s => s.activeViewProfile || s.primaryProfile)
 }
 
 /**
@@ -17,7 +17,7 @@ export function useActiveProfile() {
  * Use for: Synastry (you are always one side), quiz results that belong to you.
  */
 export function usePrimaryProfile() {
-  return useAboveInsideStore(s => s.primaryProfile)
+  return useGolemStore(s => s.primaryProfile)
 }
 
 /**

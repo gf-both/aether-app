@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useActiveProfile } from '../hooks/useActiveProfile'
-import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { useGolemStore } from '../store/useGolemStore'
 import { runCompatibilitySimulation } from '../lib/golemConversation'
 
 const SCENARIOS = [
@@ -12,7 +12,7 @@ const SCENARIOS = [
 
 export default function GolemSimulation() {
   const profile = useActiveProfile()
-  const people = useAboveInsideStore(s => s.people)
+  const people = useGolemStore(s => s.people)
   const [selectedId, setSelectedId] = useState(null)
   const [relType, setRelType] = useState('romantic')
   const [result, setResult] = useState(null)

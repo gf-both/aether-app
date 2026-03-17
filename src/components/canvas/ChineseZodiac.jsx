@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { CHINESE_ANIMALS, FIVE_ELEMENTS } from '../../data/chineseData'
 import { getChineseProfileFromDob } from '../../engines/chineseEngine'
 
@@ -8,7 +8,7 @@ export default function ChineseZodiac() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const hovRef = useRef(-1)
-  const profile = useAboveInsideStore((s) => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore((s) => s.activeViewProfile || s.primaryProfile)
 
   const CHINESE_PROFILE = useMemo(() => {
     try {

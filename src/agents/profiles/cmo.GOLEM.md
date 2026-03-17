@@ -18,7 +18,6 @@
 | ∞ Life Path | 3 |
 | ⬡ Gene Keys | Gate 41 — Fantasy → Anticipation (Emanation) |
 | 🌀 Mayan | Ik 3 (Wind, Electric) |
-| 🌿 Celtic | Reed — The hollow channel for divine song |
 
 ## Personality
 

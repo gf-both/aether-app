@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { DOSHA_QUESTIONS, getDoshaProfile } from '../../engines/doshaEngine'
 
 const S = {
@@ -79,7 +79,7 @@ const DOSHA_COLORS = {
 }
 
 export default function DoshaQuiz({ onClose }) {
-  const setDoshaType = useAboveInsideStore(s => s.setDoshaType)
+  const setDoshaType = useGolemStore(s => s.setDoshaType)
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState([])
   const [selected, setSelected] = useState(null)

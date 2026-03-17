@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 
 function formatDuration(startTime, endTime) {
   const ms = (endTime || Date.now()) - startTime
@@ -17,7 +17,7 @@ function formatDate(timestamp) {
 }
 
 export default function SessionSummary({ session, clientProfile = {}, practitionerName = 'Your Practitioner' }) {
-  const { endSession: _endSession } = useAboveInsideStore()
+  const { endSession: _endSession } = useGolemStore()
   const [copied, setCopied] = useState(false)
   const [showScheduler, setShowScheduler] = useState(false)
 

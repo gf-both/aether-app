@@ -1,4 +1,4 @@
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import {
   CROSS_FRAMEWORK_ALIGNMENTS,
   PATTERN_CATEGORIES,
@@ -118,7 +118,7 @@ function StrengthMeter({ value, max = 10, color = '#c9a84c' }) {
 }
 
 export default function PatternsDetail() {
-  const { people } = useAboveInsideStore()
+  const { people } = useGolemStore()
 
   // Compute stats
   const totalAlignments = CROSS_FRAMEWORK_ALIGNMENTS.length

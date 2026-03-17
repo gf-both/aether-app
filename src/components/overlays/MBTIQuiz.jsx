@@ -4,7 +4,7 @@
  * Saves result to Zustand store via setMbtiType
  */
 import { useState } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 
 /* ── Data ────────────────────────────────────────────────── */
 const QUESTIONS = [
@@ -231,7 +231,7 @@ function QuizResult({ code, scores, onSave, onRetake, onClose }) {
 
 /* ── Main quiz component ─────────────────────────────────── */
 export default function MBTIQuiz({ onClose }) {
-  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
+  const setPrimaryProfile = useGolemStore((s) => s.setPrimaryProfile)
 
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState({})

@@ -18,7 +18,6 @@
 | ∞ Life Path | 22 |
 | ⬡ Gene Keys | Gate 1 — Fantasy → Emanation (Beauty) |
 | 🌀 Mayan | Ahau 13 (Sun, Cosmic Tone) |
-| 🌿 Celtic | Oak — Sovereignty |
 
 ## Personality
 

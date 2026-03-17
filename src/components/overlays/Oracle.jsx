@@ -3,7 +3,7 @@
  * Slides in from the right, works with all themes.
  */
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 
 function buildOracleResponses(profile) {
   const hdType = profile?.hdType || 'Projector'
@@ -38,10 +38,10 @@ function getQuickResponse(text, responses) {
 }
 
 export default function Oracle({ open, onClose }) {
-  const primaryProfile = useAboveInsideStore(s => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore(s => s.activeViewProfile)
+  const primaryProfile = useGolemStore(s => s.primaryProfile)
+  const activeViewProfile = useGolemStore(s => s.activeViewProfile)
   const profile = activeViewProfile || primaryProfile
-  const activeDetail = useAboveInsideStore(s => s.activeDetail)
+  const activeDetail = useGolemStore(s => s.activeDetail)
 
   const hdType = profile?.hdType || 'Projector'
   const hdProfile = profile?.hdProfile || ''

@@ -1,4 +1,4 @@
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { LOVE_LANGUAGES } from '../../engines/loveLangEngine'
 import LoveLangSymbol from '../canvas/LoveLangSymbol'
 
@@ -216,7 +216,7 @@ function hexToRgba(hex, alpha) {
 }
 
 export default function LoveLangDetail() {
-  const loveLanguage = useAboveInsideStore((s) => s.loveLanguage)
+  const loveLanguage = useGolemStore((s) => s.loveLanguage)
 
   const primary = loveLanguage
     ? LOVE_LANGUAGES.find(l => l.name === loveLanguage)

@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import { upsertBirthProfile } from '../../lib/db'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { REL_CONFIG } from '../../data/primaryProfile'
 import PlaceAutocomplete from '../ui/PlaceAutocomplete'
 
@@ -15,20 +15,20 @@ function formatDOB(dob) {
 }
 
 export default function ProfilePanel({ open, onClose, embedded }) {
-  const profile = useAboveInsideStore((s) => s.primaryProfile)
-  const setPrimaryProfile = useAboveInsideStore((s) => s.setPrimaryProfile)
-  const people = useAboveInsideStore((s) => s.people)
-  const addPerson = useAboveInsideStore((s) => s.addPerson)
-  const removePerson = useAboveInsideStore((s) => s.removePerson)
-  const _setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
-  const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
-  const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
+  const profile = useGolemStore((s) => s.primaryProfile)
+  const setPrimaryProfile = useGolemStore((s) => s.setPrimaryProfile)
+  const people = useGolemStore((s) => s.people)
+  const addPerson = useGolemStore((s) => s.addPerson)
+  const removePerson = useGolemStore((s) => s.removePerson)
+  const _setActivePanel = useGolemStore((s) => s.setActivePanel)
+  const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
+  const setActiveNav = useGolemStore((s) => s.setActiveNav)
 
-  const user = useAboveInsideStore((s) => s.user)
-  const loadProfilesFromDB = useAboveInsideStore((s) => s.loadProfilesFromDB)
-  const updatePerson = useAboveInsideStore((s) => s.updatePerson)
-  const enneagramInstinct = useAboveInsideStore((s) => s.enneagramInstinct)
-  const setEnneagramInstinct = useAboveInsideStore((s) => s.setEnneagramInstinct)
+  const user = useGolemStore((s) => s.user)
+  const loadProfilesFromDB = useGolemStore((s) => s.loadProfilesFromDB)
+  const updatePerson = useGolemStore((s) => s.updatePerson)
+  const enneagramInstinct = useGolemStore((s) => s.enneagramInstinct)
+  const setEnneagramInstinct = useGolemStore((s) => s.setEnneagramInstinct)
   // Read enneagram/mbti from primaryProfile (per-profile storage)
   const mbtiType = profile?.mbtiType || null
   const enneagramType = profile?.enneagramType || null
@@ -81,7 +81,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
 
   function _handleResetProfile() {
     // Clear all localStorage and reload with defaults
-    localStorage.removeItem('above-inside-store')
+    localStorage.removeItem('golem-store')
     window.location.reload()
   }
 
@@ -389,7 +389,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
             </div>
             <div
               className="btn"
-              onClick={() => { localStorage.removeItem('above-inside-store'); window.location.reload(); }}
+              onClick={() => { localStorage.removeItem('golem-store'); window.location.reload(); }}
               style={{
                 marginTop: 8, width: '100%', padding: '8px 0', textAlign: 'center',
                 background: 'transparent', border: '1px solid rgba(220,60,60,0.3)',

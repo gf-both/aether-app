@@ -31,9 +31,9 @@ export default function ArchetypeSymbol() {
     let storeUnsub
     let activeArchetype = null
     try {
-      const { useAboveInsideStore } = require('../../store/useAboveInsideStore')
-      activeArchetype = useAboveInsideStore.getState().archetypeType
-      storeUnsub = useAboveInsideStore.subscribe((state) => {
+      const { useGolemStore } = require('../../store/useGolemStore')
+      activeArchetype = useGolemStore.getState().archetypeType
+      storeUnsub = useGolemStore.subscribe((state) => {
         activeArchetype = state.archetypeType
       })
     } catch (e) { /* fallback */ }

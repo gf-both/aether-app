@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 
 const AI_PROMPT_TEMPLATE = (notes, clientProfile) => `
 You are an expert practitioner assistant specializing in Human Design, astrology, and consciousness work.
@@ -127,7 +127,7 @@ function CollapsibleSection({ icon, title, children, defaultOpen = true, private
 }
 
 export default function AINoteTaker({ clientProfile = {} }) {
-  const { activeSession, updateSessionNotes } = useAboveInsideStore()
+  const { activeSession, updateSessionNotes } = useGolemStore()
   const [notes, setNotes] = useState(activeSession?.notes || '')
   const [loading, setLoading] = useState(false)
   const [analysis, setAnalysis] = useState(null)

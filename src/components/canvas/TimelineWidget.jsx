@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useAboveInsideStore } from '../../store/useAboveInsideStore'
+import { useGolemStore } from '../../store/useGolemStore'
 import { getVedicChart } from '../../engines/vedicEngine'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
 
@@ -24,7 +24,7 @@ function getPersonalYear(birthMonth, birthDay, year) {
 }
 
 export default function TimelineWidget() {
-  const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
 
   const data = useMemo(() => {
     try {

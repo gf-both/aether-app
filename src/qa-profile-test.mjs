@@ -6,10 +6,7 @@ import { getChineseProfileFromDob } from './engines/chineseEngine.js'
 import { getEgyptianSign } from './engines/egyptianEngine.js'
 import { getGeneKeysProfile } from './engines/geneKeysEngine.js'
 import { getKabbalahProfile } from './engines/kabbalahEngine.js'
-import { getBiorhythms } from './engines/biorhythmEngine.js'
 import { getTibetanProfile } from './engines/tibetanEngine.js'
-import { getCelticTree } from './engines/celticTreeEngine.js'
-import { getTarotBirthCards } from './engines/tarotEngine.js'
 import { getGematriaProfile } from './engines/gematriaEngine.js'
 import computeHDChart from './engines/hdEngine.js'
 import { getVedicChart } from './engines/vedicEngine.js'
@@ -107,19 +104,6 @@ for (const p of profiles) {
     console.log(`TIBETAN: ${r.tibetan}`)
   } catch(e) { r.tibetan = `ERROR: ${e.message}`; console.log(`TIBETAN ERROR: ${e.message}`) }
 
-  // 11. Celtic Tree — correct API: getCelticTree({ day, month })
-  try {
-    const celtic = getCelticTree({ day: d, month: m })
-    r.celtic = `${celtic?.name || celtic?.tree || JSON.stringify(celtic)}`
-    console.log(`CELTIC TREE: ${r.celtic}`)
-  } catch(e) { r.celtic = `ERROR: ${e.message}`; console.log(`CELTIC ERROR: ${e.message}`) }
-
-  // 12. Tarot Birth Cards — correct API: getTarotBirthCards({ day, month, year })
-  try {
-    const tarot = getTarotBirthCards({ day: d, month: m, year: y })
-    r.tarot = `${tarot?.primaryCard?.name || tarot?.birthCard?.name || JSON.stringify(tarot).slice(0,60)}`
-    console.log(`TAROT: ${r.tarot}`)
-  } catch(e) { r.tarot = `ERROR: ${e.message}`; console.log(`TAROT ERROR: ${e.message}`) }
 
   // 13. Gematria — correct API: getGematriaProfile({ fullName, day, month, year })
   try {
@@ -128,17 +112,6 @@ for (const p of profiles) {
     r.gematria = `Pythagorean=${pyth} ${JSON.stringify(gem?.methods && Object.keys(gem.methods)).slice(0,40)}`
     console.log(`GEMATRIA: ${r.gematria}`)
   } catch(e) { r.gematria = `ERROR: ${e.message}`; console.log(`GEMATRIA ERROR: ${e.message}`) }
-
-  // 14. Biorhythm — correct API: getBiorhythms({ day, month, year })
-  // returns { cycles: { physical: { value }, emotional, intellectual }, date, daysSinceBirth }
-  try {
-    const bio = getBiorhythms({ day: d, month: m, year: y })
-    const phys = bio.physical?.value ?? bio.cycles?.physical?.value
-    const emot = bio.emotional?.value ?? bio.cycles?.emotional?.value
-    const intel = bio.intellectual?.value ?? bio.cycles?.intellectual?.value
-    r.biorhythm = `Phys=${phys?.toFixed(3)} Emot=${emot?.toFixed(3)} Intel=${intel?.toFixed(3)} Days=${bio.daysSinceBirth}`
-    console.log(`BIORHYTHM: ${r.biorhythm}`)
-  } catch(e) { r.biorhythm = `ERROR: ${e.message}`; console.log(`BIORHYTHM ERROR: ${e.message}`) }
 
   results[p.name] = r
 }
