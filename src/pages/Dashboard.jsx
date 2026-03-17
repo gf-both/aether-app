@@ -19,6 +19,10 @@ import PatternsWeb from '../components/canvas/PatternsWeb'
 import MBTIChart from '../components/canvas/MBTIChart'
 import EgyptianChart from '../components/canvas/EgyptianChart'
 import VedicChart from '../components/canvas/VedicChart'
+import DoshaSymbol from '../components/canvas/DoshaSymbol'
+import LoveLangSymbol from '../components/canvas/LoveLangSymbol'
+import ArchetypeSymbol from '../components/canvas/ArchetypeSymbol'
+import TibetanWheel from '../components/canvas/TibetanWheel'
 import BiorhythmChart from '../components/canvas/BiorhythmChart'
 import IntegralFigure from '../components/canvas/IntegralFigure'
 import NatalDetail from '../components/details/NatalDetail'
@@ -836,10 +840,7 @@ function WidgetContent({ widgetId }) {
       return (
         <>
           <div className="ch"><span className="ct">Tibetan Astrology &middot; Losar &middot; Mewa</span><span className="ci">{'☸'}</span></div>
-          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--foreground)', letterSpacing: '.15em' }}>☸</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>TIBETAN BIRTH YEAR</div>
-          </div>
+          <div className="cb"><TibetanWheel /></div>
         </>
       )
     case 'stars':
@@ -856,30 +857,21 @@ function WidgetContent({ widgetId }) {
       return (
         <>
           <div className="ch"><span className="ct">Ayurvedic Dosha &middot; {doshaType || 'Take Quiz'}</span><span className="ci">{'☯'}</span></div>
-          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--foreground)', letterSpacing: '.15em' }}>☯</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>DOSHA</div>
-          </div>
+          <div className="cb"><DoshaSymbol /></div>
         </>
       )
     case 'archetype':
       return (
         <>
           <div className="ch"><span className="ct">Archetype &middot; {archetypeType || 'Take Quiz'}</span><span className="ci">{'⬡'}</span></div>
-          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: '#a878e8', letterSpacing: '.15em' }}>⬡</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>ARCHETYPE</div>
-          </div>
+          <div className="cb"><ArchetypeSymbol /></div>
         </>
       )
     case 'lovelang':
       return (
         <>
           <div className="ch"><span className="ct">Love Language &middot; {loveLanguage || 'Take Quiz'}</span><span className="ci">{'🤗'}</span></div>
-          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, letterSpacing: '.15em' }}>🤗</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>LOVE LANGUAGE</div>
-          </div>
+          <div className="cb"><LoveLangSymbol /></div>
         </>
       )
     case 'timeline': return <TimelineWidget />
