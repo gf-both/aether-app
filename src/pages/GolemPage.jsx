@@ -4,6 +4,7 @@ import { callAI } from '../lib/ai'
 import { getNatalChart } from '../engines/natalEngine'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 import { resolvePob, safeVal } from '../utils/profileUtils'
+import { computeHDChart } from '../engines/hdEngine'
 
 // Build complement profile (opposite of primary profile — what completes you)
 function buildComplementProfile(p) {
@@ -94,32 +95,12 @@ export default function GolemPage() {
   const setPrimaryProfile = useAboveInsideStore(s => s.setPrimaryProfile)
   const people = useAboveInsideStore(s => s.people)
 
-  // Fixed golems (read-only)
-  const cloneGolem = { id: 'clone', label: 'Your Clone', emoji: '🪬', readonly: true, profile: profile }
-  const complementGolem = { id: 'complement', label: 'Complement', emoji: '🌗', readonly: true, profile: buildComplementProfile(profile) }
-  const antagonistGolem = { id: 'antagonist', label: 'Antagonist', emoji: '🔥', readonly: true, profile: buildAntagonistProfile(profile) }
-
   // Custom golems
   const [customGolems, setCustomGolems] = useState([])
   const [selectedId, setSelectedId] = useState('clone')
   const [messages, setMessages] = useState({})
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-
-  const allGolems = [cloneGolem, complementGolem, antagonistGolem, ...customGolems]
-  const selectedGolem = allGolems.find(g => g.id === selectedId) || cloneGolem
-
-  // Edit state for selected custom golem
-  const [editProfile, setEditProfile] = useState(null)
-  useEffect(() => {
-    if (selectedGolem?.readonly) {
-      setEditProfile(null)
-    } else {
-      setEditProfile({ ...selectedGolem.profile })
-    }
-  }, [selectedId])
-
-  const activeProfile = editProfile || selectedGolem.profile
 
   // resolvePob imported from utils/profileUtils — not inline (prevents stale closure)
 
@@ -140,15 +121,65 @@ export default function GolemPage() {
     catch { return null }
   }, [profile?.dob, profile?.name])
 
+  // Compute HD chart for profile
+  const computedHD = useMemo(() => {
+    if (!profile?.dob) return null
+    if (profile.hdType && profile.hdType !== '?' && profile.hdType !== '—') return null
+    try {
+      return computeHDChart({ dateOfBirth: profile.dob, timeOfBirth: profile.tob || '12:00', utcOffset: profile.birthTimezone ?? -3 })
+    } catch { return null }
+  }, [profile?.dob, profile?.tob, profile?.birthTimezone, profile?.hdType])
+
+  // Build enriched profile with computed values (so complement/antagonist get real data, not '?')
+  const enrichedProfile = useMemo(() => {
+    const p = { ...profile }
+    if (computedChart) {
+      if (!p.sign || p.sign === '?') p.sign = computedChart.planets?.sun?.sign || '?'
+      if (!p.moon || p.moon === '?') p.moon = computedChart.planets?.moon?.sign || '?'
+      if (!p.asc || p.asc === '?') p.asc = computedChart.angles?.asc?.sign || '?'
+    }
+    if (computedNumerology) {
+      const core = computedNumerology.core || computedNumerology
+      if (!p.lifePath || p.lifePath === '?') p.lifePath = core.lifePath?.val || '?'
+      if (!p.expression || p.expression === '?') p.expression = core.expression?.val || '?'
+    }
+    if (computedHD) {
+      if (!p.hdType || p.hdType === '?' || p.hdType === '—') p.hdType = computedHD.type || '?'
+      if (!p.hdProfile || p.hdProfile === '?' || p.hdProfile === '—') p.hdProfile = computedHD.profile || '?'
+      if (!p.hdAuth || p.hdAuth === '?' || p.hdAuth === '—') p.hdAuth = computedHD.authority || '?'
+    }
+    return p
+  }, [profile, computedChart, computedNumerology, computedHD])
+
+  // Fixed golems (read-only)
+  const cloneGolem = { id: 'clone', label: 'Your Clone', emoji: '🪬', readonly: true, profile: enrichedProfile }
+  const complementGolem = { id: 'complement', label: 'Complement', emoji: '🌗', readonly: true, profile: buildComplementProfile(enrichedProfile) }
+  const antagonistGolem = { id: 'antagonist', label: 'Antagonist', emoji: '🔥', readonly: true, profile: buildAntagonistProfile(enrichedProfile) }
+
+  const allGolems = [cloneGolem, complementGolem, antagonistGolem, ...customGolems]
+  const selectedGolem = allGolems.find(g => g.id === selectedId) || cloneGolem
+
+  // Edit state for selected custom golem
+  const [editProfile, setEditProfile] = useState(null)
+  useEffect(() => {
+    if (selectedGolem?.readonly) {
+      setEditProfile(null)
+    } else {
+      setEditProfile({ ...selectedGolem.profile })
+    }
+  }, [selectedId])
+
+  const activeProfile = editProfile || selectedGolem.profile
+
   const val = safeVal // imported from utils/profileUtils
   const displaySign = val(profile?.sign) || computedChart?.planets?.sun?.sign || '?'
   const displayMoon = val(profile?.moon) || computedChart?.planets?.moon?.sign || '?'
   const displayAsc  = val(profile?.asc)  || computedChart?.angles?.asc?.sign  || '?'
-  const displayLP   = val(profile?.lifePath) || computedNumerology?.lifePath?.val || '?'
-  const displayExpr = val(profile?.expression) || computedNumerology?.expression?.val || '?'
-  const displayHDType    = val(profile?.hdType) || '—'
-  const displayHDProfile = val(profile?.hdProfile) || '—'
-  const displayHDAuth    = val(profile?.hdAuth) || '—'
+  const displayLP   = val(profile?.lifePath) || computedNumerology?.core?.lifePath?.val || computedNumerology?.lifePath?.val || '?'
+  const displayExpr = val(profile?.expression) || computedNumerology?.core?.expression?.val || computedNumerology?.expression?.val || '?'
+  const displayHDType    = val(profile?.hdType) || computedHD?.type || '—'
+  const displayHDProfile = val(profile?.hdProfile) || computedHD?.profile || '—'
+  const displayHDAuth    = val(profile?.hdAuth) || computedHD?.authority || '—'
   const displayCrossGK   = val(profile?.crossGK) || '—'
 
   const bottomRef = useRef(null)
@@ -382,20 +413,28 @@ Keep responses 2-4 sentences. Be direct.`
         <div style={{ width:240, flexShrink:0, overflowY:'auto', padding:'14px 12px', background:'rgba(0,0,0,.15)' }}>
           <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.6)', marginBottom:14, fontFamily:"'Cinzel',serif" }}>Edit Profile</div>
 
+          {/* Name field - text input */}
+          <div style={{ marginBottom:9 }}>
+            <div style={{ fontSize:9, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--muted-foreground)', marginBottom:3, fontFamily:"'Cinzel',serif" }}>Name</div>
+            <input value={editProfile.name || ''} onChange={e => updateCustomGolem({ name: e.target.value })} placeholder="Custom name" style={{ width:'100%', boxSizing:'border-box', padding:'6px 9px', borderRadius:6, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:11, outline:'none', fontFamily:'inherit' }} />
+          </div>
+          {/* Dropdown fields */}
           {[
-            ['Name', 'name', 'Custom name'],
-            ['Sun', 'sign', 'e.g. Aquarius'],
-            ['Moon', 'moon', 'e.g. Virgo'],
-            ['Rising', 'asc', 'e.g. Virgo'],
-            ['Life Path', 'lifePath', 'e.g. 7'],
-            ['Expression', 'expression', 'e.g. 1'],
-            ['HD Type', 'hdType', 'e.g. Projector'],
-            ['HD Profile', 'hdProfile', 'e.g. 3/5'],
-            ['HD Authority', 'hdAuth', 'e.g. Emotional'],
-          ].map(([label, field, ph]) => (
+            ['Sun', 'sign', ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']],
+            ['Moon', 'moon', ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']],
+            ['Rising', 'asc', ['Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius','Capricorn','Aquarius','Pisces']],
+            ['Life Path', 'lifePath', ['1','2','3','4','5','6','7','8','9','11','22','33']],
+            ['Expression', 'expression', ['1','2','3','4','5','6','7','8','9','11','22','33']],
+            ['HD Type', 'hdType', ['Generator','Manifesting Generator','Projector','Manifestor','Reflector']],
+            ['HD Profile', 'hdProfile', ['1/3','1/4','2/4','2/5','3/5','3/6','4/6','4/1','5/1','5/2','6/2','6/3']],
+            ['HD Authority', 'hdAuth', ['Emotional','Sacral','Splenic','Ego/Heart','Self-Projected','Mental','Lunar','None']],
+          ].map(([label, field, options]) => (
             <div key={field} style={{ marginBottom:9 }}>
               <div style={{ fontSize:9, letterSpacing:'.08em', textTransform:'uppercase', color:'var(--muted-foreground)', marginBottom:3, fontFamily:"'Cinzel',serif" }}>{label}</div>
-              <input value={editProfile[field] || ''} onChange={e => updateCustomGolem({ [field]: e.target.value })} placeholder={ph} style={{ width:'100%', boxSizing:'border-box', padding:'6px 9px', borderRadius:6, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:11, outline:'none', fontFamily:'inherit' }} />
+              <select value={editProfile[field] || ''} onChange={e => updateCustomGolem({ [field]: e.target.value })} style={{ width:'100%', boxSizing:'border-box', padding:'6px 9px', borderRadius:6, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:11, outline:'none', fontFamily:'inherit', cursor:'pointer' }}>
+                <option value="">Select {label}...</option>
+                {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+              </select>
             </div>
           ))}
         </div>
