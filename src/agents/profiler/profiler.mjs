@@ -1,6 +1,6 @@
 // ============================================================
 // THE PROFILER — Standalone deployment script
-// Profiles all agents in a Paperclip org using AETHER standard
+// Profiles all agents in a Paperclip org using GOLEM standard
 // ============================================================
 //
 // Usage:
@@ -11,7 +11,7 @@
 //   import { profileOrg } from './profiler.mjs';
 //   await profileOrg({ companyId, paperclipUrl, creatorBirth });
 
-import { generateAetherProfile, generateAetherMd } from '../../engines/aetherEngine.js';
+import { generateGolemProfile, generateGolemMd } from '../../engines/golemEngine.js';
 
 const PAPERCLIP_DEFAULTS = {
   url: 'http://127.0.0.1:3100',
@@ -49,7 +49,7 @@ export async function profileOrg({
     const timestamp = agent.createdAt || new Date().toISOString();
     
     try {
-      const profile = generateAetherProfile({
+      const profile = generateGolemProfile({
         name: agent.name,
         role: agent.role || agent.title || 'general',
         timestamp,
@@ -87,8 +87,8 @@ export async function profileOrg({
       if (updateAgents) {
         const existing = agent.adapterConfig?.heartbeatPrompt || '';
         const snippet = `\n\n${profile.promptSnippet}`;
-        const newPrompt = existing.includes('AETHER IDENTITY') 
-          ? existing.replace(/\n\nAETHER IDENTITY:[\s\S]*$/, snippet)
+        const newPrompt = existing.includes('GOLEM IDENTITY') 
+          ? existing.replace(/\n\nGOLEM IDENTITY:[\s\S]*$/, snippet)
           : existing + snippet;
         
         await fetch(`${base}/agents/${agent.id}`, {

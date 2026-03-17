@@ -53,7 +53,7 @@ const NAV_SECTIONS = [
   { icon: '\uD83C\uDFE5', label: 'Practitioner', widget: 'practitioner' },
   { icon: '\uD83D\uDCCB', label: 'Client Portal', widget: 'client' },
   null,
-  { icon: '\u2728', label: 'AETHER', widget: 'aether' },
+  { icon: '\u2728', label: 'GOLEM', widget: 'golem' },
   { icon: '\uD83C\uDFDB\uFE0F', label: 'Company', widget: 'company' },
 ]
 
@@ -714,20 +714,11 @@ export default function TopBar() {
     <div className="tb">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
         <HamburgerMenu />
-        <span className="tb-brand" style={{ cursor: 'pointer' }} onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }}>AETHER</span>
+        <span className="tb-brand" style={{ cursor: 'pointer' }} onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }}>GOLEM</span>
         <ProfileSwitcher />
         <LayoutSwitcher />
       </div>
       <div className="tb-chips">
-        <div className="chip chip-g">{'\u2609'} {displaySign} &middot; &uarr; {displayAsc} &middot; {'\u263D'} {displayMoon}</div>
-        <div className="chip chip-b" title={`Human Design: ${displayHDType} · ${displayHDProfile} · ${displayHDAuth}`}>{'\u25C8'} {displayHDType} &middot; {displayHDProfile}</div>
-        <div className="chip chip-r">{'\u221E'} LP {displayLP}</div>
-        {displayMayanSign !== '?' && <div className="chip chip-v" title="Mayan Calendar">🌸 {displayMayanSign} &middot; {displayMayanTone} &middot; Kin {displayMayanKin}</div>}
-        {displayChinese !== '?' && <div className="chip chip-g" title="Chinese Zodiac">🐉 {displayChinese}</div>}
-        {sephiraChip && (
-          <div className="chip chip-v" title="Kabbalah — Active Sephira">{'\u2721'} {sephiraChip}</div>
-        )}
-
         <ThemeToggle />
         <button
           className={`oracle-toggle-btn${oracleOpen ? ' active' : ''}`}

@@ -167,7 +167,7 @@ const ENGINES = [
   { name: 'celticTreeEngine',      status: '✅', input: 'month/day',                                 output: 'Ogham tree sign',                                                      notes: '13 months' },
   { name: 'tibetanEngine',         status: '⚠️', input: 'dob',                                       output: 'Losar calendar, mewa square',                                          notes: 'Basic implementation' },
   { name: 'fixedStarsEngine',      status: '✅', input: 'natal chart',                               output: '20 major star conjunctions',                                           notes: '1.5° orb' },
-  { name: 'aetherEngine',          status: '✅', input: 'creation timestamp + location',             output: 'Full AETHER profile for AI agents',                                    notes: 'AETHER identity system' },
+  { name: 'golemEngine',          status: '✅', input: 'creation timestamp + location',             output: 'Full GOLEM profile for AI agents',                                    notes: 'GOLEM identity system' },
   { name: 'careerAlignmentEngine', status: '✅', input: 'profile',                                   output: 'role recommendations by HD+LP',                                        notes: '' },
 ]
 
@@ -177,7 +177,7 @@ const FEATURES = [
   { section: 'Dashboard',            features: ['Grid layout', 'Bento layout', 'Focus layout', 'Magazine layout', 'Widget manager', 'Drag-drop reorder', 'Row grouping'],                   status: '✅' },
   { section: 'Golem',                features: ['Clone', 'Complement', 'Antagonist', 'Custom golems', 'Profile editor', 'Claude AI wired', 'Right profile panel'],                          status: '✅' },
   { section: 'Dating',               features: ['Clone matching', 'Compatibility scores', 'Match Story', 'Preferences tab', 'Geolocation toggle', 'IG/LinkedIn fields', 'Real engine wired'], status: '✅' },
-  { section: 'AI Agents',            features: ['27 agent roster', 'Mini natal chart', 'Constellation map', 'AETHER profiles'],                                                              status: '✅' },
+  { section: 'AI Agents',            features: ['27 agent roster', 'Mini natal chart', 'Constellation map', 'GOLEM profiles'],                                                              status: '✅' },
   { section: 'Wendy',                features: ['OCI score', '5 diagnoses', 'Weekly voice report', 'Team constellation'],                                                                    status: '✅' },
   { section: 'Career',               features: ['HD work style', 'Best roles', 'Ideal environment', 'Life Path theme'],                                                                      status: '✅' },
   { section: 'Settings',             features: ['Layout switcher', 'Theme switcher', 'Widget manager', 'Data reset'],                                                                        status: '✅' },

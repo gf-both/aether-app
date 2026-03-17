@@ -15,7 +15,7 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, info) {
-    console.error('AETHER crashed:', error.message)
+    console.error('GOLEM crashed:', error.message)
     console.error('Component stack:', info?.componentStack?.split('\n').slice(0, 6).join('\n'))
     this.setState({ componentStack: info?.componentStack?.split('\n').slice(1, 5).join(' → ') })
   }
@@ -29,7 +29,7 @@ export default class ErrorBoundary extends Component {
         }}>
           <div style={{ fontSize: 48 }}>⚠️</div>
           <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, letterSpacing: '.15em', textTransform: 'uppercase', color: '#c9a84c' }}>
-            AETHER — Runtime Error
+            GOLEM — Runtime Error
           </div>
           <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', maxWidth: 420, lineHeight: 1.7 }}>
             Something crashed. This is usually caused by stale cached data from a recent update.

@@ -1,4 +1,4 @@
-// Stripe integration for AETHER
+// Stripe integration for GOLEM
 // Requires VITE_STRIPE_PUBLISHABLE_KEY environment variable
 
 const PLANS = {

@@ -1,6 +1,6 @@
 /* eslint-disable */
 // Demo stub — not production-backed
-// WhatsApp messaging integration for AETHER
+// WhatsApp messaging integration for GOLEM
 // Requires:
 //   - WhatsApp Business API (cloud-hosted by Meta) or Twilio WhatsApp API
 //   - Approved message templates for transactional messages

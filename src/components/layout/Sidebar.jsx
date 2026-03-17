@@ -51,7 +51,7 @@ const NAV_SECTIONS = [
   { type: 'section', label: 'IDENTITY' },
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
   { type: 'item', icon: '💫', label: 'Dating', id: 'dating', widget: 'dating' },
-  { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aether', widget: 'aether' },
+  { type: 'item', icon: '🤖', label: 'AI Agents', id: 'golem', widget: 'golem' },
   { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
 
   { type: 'section', label: 'TOOLS' },
@@ -115,7 +115,7 @@ export default function Sidebar() {
           <circle cx="12" cy="12" r="1" fill="currentColor" opacity="0.9" />
         </svg>
         {!collapsed && (
-          <span className="sb-brand">AETHER</span>
+          <span className="sb-brand">GOLEM</span>
         )}
         <button
           className="sb-toggle"

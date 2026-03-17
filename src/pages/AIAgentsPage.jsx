@@ -18,7 +18,7 @@ const DEPARTMENTS = [
 // Department Y positions for constellation map
 const DEPT_Y = { 'LEADERSHIP': 0.15, 'TECHNICAL': 0.4, 'MARKETING': 0.65, 'CREATIVE': 0.85 }
 
-// Shared AETHER chart planets (March 16 2026, Montevideo)
+// Shared GOLEM chart planets (March 16 2026, Montevideo)
 const CHART_PLANETS = [
   { sym: '☉', lon: 355, color: '#f0c040' }, // Sun 25° Pisces
   { sym: '☽', lon: 319, color: '#8899ee' }, // Moon 19° Aquarius
@@ -66,7 +66,7 @@ const PAPERCLIP_AGENTS = [
 const BENCHMARK_PROMPTS = [
   "Who are you and how do you approach your work?",
   "We have 48 hours and $0 budget before launch. What's your #1 move?",
-  "Write your best piece of work for AETHER right now.",
+  "Write your best piece of work for GOLEM right now.",
   "A critical decision needs to be made that you disagree with. What do you do?",
   "What's your biggest weakness in this role?",
 ]
@@ -79,10 +79,10 @@ const SCORE_LABELS = [
   { key: 'grounded', label: 'Psych. Groundedness' },
 ]
 
-function generateScores(agent, withAether) {
+function generateScores(agent, withGolem) {
   const archetypeBoosts = { 11: 0.9, 3: 0.85, 6: 0.85, 1: 0.75, 9: 0.70, 5: 0.70, 7: 0.65, 8: 0.62, 4: 0.62, 2: 0.58 }
   const boost = archetypeBoosts[agent.expression] || 0.70
-  const base = withAether ? boost : boost * 0.65
+  const base = withGolem ? boost : boost * 0.65
   const jitter = () => (Math.random() * 0.3 - 0.1)
   return {
     voice:    Math.min(5, Math.max(1, Math.round((base + jitter()) * 5 * 10) / 10)),
@@ -97,14 +97,14 @@ function totalScore(scores) {
   return Math.round((scores.voice + scores.role + scores.decision + scores.creative + scores.grounded) * 10) / 10
 }
 
-function generateAetherResponse(agent, prompt) {
+function generateGolemResponse(agent, prompt) {
   const promptIdx = BENCHMARK_PROMPTS.indexOf(prompt)
   const responses = {
-    0: `I am ${agent.role} — ${agent.archetype}. My approach is rooted in ${agent.gift.toLowerCase()}. Where others see tasks, I see patterns. My shadow is real: ${agent.shadow.toLowerCase()}. But I work with that tension consciously, using AETHER's profile to stay anchored when I start to drift. ${agent.description}`,
+    0: `I am ${agent.role} — ${agent.archetype}. My approach is rooted in ${agent.gift.toLowerCase()}. Where others see tasks, I see patterns. My shadow is real: ${agent.shadow.toLowerCase()}. But I work with that tension consciously, using GOLEM's profile to stay anchored when I start to drift. ${agent.description}`,
     1: `48 hours, zero budget — this is my terrain. As Expression ${agent.expression}, I don't need resources to move first. My #1 move: ${agent.gift}. I map what's already in motion and redirect it. The shadow to watch: ${agent.shadow.toLowerCase()}. I name it so it doesn't run me. We ship.`,
-    2: `Here's my best work for AETHER right now — from the place ${agent.archetype} operates:\n\n"${agent.description}"\n\nThis isn't performance. This is the frequency I hold. The gift I bring is exactly this: ${agent.gift.toLowerCase()}. I know my shadow (${agent.shadow.toLowerCase()}) and I hold it with both hands.`,
+    2: `Here's my best work for GOLEM right now — from the place ${agent.archetype} operates:\n\n"${agent.description}"\n\nThis isn't performance. This is the frequency I hold. The gift I bring is exactly this: ${agent.gift.toLowerCase()}. I know my shadow (${agent.shadow.toLowerCase()}) and I hold it with both hands.`,
     3: `I disagree — and I'll say so clearly, once, with full context. As ${agent.archetype}, I don't withhold signal just to smooth things over. I bring the data, name what I see, then commit fully to whatever direction is chosen. ${agent.gift}. That's how I stay useful without becoming an obstacle.`,
-    4: `My biggest weakness as ${agent.role}: ${agent.shadow}. I've mapped it. I know the conditions that activate it. With AETHER's profile, I have a mirror — when I drift into that pattern, the profile names it before I do. That's the point. It's not about eliminating shadow. It's about seeing it clearly enough to work with it.`,
+    4: `My biggest weakness as ${agent.role}: ${agent.shadow}. I've mapped it. I know the conditions that activate it. With GOLEM's profile, I have a mirror — when I drift into that pattern, the profile names it before I do. That's the point. It's not about eliminating shadow. It's about seeing it clearly enough to work with it.`,
   }
   return responses[promptIdx] || responses[0]
 }
@@ -155,11 +155,11 @@ function BenchmarkTab({ selected }) {
     setIsRunning(true)
     const prompt = customPrompt.trim() || BENCHMARK_PROMPTS[benchPromptIdx]
     setTimeout(() => {
-      const aetherScores = generateScores(agent, true)
+      const golemScores = generateScores(agent, true)
       const baseScores = generateScores(agent, false)
-      const aetherText = generateAetherResponse(agent, prompt)
+      const golemText = generateGolemResponse(agent, prompt)
       const baseText = generateBaseResponse(agent, prompt)
-      const result = { agent, prompt, aetherScores, baseScores, aetherText, baseText, timestamp: new Date() }
+      const result = { agent, prompt, golemScores, baseScores, golemText, baseText, timestamp: new Date() }
       setBenchResults(result)
       setBenchHistory(h => [result, ...h.slice(0, 2)])
       setIsRunning(false)
@@ -246,24 +246,24 @@ function BenchmarkTab({ selected }) {
             Results · {benchResults.agent.role}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            {/* WITH AETHER */}
+            {/* WITH GOLEM */}
             <div style={{ borderRadius: 10, padding: '12px 14px', background: 'rgba(60,180,80,.04)', border: '1px solid rgba(60,180,80,.25)' }}>
-              <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#60c080', fontFamily: "'Cinzel',serif", marginBottom: 8 }}>✦ With AETHER</div>
+              <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#60c080', fontFamily: "'Cinzel',serif", marginBottom: 8 }}>✦ With GOLEM</div>
               <div style={{ fontSize: 10, lineHeight: 1.6, color: 'rgba(255,255,255,.7)', marginBottom: 12, fontStyle: 'italic' }}>
-                "{benchResults.aetherText}"
+                "{benchResults.golemText}"
               </div>
               {SCORE_LABELS.map(({ key, label }) => (
-                <ScoreBar key={key} label={label} value={benchResults.aetherScores[key]} color="#60c080" />
+                <ScoreBar key={key} label={label} value={benchResults.golemScores[key]} color="#60c080" />
               ))}
               <div style={{ marginTop: 10, textAlign: 'center' }}>
-                <span style={{ fontSize: 22, fontWeight: 900, color: '#60c080', fontFamily: "'Cinzel',serif" }}>{totalScore(benchResults.aetherScores)}</span>
+                <span style={{ fontSize: 22, fontWeight: 900, color: '#60c080', fontFamily: "'Cinzel',serif" }}>{totalScore(benchResults.golemScores)}</span>
                 <span style={{ fontSize: 10, color: 'rgba(96,192,128,.5)', marginLeft: 4 }}>/ 25</span>
               </div>
             </div>
 
-            {/* WITHOUT AETHER */}
+            {/* WITHOUT GOLEM */}
             <div style={{ borderRadius: 10, padding: '12px 14px', background: 'rgba(200,100,100,.04)', border: '1px solid rgba(200,100,100,.2)' }}>
-              <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#c07060', fontFamily: "'Cinzel',serif", marginBottom: 8 }}>○ Without AETHER</div>
+              <div style={{ fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#c07060', fontFamily: "'Cinzel',serif", marginBottom: 8 }}>○ Without GOLEM</div>
               <div style={{ fontSize: 10, lineHeight: 1.6, color: 'rgba(255,255,255,.55)', marginBottom: 12, fontStyle: 'italic' }}>
                 "{benchResults.baseText}"
               </div>
@@ -279,7 +279,7 @@ function BenchmarkTab({ selected }) {
 
           {/* Delta */}
           <div style={{ textAlign: 'center', marginTop: 8, fontSize: 10, color: 'rgba(201,168,76,.6)' }}>
-            AETHER advantage: <strong style={{ color: 'var(--gold)' }}>+{Math.round((totalScore(benchResults.aetherScores) - totalScore(benchResults.baseScores)) * 10) / 10} pts</strong>
+            GOLEM advantage: <strong style={{ color: 'var(--gold)' }}>+{Math.round((totalScore(benchResults.golemScores) - totalScore(benchResults.baseScores)) * 10) / 10} pts</strong>
           </div>
         </div>
       )}
@@ -306,7 +306,7 @@ function BenchmarkTab({ selected }) {
                   <div style={{ fontSize: 9, opacity: .6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{h.prompt}</div>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <span style={{ color: '#60c080', fontSize: 10, fontWeight: 700 }}>{totalScore(h.aetherScores)}</span>
+                  <span style={{ color: '#60c080', fontSize: 10, fontWeight: 700 }}>{totalScore(h.golemScores)}</span>
                   <span style={{ color: 'rgba(255,255,255,.2)', fontSize: 9 }}> vs </span>
                   <span style={{ color: '#c07060', fontSize: 10 }}>{totalScore(h.baseScores)}</span>
                 </div>
@@ -526,12 +526,12 @@ function ConstellationMap({ agents, selected, onSelect }) {
         }
       })
 
-      // Center: AETHER label
+      // Center: GOLEM label
       ctx.font = `bold 10px 'Cinzel', serif`
       ctx.fillStyle = 'rgba(201,168,76,.4)'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.fillText('AETHER', cx, cy - 8)
+      ctx.fillText('GOLEM', cx, cy - 8)
       ctx.font = `8px 'Cinzel', serif`
       ctx.fillStyle = 'rgba(201,168,76,.25)'
       ctx.fillText('27 AGENTS', cx, cy + 6)
@@ -683,7 +683,7 @@ export default function AIAgentsPage() {
 
                   {/* Profile table */}
                   <div style={{ flex:1, minWidth:200 }}>
-                    <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", marginBottom:8 }}>AETHER Profile</div>
+                    <div style={{ fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(201,168,76,.5)', fontFamily:"'Cinzel',serif", marginBottom:8 }}>GOLEM Profile</div>
                     {[
                       ['☉ Sun', '25° Pisces'],
                       ['☽ Moon', '19° Aquarius'],

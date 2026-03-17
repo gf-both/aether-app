@@ -119,7 +119,7 @@ export default function AuthModal({ open, onClose }) {
             fontFamily: "'Cinzel',serif", fontSize: 14,
             letterSpacing: '.2em', color: 'var(--gold)',
             textTransform: 'uppercase',
-          }}>AETHER</div>
+          }}>GOLEM</div>
           <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>
             {tab === 'signin' ? 'Welcome back' : 'Begin your journey'}
           </div>

@@ -3,10 +3,10 @@ import { useAboveInsideStore } from '../store/useAboveInsideStore'
 
 /* ── Mock Data ── */
 const MOCK_SESSION_HISTORY = [
-  { id: 1, date: '2026-03-03', practitioner: 'AETHER Guide', type: 'Natal + Human Design Intro', duration: '75 min', summary: 'Introductory reading covering natal chart placements and Human Design bodygraph. Discussed Aquarius Sun, Virgo Moon/Rising, and 3/5 Projector profile. Key insight: the interplay between Aquarian innovation and Virgoan precision creates a unique capacity for building practical systems that serve collective evolution.', keyInsights: ['3/5 Projector with Emotional Authority', 'Wait for clarity at bottom of emotional wave', 'Aquarius-Virgo axis = visionary service'] },
-  { id: 2, date: '2026-02-20', practitioner: 'AETHER Guide', type: 'Gene Keys Deep Dive', duration: '60 min', summary: 'Explored the Hologenetic Profile focusing on the Activation Sequence. Concentrated on Gate 41 (Contraction to Emanation) and its role as the initiating codon. Discussed how the shadow of Contraction manifests as creative blocks and how the gift of Anticipation opens new experiential doorways.', keyInsights: ['Gate 41 = initiating codon, start of all experience', 'Shadow: Contraction around finances and creativity', 'Gift: Anticipation as a creative force'] },
-  { id: 3, date: '2026-02-05', practitioner: 'AETHER Guide', type: 'Kabbalah + Numerology', duration: '60 min', summary: 'Mapped the consciousness profile onto the Tree of Life. Identified Tiphareth as the central integrating sephirah. Combined with Life Path 7 numerology to understand the seeker archetype and its relationship to the path of Beauty and Harmony.', keyInsights: ['Tiphareth (Beauty) as primary sephirah', 'Life Path 7 = The Seeker of Truth', 'Netzach-Hod polarity work recommended'] },
-  { id: 4, date: '2026-01-15', practitioner: 'AETHER Guide', type: 'Transits & Forecast', duration: '45 min', summary: 'Reviewed upcoming transit themes for Q1 2026. Saturn approaching natal Sun signals restructuring of identity and public role. Jupiter trine Moon supports emotional expansion and new learning opportunities. Recommended journaling during the Saturn-Sun conjunction in April.', keyInsights: ['Saturn conjunct Sun in April = identity restructuring', 'Jupiter trine Moon = emotional growth', 'Journal daily during Saturn transit window'] },
+  { id: 1, date: '2026-03-03', practitioner: 'GOLEM Guide', type: 'Natal + Human Design Intro', duration: '75 min', summary: 'Introductory reading covering natal chart placements and Human Design bodygraph. Discussed Aquarius Sun, Virgo Moon/Rising, and 3/5 Projector profile. Key insight: the interplay between Aquarian innovation and Virgoan precision creates a unique capacity for building practical systems that serve collective evolution.', keyInsights: ['3/5 Projector with Emotional Authority', 'Wait for clarity at bottom of emotional wave', 'Aquarius-Virgo axis = visionary service'] },
+  { id: 2, date: '2026-02-20', practitioner: 'GOLEM Guide', type: 'Gene Keys Deep Dive', duration: '60 min', summary: 'Explored the Hologenetic Profile focusing on the Activation Sequence. Concentrated on Gate 41 (Contraction to Emanation) and its role as the initiating codon. Discussed how the shadow of Contraction manifests as creative blocks and how the gift of Anticipation opens new experiential doorways.', keyInsights: ['Gate 41 = initiating codon, start of all experience', 'Shadow: Contraction around finances and creativity', 'Gift: Anticipation as a creative force'] },
+  { id: 3, date: '2026-02-05', practitioner: 'GOLEM Guide', type: 'Kabbalah + Numerology', duration: '60 min', summary: 'Mapped the consciousness profile onto the Tree of Life. Identified Tiphareth as the central integrating sephirah. Combined with Life Path 7 numerology to understand the seeker archetype and its relationship to the path of Beauty and Harmony.', keyInsights: ['Tiphareth (Beauty) as primary sephirah', 'Life Path 7 = The Seeker of Truth', 'Netzach-Hod polarity work recommended'] },
+  { id: 4, date: '2026-01-15', practitioner: 'GOLEM Guide', type: 'Transits & Forecast', duration: '45 min', summary: 'Reviewed upcoming transit themes for Q1 2026. Saturn approaching natal Sun signals restructuring of identity and public role. Jupiter trine Moon supports emotional expansion and new learning opportunities. Recommended journaling during the Saturn-Sun conjunction in April.', keyInsights: ['Saturn conjunct Sun in April = identity restructuring', 'Jupiter trine Moon = emotional growth', 'Journal daily during Saturn transit window'] },
 ]
 
 const MOCK_TODOS = [
@@ -21,17 +21,17 @@ const MOCK_TODOS = [
 ]
 
 const MOCK_UPCOMING = [
-  { id: 1, date: '2026-03-12', time: '10:00 AM', type: 'Follow-up: Gene Keys Integration', practitioner: 'AETHER Guide', duration: '60 min' },
-  { id: 2, date: '2026-03-25', time: '2:00 PM', type: 'Saturn Transit Preparation', practitioner: 'AETHER Guide', duration: '45 min' },
-  { id: 3, date: '2026-04-08', time: '11:00 AM', type: 'Synastry Reading (with Partner)', practitioner: 'AETHER Guide', duration: '90 min' },
+  { id: 1, date: '2026-03-12', time: '10:00 AM', type: 'Follow-up: Gene Keys Integration', practitioner: 'GOLEM Guide', duration: '60 min' },
+  { id: 2, date: '2026-03-25', time: '2:00 PM', type: 'Saturn Transit Preparation', practitioner: 'GOLEM Guide', duration: '45 min' },
+  { id: 3, date: '2026-04-08', time: '11:00 AM', type: 'Synastry Reading (with Partner)', practitioner: 'GOLEM Guide', duration: '90 min' },
 ]
 
 const MOCK_MESSAGES = [
-  { id: 1, from: 'practitioner', name: 'AETHER Guide', date: '2026-03-04', content: 'Great session yesterday! I have sent you the HD bodygraph PDF and some reading recommendations. Remember to track your emotional wave for the next 2 weeks before making any major decisions. Looking forward to our follow-up.' },
+  { id: 1, from: 'practitioner', name: 'GOLEM Guide', date: '2026-03-04', content: 'Great session yesterday! I have sent you the HD bodygraph PDF and some reading recommendations. Remember to track your emotional wave for the next 2 weeks before making any major decisions. Looking forward to our follow-up.' },
   { id: 2, from: 'client', name: 'You', date: '2026-03-04', content: 'Thank you so much! The session was incredibly insightful. I already started noticing my emotional wave patterns today. Quick question \u2014 should I also track the moon transits alongside my emotional wave?' },
-  { id: 3, from: 'practitioner', name: 'AETHER Guide', date: '2026-03-05', content: 'Excellent question! Yes, tracking lunar transits alongside your emotional wave would be very beneficial. Your Virgo Moon is particularly sensitive to lunar aspects. I would recommend using a simple journal format: date, moon sign, your emotional state (1-10), and any notable events or insights.' },
+  { id: 3, from: 'practitioner', name: 'GOLEM Guide', date: '2026-03-05', content: 'Excellent question! Yes, tracking lunar transits alongside your emotional wave would be very beneficial. Your Virgo Moon is particularly sensitive to lunar aspects. I would recommend using a simple journal format: date, moon sign, your emotional state (1-10), and any notable events or insights.' },
   { id: 4, from: 'client', name: 'You', date: '2026-03-05', content: 'Perfect, I will start doing that today. Also, I finished the Gene Keys chapters on Gate 41. The concept of Contraction to Anticipation really resonated with some patterns I have been noticing in my creative work.' },
-  { id: 5, from: 'practitioner', name: 'AETHER Guide', date: '2026-03-06', content: 'That is wonderful progress! The fact that you are already seeing Gate 41 patterns in your creative work shows real awareness. In our next session, we will explore how the gift of Anticipation can become a conscious tool for initiating new projects. Keep journaling those observations!' },
+  { id: 5, from: 'practitioner', name: 'GOLEM Guide', date: '2026-03-06', content: 'That is wonderful progress! The fact that you are already seeing Gate 41 patterns in your creative work shows real awareness. In our next session, we will explore how the gift of Anticipation can become a conscious tool for initiating new projects. Keep journaling those observations!' },
 ]
 
 /* ── Styles ── */
@@ -486,7 +486,7 @@ export default function ClientPortal() {
               </div>
               <div>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: '11px', color: 'var(--foreground)', letterSpacing: '.06em' }}>
-                  AETHER Guide
+                  GOLEM Guide
                 </div>
                 <div style={{ fontSize: '10px', color: 'var(--muted-foreground)' }}>Your practitioner</div>
               </div>

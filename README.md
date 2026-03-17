@@ -1,4 +1,4 @@
-# AETHER
+# GOLEM
 
 The world's most complete self-knowledge platform. 21+ esoteric and psychological frameworks — astrology, Human Design, Gene Keys, Kabbalah, Mayan calendar, numerology, and more — in one unified interface.
 

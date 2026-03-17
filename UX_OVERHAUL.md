@@ -1,4 +1,4 @@
-# UX Overhaul Plan — Above + Inside (Aether App)
+# UX Overhaul Plan — Above + Inside (Golem App)
 *Senior UX/UI Assessment — March 2026*
 
 ---
@@ -678,7 +678,7 @@ Active tab: filled icon + gold underline.
 - Daily horoscope is the hero — provides "reason to return daily"
 - Onboarding: 5-step, collects birth data, explains why time matters
 
-**Lesson**: A daily "reason to return" hook is essential. Aether lacks this. Daily transit insight on the dashboard would address this gap.
+**Lesson**: A daily "reason to return" hook is essential. Golem lacks this. Daily transit insight on the dashboard would address this gap.
 
 ### The Pattern
 - Long-form personality narrative as primary content
@@ -686,7 +686,7 @@ Active tab: filled icon + gold underline.
 - Strong emotional resonance — users feel "seen"
 - Freemium with aggressive upgrade moments
 
-**Lesson**: Interpretive text matters as much as charts. Aether's charts are beautiful but interpretation is shallow. AI Guide should produce The Pattern-quality prose.
+**Lesson**: Interpretive text matters as much as charts. Golem's charts are beautiful but interpretation is shallow. AI Guide should produce The Pattern-quality prose.
 
 ### Human Design Apps (Jovian Archive, Genetic Matrix)
 - Information-dense, expert-oriented
@@ -694,7 +694,7 @@ Active tab: filled icon + gold underline.
 - Genetic Matrix is more visual but still complex
 - No mobile optimization
 
-**Lesson**: Aether is better than these in visual design. Aether should position as "HD for everyone" — approachable first, deep second.
+**Lesson**: Golem is better than these in visual design. Golem should position as "HD for everyone" — approachable first, deep second.
 
 ### astro.com
 - The gold standard for accuracy and data depth
@@ -702,7 +702,7 @@ Active tab: filled icon + gold underline.
 - Zero personality or brand feel
 - Professionals use it for data, not experience
 
-**Lesson**: There is a clear gap in the market for beautiful, accurate astrology that doesn't sacrifice visual experience. Aether is on the right track. Execution of onboarding and discoverability is the missing piece.
+**Lesson**: There is a clear gap in the market for beautiful, accurate astrology that doesn't sacrifice visual experience. Golem is on the right track. Execution of onboarding and discoverability is the missing piece.
 
 ### Sanctuary
 - Mobile-first daily astrology content
@@ -710,7 +710,7 @@ Active tab: filled icon + gold underline.
 - Subscription-gated deeper content
 - Modern UI but shallow on frameworks
 
-**Lesson**: Mobile-first with push notifications drives retention. Aether should build mobile early, and consider weekly "cosmic briefing" notifications.
+**Lesson**: Mobile-first with push notifications drives retention. Golem should build mobile early, and consider weekly "cosmic briefing" notifications.
 
 ---
 
