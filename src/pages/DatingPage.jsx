@@ -6,6 +6,14 @@ import { computeHDChart } from '../engines/hdEngine'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 import { resolvePob } from '../utils/profileUtils'
 
+const CONNECTION_TYPES = [
+  { id: 'romantic', label: 'Romantic', icon: '💗' },
+  { id: 'cofounder', label: 'Cofounder', icon: '🤝' },
+  { id: 'friendship', label: 'Friendship', icon: '✨' },
+  { id: 'creative', label: 'Creative', icon: '🎨' },
+  { id: 'mentor', label: 'Mentor', icon: '🌱' },
+]
+
 export default function DatingPage() {
   const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
   // Compute chart values dynamically when profile fields show '?'
@@ -49,6 +57,7 @@ export default function DatingPage() {
   const [geoRange, setGeoRange] = useState(100)
   const [selectedMatch, setSelectedMatch] = useState(null)
   const [activeTab, setActiveTab] = useState('matches') // 'matches' | 'golem' | 'preferences'
+  const [connectionType, setConnectionType] = useState('romantic')
 
   // Preferences state
   const [relType, setRelType] = useState([])
@@ -105,7 +114,7 @@ export default function DatingPage() {
     return (
       <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:16, padding:40, textAlign:'center' }}>
         <div style={{ fontSize:48 }}>💫</div>
-        <div style={{ fontFamily:"'Cinzel',serif", fontSize:14, letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold)' }}>Activate Your Golem First</div>
+        <div style={{ fontFamily:"'Cinzel',serif", fontSize:14, letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold)' }}>Activate Your Golem First — Connections</div>
         <div style={{ fontSize:12, color:'var(--muted-foreground)', maxWidth:320, lineHeight:1.7 }}>
           Add your birth date to create your Golem. Your clone will match with others while you rest — you only meet people when the frameworks say yes.
         </div>

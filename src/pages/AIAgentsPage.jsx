@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { callAI } from '../lib/ai'
 
 // Archetype colors
 const ARCHETYPE_COLORS = {

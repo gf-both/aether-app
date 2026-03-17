@@ -53,10 +53,14 @@ const PricingPage = lazy(() => import('./PricingPage'))
 const PractitionerPortal = lazy(() => import('./PractitionerPortal'))
 const ClientPortal = lazy(() => import('./ClientPortal'))
 const AIAgentsPage = lazy(() => import('./AIAgentsPage'))
+const IdentityAgent = lazy(() => import('./IdentityAgent'))
+const RelationshipAgent = lazy(() => import('./RelationshipAgent'))
+const LifeDirectionAgent = lazy(() => import('./LifeDirectionAgent'))
 import CompanyPage from './CompanyPage'
 const GolemPage = lazy(() => import('./GolemPage'))
 const WendyPage = lazy(() => import('./WendyPage'))
 const DatingPage = lazy(() => import('./DatingPage'))
+const GolemSimulation = lazy(() => import('./GolemSimulation'))
 import SettingsPage from './SettingsPage'
 const AdminPanel = lazy(() => import('./AdminPanel'))
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
@@ -278,6 +282,9 @@ const CONSTELLATION_LINKS = [
 ]
 
 const DETAIL_COMPONENTS = {
+  'identity-agent': IdentityAgent,
+  'relationship-agent': RelationshipAgent,
+  'life-direction': LifeDirectionAgent,
   integral: IntegralDetail,
   natal: NatalDetail,
   hd: HDDetail,
@@ -309,11 +316,15 @@ const DETAIL_COMPONENTS = {
   golem: GolemPage,
   wendy: WendyPage,
   dating: DatingPage,
+  'golem-sim': GolemSimulation,
   settings: SettingsPage,
   admin: AdminPanel,
 }
 
 const DETAIL_TITLES = {
+  'identity-agent': 'Identity Synthesis \u2014 Who Am I Really?',
+  'relationship-agent': 'Relationship Patterns \u2014 Why Do I Repeat This?',
+  'life-direction': 'Life Direction \u2014 Where Should My Life Go?',
   integral: 'Integral Consciousness \u2014 Full Map',
   natal: 'Natal Astrology \u2014 Full Profile',
   hd: 'Human Design \u2014 Full Profile',
@@ -345,6 +356,7 @@ const DETAIL_TITLES = {
   golem: 'Golem \u2014 Talk to Your Clone',
   wendy: 'Wendy \u2014 Org Intelligence',
   dating: 'Dating \u2014 Golem Matching',
+  'golem-sim': 'Golem Simulation \u2014 See How You Interact',
   settings: 'Settings',
   admin: 'Admin Panel \u2014 Product Architecture',
 }

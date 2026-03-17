@@ -11,7 +11,7 @@ export async function callAI({ systemPrompt, messages, maxTokens = 400 }) {
     })
     if (error) throw error
     return data?.content || null
-  } catch {
+  } catch (e) {
     console.error('AI call failed:', e)
     return null
   }

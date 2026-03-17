@@ -4,6 +4,11 @@ import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 const NAV_SECTIONS = [
   { type: 'item', icon: '◎', label: 'Dashboard', id: 'dashboard' },
 
+  { type: 'section', label: 'CORE AGENTS' },
+  { type: 'item', icon: '🜁', label: 'Identity', id: 'identity-agent', widget: 'identity-agent' },
+  { type: 'item', icon: '💫', label: 'Relationship', id: 'relationship-agent', widget: 'relationship-agent' },
+  { type: 'item', icon: '🧭', label: 'Life Direction', id: 'life-direction', widget: 'life-direction' },
+
   { type: 'section', label: 'CORE STRUCTURAL' },
   { type: 'item', icon: '☉', label: 'Natal Chart', id: 'natal', widget: 'natal' },
   { type: 'item', icon: '☽', label: 'Transits', id: 'transits', widget: 'tr' },
@@ -44,7 +49,8 @@ const NAV_SECTIONS = [
 
   { type: 'section', label: 'AGENTS' },
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
-  { type: 'item', icon: '💫', label: 'Dating', id: 'dating', widget: 'dating' },
+  { type: 'item', icon: '🔮', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
+  { type: 'item', icon: '💫', label: 'Connections', id: 'dating', widget: 'dating' },
   { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aiagents', widget: 'aiagents' },
   { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
 
