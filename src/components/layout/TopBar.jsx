@@ -542,7 +542,7 @@ export default function TopBar() {
     <div className="tb">
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
         <HamburgerMenu />
-        <span className="tb-brand" style={{ cursor: 'pointer' }} onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }}>GOLEM</span>
+        <span className="tb-brand" style={{ cursor: 'pointer' }} onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }}>AETHER</span>
         <ProfileSwitcher />
       </div>
       <div className="tb-chips">
