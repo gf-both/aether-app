@@ -161,7 +161,6 @@ const S = {
 /* ── Result screen ───────────────────────────────────────── */
 function QuizResult({ code, scores, onSave, onRetake, onClose }) {
   const typeData = MBTI_TYPES[code] || { name: code, desc: '' }
-  const total = QUESTIONS.length / 4
 
   const dims = [
     { a: 'E', b: 'I', label: 'Energy' },
@@ -330,7 +329,7 @@ export default function MBTIQuiz({ onClose }) {
                 {[
                   { key: 'A', text: current.a, letter: current.aScore },
                   { key: 'B', text: current.b, letter: current.bScore },
-                ].map(({ key, text, letter }) => (
+                ].map(({ key, text, _letter }) => (
                   <div
                     key={key}
                     onClick={() => pick(key)}

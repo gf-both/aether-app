@@ -322,7 +322,7 @@ export default function EnneagramQuiz({ onClose }) {
                   { label: 'Not me', sub: '0', val: 0 },
                   { label: 'Somewhat', sub: '1', val: 1 },
                   { label: 'Definitely me', sub: '2', val: 2 },
-                ].map(({ label, sub, val }) => (
+                ].map(({ label, _sub, val }) => (
                   <div
                     key={val}
                     onClick={() => rate(val)}

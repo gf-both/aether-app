@@ -24,7 +24,6 @@ function analyzePatterns(sessions) {
     }
   }
 
-  const allNotes = sessions.map(s => (s.notes || '').toLowerCase()).join(' ')
   const allText = sessions.map(s => [
     s.notes || '',
     ...(s.analysis?.insights || []),
@@ -147,14 +146,13 @@ const DEMO_SESSIONS = [
   },
 ]
 
-export default function PatternMiner({ clientId, clientProfile = {} }) {
+export default function PatternMiner({ clientId, _clientProfile = {} }) {
   const { sessionHistory } = useAboveInsideStore()
   const sessions = (sessionHistory?.[clientId] || []).length > 0
     ? sessionHistory[clientId]
     : DEMO_SESSIONS
 
   const patterns = useMemo(() => analyzePatterns(sessions), [sessions])
-  const [expanded, setExpanded] = useState(true)
 
   return (
     <div style={{

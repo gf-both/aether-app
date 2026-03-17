@@ -247,7 +247,7 @@ export default function AIChatPanel({ open, onClose }) {
     try {
       const response = await sendToClaudeAPI(updatedMessages, profile)
       setMessages((prev) => [...prev, { role: 'assistant', content: response }])
-    } catch (err) {
+    } catch (_err) {
       setMessages((prev) => [
         ...prev,
         { role: 'assistant', content: 'I apologize, but I encountered an issue processing your question. Please try again.' },

@@ -117,7 +117,7 @@ export const romanticFramework = {
         { label: 'Chiron Healing',  pct: 71, gradient: 'linear-gradient(90deg,#60b030,#88dd44)' },
         { label: 'Composite Moon',  pct: 86, gradient: 'linear-gradient(90deg,#ccd5f0,#dde8ff)' },
       ],
-      insight: (a, b) => `North Node conjunction — a karmic soul contract from past lives. Pluto aspects indicate transformative potential: this union triggers profound shadow integration and spiritual evolution for both.`,
+      insight: (_a, _b) => `North Node conjunction — a karmic soul contract from past lives. Pluto aspects indicate transformative potential: this union triggers profound shadow integration and spiritual evolution for both.`,
     },
   ],
   hdSection: {
@@ -144,7 +144,7 @@ export const romanticFramework = {
       { label: 'Life Path Synergy',         val: '5 + 7 = 12/3', gradient: 'linear-gradient(90deg,#1a8899,#40ccdd)' },
       { label: 'Vedic Nakshatras',          pct: 79, gradient: 'linear-gradient(90deg,#e09040,#f0b060)' },
     ],
-    insight: (a, b) => `Combined Life Path 5+7=12/3 — The Creative Seekers. Gene Key 28 (Totality) meets Gene Key 22 (Grace): your union holds a frequency of Sacred Partnership designed to inspire others.`,
+    insight: (_a, _b) => `Combined Life Path 5+7=12/3 — The Creative Seekers. Gene Key 28 (Totality) meets Gene Key 22 (Grace): your union holds a frequency of Sacred Partnership designed to inspire others.`,
   },
   wheelMode: 'romantic',
 }

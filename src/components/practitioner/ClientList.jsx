@@ -140,7 +140,7 @@ const STATUS_COLORS = {
 
 const FILTERS = ['All', 'Active', 'Generator', 'Projector', 'Manifestor', 'Reflector']
 
-function getInitials(name) {
+function _getInitials(name) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase()
 }
 

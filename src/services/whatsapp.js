@@ -27,7 +27,7 @@ export function generateWhatsAppLink(phoneNumber, message) {
 // sendMessage(phoneNumber, message)
 // Sends a free-form text message via the WhatsApp Business API.
 // ---------------------------------------------------------------------------
-export async function sendMessage(phoneNumber, message) {
+export async function sendMessage(phoneNumber, _message) {
   // TODO: Implement real WhatsApp message sending
   // 1. Validate the phone number (E.164 format)
   // 2. POST to the WhatsApp Cloud API messages endpoint:

@@ -191,14 +191,12 @@ function opposite(longitude) {
  */
 export function getGeneKeysProfile({ day, month, year, hour, minute, timezone = 0 }) {
   // Convert local time to UTC
-  const utcHour = hour - timezone
   let utcDay = day
   let utcMonth = month
   let utcYear = year
 
   // Handle day rollover
   const totalHours = hour * 60 + minute
-  const utcTotalMinutes = totalHours - timezone * 60
 
   let utcMinute = minute
   let adjHour = hour - timezone

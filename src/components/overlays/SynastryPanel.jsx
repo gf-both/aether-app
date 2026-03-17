@@ -132,7 +132,7 @@ function RomanticContent({ a, b, aName, bName, report }) {
   )
 }
 
-function FamilyContent({ a, b, aName, bName, report }) {
+function FamilyContent({ _a, b, aName, bName, report }) {
   const fw = familyFramework
   const rel = b.rel || 'other'
   const isParentRel = rel === 'father' || rel === 'mother'
@@ -221,8 +221,6 @@ function FamilyContent({ a, b, aName, bName, report }) {
 
 export function SynastryInner({ onClose }) {
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
-  const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
   const people = useAboveInsideStore((s) => s.people)
   const synSelA = useAboveInsideStore((s) => s.synSelA)
   const synSelB = useAboveInsideStore((s) => s.synSelB)

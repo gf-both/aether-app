@@ -5,7 +5,7 @@
  */
 
 import { useState, useMemo } from 'react'
-import { buildFullProfile, detectPatterns } from '../../engines/patternEngine.js'
+import { buildFullProfile } from '../../engines/patternEngine.js'
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -340,7 +340,7 @@ function SessionTimeline({ sessions = [] }) {
 
 // ─── Family Tab ───────────────────────────────────────────────────────────────
 
-function FamilyTab({ client }) {
+function FamilyTab({ _client }) {
   return (
     <div>
       <div style={s.sectionTitle}><span>🌳</span> Family Constellation</div>

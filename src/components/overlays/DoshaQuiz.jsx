@@ -196,8 +196,7 @@ export default function DoshaQuiz({ onClose }) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {q.options.map((opt, i) => {
-                const doshaKey = Object.keys(opt.dosha)[0]
-                const isSelected = selected === opt.dosha
+                                const isSelected = selected === opt.dosha
                 return (
                   <div
                     key={i}

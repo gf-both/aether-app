@@ -20,7 +20,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const people = useAboveInsideStore((s) => s.people)
   const addPerson = useAboveInsideStore((s) => s.addPerson)
   const removePerson = useAboveInsideStore((s) => s.removePerson)
-  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
+  const _setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
 
@@ -54,7 +54,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const nameRef = useRef(null)
   const dobRef = useRef(null)
   const tobRef = useRef(null)
-  const pobRef = useRef(null)
+  const _pobRef = useRef(null)
   const genderRef = useRef(null)
   const mbtiRef = useRef(null)
   const enneagramRef = useRef(null)
@@ -69,7 +69,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const npRelRef = useRef(null)
   const npDobRef = useRef(null)
   const npTobRef = useRef(null)
-  const npPobRef = useRef(null)
+  const _npPobRef = useRef(null)
   const npNotesRef = useRef(null)
   const npGenderRef = useRef(null)
   const npMbtiRef = useRef(null)
@@ -79,7 +79,7 @@ export default function ProfilePanel({ open, onClose, embedded }) {
   const npArchetypeRef = useRef(null)
   const npLoveLanguageRef = useRef(null)
 
-  function handleResetProfile() {
+  function _handleResetProfile() {
     // Clear all localStorage and reload with defaults
     localStorage.removeItem('above-inside-store')
     window.location.reload()

@@ -77,7 +77,7 @@ function getClientChartData(client, frameworkId) {
         timezone: client.birthTimezone,
       })
     }
-  } catch (e) {
+  } catch (_e) {
     return null
   }
   return null
@@ -181,11 +181,11 @@ function ChartView({ client, frameworkId }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setChart(getClientChartData(client, frameworkId))
       setLoading(false)
     }, 100)
+    return () => clearTimeout(timer)
   }, [client.id, frameworkId])
 
   if (loading) return <div style={cs.chartPlaceholder}>Computing {frameworkId}…</div>
@@ -505,11 +505,12 @@ export default function SessionMode({ client, onBack }) {
   const [running, setRunning] = useState(true)
   const [framework, setFramework] = useState('hd')
   const [notes, setNotes] = useState('')
-  const [actionItems, setActionItems] = useState(
-    (client?.sessions ?? []).length > 0
-      ? (client.sessions[0]?.actionItems ?? []).map(a => ({ ...a, id: Math.random() }))
-      : []
-  )
+  const [actionItems, setActionItems] = useState(() => {
+    if ((client?.sessions ?? []).length > 0) {
+      return (client.sessions[0]?.actionItems ?? []).map((a, idx) => ({ ...a, id: Date.now() + idx }))
+    }
+    return []
+  })
   const [newAction, setNewAction] = useState('')
   const [aiIdx, setAiIdx] = useState(0)
   const [expandedNotes, setExpandedNotes] = useState(null)
@@ -661,7 +662,7 @@ export default function SessionMode({ client, onBack }) {
           {sortedSessions.length > 0 && (
             <div>
               <div style={s.sectionTitle}>Previous Sessions</div>
-              {sortedSessions.map((sess, i) => (
+              {sortedSessions.map((sess) => (
                 <div key={sess.id} style={s.prevNote}>
                   <div style={s.prevNoteDate}>{formatSessionDate(sess.date)} · {sess.duration} min</div>
                   <div

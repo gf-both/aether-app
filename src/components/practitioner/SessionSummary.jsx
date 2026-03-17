@@ -17,7 +17,7 @@ function formatDate(timestamp) {
 }
 
 export default function SessionSummary({ session, clientProfile = {}, practitionerName = 'Your Practitioner' }) {
-  const { endSession } = useAboveInsideStore()
+  const { endSession: _endSession } = useAboveInsideStore()
   const [copied, setCopied] = useState(false)
   const [showScheduler, setShowScheduler] = useState(false)
 

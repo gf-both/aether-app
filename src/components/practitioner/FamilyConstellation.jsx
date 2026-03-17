@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 
 const RELATIONSHIP_COLORS = {

@@ -119,8 +119,8 @@ const UPCOMING = [
   ]},
 ]
 
-export default function PractitionerDashboard({ onNewSession, onViewClient }) {
-  const completionRate = Math.round((MOCK_REVENUE.currentMonth.sessions / (MOCK_REVENUE.currentMonth.sessions + 1)) * 100)
+export default function PractitionerDashboard({ _onNewSession, _onViewClient }) {
+  const _completionRate = Math.round((MOCK_REVENUE.currentMonth.sessions / (MOCK_REVENUE.currentMonth.sessions + 1)) * 100)
 
   return (
     <div>

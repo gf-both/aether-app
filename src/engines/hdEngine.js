@@ -371,7 +371,6 @@ function isThroadConnectedToMotor(activeChannels, centers) {
 
 function determineType(centers, activeChannels) {
   const sacralDefined = centers.SACRAL.defined
-  const throatDefined = centers.THROAT.defined
   const throadMotorLinked = isThroadConnectedToMotor(activeChannels, centers)
 
   const anyDefined = Object.values(centers).some(c => c.defined)

@@ -156,7 +156,7 @@ export default function AINoteTaker({ clientProfile = {} }) {
 
     try {
       // Try real API if available, fall back to mock
-      const prompt = AI_PROMPT_TEMPLATE(notes, clientProfile)
+      const _prompt = AI_PROMPT_TEMPLATE(notes, clientProfile)
       
       // For now, simulate API call with mock data
       await new Promise(resolve => setTimeout(resolve, 2200))

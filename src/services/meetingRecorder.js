@@ -44,7 +44,7 @@ export async function stopRecording(handle) {
 // getTranscript(audioBlob)
 // Sends recorded audio to a speech-to-text service and returns plain text.
 // ---------------------------------------------------------------------------
-export async function getTranscript(audioBlob) {
+export async function getTranscript(_audioBlob) {
   // TODO: Implement real transcription
   // 1. Convert the audioBlob to a File or FormData payload
   // 2. POST to the Whisper API endpoint (e.g. https://api.openai.com/v1/audio/transcriptions)
@@ -93,7 +93,7 @@ export async function generateNotes(transcript) {
 // generateTodos(transcript)
 // Extracts actionable to-do items from the transcript using Claude.
 // ---------------------------------------------------------------------------
-export async function generateTodos(transcript) {
+export async function generateTodos(_transcript) {
   // TODO: Implement real AI todo extraction
   // 1. Build a prompt instructing Claude to extract concrete action items:
   //    - Who is responsible (client, practitioner, or both)
@@ -132,7 +132,7 @@ export async function generateTodos(transcript) {
 // generateFollowUps(transcript)
 // Produces suggested follow-up messages from the transcript using Claude.
 // ---------------------------------------------------------------------------
-export async function generateFollowUps(transcript) {
+export async function generateFollowUps(_transcript) {
   // TODO: Implement real AI follow-up generation
   // 1. Build a prompt instructing Claude to draft follow-up messages:
   //    - Post-session check-in for the client
