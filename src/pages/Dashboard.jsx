@@ -6,6 +6,7 @@ import Sidebar from '../components/layout/Sidebar'
 import TopBar from '../components/layout/TopBar'
 import StatusBar from '../components/layout/StatusBar'
 import Starfield from '../components/ui/Starfield'
+import Oracle from '../components/overlays/Oracle'
 import NatalWheel from '../components/canvas/NatalWheel'
 import HumanDesign from '../components/canvas/HumanDesign'
 import KabbalahTree from '../components/canvas/KabbalahTree'
@@ -1064,6 +1065,7 @@ export default function Dashboard() {
   const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
   const setActiveNav = useGolemStore((s) => s.setActiveNav)
   const activeNav = useGolemStore((s) => s.activeNav)
+  const oracleOpen = useGolemStore((s) => s.oracleOpen)
   const setOracleOpen = useGolemStore((s) => s.setOracleOpen)
   const setActivePanel = useGolemStore((s) => s.setActivePanel)
   const layoutMode = useGolemStore((s) => s.layoutMode)
@@ -1105,18 +1107,21 @@ export default function Dashboard() {
   // Filter out hidden widgets
   const visibleWidgets = (Array.isArray(widgetOrder) ? widgetOrder : []).filter((id) => !(Array.isArray(hiddenWidgets) ? hiddenWidgets : []).includes(id))
 
+  // Oracle column width
+  const oracleCol = oracleOpen && !isMobile ? ' 340px' : ''
+
   // Detail view mode (shared across all layouts)
   if (activeDetail) {
     const DetailComponent = DETAIL_COMPONENTS[activeDetail]
     const title = DETAIL_TITLES[activeDetail]
     return (
       <div className="dash-root" style={{
-        display: 'grid', gridTemplateColumns: `${sbWidth} 1fr`, gridTemplateRows: '46px 1fr 42px',
+        display: 'grid', gridTemplateColumns: `${sbWidth} 1fr${oracleCol}`, gridTemplateRows: '46px 1fr 42px',
         gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
       }}>
         <Starfield />
         <Sidebar />
-        <TopBar />
+        <TopBar style={oracleOpen ? { gridColumn: '2 / -1' } : undefined} />
         <div className="dash-content" style={{
           gridColumn: 2, gridRow: 2, ...CARD_BASE,
           display: 'flex', flexDirection: 'column', animation: 'fadeUp .35s ease backwards',
@@ -1137,6 +1142,11 @@ export default function Dashboard() {
             </Suspense>
           </div>
         </div>
+        {oracleOpen && !isMobile && (
+          <div style={{ gridColumn: 3, gridRow: '2 / 4', overflow: 'hidden', borderRadius: 'var(--radius)' }}>
+            <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
+          </div>
+        )}
         <StatusBar />
         {isMobile && <MobileBottomNav activeNav={activeNav} setActiveNav={setActiveNav} setActiveDetail={setActiveDetail} setOracleOpen={setOracleOpen} setActivePanel={setActivePanel} />}
       </div>
@@ -1148,7 +1158,7 @@ export default function Dashboard() {
   if (isGrid) {
     return (
       <div className="dash-root" style={{
-        display: 'grid', gridTemplateColumns: `${sbWidth} 1fr`,
+        display: 'grid', gridTemplateColumns: `${sbWidth} 1fr${oracleCol}`,
         gridTemplateRows: '46px 1fr 42px', gap: '7px', padding: '7px 7px 7px 0',
         width: '100%', height: '100vh', position: 'relative', zIndex: 1,
       }}>
@@ -1222,6 +1232,11 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+        {oracleOpen && !isMobile && (
+          <div style={{ gridColumn: 3, gridRow: '2 / 4', overflow: 'hidden', borderRadius: 'var(--radius)' }}>
+            <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
+          </div>
+        )}
         <StatusBar />
         {isMobile && <MobileBottomNav activeNav={activeNav} setActiveNav={setActiveNav} setActiveDetail={setActiveDetail} setOracleOpen={setOracleOpen} setActivePanel={setActivePanel} />}
       </div>
@@ -1231,7 +1246,7 @@ export default function Dashboard() {
   // Focus, Stream
   return (
     <div className="dash-root" style={{
-      display: 'grid', gridTemplateColumns: `${sbWidth} 1fr`, gridTemplateRows: '46px 1fr 42px',
+      display: 'grid', gridTemplateColumns: `${sbWidth} 1fr${oracleCol}`, gridTemplateRows: '46px 1fr 42px',
       gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
     }}>
       <Starfield />
@@ -1239,6 +1254,11 @@ export default function Dashboard() {
       <TopBar />
       {layoutMode === 'focus' && <FocusLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       {layoutMode === 'stream' && <StreamLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
+      {oracleOpen && !isMobile && (
+        <div style={{ gridColumn: 3, gridRow: '2 / 4', overflow: 'hidden', borderRadius: 'var(--radius)' }}>
+          <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
+        </div>
+      )}
       <StatusBar />
       {isMobile && <MobileBottomNav activeNav={activeNav} setActiveNav={setActiveNav} setActiveDetail={setActiveDetail} setOracleOpen={setOracleOpen} setActivePanel={setActivePanel} />}
     </div>

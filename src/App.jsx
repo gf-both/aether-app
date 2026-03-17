@@ -6,7 +6,7 @@ import Dashboard from './pages/Dashboard'
 import ProfilePanel from './components/overlays/ProfilePanel'
 import SynastryPanel from './components/overlays/SynastryPanel'
 import AIChatPanel from './components/overlays/AIChatPanel'
-import Oracle from './components/overlays/Oracle'
+// Oracle is now embedded in Dashboard layout (not an overlay)
 import AuthModal from './components/auth/AuthModal'
 import Starfield from './components/ui/Starfield'
 import Cursor from './components/ui/Cursor'
@@ -50,13 +50,12 @@ function AuthSync() {
 }
 
 function OverlayManager() {
-  const { activePanel, setActivePanel, showAuthModal, setShowAuthModal, oracleOpen, setOracleOpen } = useGolemStore()
+  const { activePanel, setActivePanel, showAuthModal, setShowAuthModal } = useGolemStore()
   return createPortal(
     <>
       <ProfilePanel open={activePanel === 'profile'} onClose={() => setActivePanel(null)} />
       <SynastryPanel open={activePanel === 'synastry'} onClose={() => setActivePanel(null)} />
       <AIChatPanel open={activePanel === 'aichat'} onClose={() => setActivePanel(null)} />
-      <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>,
     document.body

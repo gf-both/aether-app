@@ -55,7 +55,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
 
   { type: 'section', label: 'TOOLS' },
-  { type: 'item', icon: '💬', label: 'AI Guide', id: 'aichat', panel: 'aichat' },
+  { type: 'item', icon: '◈', label: 'Oracle', id: 'oracle', action: 'toggleOracle' },
   { type: 'item', icon: '💎', label: 'Pricing', id: 'pricing', widget: 'pricing' },
   { type: 'item', icon: '🏥', label: 'Practitioner', id: 'practitioner', widget: 'practitioner' },
   { type: 'item', icon: '📋', label: 'Client Portal', id: 'client', widget: 'client' },
@@ -71,11 +71,17 @@ export default function Sidebar() {
   const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
   const sidebarCollapsed = useGolemStore((s) => s.sidebarCollapsed)
   const setSidebarCollapsed = useGolemStore((s) => s.setSidebarCollapsed)
+  const oracleOpen = useGolemStore((s) => s.oracleOpen)
+  const setOracleOpen = useGolemStore((s) => s.setOracleOpen)
 
   function handleClick(item) {
     if (item.id === 'dashboard') {
       setActiveDetail(null)
       setActiveNav('dashboard')
+      return
+    }
+    if (item.action === 'toggleOracle') {
+      setOracleOpen(!oracleOpen)
       return
     }
     setActiveNav(item.id)
