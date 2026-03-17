@@ -128,7 +128,7 @@ function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
       if (card) {
         const targetId = card.dataset.widget
         dropTargetRef.current = targetId
-        const visibleWidgets = widgetOrder.filter(w => !hiddenWidgets.includes(w))
+        const visibleWidgets = (Array.isArray(widgetOrder) ? widgetOrder : []).filter(w => !(Array.isArray(hiddenWidgets) ? hiddenWidgets : []).includes(w))
         const idx = visibleWidgets.indexOf(targetId)
         setOverIdx(idx >= 0 ? idx : null)
       } else {
@@ -151,6 +151,7 @@ function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
       dropTargetRef.current = null
       if (dropId && dropId !== widgetId) {
         setWidgetOrder(prev => {
+            if (!Array.isArray(prev)) return prev
           const arr = [...prev]
           const fromIdx = arr.indexOf(widgetId)
           const toIdx = arr.indexOf(dropId)
@@ -1388,7 +1389,7 @@ export default function Dashboard() {
   const hdTags = hdChart ? buildHDTags(hdChart) : []
 
   // Filter out hidden widgets
-  const visibleWidgets = widgetOrder.filter((id) => !hiddenWidgets.includes(id))
+  const visibleWidgets = (Array.isArray(widgetOrder) ? widgetOrder : []).filter((id) => !(Array.isArray(hiddenWidgets) ? hiddenWidgets : []).includes(id))
 
   // Detail view mode (shared across all layouts)
   if (activeDetail) {

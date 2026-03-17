@@ -66,7 +66,7 @@ function ThemeSync() {
     html.setAttribute('data-theme', theme)
 
     // Paperclip dark/light class — determines base chrome colors
-    const isLight = theme === 'parchment-day' || theme === 'crystal-day' || theme === 'manuscript-day' || theme === 'light'
+    const isLight = theme?.endsWith('-day') || theme === 'light'
     html.classList.toggle('dark', !isLight)
 
     // Remove all theme-* classes, add current one
