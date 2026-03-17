@@ -77,6 +77,20 @@ export default function TimelineWidget() {
         if (yr > currentYear) events.push({ year: yr, label, type: 'saturn' })
       }
 
+      // Outer planet transits
+      const outerTransits = [
+        { offset: 21,  label: 'Uranus Square I', type: 'uranus' },
+        { offset: 36,  label: 'Pluto Square', type: 'pluto' },
+        { offset: 41,  label: 'Neptune Square', type: 'neptune' },
+        { offset: 42,  label: 'Uranus Opposition', type: 'uranus' },
+        { offset: 63,  label: 'Uranus Square II', type: 'uranus' },
+        { offset: 84,  label: 'Uranus Return', type: 'uranus' },
+      ]
+      for (const { offset, label, type } of outerTransits) {
+        const yr = birthYear + offset
+        if (yr > currentYear) events.push({ year: yr, label, type })
+      }
+
       // Jupiter returns
       for (let i = 1; i <= 8; i++) {
         const yr = birthYear + i * 12
@@ -104,9 +118,8 @@ export default function TimelineWidget() {
         dashaProgress = Math.max(0, Math.min(1, (nowMs - start) / (end - start)))
       }
 
-      return { currentDasha, py, nextEvents, dashaProgress, birthYear }
+      return { currentDasha, py, nextEvents, dashaProgress, birthYear, birthMonth, birthDay }
     } catch {
-      console.error('TimelineWidget error:', e)
       return null
     }
   }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone])
@@ -125,10 +138,11 @@ export default function TimelineWidget() {
     )
   }
 
-  const { currentDasha, py, nextEvents, dashaProgress } = data
+  const { currentDasha, py, nextEvents, dashaProgress, birthYear } = data
   const currentYear = new Date().getFullYear()
+  const currentAge = currentYear - birthYear
 
-  const typeColor = { saturn: '#f0c040', jupiter: '#40b0ff', dasha: '#a060e0', chiron: '#40cccc' }
+  const typeColor = { saturn: '#f0c040', jupiter: '#40b0ff', dasha: '#a060e0', chiron: '#40cccc', pluto: '#cc3355', uranus: '#40ccdd', neptune: '#6688dd' }
 
   return (
     <div style={{
@@ -142,8 +156,10 @@ export default function TimelineWidget() {
       <div style={{
         fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.2em',
         textTransform: 'uppercase', color: 'var(--muted-foreground)', marginBottom: 2,
+        display: 'flex', justifyContent: 'space-between',
       }}>
-        Timeline
+        <span>Timeline</span>
+        <span style={{ color: 'var(--foreground)', opacity: 0.5 }}>Age {currentAge}</span>
       </div>
 
       {/* Current Dasha */}
@@ -203,6 +219,7 @@ export default function TimelineWidget() {
           }}>Upcoming</div>
           {nextEvents.map((ev, i) => {
             const yr = Math.floor(ev.year)
+            const ageAtEvent = yr - birthYear
             const countdown = yr - currentYear
             const col = typeColor[ev.type] || '#888'
             return (
@@ -219,7 +236,7 @@ export default function TimelineWidget() {
                 </div>
                 <div style={{ color: col, fontFamily: "'Cinzel', serif", fontSize: 9, flexShrink: 0, marginLeft: 6 }}>
                   {yr} <span style={{ color: 'var(--muted-foreground)', fontSize: 8 }}>
-                    ({countdown > 0 ? `in ${countdown}y` : 'now'})
+                    age {ageAtEvent} · {countdown > 0 ? `in ${countdown}y` : 'now'}
                   </span>
                 </div>
               </div>

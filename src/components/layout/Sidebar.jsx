@@ -37,12 +37,6 @@ const NAV_SECTIONS = [
 
   { type: 'section', label: 'SYMBOLIC' },
   { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
-  { type: 'item', icon: '🌟', label: 'Fixed Stars', id: 'stars', widget: 'stars' },
-  { type: 'item', icon: '🔮', label: 'Sabian', id: 'sabian', widget: 'sabian' },
-  { type: 'item', icon: '☽', label: 'Arabic Parts', id: 'arabic', widget: 'arabic' },
-  { type: 'item', icon: '🃏', label: 'Tarot', id: 'tarot', widget: 'tarot' },
-  { type: 'item', icon: '🌲', label: 'Celtic Tree', id: 'celtic', widget: 'celtic' },
-  { type: 'item', icon: '📊', label: 'Biorhythms', id: 'biorhythm', widget: 'biorhythm' },
 
   { type: 'section', label: 'LIFE ARC' },
   { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
@@ -51,7 +45,7 @@ const NAV_SECTIONS = [
   { type: 'section', label: 'IDENTITY' },
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
   { type: 'item', icon: '💫', label: 'Dating', id: 'dating', widget: 'dating' },
-  { type: 'item', icon: '🤖', label: 'AI Agents', id: 'golem', widget: 'golem' },
+  { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aiagents', widget: 'aiagents' },
   { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
 
   { type: 'section', label: 'TOOLS' },

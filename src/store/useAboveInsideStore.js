@@ -3,7 +3,7 @@ import { getAllBirthProfiles } from '../lib/db'
 import { persist } from 'zustand/middleware'
 import { DEFAULT_PRIMARY_PROFILE, DEFAULT_PEOPLE } from '../data/primaryProfile'
 
-const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'integral', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'vedic', 'tibetan', 'stars', 'timeline', 'career']
+const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'integral', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'vedic', 'tibetan', 'timeline', 'career']
 
 export const useAboveInsideStore = create(
   persist(
@@ -36,6 +36,9 @@ export const useAboveInsideStore = create(
           enneagramType: person.enneagramType || null,
           enneagramWing: person.enneagramWing || null,
           mbtiType: person.mbtiType || null,
+          doshaType: person.doshaType || null,
+          archetypeType: person.archetypeType || null,
+          loveLanguage: person.loveLanguage || null,
         }] })),
       removePerson: (id) =>
         set((s) => ({ people: s.people.filter((p) => p.id !== id) })),
@@ -84,6 +87,12 @@ export const useAboveInsideStore = create(
               rel: p.label || 'other',
               emoji: '✦',
               sign: '?',
+              enneagramType: p.enneagram_type || null,
+              enneagramWing: p.enneagram_wing || null,
+              mbtiType: p.mbti_type || null,
+              doshaType: p.dosha_type || null,
+              archetypeType: p.archetype_type || null,
+              loveLanguage: p.love_language || null,
             }))
           })
         }
@@ -322,7 +331,7 @@ export const useAboveInsideStore = create(
           return {
             ...persistedState,
             hiddenWidgets: [],
-            widgetOrder: ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang', 'timeline']
+            widgetOrder: ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'dosha', 'archetype', 'lovelang', 'timeline']
           }
         }
         return persistedState

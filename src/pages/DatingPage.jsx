@@ -1,9 +1,50 @@
 import { useState, useMemo } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
 import { computeCompatibility, getCompatibilityDescription } from '../engines/compatibilityEngine'
+import { getNatalChart } from '../engines/natalEngine'
+import { computeHDChart } from '../engines/hdEngine'
+import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
+import { resolvePob } from '../utils/profileUtils'
 
 export default function DatingPage() {
   const profile = useAboveInsideStore(s => s.activeViewProfile || s.primaryProfile)
+  // Compute chart values dynamically when profile fields show '?'
+  const computed = useMemo(() => {
+    if (!profile?.dob) return {}
+    const v = (x) => x && x !== '?' ? x : null
+    let sign = v(profile.sign), moon = v(profile.moon), asc = v(profile.asc)
+    let hdType = v(profile.hdType), hdAuth = v(profile.hdAuth), hdProfile = v(profile.hdProfile)
+    let lifePath = v(profile.lifePath)
+    if (!sign || !moon || !asc) {
+      try {
+        const [y, m, d] = profile.dob.split('-').map(Number)
+        const [h, min] = (profile.tob || '12:00').split(':').map(Number)
+        const { lat, lon, tz } = resolvePob(profile)
+        const chart = getNatalChart({ day: d, month: m, year: y, hour: h || 12, minute: min || 0, lat, lon, timezone: tz })
+        if (chart) { sign = sign || chart.planets?.sun?.sign; moon = moon || chart.planets?.moon?.sign; asc = asc || chart.angles?.asc?.sign }
+      } catch {}
+    }
+    if (!hdType || !hdAuth) {
+      try {
+        const hd = computeHDChart({ dateOfBirth: profile.dob, timeOfBirth: profile.tob || '12:00', utcOffset: profile.birthTimezone ?? -3 })
+        if (hd) { hdType = hdType || hd.type; hdAuth = hdAuth || hd.authority; hdProfile = hdProfile || hd.profile }
+      } catch {}
+    }
+    if (!lifePath) {
+      try {
+        const num = getNumerologyProfileFromDob(profile.dob, profile.name || 'X', {})
+        if (num?.core?.lifePath) lifePath = num.core.lifePath.val
+      } catch {}
+    }
+    return { sign: sign || '?', moon: moon || '?', asc: asc || '?', hdType: hdType || '?', hdAuth: hdAuth || '?', hdProfile: hdProfile || '?', lifePath: lifePath || '?' }
+  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.name, profile?.sign, profile?.moon, profile?.hdType])
+
+  const pSign = computed.sign || profile.sign || '?'
+  const pMoon = computed.moon || profile.moon || '?'
+  const pHdType = computed.hdType || profile.hdType || '?'
+  const pHdAuth = computed.hdAuth || profile.hdAuth || '?'
+  const pLifePath = computed.lifePath || profile.lifePath || '?'
+
   const [geoEnabled, setGeoEnabled] = useState(true)
   const [geoRange, setGeoRange] = useState(100)
   const [selectedMatch, setSelectedMatch] = useState(null)
@@ -191,7 +232,7 @@ export default function DatingPage() {
                 </div>
               </div>
               <div style={{ fontSize:12, lineHeight:1.7, color:'rgba(255,255,255,.65)' }}>
-                Your Golem holds your complete profile — {profile.sign || '?'} Sun, {profile.moon || '?'} Moon, {profile.hdType || '?'} in Human Design, Life Path {profile.lifePath || '?'}. It meets other Golems, runs compatibility scores across 21 frameworks, and brings you the best matches. You only appear when the frameworks agree.
+                Your Golem holds your complete profile — {pSign} Sun, {pMoon} Moon, {pHdType} in Human Design, Life Path {pLifePath}. It meets other Golems, runs compatibility scores across 21 frameworks, and brings you the best matches. You only appear when the frameworks agree.
               </div>
             </div>
 
@@ -199,9 +240,9 @@ export default function DatingPage() {
               Active Matching Frameworks
             </div>
             {[
-              { label:'Human Design', detail:`${profile.hdType || '?'} · ${profile.hdAuth || '?'} authority`, weight:'25%' },
-              { label:'Western Astrology', detail:`${profile.sign || '?'} Sun · ${profile.moon || '?'} Moon`, weight:'20%' },
-              { label:'Numerology', detail:`Life Path ${profile.lifePath || '?'}`, weight:'15%' },
+              { label:'Human Design', detail:`${pHdType} · ${pHdAuth} authority`, weight:'25%' },
+              { label:'Western Astrology', detail:`${pSign} Sun · ${pMoon} Moon`, weight:'20%' },
+              { label:'Numerology', detail:`Life Path ${pLifePath}`, weight:'15%' },
               { label:'Gene Keys', detail:'Hologenetic profile', weight:'15%' },
               { label:'Mayan Calendar', detail:'Kin resonance', weight:'10%' },
               { label:'Personality', detail:'Enneagram · MBTI · Archetype', weight:'15%' },

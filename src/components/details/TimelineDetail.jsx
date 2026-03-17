@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useRef, useCallback } from 'react'
 import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { getVedicChart } from '../../engines/vedicEngine'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
@@ -20,6 +20,9 @@ const COLORS = {
   saturn:  '#f0c040',  // gold
   jupret:  '#40b0ff',  // blue
   chiron:  '#20c0b0',  // teal
+  pluto:   '#cc3355',  // crimson
+  uranus:  '#40ccdd',  // cyan
+  neptune: '#6688dd',  // periwinkle
   numcyc:  '#50c060',  // green
   numchg:  '#c0d060',  // lime
   challenge: '#e05050', // red
@@ -168,6 +171,26 @@ function buildEvents(profile) {
     })
   }
 
+  // ── 4b. Outer planet transits (Pluto, Uranus, Neptune) ────────────────────
+  // Pluto: ~248 year cycle, but key transits happen at specific angles
+  // Pluto square natal Pluto: age ~36-40, Pluto opposite: ~82-90 (rare)
+  // Uranus: ~84 year cycle, opposition at ~42, squares at ~21 & ~63
+  // Neptune: ~165 year cycle, square at ~41
+
+  const outerTransits = [
+    { offset: 21,   label: 'Uranus Square I', icon: '♅', desc: 'First Uranus square — breaking free from inherited structures; sudden awakening to individuality and rebellion against constraints', color: '#40ccdd', type: 'uranus' },
+    { offset: 36,   label: 'Pluto Square', icon: '♇', desc: 'Pluto squares natal Pluto — deep psychological transformation; power struggles surface. Old identities must die for authentic self to emerge', color: '#cc3355', type: 'pluto' },
+    { offset: 41,   label: 'Neptune Square', icon: '♆', desc: 'Neptune squares natal Neptune — spiritual disillusionment and re-enchantment; the midlife fog that reveals what is truly real', color: '#6688dd', type: 'neptune' },
+    { offset: 42,   label: 'Uranus Opposition', icon: '♅', desc: 'Uranus opposes natal Uranus — the classic midlife crisis point. Radical authenticity demanded; liberation from what no longer fits', color: '#40ccdd', type: 'uranus' },
+    { offset: 63,   label: 'Uranus Square II', icon: '♅', desc: 'Second Uranus square — elder rebellion; breaking free again to live remaining years with radical freedom', color: '#40ccdd', type: 'uranus' },
+    { offset: 84,   label: 'Uranus Return', icon: '♅', desc: 'Full Uranus return — the complete cycle of individuation. Rare and powerful milestone of total liberation', color: '#40ccdd', type: 'uranus' },
+  ]
+  for (const { offset, label, icon, desc, color, type } of outerTransits) {
+    const yr = birthYear + offset
+    if (yr < rangeStart || yr > rangeEnd) continue
+    events.push({ year: yr, yearDisplay: String(yr), icon, label, desc, color, type, overlay: 'astrology' })
+  }
+
   // ── 5. Numerology cycles (→ numerology overlay) ─────────────────────────────
   try {
     const name = profile?.name || 'Unknown'
@@ -274,7 +297,8 @@ function EventDot({ color, size = 12 }) {
 function TypeBadge({ type, color }) {
   const labels = {
     dasha: 'Vedic', saturn: 'Saturn', jupiter: 'Jupiter',
-    chiron: 'Chiron', numerology: 'Numerology',
+    chiron: 'Chiron', pluto: 'Pluto', uranus: 'Uranus', neptune: 'Neptune',
+    numerology: 'Numerology',
     hd: 'Human Design', mayan: 'Mayan',
   }
   return (
@@ -289,22 +313,42 @@ function TypeBadge({ type, color }) {
   )
 }
 
-function TimelineEvent({ ev, isPast, isNear }) {
+function TimelineEvent({ ev, isPast, isNear, birthYear }) {
+  const [hovered, setHovered] = useState(false)
+  const [tooltipSide, setTooltipSide] = useState('right')
+  const cardRef = useRef(null)
   const isLeft = isPast
+  const ageAtEvent = Math.floor(ev.year - birthYear)
+
+  const handleMouseEnter = useCallback((e) => {
+    setHovered(true)
+    // Determine tooltip side based on mouse position relative to viewport
+    const rect = e.currentTarget.getBoundingClientRect()
+    const midX = window.innerWidth / 2
+    setTooltipSide(rect.left + rect.width / 2 < midX ? 'right' : 'left')
+  }, [])
+
   return (
-    <div style={{
-      display: 'flex', alignItems: 'flex-start', gap: 12,
-      flexDirection: isLeft ? 'row' : 'row-reverse',
-      marginBottom: 6,
-      opacity: isPast ? 0.65 : 1,
-    }}>
+    <div
+      ref={cardRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex', alignItems: 'flex-start', gap: 12,
+        flexDirection: isLeft ? 'row' : 'row-reverse',
+        marginBottom: 6,
+        opacity: isPast ? 0.65 : 1,
+        position: 'relative',
+      }}
+    >
       {/* Content card */}
       <div style={{
         flex: 1, maxWidth: 'calc(50% - 24px)',
         background: isNear ? ev.color + '08' : 'var(--card)',
-        border: `1px solid ${isNear ? ev.color + '50' : 'var(--border)'}`,
+        border: `1px solid ${isNear ? ev.color + '50' : hovered ? ev.color + '40' : 'var(--border)'}`,
         borderRadius: 10, padding: '8px 12px',
         textAlign: isLeft ? 'right' : 'left',
+        cursor: 'pointer', transition: 'border-color .2s',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: isLeft ? 'flex-end' : 'flex-start', marginBottom: 3 }}>
           <span style={{ fontSize: 15, color: ev.color }}>{ev.icon}</span>
@@ -312,6 +356,10 @@ function TimelineEvent({ ev, isPast, isNear }) {
             fontFamily: "'Cinzel', serif", fontSize: 9, fontWeight: 600,
             color: ev.color, letterSpacing: '.06em',
           }}>{ev.yearDisplay}</span>
+          <span style={{
+            fontSize: 8, fontFamily: "'Cinzel', serif", letterSpacing: '.08em',
+            color: 'var(--muted-foreground)', opacity: 0.7,
+          }}>age {ageAtEvent}</span>
           <TypeBadge type={ev.type} color={ev.color} />
         </div>
         <div style={{
@@ -321,13 +369,6 @@ function TimelineEvent({ ev, isPast, isNear }) {
         }}>
           {ev.label}
         </div>
-        <div style={{
-          fontSize: 10.5, color: 'var(--muted-foreground)', lineHeight: 1.5,
-          fontFamily: "'Cormorant Garamond', Georgia, serif",
-          fontStyle: 'italic',
-        }}>
-          {ev.desc}
-        </div>
       </div>
 
       {/* Dot on spine */}
@@ -335,8 +376,52 @@ function TimelineEvent({ ev, isPast, isNear }) {
         <EventDot color={ev.color} />
       </div>
 
-      {/* Year label on opposite side (empty spacer) */}
-      <div style={{ flex: 1, maxWidth: 'calc(50% - 24px)' }} />
+      {/* Age badge on opposite side */}
+      <div style={{ flex: 1, maxWidth: 'calc(50% - 24px)', display: 'flex', alignItems: isLeft ? 'flex-start' : 'flex-end', paddingTop: 6 }}>
+        <span style={{
+          fontSize: 9, fontFamily: "'Cinzel', serif", letterSpacing: '.08em',
+          color: ev.color, opacity: 0.6,
+        }}>
+          {isPast ? `age ${ageAtEvent}` : `age ${ageAtEvent}`}
+        </span>
+      </div>
+
+      {/* Expanded tooltip on hover */}
+      {hovered && ev.desc && (
+        <div style={{
+          position: 'absolute',
+          top: '100%', marginTop: 4,
+          [tooltipSide === 'right' ? 'left' : 'right']: 0,
+          zIndex: 100,
+          maxWidth: 340, minWidth: 220,
+          background: 'var(--popover)',
+          border: `1px solid ${ev.color}40`,
+          borderRadius: 12, padding: '12px 16px',
+          backdropFilter: 'blur(20px)',
+          boxShadow: `0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px ${ev.color}15`,
+          animation: 'fadeUp .15s ease',
+          pointerEvents: 'none',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+            <span style={{ fontSize: 18, color: ev.color }}>{ev.icon}</span>
+            <div>
+              <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, color: ev.color, letterSpacing: '.06em' }}>
+                {ev.label}
+              </div>
+              <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>
+                {ev.yearDisplay} · Age {ageAtEvent} · {isPast ? 'Past' : isNear ? 'Approaching' : 'Future'}
+              </div>
+            </div>
+          </div>
+          <div style={{
+            fontSize: 11.5, color: 'var(--foreground)', lineHeight: 1.6,
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontStyle: 'italic',
+          }}>
+            {ev.desc}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -429,6 +514,9 @@ export default function TimelineDetail() {
     { color: COLORS.numcyc,    label: 'New Cycle (PY1)',     overlay: 'numerology' },
     { color: COLORS.numchg,    label: 'Pinnacle Shift',      overlay: 'numerology' },
     { color: '#f0a040',        label: 'Life Path Year',      overlay: 'numerology' },
+    { color: COLORS.pluto,     label: 'Pluto Transit',       overlay: 'astrology' },
+    { color: COLORS.uranus,    label: 'Uranus Transit',      overlay: 'astrology' },
+    { color: COLORS.neptune,   label: 'Neptune Transit',     overlay: 'astrology' },
     { color: COLORS.hd,        label: 'HD Gate Cycle',       overlay: 'hd' },
     { color: COLORS.mayan,     label: 'Mayan Wavespell',     overlay: 'mayan' },
   ].filter(item => activeOverlays.includes(item.overlay))
@@ -561,12 +649,12 @@ export default function TimelineDetail() {
                       textTransform: 'uppercase', color: '#ffffff', fontWeight: 700,
                       boxShadow: '0 0 16px rgba(255,255,255,0.1)',
                     }}>
-                      ◈ Today {currentYear}
+                      ◈ Today {currentYear} · Age {currentYear - birthYear}
                     </div>
                   </div>
                 )}
                 <div style={{ position: 'relative', zIndex: 1 }}>
-                  <TimelineEvent ev={ev} isPast={isPast} isNear={isNear} />
+                  <TimelineEvent ev={ev} isPast={isPast} isNear={isNear} birthYear={birthYear} />
                 </div>
               </div>
             )

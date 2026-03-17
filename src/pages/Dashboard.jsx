@@ -23,7 +23,6 @@ import DoshaSymbol from '../components/canvas/DoshaSymbol'
 import LoveLangSymbol from '../components/canvas/LoveLangSymbol'
 import ArchetypeSymbol from '../components/canvas/ArchetypeSymbol'
 import TibetanWheel from '../components/canvas/TibetanWheel'
-import BiorhythmChart from '../components/canvas/BiorhythmChart'
 import IntegralFigure from '../components/canvas/IntegralFigure'
 import NatalDetail from '../components/details/NatalDetail'
 import HDDetail from '../components/details/HDDetail'
@@ -39,16 +38,10 @@ import PatternsDetail from '../components/details/PatternsDetail'
 import MBTIDetail from '../components/details/MBTIDetail'
 import EgyptianDetail from '../components/details/EgyptianDetail'
 import VedicDetail from '../components/details/VedicDetail'
-import BiorhythmDetail from '../components/details/BiorhythmDetail'
-import TarotDetail from '../components/details/TarotDetail'
-import CelticTreeDetail from '../components/details/CelticTreeDetail'
 import IntegralDetail from '../components/details/IntegralDetail'
 import SynastryDetail from '../components/details/SynastryDetail'
 import ProfileDetail from '../components/details/ProfileDetail'
-import SabianDetail from '../components/details/SabianDetail'
-import ArabicPartsDetail from '../components/details/ArabicPartsDetail'
 import TibetanDetail from '../components/details/TibetanDetail'
-import FixedStarsDetail from '../components/details/FixedStarsDetail'
 import DoshaDetail from '../components/details/DoshaDetail'
 import ArchetypeDetail from '../components/details/ArchetypeDetail'
 import LoveLangDetail from '../components/details/LoveLangDetail'
@@ -68,9 +61,6 @@ import SettingsPage from './SettingsPage'
 const AdminPanel = lazy(() => import('./AdminPanel'))
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
-import { getBiorhythms } from '../engines/biorhythmEngine'
-import { getTarotBirthCards } from '../engines/tarotEngine'
-import { getCelticTree } from '../engines/celticTreeEngine'
 import { GK_LIST } from '../data/geneKeysData'
 import { MAYAN_PROFILE, computeFullProfile as computeMayanProfile } from '../data/mayanData'
 import { getChineseProfileFromDob } from '../engines/chineseEngine'
@@ -263,28 +253,12 @@ const ROWS = [
     cols: '1fr',
   },
   {
-    label: 'SYMBOLIC ASTROLOGY',
-    sub: 'Sabian Symbols \u00B7 Arabic Parts \u00B7 Lots \u00B7 Sensitive Points',
-    color: 'rgba(201,168,76,1)',
-    border: 'rgba(201,168,76,.3)',
-    widgets: ['sabian', 'arabic'],
-    cols: '1fr 1fr',
-  },
-  {
-    label: 'CYCLES & DIVINATION',
-    sub: 'Biorhythms \u00B7 Tarot Birth Cards \u00B7 Celtic Tree Calendar',
-    color: 'rgba(96,200,80,1)',
-    border: 'rgba(96,200,80,.3)',
-    widgets: ['biorhythm', 'tarot', 'celtic'],
-    cols: '1.5fr 1fr 1fr',
-  },
-  {
-    label: 'TIBETAN & STELLAR',
-    sub: 'Losar Calendar \u00B7 Mewa \u00B7 Fixed Stars \u00B7 Ancient Wisdom',
+    label: 'TIBETAN ASTROLOGY',
+    sub: 'Losar Calendar \u00B7 Mewa \u00B7 Ancient Wisdom',
     color: '#e8a040',
     border: 'rgba(232,160,64,.3)',
-    widgets: ['tibetan', 'stars'],
-    cols: '1fr 1fr',
+    widgets: ['tibetan'],
+    cols: '1fr',
   },
   {
     label: 'LIFE TIMELINE',
@@ -319,11 +293,7 @@ const DETAIL_COMPONENTS = {
   mbti: MBTIDetail,
   egyptian: EgyptianDetail,
   vedic: VedicDetail,
-  biorhythm: BiorhythmDetail,
-  tarot: TarotDetail,
-  celtic: CelticTreeDetail,
   tibetan: TibetanDetail,
-  stars: FixedStarsDetail,
   dosha: DoshaDetail,
   archetype: ArchetypeDetail,
   lovelang: LoveLangDetail,
@@ -331,8 +301,6 @@ const DETAIL_COMPONENTS = {
   career: CareerAlignmentDetail,
   synastry: SynastryDetail,
   profile: ProfileDetail,
-  sabian: SabianDetail,
-  arabic: ArabicPartsDetail,
   pricing: PricingPage,
   practitioner: PractitionerPortal,
   client: ClientPortal,
@@ -361,14 +329,8 @@ const DETAIL_TITLES = {
   mbti: 'Myers-Briggs \u2014 Personality Type',
   egyptian: 'Egyptian Astrology \u2014 Full Profile',
   vedic:     'Vedic Astrology \u2014 Jyotish Profile',
-  biorhythm: 'Biorhythms \u2014 Physical \u00B7 Emotional \u00B7 Intellectual',
-  tarot:     'Tarot Birth Cards \u2014 Major Arcana Soul Reading',
-  celtic:    'Celtic Tree Calendar \u2014 Ogham Tree Zodiac',
   synastry:  'Synastry \u2014 Composite Analysis',
-  sabian:    'Sabian Symbols \u2014 360 Degrees',
-  arabic:    'Arabic Parts \u2014 Lots & Sensitive Points',
   tibetan: 'Tibetan Astrology \u2014 Losar Calendar & Mewa',
-  stars: 'Fixed Stars \u2014 Natal Conjunctions',
   dosha: 'Ayurvedic Dosha \u2014 Mind-Body Constitution',
   archetype: 'Archetype Assessment \u2014 Jungian Pattern',
   lovelang: 'Love Languages \u2014 How You Give & Receive Love',
@@ -421,87 +383,6 @@ function NatalWidget() {
       </div>
       <div className="cb"><NatalWheel showAspects={showAspects} showHouses={showHouses} /></div>
     </>
-  )
-}
-
-function TarotWidget() {
-  const profile = useActiveProfile()
-  let result
-  if (profile?.dob) {
-    const [y, m, d] = profile.dob.split('-').map(Number)
-    result = getTarotBirthCards({ day: d, month: m, year: y })
-  } else {
-    return <div style={{ padding: 16, color: 'var(--muted-foreground)', fontStyle: 'italic', fontSize: 12 }}>Set your birth date in settings to see your Tarot birth cards.</div>
-  }
-  const { primaryCard, pairCard, birthNumber } = result
-  const ROMAN = { 1:'I',2:'II',3:'III',4:'IV',5:'V',6:'VI',7:'VII',8:'VIII',9:'IX',10:'X',11:'XI',12:'XII',13:'XIII',14:'XIV',15:'XV',16:'XVI',17:'XVII',18:'XVIII',19:'XIX',20:'XX',21:'XXI',22:'0' }
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%', padding: '8px 0' }}>
-      <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
-        {primaryCard && (
-          <div style={{ textAlign: 'center', padding: '16px 20px', borderRadius: 12, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.2)', minWidth: 100 }}>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', color: 'rgba(201,168,76,.6)', marginBottom: 6 }}>BIRTH CARD</div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 36, color: 'var(--foreground)', lineHeight: 1, marginBottom: 6 }}>{ROMAN[primaryCard.num]}</div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--foreground)', letterSpacing: '.08em' }}>{primaryCard.name}</div>
-            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>{primaryCard.archetype}</div>
-          </div>
-        )}
-        {pairCard && (
-          <div style={{ textAlign: 'center', padding: '16px 20px', borderRadius: 12, background: 'rgba(144,80,224,.06)', border: '1px solid rgba(144,80,224,.2)', minWidth: 100 }}>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', color: 'rgba(144,80,224,.6)', marginBottom: 6 }}>SHADOW</div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 36, color: 'rgba(144,80,224,1)', lineHeight: 1, marginBottom: 6 }}>{ROMAN[pairCard.num]}</div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'rgba(144,80,224,1)', letterSpacing: '.08em' }}>{pairCard.name}</div>
-            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>{pairCard.archetype}</div>
-          </div>
-        )}
-      </div>
-      <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontFamily: "'Inconsolata',monospace" }}>
-        Birth Number · {birthNumber}
-      </div>
-    </div>
-  )
-}
-
-function CelticWidget() {
-  const profile = useActiveProfile()
-  let tree
-  if (profile?.dob) {
-    const [, m, d] = profile.dob.split('-').map(Number)
-    tree = getCelticTree({ day: d, month: m })
-  } else {
-    tree = getCelticTree({ day: 23, month: 1 })
-  }
-  const ELEMENT_COLORS = { Air:'rgba(64,204,221,1)', Fire:'rgba(255,120,60,1)', Water:'rgba(80,140,220,1)', Earth:'rgba(120,180,80,1)', All:'rgba(201,168,76,1)' }
-  const elCol = ELEMENT_COLORS[tree?.element] || 'rgba(201,168,76,1)'
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-  const fmt = ([mo, dy]) => `${months[mo - 1]} ${dy}`
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%', padding: '8px 0' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 40, lineHeight: 1, marginBottom: 8 }}>🌿</div>
-        <div style={{ fontFamily: "'Cinzel',serif", fontSize: 20, color: elCol, letterSpacing: '.15em' }}>{tree?.name}</div>
-        <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 12, color: 'var(--muted-foreground)', marginTop: 4 }}>
-          {tree?.ogham}
-        </div>
-        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 6, maxWidth: 200, lineHeight: 1.5 }}>
-          {tree?.meaning}
-        </div>
-      </div>
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: elCol, background: elCol.replace('1)', '.08)'), border: `1px solid ${elCol.replace('1)', '.25)')}` }}>
-          {tree?.element}
-        </span>
-        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: 'var(--muted-foreground)', background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)' }}>
-          {tree?.planet}
-        </span>
-        <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '3px 8px', borderRadius: 8, color: 'var(--muted-foreground)', background: 'var(--secondary)', border: '1px solid rgba(255,255,255,.1)' }}>
-          {tree?.keyword}
-        </span>
-      </div>
-      <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontFamily: "'Inconsolata',monospace" }}>
-        {tree ? `${fmt(tree.startDate)} – ${fmt(tree.endDate)}` : ''}
-      </div>
-    </div>
   )
 }
 
@@ -765,92 +646,11 @@ function WidgetContent({ widgetId }) {
           <div className="cb"><VedicChart /></div>
         </>
       )
-    case 'sabian':
-      return (
-        <>
-          <div className="ch"><span className="ct">Sabian Symbols &middot; 360 Degrees</span><span className="ci">{'\u{1F52E}'}</span></div>
-          <div className="cb" style={{ display: 'flex', flexDirection: 'column', gap: 6, overflowY: 'auto', padding: '8px 12px' }}>
-            {[
-              ['☉','Sun','Aquarius 3°','A deserter from the navy'],
-              ['☽','Moon','Virgo 28°','A bald-headed man who has seized power'],
-              ['♀','Venus','Aries 2°','A comedian entertaining a group'],
-              ['♂','Mars','Scorpio 19°','A parrot listening and talking to a man'],
-              ['ASC','ASC','Virgo 9°','An expressionist painter at her easel'],
-            ].map(([g,n,d,s]) => (
-              <div key={n} style={{ display: 'flex', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--secondary)', border: '1px solid var(--border)', alignItems: 'flex-start' }}>
-                <span style={{ color: 'var(--foreground)', fontSize: 14, width: 20, flexShrink: 0 }}>{g}</span>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--muted-foreground)', textTransform: 'uppercase' }}>{n} · {d}</div>
-                  <div style={{ fontSize: 12, fontStyle: 'italic', color: 'var(--foreground)', lineHeight: 1.5, marginTop: 2 }}>"{s}"</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )
-    case 'arabic':
-      return (
-        <>
-          <div className="ch"><span className="ct">Arabic Parts &middot; Lots</span><span className="ci">{'\u2734'}</span></div>
-          <div className="cb" style={{ display: 'flex', flexDirection: 'column', gap: 5, overflowY: 'auto', padding: '8px 12px' }}>
-            {[
-              ['✦','Part of Fortune','Taurus 14°','Material luck, worldly prosperity'],
-              ['✧','Part of Spirit','Scorpio 14°','Soul purpose, inner vocation'],
-              ['♡','Part of Love','Pisces 8°','Romance, heart connections'],
-              ['◉','Part of Career','Capricorn 22°','Vocation, public reputation'],
-              ['⚔','Part of Passion','Leo 6°','Deep desires, creative fire'],
-            ].map(([icon,name,pos,desc]) => (
-              <div key={name} style={{ display: 'flex', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--secondary)', border: '1px solid var(--border)', alignItems: 'flex-start' }}>
-                <span style={{ color: 'var(--foreground)', fontSize: 14, width: 20, flexShrink: 0 }}>{icon}</span>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--muted-foreground)', textTransform: 'uppercase' }}>{name} · {pos}</div>
-                  <div style={{ fontSize: 11, color: 'var(--muted-foreground)', lineHeight: 1.5, marginTop: 2 }}>{desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )
-    case 'biorhythm':
-      return (
-        <>
-          <div className="ch"><span className="ct">Biorhythms &middot; Physical &middot; Emotional &middot; Intellectual</span><span className="ci">{'◈'}</span></div>
-          <div className="cb"><BiorhythmChart /></div>
-        </>
-      )
-    case 'tarot':
-      return (
-        <>
-          <div className="ch"><span className="ct">Tarot Birth Cards &middot; Major Arcana &middot; Soul Cards</span><span className="ci">{'🃏'}</span></div>
-          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, padding: '16px' }}>
-            <TarotWidget />
-          </div>
-        </>
-      )
-    case 'celtic':
-      return (
-        <>
-          <div className="ch"><span className="ct">Celtic Tree Calendar &middot; Ogham &middot; Sacred Trees</span><span className="ci">{'🌳'}</span></div>
-          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, padding: '16px' }}>
-            <CelticWidget />
-          </div>
-        </>
-      )
     case 'tibetan':
       return (
         <>
           <div className="ch"><span className="ct">Tibetan Astrology &middot; Losar &middot; Mewa</span><span className="ci">{'☸'}</span></div>
           <div className="cb"><TibetanWheel /></div>
-        </>
-      )
-    case 'stars':
-      return (
-        <>
-          <div className="ch"><span className="ct">Fixed Stars &middot; Natal Conjunctions</span><span className="ci">{'✦'}</span></div>
-          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 32, color: 'var(--foreground)', letterSpacing: '.15em' }}>✦</div>
-            <div style={{ fontFamily: "'Cinzel', serif", fontSize: 12, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>FIXED STARS</div>
-          </div>
         </>
       )
     case 'dosha':
@@ -910,13 +710,7 @@ const WIDGET_META = {
   mbti: { icon: '\u{1F9E0}', label: 'Myers-Briggs', sub: 'Personality Type \u00B7 Cognitive Functions' },
   egyptian: { icon: '\u{1F3DB}', label: 'Egyptian Astrology', sub: 'Ancient Egypt \u00B7 Zodiac' },
   vedic:      { icon: '🕉️', label: 'Vedic Astrology', sub: 'Jyotish \u00B7 Sidereal \u00B7 Nakshatras' },
-  sabian:     { icon: '\u{1F52E}', label: 'Sabian Symbols', sub: '360 Degrees \u00B7 Symbolic Images' },
-  arabic:     { icon: '\u2734', label: 'Arabic Parts', sub: 'Lots \u00B7 Sensitive Points' },
-  biorhythm:  { icon: '◈', label: 'Biorhythms', sub: 'Physical \u00B7 Emotional \u00B7 Intellectual' },
-  tarot:      { icon: '🃏', label: 'Tarot Birth Cards', sub: 'Major Arcana \u00B7 Soul Cards' },
-  celtic:     { icon: '🌳', label: 'Celtic Tree Calendar', sub: 'Ogham \u00B7 13 Sacred Trees' },
   tibetan: { icon: '☸', label: 'Tibetan Astrology', sub: 'Losar \u00B7 Mewa \u00B7 Elements' },
-  stars: { icon: '✦', label: 'Fixed Stars', sub: 'Natal Conjunctions \u00B7 Stellar Influences' },
   dosha: { icon: '☯', label: 'Ayurvedic Dosha', sub: 'Vata \u00B7 Pitta \u00B7 Kapha' },
   archetype: { icon: '⬡', label: 'Archetype', sub: 'Jungian Pattern \u00B7 12 Archetypes' },
   lovelang: { icon: '🤗', label: 'Love Languages', sub: 'Give & Receive \u00B7 5 Languages' },
@@ -932,8 +726,6 @@ const WIDGET_CATEGORIES = {
   natal:    { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   tr:       { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   vedic:    { label: 'EASTERN', color: 'rgba(160,100,255,.8)', bg: 'rgba(160,100,255,.08)', border: 'rgba(160,100,255,.2)' },
-  sabian:   { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
-  arabic:   { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   hd:       { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
   kab:      { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
   gk:       { label: 'ENERGY', color: 'rgba(144,80,224,.8)', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.2)' },
@@ -945,11 +737,7 @@ const WIDGET_CATEGORIES = {
   chi:      { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
   mbti:     { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
   pat:        { label: 'PERSONALITY', color: 'rgba(212,48,112,.8)', bg: 'rgba(212,48,112,.08)', border: 'rgba(212,48,112,.2)' },
-  biorhythm:  { label: 'CYCLES',      color: 'rgba(96,200,80,.8)',  bg: 'rgba(96,200,80,.08)',  border: 'rgba(96,200,80,.2)'  },
-  tarot:      { label: 'DIVINATION',  color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
-  celtic:     { label: 'CELTIC',      color: 'rgba(120,180,80,.8)', bg: 'rgba(120,180,80,.08)', border: 'rgba(120,180,80,.2)' },
   tibetan:  { label: 'TIBETAN', color: 'rgba(232,160,64,.8)', bg: 'rgba(232,160,64,.08)', border: 'rgba(232,160,64,.2)' },
-  stars:    { label: 'STELLAR', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   dosha:    { label: 'AYURVEDA', color: 'rgba(68,204,136,.8)', bg: 'rgba(68,204,136,.08)', border: 'rgba(68,204,136,.2)' },
   archetype:{ label: 'JUNGIAN', color: 'rgba(168,120,232,.8)', bg: 'rgba(168,120,232,.08)', border: 'rgba(168,120,232,.2)' },
   lovelang: { label: 'RELATIONAL', color: 'rgba(238,136,102,.8)', bg: 'rgba(238,136,102,.08)', border: 'rgba(238,136,102,.2)' },
@@ -1016,7 +804,7 @@ function DemoBanner() {
 }
 
 /* ── Widget Manager Bar ── */
-const ALL_WIDGET_IDS = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'stars', 'dosha', 'archetype', 'lovelang', 'timeline', 'career']
+const ALL_WIDGET_IDS = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'dosha', 'archetype', 'lovelang', 'timeline', 'career']
 
 function WidgetManagerBar() {
   const widgetOrder = useAboveInsideStore((s) => s.widgetOrder)
@@ -1105,37 +893,18 @@ function WidgetManagerBar() {
   )
 }
 
-/* ── Bento Layout ── */
-function BentoLayout({ visibleWidgets, setActiveDetail }) {
-  const hero = visibleWidgets[0]
-  const sideWidgets = visibleWidgets.slice(1, 3)
-  const bottomWidgets = visibleWidgets.slice(3)
+/* ── Stream Layout ── */
+function StreamLayout({ visibleWidgets, setActiveDetail }) {
   return (
-    <div style={{ gridColumn: 2, gridRow: 2, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr) 260px', gridTemplateRows: '2fr 1fr 1fr', gap: 7, overflow: 'hidden' }}>
-      <div className="card" style={{ gridColumn: '1/4', gridRow: '1', cursor: 'pointer' }} onClick={() => setActiveDetail(hero)}>
-        <WidgetContent widgetId={hero} />
+    <div style={{ gridColumn: 2, gridRow: 2, overflow: 'auto', padding: '8px 24px 40px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 900, margin: '0 auto' }}>
+        {visibleWidgets.map(id => (
+          <div key={id} className="card" style={{ height: 480, cursor: 'pointer' }}
+            onDoubleClick={() => setActiveDetail(id)}>
+            <WidgetContent widgetId={id} />
+          </div>
+        ))}
       </div>
-      {sideWidgets.map((id, i) => (
-        <div key={id} className="card" style={{ gridColumn: 4, gridRow: i + 1, cursor: 'pointer', display: 'flex', flexDirection: 'column' }} onClick={() => setActiveDetail(id)}>
-          <div style={{ padding: '12px 14px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ fontSize: 11, letterSpacing: '.12em', color: 'var(--foreground)', fontFamily: "'Cinzel',serif", marginBottom: 4 }}>
-              {WIDGET_META[id]?.label || id}
-            </div>
-            <div style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>{WIDGET_META[id]?.sub || ''}</div>
-          </div>
-        </div>
-      ))}
-      {bottomWidgets.map((id, i) => (
-        <div key={id} className="card" style={{ gridColumn: (i % 3) + 1, gridRow: Math.floor(i / 3) + 2, cursor: 'pointer' }} onClick={() => setActiveDetail(id)}>
-          <div style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 20 }}>{WIDGET_META[id]?.icon || '\u2726'}</span>
-            <div>
-              <div style={{ fontSize: 11, letterSpacing: '.08em', color: 'var(--foreground)', fontFamily: "'Cinzel',serif" }}>{WIDGET_META[id]?.label || id}</div>
-              <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>{WIDGET_META[id]?.sub || ''}</div>
-            </div>
-          </div>
-        </div>
-      ))}
     </div>
   )
 }
@@ -1174,65 +943,6 @@ function FocusLayout({ visibleWidgets, setActiveDetail }) {
             padding: '4px 14px', borderRadius: 8, background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
             fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--foreground)', cursor: 'pointer', transition: 'all .2s',
           }}>View Full Profile</div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ── Magazine Layout ── */
-function MagazineLayout({ visibleWidgets, setActiveDetail, profile }) {
-  return (
-    <div style={{ gridColumn: 2, gridRow: 2, overflow: 'auto', padding: '0 8px 8px' }}>
-      <div style={{
-        display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: 16, overflow: 'hidden',
-        border: '1px solid var(--border)', marginBottom: 16,
-      }}>
-        <div style={{ padding: '32px 28px', background: 'linear-gradient(135deg, rgba(120,80,200,.08), var(--secondary))' }}>
-          <h2 style={{ fontFamily: "'Cinzel',serif", fontSize: 24, color: 'var(--foreground)', lineHeight: 1.2, marginBottom: 8 }}>Your profile</h2>
-          <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, color: 'var(--muted-foreground)', lineHeight: 1.5, marginBottom: 16 }}>
-            {profile.sign} Sun with {profile.moon} Moon and {profile.asc} Rising. A {profile.hdProfile} {profile.hdType} walking Life Path {profile.lifePath}.
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {[`\u2609 ${profile.sign}`, `\u25C8 ${profile.hdType} ${profile.hdProfile}`, `\u221E Life Path ${profile.lifePath}`, '\u2721 Tiphareth'].map((chip, i) => (
-              <span key={i} style={{ padding: '4px 10px', borderRadius: 16, fontSize: 10, background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)', color: 'var(--foreground)' }}>{chip}</span>
-            ))}
-          </div>
-        </div>
-        <div className="card" style={{ borderRadius: 0, minHeight: 200 }}>
-          <WidgetContent widgetId={visibleWidgets[0]} />
-        </div>
-      </div>
-      <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.2em', color: 'var(--ring)', marginBottom: 10 }}>
-        EXPLORE YOUR FRAMEWORKS
-      </div>
-      <div style={{ display: 'flex', gap: 12, overflowX: 'auto', paddingBottom: 12, scrollSnapType: 'x mandatory' }}>
-        {visibleWidgets.map(id => {
-          const meta = WIDGET_META[id]
-          return (
-            <div key={id} onClick={() => setActiveDetail(id)} style={{
-              minWidth: 200, scrollSnapAlign: 'start', borderRadius: 14, overflow: 'hidden',
-              border: '1px solid var(--border)', cursor: 'pointer', flexShrink: 0, transition: 'all .3s',
-            }}>
-              <div style={{ height: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, background: 'var(--secondary)' }}>
-                {meta?.icon || '\u2726'}
-              </div>
-              <div style={{ padding: '10px 14px', background: 'var(--secondary)' }}>
-                <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.06em', color: 'var(--foreground)', marginBottom: 2 }}>{meta?.label || id}</div>
-                <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>{meta?.sub || ''}</div>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, marginTop: 4 }}>
-        <div style={{ ...CARD_BASE, padding: 20, cursor: 'pointer' }} onClick={() => setActiveDetail('tr')}>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--foreground)', letterSpacing: '.1em', marginBottom: 8 }}>TODAY'S TRANSITS</div>
-          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>Current planetary positions and their aspects to your natal chart.</div>
-        </div>
-        <div style={{ ...CARD_BASE, padding: 20, cursor: 'pointer' }} onClick={() => setActiveDetail(visibleWidgets[1])}>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: 'var(--foreground)', letterSpacing: '.1em', marginBottom: 8 }}>QUICK INSIGHT</div>
-          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>{WIDGET_META[visibleWidgets[1]]?.label} &mdash; {WIDGET_META[visibleWidgets[1]]?.sub}</div>
         </div>
       </div>
     </div>
@@ -1506,7 +1216,7 @@ export default function Dashboard() {
     )
   }
 
-  // Bento, Focus, Magazine, Cosmic
+  // Focus, Stream
   return (
     <div className="dash-root" style={{
       display: 'grid', gridTemplateColumns: `${sbWidth} 1fr`, gridTemplateRows: '46px 1fr 42px',
@@ -1515,201 +1225,11 @@ export default function Dashboard() {
       <Starfield />
       <Sidebar />
       <TopBar />
-      {layoutMode === 'bento' && <BentoLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       {layoutMode === 'focus' && <FocusLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
-      {layoutMode === 'magazine' && <MagazineLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} profile={profile} />}
-      {layoutMode === 'cosmic' && <CosmicLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
+      {layoutMode === 'stream' && <StreamLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       <StatusBar />
       {isMobile && <MobileBottomNav activeNav={activeNav} setActiveNav={setActiveNav} setActiveDetail={setActiveDetail} setOracleOpen={setOracleOpen} setActivePanel={setActivePanel} />}
     </div>
   )
 }
 
-/* ── Cosmic 3-column layout ── */
-function CosmicLayout({ visibleWidgets, setActiveDetail }) {
-  const STRUCTURE_WIDGETS = ['integral', 'hd', 'kab']
-  const COSMIC_WIDGETS = ['natal', 'tr', 'mayan', 'gk']
-  const IDENTITY_WIDGETS = ['enn', 'num', 'mbti', 'egyptian', 'pat']
-
-  const WIDGET_MAP = {
-    integral: () => <CosmicIntegralWidget setActiveDetail={setActiveDetail} />,
-    natal: () => <CosmicNatalWidget setActiveDetail={setActiveDetail} />,
-    tr: () => <CosmicTransitsWidget setActiveDetail={setActiveDetail} />,
-    hd: () => <CosmicHDWidget setActiveDetail={setActiveDetail} />,
-    kab: () => <CosmicKabWidget setActiveDetail={setActiveDetail} />,
-    num: () => <CosmicNumWidget setActiveDetail={setActiveDetail} />,
-    gk: () => <CosmicGKWidget setActiveDetail={setActiveDetail} />,
-    mayan: () => <CosmicMayanWidget setActiveDetail={setActiveDetail} />,
-    enn: () => <CosmicEnnWidget setActiveDetail={setActiveDetail} />,
-    pat: () => <CosmicPatWidget setActiveDetail={setActiveDetail} />,
-    mbti: () => <CosmicMBTIWidget setActiveDetail={setActiveDetail} />,
-    egyptian: () => <CosmicEgyptianWidget setActiveDetail={setActiveDetail} />,
-  }
-
-  function renderCol(widgets, minH = 280) {
-    return widgets
-      .filter(id => visibleWidgets?.includes ? visibleWidgets.includes(id) : true)
-      .map(id => {
-        const Render = WIDGET_MAP[id]
-        if (!Render) return null
-        return (
-          <div
-            key={id}
-            className="card"
-            style={{ minHeight: minH, flexShrink: 0, cursor: 'pointer' }}
-            onClick={() => setActiveDetail(id)}
-          >
-            <Render />
-          </div>
-        )
-      })
-  }
-
-  return (
-    <div style={{ overflow: 'hidden', padding: '0 4px' }}>
-      <div className="cosmic-layout">
-        {/* Left: Structure */}
-        <div className="cosmic-col">
-          <div className="cosmic-col-header">
-            <div className="cosmic-col-line" />
-            <div className="cosmic-col-title">Structure</div>
-            <div className="cosmic-col-line" />
-          </div>
-          {renderCol(STRUCTURE_WIDGETS, 260)}
-        </div>
-        {/* Center: Cosmic Signals */}
-        <div className="cosmic-col">
-          <div className="cosmic-col-header">
-            <div className="cosmic-col-line" />
-            <div className="cosmic-col-title">Cosmic Signals</div>
-            <div className="cosmic-col-line" />
-          </div>
-          {renderCol(COSMIC_WIDGETS, 320)}
-        </div>
-        {/* Right: Identity Signals */}
-        <div className="cosmic-col">
-          <div className="cosmic-col-header">
-            <div className="cosmic-col-line" />
-            <div className="cosmic-col-title">Identity Signals</div>
-            <div className="cosmic-col-line" />
-          </div>
-          {renderCol(IDENTITY_WIDGETS, 220)}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-/* ── Widget shim wrappers for CosmicLayout (prefixed to avoid name conflicts) ── */
-function CosmicIntegralWidget() {
-  return <>
-    <div className="ch"><span className="ct">Integral Map</span><span className="ci">◉</span></div>
-    <div className="cb" style={{ minHeight: 200 }}><IntegralFigure /></div>
-  </>
-}
-function CosmicNatalWidget() {
-  const _cnwProfile = useActiveProfile()
-  return <>
-    <div className="ch"><span className="ct">Natal{_cnwProfile?.sign ? ` · ${_cnwProfile.sign} Sun` : ''}{_cnwProfile?.asc ? ` · ${_cnwProfile.asc} ASC` : ''}</span></div>
-    <div className="cb" style={{ minHeight: 260 }}><NatalWheel showAspects showHouses /></div>
-  </>
-}
-function CosmicTransitsWidget() {
-  return <>
-    <div className="ch"><span className="ct">Current Transits</span></div>
-    <div className="cb" style={{ padding: '5px 7px', display: 'flex', flexDirection: 'column', gap: 3 }}>
-      {TRANSITS.slice(0, 6).map((t, i) => (
-        <div key={i} className="tr-item">
-          <span className="tr-pl" style={{ color: t.color }}>{t.sym}</span>
-          <div className="tr-inf">
-            <div className="tr-sign">{t.sign}</div>
-            <div className="tr-deg">{t.aspLabel}</div>
-          </div>
-        </div>
-      ))}
-    </div>
-  </>
-}
-function CosmicHDWidget() {
-  return <>
-    <div className="ch"><span className="ct">Human Design</span></div>
-    <div className="cb" style={{ minHeight: 200 }}><HumanDesign /></div>
-  </>
-}
-function CosmicKabWidget() {
-  return <>
-    <div className="ch"><span className="ct">Kabbalah Tree</span></div>
-    <div className="cb" style={{ minHeight: 200 }}><KabbalahTree /></div>
-  </>
-}
-function CosmicNumWidget() {
-  const profile = useActiveProfile()
-  const np = profile?.dob && profile?.name
-    ? getNumerologyProfileFromDob(profile.dob, profile.name.toUpperCase(), {})
-    : null
-  const cells = np ? [
-    { val: np.lifePath?.val || '?', label: 'Life Path', hl: true },
-    { val: np.expression?.val || '?', label: 'Expression' },
-    { val: np.soulUrge?.val || '?', label: 'Soul Urge' },
-    { val: np.birthday?.val || '?', label: 'Birthday' },
-    { val: np.personality?.val || '?', label: 'Personality' },
-    { val: np.maturity?.val || '?', label: 'Maturity' },
-  ] : null
-  if (!cells) return <>
-    <div className="ch"><span className="ct">Numerology</span></div>
-    <div className="cb" style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', opacity:.4 }}>
-      <div style={{ fontFamily:"'Cinzel',serif", fontSize:11, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)' }}>Add name &amp; birth date</div>
-    </div>
-  </>
-  return <>
-    <div className="ch"><span className="ct">Numerology</span></div>
-    <div className="cb">
-      <div className="num-outer">
-        <div className="num-grid">
-          {cells.map((c, i) => (
-            <div key={i} className={`nc${c.hl ? ' hl' : ''}${[11,22,33].includes(Number(c.val)) ? ' master' : ''}`}>
-              <span className="nv">{c.val}</span>
-              <span className="nl">{c.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </>
-}
-function CosmicGKWidget() {
-  return <>
-    <div className="ch"><span className="ct">Gene Keys</span></div>
-    <div className="cb" style={{ minHeight: 180 }}><GeneKeysWheel /></div>
-  </>
-}
-function CosmicMayanWidget() {
-  return <>
-    <div className="ch"><span className="ct">Mayan Calendar</span></div>
-    <div className="cb" style={{ minHeight: 220 }}><MayanWheel /></div>
-  </>
-}
-function CosmicEnnWidget() {
-  return <>
-    <div className="ch"><span className="ct">Enneagram</span></div>
-    <div className="cb" style={{ minHeight: 180 }}><EnneagramSymbol /></div>
-  </>
-}
-function CosmicPatWidget() {
-  return <>
-    <div className="ch"><span className="ct">Patterns</span></div>
-    <div className="cb" style={{ minHeight: 160 }}><PatternsWeb /></div>
-  </>
-}
-function CosmicMBTIWidget() {
-  return <>
-    <div className="ch"><span className="ct">Myers-Briggs</span></div>
-    <div className="cb" style={{ minHeight: 160 }}><MBTIChart /></div>
-  </>
-}
-function CosmicEgyptianWidget() {
-  return <>
-    <div className="ch"><span className="ct">Egyptian</span></div>
-    <div className="cb" style={{ minHeight: 160 }}><EgyptianChart /></div>
-  </>
-}
