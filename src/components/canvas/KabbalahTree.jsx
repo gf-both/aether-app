@@ -21,7 +21,7 @@ export default function KabbalahTree() {
         const computed = result.sephiroth.find(r => r.name === s.name)
         return computed ? { ...s, active: computed.active } : s
       })
-    } catch (e) {
+    } catch {
       return null
     }
   }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone])

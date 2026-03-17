@@ -125,7 +125,7 @@ export default function KabbalahDetail() {
     try {
 const kabArgs = profileToKabArgs(profile)
       if (kabArgs) liveResult = getKabbalahProfile(kabArgs)
-    } catch (e) {
+    } catch {
       // fall back to static data
     }
 

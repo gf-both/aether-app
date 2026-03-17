@@ -126,7 +126,7 @@ function buildEvents(profile) {
         })
       }
     }
-  } catch (e) { /* skip dasha if birth time unknown */ }
+  } catch { /* skip dasha if birth time unknown */ }
 
   // ── 2. Saturn milestones (→ astrology overlay) ──────────────────────────────
   const saturnEvents = [
@@ -217,7 +217,7 @@ function buildEvents(profile) {
         })
       }
     }
-  } catch (e) { /* skip numerology if engine fails */ }
+  } catch { /* skip numerology if engine fails */ }
 
   // ── 6. Human Design 7-year gate cycles (→ hd overlay) ──────────────────────
   for (const cycle of HD_GATE_CYCLES) {
@@ -388,7 +388,7 @@ export default function TimelineDetail() {
   const result = useMemo(() => {
     try {
       return buildEvents(profile)
-    } catch (e) {
+    } catch {
       console.error('TimelineDetail error:', e)
       return null
     }

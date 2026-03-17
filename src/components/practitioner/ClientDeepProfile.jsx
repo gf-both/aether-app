@@ -538,7 +538,7 @@ export default function ClientDeepProfile({ client, sessions = [], onBack }) {
         enneagram: client.enneagram,
         mbti: client.mbti,
       })
-    } catch (e) {
+    } catch {
       console.warn('[ClientDeepProfile] buildFullProfile error:', e)
       return { patterns: [] }
     }

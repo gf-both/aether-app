@@ -99,7 +99,7 @@ export default function NumerologyDetail() {
           currentDay:   now.getDate(),
         }
       )
-    } catch (e) {
+    } catch {
       console.error('NumerologyEngine error:', e)
       return null
     }

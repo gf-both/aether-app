@@ -446,7 +446,7 @@ export default function HDDetail() {
       const { dob, tob } = profile
       if (!dob) return null
       return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: profile.birthTimezone ?? -3 })
-    } catch (e) {
+    } catch {
       console.error('HDDetail chart error:', e)
       return null
     }

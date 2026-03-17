@@ -189,7 +189,7 @@ export function getKabbalahProfile({ day, month, year, hour, minute, timezone })
   for (const p of PLANETS) {
     try {
       lons[p] = getPlanetLon(p, utc);
-    } catch (e) {
+    } catch {
       lons[p] = 0;
     }
   }

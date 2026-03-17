@@ -22,7 +22,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
       const timezone = profile.birthTimezone ?? -3
       const { SPHERES: computed } = computeGeneKeysData({ day, month, year, hour: hour || 0, minute: minute || 0, timezone })
       return computed
-    } catch (e) {
+    } catch {
       console.error('GeneKeysWheel compute error:', e)
       return null
     }

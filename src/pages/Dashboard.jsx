@@ -517,7 +517,7 @@ function WidgetContent({ widgetId }) {
       const { dob, tob } = profile || {}
       if (!dob) return null
       return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: profile.birthTimezone ?? -3 })
-    } catch (e) { return null }
+    } catch { return null }
   }, [profile?.dob, profile?.tob, profile?.birthTimezone])
   const hdDesignPlanets = hdChartLocal
     ? PLANET_ORDER.map(k => ({ sym: PLANET_SYMBOLS[k], val: hdChartLocal.design[k] ? `${hdChartLocal.design[k].gate}.${hdChartLocal.design[k].line}` : '' }))
@@ -533,14 +533,14 @@ function WidgetContent({ widgetId }) {
       const [y, m, d] = dob.split('-').map(Number)
       if (!y || !m || !d) return null
       return computeMayanProfile(y, m, d)
-    } catch (e) { return null }
+    } catch { return null }
   }, [profile?.dob])
   const chineseLocal = useMemo(() => {
     try {
       const dob = profile?.dob
       if (!dob) return null
       return getChineseProfileFromDob(dob) || null
-    } catch (e) { return null }
+    } catch { return null }
   }, [profile?.dob, profile?.tob])
   const egyptianLocal = useMemo(() => {
     try {
@@ -549,7 +549,7 @@ function WidgetContent({ widgetId }) {
       const [, m, d] = dob.split('-').map(Number)
       if (!m || !d) return null
       return getEgyptianSign(d, m) || null
-    } catch (e) { return null }
+    } catch { return null }
   }, [profile?.dob])
   switch (widgetId) {
     case 'integral':
@@ -1373,7 +1373,7 @@ export default function Dashboard() {
       const { dob, tob } = profile
       if (!dob) return null
       return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset: -3 })
-    } catch (e) {
+    } catch {
       console.error('HD chart error in Dashboard:', e)
       return null
     }

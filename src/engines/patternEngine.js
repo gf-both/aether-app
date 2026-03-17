@@ -311,31 +311,31 @@ export function buildFullProfile(birthData) {
 
   try {
     natal = getNatalChart({ day, month, year, hour, minute, lat, lon, timezone })
-  } catch (e) {
+  } catch {
     console.warn('[patternEngine] natal failed:', e.message)
   }
 
   try {
     hd = computeHDChart({ dateOfBirth: dob, timeOfBirth: tob, utcOffset: timezone })
-  } catch (e) {
+  } catch {
     console.warn('[patternEngine] hd failed:', e.message)
   }
 
   try {
     geneKeys = getGeneKeysProfile({ day, month, year, hour, minute, timezone })
-  } catch (e) {
+  } catch {
     console.warn('[patternEngine] geneKeys failed:', e.message)
   }
 
   try {
     numerology = getNumerologyProfileFromDob(dob, name || '')
-  } catch (e) {
+  } catch {
     console.warn('[patternEngine] numerology failed:', e.message)
   }
 
   try {
     mayan = getMayanProfile(day, month, year)
-  } catch (e) {
+  } catch {
     console.warn('[patternEngine] mayan failed:', e.message)
   }
 

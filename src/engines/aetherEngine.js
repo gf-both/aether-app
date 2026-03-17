@@ -92,7 +92,7 @@ function getHDSummary(day, month, year, hour, minute, lat, lon, timezone) {
       profile: hd.profile || '[computed]',
       definition: hd.definition || '[computed]',
     }
-  } catch (e) {
+  } catch {
     return { type: '[computed]', authority: '[computed]', profile: '[computed]', definition: '[computed]' }
   }
 }
@@ -179,7 +179,7 @@ export function generateAetherProfile({
         challenges: synReport.challenging.slice(0, 2).map(a => `${a.planet1 || a.p1}-${a.planet2 || a.p2} ${a.aspect || a.name}`),
         insight: synReport.insight || '',
       }
-    } catch (e) {
+    } catch {
       console.warn('[aetherEngine] Synastry calculation failed:', e.message)
     }
   }

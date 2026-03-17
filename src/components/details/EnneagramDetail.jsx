@@ -193,7 +193,9 @@ export default function EnneagramDetail() {
   const activeProfile = useActiveProfile()
   const storeType = activeProfile?.enneagramType || null
   const storeWing = activeProfile?.enneagramWing || null
-  const storeInstinct = activeProfile?.enneagramInstinct || useAboveInsideStore((s) => s.enneagramInstinct)
+  const globalInstinct = useAboveInsideStore((s) => s.enneagramInstinct)
+  const storeInstinct = activeProfile?.enneagramInstinct || globalInstinct
+  const useStaticInstinct = !storeInstinct
   const [showQuizOverlay, setShowQuizOverlay] = useState(false)
 
   // No enneagram type — show empty state

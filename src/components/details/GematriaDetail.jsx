@@ -88,15 +88,15 @@ function buildComputedProfile(profileData) {
     engineProfile: eng,
 
     // Rich editorial content — dynamically generated from computed values
-    significantMatches: buildSignificantMatches(eng, pyt, heb, ord, cha),
+    significantMatches: buildSignificantMatches(eng, pyt, heb, _ord, _cha),
     kabbalisticCorrespondences: buildKabbalisticCorrespondences(pyt, fullName),
   }
 }
 
-function buildSignificantMatches(eng, pyt, heb, ord, cha) {
+function buildSignificantMatches(eng, pyt, heb, _ord, _cha) {
   const matches = []
   const hebrewTotal = heb.fullName.total
-  const pytTotal = pyt.fullName.total
+  const _pytTotal = pyt.fullName.total
   const pytReduced = pyt.fullName.reduced
   const soulUrge = eng.soulNumber?.reduced || eng.vowelSum?.reduced
   const personality = eng.personalityNumber?.reduced
@@ -134,7 +134,7 @@ function buildSignificantMatches(eng, pyt, heb, ord, cha) {
 
   // Soul Urge
   if (soulUrge) {
-    const hebrewLetterMap = {1:'Aleph',2:'Beth',3:'Gimel',4:'Daleth',5:'He',6:'Vav',7:'Zayin',8:'Cheth',9:'Teth'}
+    const _hebrewLetterMap = {1:'Aleph',2:'Beth',3:'Gimel',4:'Daleth',5:'He',6:'Vav',7:'Zayin',8:'Cheth',9:'Teth'}
     matches.push({
       value: soulUrge,
       system: 'Soul Urge',
@@ -259,7 +259,7 @@ const NUM_DESCS = {
   2:'Cooperation, sensitivity, balance, partnership',
   3:'Self-expression, creativity, joy, artistic talent',
   4:'Discipline, stability, hard work, foundation',
-  5:'Freedom, change, versatility, progressive energy',
+  5:'Freedom, _change, versatility, progressive energy',
   6:'Responsibility, family, love, domestic harmony',
   7:'Introspection, analysis, wisdom, spiritual seeking',
   8:'Material mastery, authority, abundance, achievement',

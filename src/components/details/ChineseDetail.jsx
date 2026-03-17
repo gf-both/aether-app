@@ -120,7 +120,7 @@ export default function ChineseDetail() {
           }
         })(),
       }
-    } catch (e) {
+    } catch {
       console.error('ChineseEngine error:', e)
       return null
     }

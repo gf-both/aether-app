@@ -46,7 +46,7 @@ export default function TimelineWidget() {
       try {
         const v = getVedicChart({ day: birthDay, month: birthMonth, year: birthYear, hour: bh || 12, minute: bm || 0, lat, lon, timezone: tz })
         dasha = v.dasha
-      } catch (e) { /* fallback: no dasha */ }
+      } catch { /* fallback: no dasha */ }
 
       // Current dasha period
       let currentDasha = null
@@ -105,7 +105,7 @@ export default function TimelineWidget() {
       }
 
       return { currentDasha, py, nextEvents, dashaProgress, birthYear }
-    } catch (e) {
+    } catch {
       console.error('TimelineWidget error:', e)
       return null
     }

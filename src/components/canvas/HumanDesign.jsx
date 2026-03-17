@@ -79,7 +79,7 @@ export default function HumanDesign() {
       // Determine UTC offset from pob (default to -3 for Buenos Aires)
       const utcOffset = -3
       return computeHDChart({ dateOfBirth: dob, timeOfBirth: tob || '00:00', utcOffset })
-    } catch (e) {
+    } catch {
       console.error('HD chart computation error:', e)
       return null
     }

@@ -122,7 +122,7 @@ export default function GeneKeysDetail() {
       const [hour, minute] = tob.split(':').map(Number)
       const timezone = profile.birthTimezone ?? -3
       return computeGeneKeysData({ day, month, year, hour: hour || 12, minute: minute || 0, timezone })
-    } catch (e) {
+    } catch {
       console.error('GeneKeysDetail error:', e)
       return null
     }
@@ -152,15 +152,6 @@ export default function GeneKeysDetail() {
       })
   }, [profileData])
 
-  const activeGKData = (GK_DATA && GK_DATA.length > 0) ? GK_DATA : null
-
-  if (!activeGKData) return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:12, opacity:.5 }}>
-      <div style={{ fontSize:40 }}>⬡</div>
-      <div style={{ fontFamily:"'Cinzel',serif", fontSize:12, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)' }}>Add birth date to see your Gene Keys</div>
-    </div>
-  )
-
   const SEQUENCES = useMemo(() => {
     if (!profileData?.SPHERES) return [
       { label: 'Activation', desc: 'The awakening sequence', keys: (activeGKData ?? []).map(d => d.num) },
@@ -174,6 +165,17 @@ export default function GeneKeysDetail() {
       { label: 'Pearl', desc: 'The prosperity sequence connecting purpose to abundance', keys: keys.slice(2) },
     ]
   }, [profileData])
+
+    const activeGKData = (GK_DATA && GK_DATA.length > 0) ? GK_DATA : null
+
+  if (!activeGKData) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:12, opacity:.5 }}>
+      <div style={{ fontSize:40 }}>⬡</div>
+      <div style={{ fontFamily:"'Cinzel',serif", fontSize:12, textTransform:'uppercase', letterSpacing:'.1em', color:'var(--gold)' }}>Add birth date to see your Gene Keys</div>
+    </div>
+  )
+
+
 
   // Empty state — no birth date
   if (!profile?.dob) {
