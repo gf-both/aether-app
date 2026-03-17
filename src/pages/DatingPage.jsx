@@ -108,7 +108,7 @@ export default function DatingPage() {
   }, [profile, people])
 
   // Use realMatches if available, fallback to demo data
-  const demoMatches = realMatches.length > 0 ? realMatches : (profile?.dob ? getDemoMatches(profile) : [])
+  const demoMatches = realMatches.length > 0 ? realMatches : (profile?.dob ? getDemoMatches(profile, connectionType) : [])
 
   if (!profile?.dob) {
     return (
@@ -124,10 +124,33 @@ export default function DatingPage() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>
+      {/* Header */}
+      <div style={{ padding:'14px 20px 0', flexShrink:0 }}>
+        <div style={{ fontFamily:"'Cinzel',serif", fontSize:11, letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold)', marginBottom:10 }}>💫 Connections</div>
+        {/* Connection type pills */}
+        <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:12 }}>
+          {CONNECTION_TYPES.map(ct => (
+            <div
+              key={ct.id}
+              onClick={() => setConnectionType(ct.id)}
+              style={{
+                padding:'5px 12px', borderRadius:16, cursor:'pointer', fontSize:11,
+                background: connectionType === ct.id ? 'rgba(201,168,76,.15)' : 'var(--secondary)',
+                border:`1px solid ${connectionType === ct.id ? 'rgba(201,168,76,.4)' : 'var(--border)'}`,
+                color: connectionType === ct.id ? 'var(--gold)' : 'var(--foreground)',
+                transition:'all .15s',
+              }}
+            >
+              {ct.icon} {ct.label}
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Tab bar */}
       <div style={{ display:'flex', borderBottom:'1px solid var(--border)', padding:'0 20px', flexShrink:0 }}>
         {[
-          { id:'matches', label:'Matches', icon:'💫' },
+          { id:'matches', label:'Connections', icon:'💫' },
           { id:'golem', label:'Your Golem', icon:'🪬' },
           { id:'preferences', label:'Preferences', icon:'⚙' },
         ].map(tab => (
@@ -412,7 +435,7 @@ function PrefChip({ label, active, onClick }) {
   )
 }
 
-function getDemoMatches(profile) {
+function getDemoMatches(profile, connectionType = 'romantic') {
   const sign = profile.sign || 'Aquarius'
   return [
     {

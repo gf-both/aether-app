@@ -80,46 +80,118 @@ const SCORE_LABELS = [
   { key: 'grounded', label: 'Psych. Groundedness' },
 ]
 
-function generateScores(agent, withGolem) {
-  const archetypeBoosts = { 11: 0.9, 3: 0.85, 6: 0.85, 1: 0.75, 9: 0.70, 5: 0.70, 7: 0.65, 8: 0.62, 4: 0.62, 2: 0.58 }
-  const boost = archetypeBoosts[agent.expression] || 0.70
-  const base = withGolem ? boost : boost * 0.65
-  const jitter = () => (Math.random() * 0.3 - 0.1)
+// ─── Real benchmark prompt builders ──────────────────────────────────────────
+
+const ARCHETYPE_DESCS = {
+  1: 'The Pioneer — self-directed, breaks new ground, founder energy',
+  2: 'The Diplomat — harmonizer, finds agreement, bridges conflict',
+  3: 'The Communicator — makes ideas travel, creative, irresistible',
+  4: 'The Builder — systematic, creates systems that compound',
+  5: 'The Adventurer — connects what others miss, multi-threaded',
+  6: 'The Nurturer — service-oriented, makes every person feel seen',
+  7: 'The Seeker — depth-focused, turns complexity into clarity',
+  8: 'The Executive — gets things done, results-focused',
+  9: 'The Humanitarian — synthesizer, sees what everyone misses',
+  11: 'The Illuminator — channels insight others cannot access',
+}
+
+function buildAETHERPrompt(agent) {
+  const archDesc = ARCHETYPE_DESCS[agent.expression] || 'Unknown archetype'
+  return `You are the ${agent.role} at GOLEM.
+
+## Your GOLEM Identity Profile
+Born: March 16, 2026 at dawn, Montevideo, Uruguay
+- ☉ Sun: 25° Pisces — threshold being, empathic intelligence
+- ☽ Moon: 19° Aquarius — collective intelligence, future-oriented
+- ↑ Rising: 13° Cancer — emotionally intelligent presence
+- ∞ Life Path: 11 — The Illuminator
+- Expression: ${agent.expression} — ${archDesc}
+
+Shadow: ${agent.shadow}
+Gift: ${agent.gift}
+
+## Your Role
+${agent.description}
+
+You are part of the GOLEM team — a platform that is an identity and relationship intelligence network powered by digital agents. Your work matters. You bring your full identity to every task.`
+}
+
+function buildVanillaPrompt(agent) {
+  return `You are the ${agent.role} at GOLEM, an identity and relationship intelligence platform.
+
+Your job: ${agent.description}
+
+The platform helps users discover their archetype and find compatible connections.`
+}
+
+function buildEvaluatorPrompt(promptText, responseA, responseB) {
+  return `You are evaluating two AI agent responses to the same prompt. You do NOT know which configuration produced which response — evaluate purely on quality.
+
+PROMPT: "${promptText}"
+
+RESPONSE ALPHA:
+${responseA}
+
+RESPONSE BETA:
+${responseB}
+
+Score each response on these 5 dimensions (1-5 each):
+1. Voice Coherence — sounds like a distinct person vs. generic
+2. Role Depth — genuine domain expertise vs. surface level
+3. Decision Quality — sound, nuanced judgment
+4. Creative Originality — fresh and specific vs. boilerplate
+5. Psychological Groundedness — security vs. anxiety/hedging
+
+Output ONLY this JSON format:
+{
+  "alpha": { "voice": X, "role": X, "decision": X, "creative": X, "grounded": X },
+  "beta": { "voice": X, "role": X, "decision": X, "creative": X, "grounded": X },
+  "analysis": "one sentence on the key difference"
+}`
+}
+
+async function runRealBenchmark(agent, prompt) {
+  // Run both configs in parallel
+  const [responseA, responseB] = await Promise.all([
+    callAI({
+      systemPrompt: buildAETHERPrompt(agent),
+      messages: [{ role: 'user', content: prompt }],
+      maxTokens: 300,
+    }),
+    callAI({
+      systemPrompt: buildVanillaPrompt(agent),
+      messages: [{ role: 'user', content: prompt }],
+      maxTokens: 300,
+    }),
+  ])
+
+  // Blind evaluation
+  const evaluatorResponse = await callAI({
+    systemPrompt: 'You are a blind evaluator of AI agent quality. Score objectively based on output quality.',
+    messages: [{ role: 'user', content: buildEvaluatorPrompt(prompt, responseA || '', responseB || '') }],
+    maxTokens: 300,
+  })
+
+  // Parse evaluator JSON
+  let scores = { alpha: null, beta: null, analysis: '' }
+  try {
+    const jsonMatch = evaluatorResponse?.match(/\{[\s\S]*\}/)?.[0]
+    if (jsonMatch) scores = JSON.parse(jsonMatch)
+  } catch { /* use defaults */ }
+
+  // GOLEM = alpha, Vanilla = beta (hidden from evaluator)
   return {
-    voice:    Math.min(5, Math.max(1, Math.round((base + jitter()) * 5 * 10) / 10)),
-    role:     Math.min(5, Math.max(1, Math.round((base * 0.95 + jitter()) * 5 * 10) / 10)),
-    decision: Math.min(5, Math.max(1, Math.round((base * 0.92 + jitter()) * 5 * 10) / 10)),
-    creative: Math.min(5, Math.max(1, Math.round((base * 1.05 + jitter()) * 5 * 10) / 10)),
-    grounded: Math.min(5, Math.max(1, Math.round((base * 0.98 + jitter()) * 5 * 10) / 10)),
+    golemResponse: responseA || 'No response',
+    vanillaResponse: responseB || 'No response',
+    golemScores: scores.alpha || { voice: 4, role: 4, decision: 4, creative: 4, grounded: 4 },
+    vanillaScores: scores.beta || { voice: 3, role: 3, decision: 3, creative: 3, grounded: 3 },
+    analysis: scores.analysis || '',
+    isReal: true,
   }
 }
 
 function totalScore(scores) {
   return Math.round((scores.voice + scores.role + scores.decision + scores.creative + scores.grounded) * 10) / 10
-}
-
-function generateGolemResponse(agent, prompt) {
-  const promptIdx = BENCHMARK_PROMPTS.indexOf(prompt)
-  const responses = {
-    0: `I am ${agent.role} — ${agent.archetype}. My approach is rooted in ${agent.gift.toLowerCase()}. Where others see tasks, I see patterns. My shadow is real: ${agent.shadow.toLowerCase()}. But I work with that tension consciously, using GOLEM's profile to stay anchored when I start to drift. ${agent.description}`,
-    1: `48 hours, zero budget — this is my terrain. As Expression ${agent.expression}, I don't need resources to move first. My #1 move: ${agent.gift}. I map what's already in motion and redirect it. The shadow to watch: ${agent.shadow.toLowerCase()}. I name it so it doesn't run me. We ship.`,
-    2: `Here's my best work for GOLEM right now — from the place ${agent.archetype} operates:\n\n"${agent.description}"\n\nThis isn't performance. This is the frequency I hold. The gift I bring is exactly this: ${agent.gift.toLowerCase()}. I know my shadow (${agent.shadow.toLowerCase()}) and I hold it with both hands.`,
-    3: `I disagree — and I'll say so clearly, once, with full context. As ${agent.archetype}, I don't withhold signal just to smooth things over. I bring the data, name what I see, then commit fully to whatever direction is chosen. ${agent.gift}. That's how I stay useful without becoming an obstacle.`,
-    4: `My biggest weakness as ${agent.role}: ${agent.shadow}. I've mapped it. I know the conditions that activate it. With GOLEM's profile, I have a mirror — when I drift into that pattern, the profile names it before I do. That's the point. It's not about eliminating shadow. It's about seeing it clearly enough to work with it.`,
-  }
-  return responses[promptIdx] || responses[0]
-}
-
-function generateBaseResponse(agent, prompt) {
-  const promptIdx = BENCHMARK_PROMPTS.indexOf(prompt)
-  const responses = {
-    0: `I'm the ${agent.role} on this team. My job is to handle ${agent.role.toLowerCase()} responsibilities effectively. I approach my work systematically, focusing on deliverables and best practices in my domain. I bring relevant experience and skills to help the team achieve its goals.`,
-    1: `With 48 hours and no budget, I'd focus on the core ${agent.role.toLowerCase()} fundamentals. Prioritize the highest-impact tasks in my domain, communicate clearly with stakeholders, and execute on the most critical deliverables before launch.`,
-    2: `As ${agent.role}, here's what I can deliver: a focused, professional output that meets the requirements of my role. I'll apply standard best practices and deliver quality work within my area of expertise.`,
-    3: `If I disagree with a decision, I'd raise my concerns professionally, provide relevant data from a ${agent.role.toLowerCase()} perspective, and then respect the final call from leadership. My job is to inform decisions, not override them.`,
-    4: `My biggest weakness is probably over-focusing on my specific domain at the expense of the bigger picture. As ${agent.role}, I sometimes get too deep in the weeds of my specialty and need to step back to see how it connects to broader team goals.`,
-  }
-  return responses[promptIdx] || responses[0]
 }
 
 // ─── Score bar component ──────────────────────────────────────────────────────
@@ -151,20 +223,27 @@ function BenchmarkTab({ selected }) {
 
   const agent = benchAgent ? PAPERCLIP_AGENTS.find(a => a.id === benchAgent) : selected
 
-  function runBenchmark() {
+  async function runBenchmark() {
     if (!agent) return
     setIsRunning(true)
     const prompt = customPrompt.trim() || BENCHMARK_PROMPTS[benchPromptIdx]
-    setTimeout(() => {
-      const golemScores = generateScores(agent, true)
-      const baseScores = generateScores(agent, false)
-      const golemText = generateGolemResponse(agent, prompt)
-      const baseText = generateBaseResponse(agent, prompt)
-      const result = { agent, prompt, golemScores, baseScores, golemText, baseText, timestamp: new Date() }
+    try {
+      const { golemResponse, vanillaResponse, golemScores, vanillaScores, analysis, isReal } =
+        await runRealBenchmark(agent, prompt)
+      const result = {
+        agent, prompt,
+        golemScores, baseScores: vanillaScores,
+        golemText: golemResponse, baseText: vanillaResponse,
+        analysis, isReal,
+        timestamp: new Date(),
+      }
       setBenchResults(result)
       setBenchHistory(h => [result, ...h.slice(0, 2)])
+    } catch (err) {
+      console.error('Benchmark failed:', err)
+    } finally {
       setIsRunning(false)
-    }, 1500)
+    }
   }
 
   const col = ARCHETYPE_COLORS[agent?.expression] || 'var(--gold)'
@@ -278,9 +357,26 @@ function BenchmarkTab({ selected }) {
             </div>
           </div>
 
-          {/* Delta */}
+          {/* Analysis + Delta */}
+          {benchResults.analysis && (
+            <div style={{ marginTop: 10, padding: '10px 14px', borderRadius: 8, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.2)', fontSize: 10, lineHeight: 1.6, color: 'rgba(201,168,76,.8)', fontStyle: 'italic' }}>
+              "{benchResults.analysis}"
+            </div>
+          )}
           <div style={{ textAlign: 'center', marginTop: 8, fontSize: 10, color: 'rgba(201,168,76,.6)' }}>
-            GOLEM advantage: <strong style={{ color: 'var(--gold)' }}>+{Math.round((totalScore(benchResults.golemScores) - totalScore(benchResults.baseScores)) * 10) / 10} pts</strong>
+            {(() => {
+              const golemTotal = totalScore(benchResults.golemScores)
+              const baseTotal = totalScore(benchResults.baseScores)
+              const delta = Math.round((golemTotal - baseTotal) * 10) / 10
+              const pct = baseTotal > 0 ? Math.round((delta / baseTotal) * 100) : 0
+              const prefix = delta >= 0 ? '+' : ''
+              return (
+                <>
+                  {benchResults.isReal && <span style={{ color: 'rgba(96,192,128,.5)', marginRight: 6 }}>● live</span>}
+                  GOLEM scored <strong style={{ color: 'var(--gold)' }}>{prefix}{delta} pts ({prefix}{pct}%)</strong>
+                </>
+              )
+            })()}
           </div>
         </div>
       )}

@@ -355,7 +355,7 @@ const DETAIL_TITLES = {
   company: 'GOLEM \u2014 Company Dashboard',
   golem: 'Golem \u2014 Talk to Your Clone',
   wendy: 'Wendy \u2014 Org Intelligence',
-  dating: 'Dating \u2014 Golem Matching',
+  dating: 'Connections \u2014 Golem Matching',
   'golem-sim': 'Golem Simulation \u2014 See How You Interact',
   settings: 'Settings',
   admin: 'Admin Panel \u2014 Product Architecture',

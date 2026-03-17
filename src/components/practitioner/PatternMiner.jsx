@@ -340,14 +340,9 @@ export default function PatternMiner({ clientId, _clientProfile = {} }) {
             fontSize: '0.92rem',
             lineHeight: 1.7,
             opacity: 0.9,
-          }}
-            dangerouslySetInnerHTML={{
-              __html: patterns.suggestedFocus.replace(
-                /\*\*(.*?)\*\*/g,
-                '<strong style="color: var(--gold, #c9a84c)">$1</strong>'
-              )
-            }}
-          />
+          }}>
+            {renderBoldMarkdown(patterns.suggestedFocus)}
+          </p>
         </div>
       )}
     </div>

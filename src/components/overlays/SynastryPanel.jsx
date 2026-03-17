@@ -6,6 +6,17 @@ import { getSynastryReport, getBirthParams } from '../../engines/synastryEngine'
 import SynastryWheel from '../canvas/SynastryWheel'
 import ScoreRow from '../ui/ScoreRow'
 
+const HIGHLIGHT_TERMS = /\b(Venus|Mars|Moon|North Node|Pluto|Saturn|Chiron|Soul Contract|shadow integration|Sacred Partnership|Life Path \S+|Sephirah \S+|wisdom transmission|frequency of Anticipation|ego to beauty|mirror each other's gifts|Sibling Circuit of Perseverance)\b/
+
+function highlightTerms(text) {
+  const parts = text.split(HIGHLIGHT_TERMS)
+  return parts.map((part, i) =>
+    HIGHLIGHT_TERMS.test(part)
+      ? <span key={i}>{part}</span>
+      : part
+  )
+}
+
 function getProfile(id, primaryProfile, people) {
   if (id === null) return primaryProfile
   return people.find((p) => p.id === id) || primaryProfile
@@ -43,10 +54,9 @@ function ScoreSection({ headerLabel, headerColor, scores, insight, aName, bName 
         <ScoreRow key={i} label={s.label} val={s.pct ? `${s.pct}%` : s.val} gradient={s.gradient} />
       ))}
       {insight && (
-        <div className="score-insight" dangerouslySetInnerHTML={{
-          __html: insight(aName, bName).replace(/([^>])(Venus|Mars|Moon|North Node|Pluto|Saturn|Chiron|Soul Contract|shadow integration|Sacred Partnership|Life Path [^\s.]+|Sephirah [^\s.]+|wisdom transmission|frequency of Anticipation|ego to beauty|mirror each other's gifts|Sibling Circuit of Perseverance)/g,
-            (m, pre, term) => `${pre}<span>${term}</span>`)
-        }} />
+        <div className="score-insight">
+          {highlightTerms(insight(aName, bName))}
+        </div>
       )}
     </div>
   )
