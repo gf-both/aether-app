@@ -267,7 +267,7 @@ export default function NatalWheel({ showAspects = true, showHouses = true }) {
 
       // ── Aspect lines ──
       if (showAspectsRef.current) {
-        const rA = R * .46
+        const rA = R * 0.46;
         (ch?.aspects ?? []).forEach(({ planet1, planet2, aspect, orb }) => {
           const lon1 = ch.planets[planet1]?.lon
           const lon2 = ch.planets[planet2]?.lon
