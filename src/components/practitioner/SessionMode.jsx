@@ -77,7 +77,7 @@ function getClientChartData(client, frameworkId) {
         timezone: client.birthTimezone,
       })
     }
-  } catch (_e) {
+  } catch {
     return null
   }
   return null

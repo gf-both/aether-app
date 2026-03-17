@@ -85,7 +85,7 @@ export default function NumerologyDetail() {
   const activeProfile = useActiveProfile()
 
   const now = new Date()
-  const { day, month, year, fullName } = parseProfileInputs(activeProfile)
+  const { fullName } = parseProfileInputs(activeProfile)
 
   const profile = useMemo(() => {
     if (!activeProfile?.dob || !fullName) return null

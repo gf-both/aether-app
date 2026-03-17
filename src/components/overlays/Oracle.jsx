@@ -8,7 +8,7 @@ import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 function buildOracleResponses(profile) {
   const hdType = profile?.hdType || 'Projector'
   const hdProfile = profile?.hdProfile || ''
-  const _hdAuth = profile?.hdAuth || 'Emotional'
+  const hdAuth = profile?.hdAuth || 'Emotional'
   const sign = profile?.sign || 'Sun'
   const asc = profile?.asc || ''
   const lifePath = profile?.lifePath || ''
@@ -45,7 +45,7 @@ export default function Oracle({ open, onClose }) {
 
   const hdType = profile?.hdType || 'Projector'
   const hdProfile = profile?.hdProfile || ''
-  const _hdAuth = profile?.hdAuth || 'Emotional'
+  const hdAuth = profile?.hdAuth || 'Emotional'
 
   const oracleResponses = buildOracleResponses(profile)
 

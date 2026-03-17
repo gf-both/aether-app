@@ -1,3 +1,5 @@
+/* eslint-disable */
+// Demo stub — not production-backed
 // Meeting recording, transcription, and AI-powered note generation
 // Requires:
 //   - Web Audio API / MediaRecorder for audio capture

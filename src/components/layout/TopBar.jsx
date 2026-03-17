@@ -247,7 +247,6 @@ function ProfileSwitcher() {
   const people = useAboveInsideStore((s) => s.people)
   const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
   const setActiveViewProfile = useAboveInsideStore((s) => s.setActiveViewProfile)
-  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
   const [open, setOpen] = useState(false)
@@ -647,7 +646,6 @@ export default function TopBar() {
   const primaryProfile = useAboveInsideStore((s) => s.primaryProfile)
   const activeViewProfile = useAboveInsideStore((s) => s.activeViewProfile)
   const profile = activeViewProfile || primaryProfile
-  const setActivePanel = useAboveInsideStore((s) => s.setActivePanel)
   const setActiveDetail = useAboveInsideStore((s) => s.setActiveDetail)
   const setActiveNav = useAboveInsideStore((s) => s.setActiveNav)
   const oracleOpen = useAboveInsideStore((s) => s.oracleOpen)
@@ -709,7 +707,6 @@ export default function TopBar() {
   const displayChinese   = computedChinese ? `${computedChinese.element} ${computedChinese.animal}` : '?'
 
   // Derive dynamic values instead of hardcoding
-  const hdProfileLabel = HD_PROFILE_LABELS[displayHDProfile] || displayHDProfile
   const activeSephira = SEPHIROTH?.find(s => s.active) || null
   const sephiraChip = activeSephira ? `${activeSephira.name} ${activeSephira.ratio}` : null
 

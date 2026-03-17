@@ -88,12 +88,12 @@ function buildComputedProfile(profileData) {
     engineProfile: eng,
 
     // Rich editorial content — dynamically generated from computed values
-    significantMatches: buildSignificantMatches(eng, pyt, heb, _ord, _cha),
+    significantMatches: buildSignificantMatches(eng, pyt, heb),
     kabbalisticCorrespondences: buildKabbalisticCorrespondences(pyt, fullName),
   }
 }
 
-function buildSignificantMatches(eng, pyt, heb, _ord, _cha) {
+function buildSignificantMatches(eng, pyt, heb) {
   const matches = []
   const hebrewTotal = heb.fullName.total
   const _pytTotal = pyt.fullName.total

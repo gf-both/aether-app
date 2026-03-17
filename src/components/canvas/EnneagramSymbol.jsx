@@ -24,7 +24,7 @@ export default function EnneagramSymbol({ typeOverride, wingOverride } = {}) {
     const disintegrationTo = typeInfo ? typeInfo.stress : null
 
     // Triangle: 3-6-9 and Hexad: 1-4-2-8-5-7-1
-    const triangleIndices = [3, 6, 9]
+    // const triangleIndices = [3, 6, 9]
     const hexadOrder = [1, 4, 2, 8, 5, 7]
 
     const handleMouseMove = (e) => {
