@@ -159,8 +159,9 @@ export default function ClientPortal() {
     <div style={st.container}>
       {/* Header */}
       <div style={{ marginBottom: '20px' }}>
-        <div style={{ fontFamily: "'Cinzel',serif", fontSize: '18px', letterSpacing: '.15em', color: 'var(--foreground)', marginBottom: '4px' }}>
+        <div style={{ fontFamily: "'Cinzel',serif", fontSize: '18px', letterSpacing: '.15em', color: 'var(--foreground)', marginBottom: '4px', display: 'flex', alignItems: 'center' }}>
           {'\uD83D\uDCCB'} Client Portal
+          <span style={{ fontSize:9, padding:'2px 8px', borderRadius:10, background:'rgba(240,160,60,.15)', border:'1px solid rgba(240,160,60,.3)', color:'rgba(240,160,60,.8)', fontFamily:"'Cinzel',serif", letterSpacing:'.08em', textTransform:'uppercase', marginLeft:8 }}>Demo</span>
         </div>
         <div style={{ fontSize: '12px', color: 'var(--muted-foreground)' }}>
           Your personal space for sessions, insights, and growth tracking.

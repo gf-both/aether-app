@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, lazy, Suspense } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
 import { useActiveProfile } from '../hooks/useActiveProfile'
 import { DEFAULT_PRIMARY_PROFILE } from '../data/primaryProfile'
@@ -52,16 +52,16 @@ import TimelineDetail from '../components/details/TimelineDetail'
 import CareerAlignmentDetail from '../components/details/CareerAlignmentDetail'
 import CareerWheel from '../components/canvas/CareerWheel'
 import TimelineWidget from '../components/canvas/TimelineWidget'
-import PricingPage from './PricingPage'
-import PractitionerPortal from './PractitionerPortal'
-import ClientPortal from './ClientPortal'
-import AIAgentsPage from './AIAgentsPage'
+const PricingPage = lazy(() => import('./PricingPage'))
+const PractitionerPortal = lazy(() => import('./PractitionerPortal'))
+const ClientPortal = lazy(() => import('./ClientPortal'))
+const AIAgentsPage = lazy(() => import('./AIAgentsPage'))
 import CompanyPage from './CompanyPage'
-import GolemPage from './GolemPage'
-import WendyPage from './WendyPage'
-import DatingPage from './DatingPage'
+const GolemPage = lazy(() => import('./GolemPage'))
+const WendyPage = lazy(() => import('./WendyPage'))
+const DatingPage = lazy(() => import('./DatingPage'))
 import SettingsPage from './SettingsPage'
-import AdminPanel from './AdminPanel'
+const AdminPanel = lazy(() => import('./AdminPanel'))
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
 import { getBiorhythms } from '../engines/biorhythmEngine'
@@ -1417,7 +1417,9 @@ export default function Dashboard() {
             }}>Back to Dashboard</div>
           </div>
           <div style={{ flex: 1, overflow: 'auto' }}>
-            {DetailComponent && <DetailComponent />}
+            <Suspense fallback={<div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', opacity:.3, fontFamily:"'Cinzel',serif", fontSize:11, textTransform:'uppercase', letterSpacing:'.1em' }}>Loading...</div>}>
+              {DetailComponent && <DetailComponent />}
+            </Suspense>
           </div>
         </div>
         <StatusBar />

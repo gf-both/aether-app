@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
+import { signOut } from '../../lib/auth'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { useClock } from '../../hooks/useClock'
 import { SEPHIROTH } from '../../data/kabbalahData'
@@ -622,7 +623,6 @@ function SignInButton() {
           </div>
           <div
             onClick={async () => {
-              const { signOut } = await import('../../lib/auth')
               await signOut()
               setUser(null)
               setMenuOpen(false)

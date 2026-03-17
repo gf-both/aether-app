@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useAboveInsideStore } from '../store/useAboveInsideStore'
+import { callAI } from '../lib/ai'
 import { getNatalChart } from '../engines/natalEngine'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 import { resolvePob, safeVal } from '../utils/profileUtils'
@@ -200,51 +201,24 @@ Keep responses 2-4 sentences. Be direct.`
       setMessages(m => ({ ...m, [selectedId]: [...(m[selectedId] || newMessages), { role: 'golem', text: response }] }))
     } catch (err) {
       console.error('Golem error:', err)
-      const fallback = err?.message?.includes('API key')
-        ? "I'm dormant — no key to animate me. Set VITE_ANTHROPIC_API_KEY to wake me."
-        : "I'm having trouble connecting right now. My essence is here — try again in a moment."
+      const fallback = "I'm having trouble connecting right now. My essence is here — try again in a moment."
       setMessages(m => ({ ...m, [selectedId]: [...(m[selectedId] || []), { role: 'golem', text: fallback }] }))
     }
     setLoading(false)
   }
 
   async function callGolem(systemPrompt, userMessage, history) {
-    const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-    if (!apiKey || apiKey.startsWith('sk-ant-REPLACE')) {
-      throw new Error('No Anthropic API key configured')
-    }
-
-    // Build messages array from history + new user message
-    const messagesForClaude = [
-      ...history
-        .filter(m => m.role !== 'system')
-        .map(m => ({ role: m.role === 'golem' ? 'assistant' : 'user', content: m.text })),
-      { role: 'user', content: userMessage },
+    const messages = [
+      ...history.filter(m => m.role !== 'system').map(m => ({
+        role: m.role === 'golem' ? 'assistant' : 'user',
+        content: m.text
+      })),
+      { role: 'user', content: userMessage }
     ]
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 300,
-        system: systemPrompt,
-        messages: messagesForClaude,
-      }),
-    })
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}))
-      throw new Error(err?.error?.message || `API error ${response.status}`)
-    }
-
-    const data = await response.json()
-    return data.content[0].text
+    const response = await callAI({ systemPrompt, messages, maxTokens: 300 })
+    if (!response) return `I'm having trouble connecting right now. Try again in a moment.`
+    return response
   }
 
   function createCustomGolem() {

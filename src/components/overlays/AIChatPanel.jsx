@@ -276,6 +276,7 @@ export default function AIChatPanel({ open, onClose }) {
             <span style={{ fontSize: '14px' }}>{'\u2726'}</span>
             AI Consciousness Guide &mdash; Powered by Claude
             <span style={styles.badge}>Premium Feature</span>
+            <div style={{ fontSize:9, color:'rgba(255,255,255,.3)', fontStyle:'italic', marginLeft:'auto' }}>Preview mode</div>
           </div>
           <div style={styles.close} onClick={onClose}>{'\u2715'}</div>
         </div>

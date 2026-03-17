@@ -199,7 +199,10 @@ export default function PractitionerPortal() {
       {/* Header */}
       <div style={s.header}>
         <div>
-          <div style={s.title}>Practitioner HQ</div>
+          <div style={{ ...s.title, display: 'flex', alignItems: 'center' }}>
+            Practitioner HQ
+            <span style={{ fontSize:9, padding:'2px 8px', borderRadius:10, background:'rgba(240,160,60,.15)', border:'1px solid rgba(240,160,60,.3)', color:'rgba(240,160,60,.8)', fontFamily:"'Cinzel',serif", letterSpacing:'.08em', textTransform:'uppercase', marginLeft:8 }}>Demo</span>
+          </div>
           <div style={s.subtitle}>Practice Management · Sessions · Revenue</div>
         </div>
         <div style={s.headerActions}>

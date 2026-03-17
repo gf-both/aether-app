@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { upsertBirthProfile } from '../../lib/db'
 import { useAboveInsideStore } from '../../store/useAboveInsideStore'
 import { REL_CONFIG } from '../../data/primaryProfile'
 import PlaceAutocomplete from '../ui/PlaceAutocomplete'
@@ -98,7 +99,6 @@ export default function ProfilePanel({ open, onClose, embedded }) {
     setPrimaryProfile(updates)
 
     if (user) {
-      const { upsertBirthProfile } = await import('../../lib/db')
       await upsertBirthProfile(user.id, updates, true)
       await loadProfilesFromDB(user.id)
     }

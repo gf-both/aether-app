@@ -1,16 +1,67 @@
-# React + Vite
+# AETHER
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The world's most complete self-knowledge platform. 21+ esoteric and psychological frameworks — astrology, Human Design, Gene Keys, Kabbalah, Mayan calendar, numerology, and more — in one unified interface.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend**: React + Vite + Tailwind (via CSS vars) + Zustand
+- **Backend/DB/Auth**: Supabase (Postgres + RLS + Edge Functions)
+- **AI**: Anthropic Claude (backend-proxied)
+- **Payments**: Stripe (coming)
+- **Deploy**: Vercel
 
-## React Compiler
+## Local Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+cp .env.example .env.local
+# Fill in VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+npm run dev
+```
 
-## Expanding the ESLint configuration
+## Environment Variables
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+VITE_SUPABASE_URL=          # Your Supabase project URL
+VITE_SUPABASE_ANON_KEY=     # Supabase anon/public key
+VITE_GOOGLE_PLACES_API_KEY= # Optional: enables birth city autocomplete
+```
+
+AI calls are backend-proxied via Supabase Edge Functions. No AI provider keys in the frontend.
+
+## Architecture
+
+```
+src/
+  engines/     # Symbolic calculation engines (the core IP)
+  components/  # UI components (canvas, details, practitioner, overlays)
+  pages/       # Product surfaces
+  hooks/       # Shared React hooks
+  lib/         # Supabase client, auth, AI proxy
+  store/       # Zustand global state
+  utils/       # Shared utilities
+supabase/
+  migrations/  # DB schema + RLS policies
+```
+
+## Current Status
+
+**Alpha** — The product vision is complete. Core engines are production-quality. UI surfaces are functional. Some practitioner/payment features are in demo mode pending backend completion.
+
+## Known Demo Features
+
+These surfaces use placeholder data and are not yet production-backed:
+- AI Guide chat (backend proxy ready, responses pending model integration)
+- Practitioner session recording
+- Stripe payments
+- WhatsApp integration
+- Client portal (uses sample data)
+
+## Development
+
+```bash
+npm run dev      # Start dev server
+npm run build    # Production build
+npm run lint     # ESLint check
+npm run preview  # Preview production build
+```
