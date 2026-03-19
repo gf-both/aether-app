@@ -52,6 +52,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '🔮', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
   { type: 'item', icon: '💫', label: 'Connections', id: 'dating', widget: 'dating' },
   { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aiagents', widget: 'aiagents' },
+  { type: 'item', icon: '📊', label: 'Benchmark Lab', id: 'benchmark', widget: 'benchmark' },
   { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
 
   { type: 'section', label: 'TOOLS' },

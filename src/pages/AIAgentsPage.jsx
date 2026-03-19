@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useGolemStore } from '../store/useGolemStore'
 import { callAI } from '../lib/ai'
 
 // Archetype colors
@@ -830,7 +831,34 @@ export default function AIAgentsPage() {
 
             {/* ── BENCHMARK TAB ── */}
             {rightTab === 'benchmark' && (
-              <BenchmarkTab selected={selected} />
+              <>
+                <div style={{
+                  background: 'rgba(147,51,234,0.08)', border: '1px solid rgba(147,51,234,0.2)',
+                  borderRadius: 8, padding: '12px 16px', marginBottom: 16,
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                }}>
+                  <div>
+                    <div style={{ fontSize: 13, color: '#c084fc', fontWeight: 600 }}>Full Benchmark Lab Available</div>
+                    <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
+                      3-way comparison: GOLEM vs Vanilla vs Antagonist — 40 prompts, blind scoring, research export
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      useGolemStore.getState().setActiveDetail('benchmark')
+                      useGolemStore.getState().setActiveNav('benchmark')
+                    }}
+                    style={{
+                      padding: '8px 16px', borderRadius: 6, border: '1px solid rgba(147,51,234,0.5)',
+                      background: 'rgba(147,51,234,0.15)', color: '#c084fc', cursor: 'pointer',
+                      fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap',
+                    }}
+                  >
+                    Go to Benchmark Lab →
+                  </button>
+                </div>
+                <BenchmarkTab selected={selected} />
+              </>
             )}
           </>
         ) : (

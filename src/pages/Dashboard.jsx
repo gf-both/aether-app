@@ -64,6 +64,7 @@ const DatingPage = lazy(() => import('./DatingPage'))
 const GolemSimulation = lazy(() => import('./GolemSimulation'))
 const SettingsPage = lazy(() => import('./SettingsPage'))
 const AdminPanel = lazy(() => import('./AdminPanel'))
+const BenchmarkPage = lazy(() => import('./BenchmarkPage'))
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
 import { GK_LIST } from '../data/geneKeysData'
@@ -313,6 +314,7 @@ const DETAIL_COMPONENTS = {
   practitioner: PractitionerPortal,
   client: ClientPortal,
   aiagents: AIAgentsPage,
+  benchmark: BenchmarkPage,
   company: CompanyPage,
   golem: GolemPage,
   wendy: WendyPage,
@@ -353,6 +355,7 @@ const DETAIL_TITLES = {
   practitioner: 'Practitioner Portal \u2014 Practice Management',
   client: 'Client Portal \u2014 Your Journey',
   aiagents: 'AI Agents \u2014 GOLEM Team',
+  benchmark: 'Benchmark Lab \u2014 GOLEM vs Vanilla vs Antagonist',
   company: 'GOLEM \u2014 Company Dashboard',
   golem: 'Golem \u2014 Talk to Your Clone',
   wendy: 'Wendy \u2014 Org Intelligence',
