@@ -1,4 +1,6 @@
-import { useMemo, useEffect, useRef } from 'react'
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
+import { callAI } from '../lib/ai.js'
+import golemPrompt from '../agents/profiler/GOLEM.md?raw'
 
 // ─── Agent Data (mirrored from AIAgentsPage) ──────────────────────────────────
 const PAPERCLIP_AGENTS = [
@@ -340,9 +342,46 @@ function DiagnosisCard({ diagnosis }) {
 export default function WendyPage() {
   const metrics = useMemo(() => computeOrgMetrics(PAPERCLIP_AGENTS), [])
   const diagnoses = useMemo(() => runDiagnoses(metrics), [metrics])
-  const voiceReport = useMemo(() => generateVoiceReport(metrics, diagnoses), [metrics, diagnoses])
+  const localReport = useMemo(() => generateVoiceReport(metrics, diagnoses), [metrics, diagnoses])
 
-  const { oci, balanceScore, fitScore, deptCounts } = metrics
+  const [aiReport, setAiReport] = useState(null)
+  const [aiLoading, setAiLoading] = useState(false)
+
+  const { oci, balanceScore, fitScore, deptCounts, expressionCounts, uniqueExpressions } = metrics
+  const criticalCount = diagnoses.filter(d => d.severity === 'critical').length
+
+  const fetchAIReport = useCallback(async () => {
+    setAiLoading(true)
+    try {
+      const result = await callAI({
+        systemPrompt: golemPrompt + `\n\nYou are Wendy, the Organizational Intelligence agent. Write a sharp, direct org diagnosis in Wendy's voice — analytical, incisive, no fluff. 2-4 sentences. Reference specific archetype numbers and roles. End with one concrete recommendation.`,
+        messages: [{
+          role: 'user',
+          content: `Here is the current state of the Paperclip org:
+- OCI Score: ${oci}/100
+- Agents: ${PAPERCLIP_AGENTS.length} total across ${uniqueExpressions} archetypes
+- Dept breakdown: ${JSON.stringify(deptCounts)}
+- Expression distribution: ${JSON.stringify(expressionCounts)}
+- Critical diagnoses: ${criticalCount}
+- Top issues: ${diagnoses.slice(0, 3).map(d => d.description).join('; ')}
+- Balance Score: ${balanceScore}/100
+- Role-Archetype Fit: ${fitScore}/100
+
+Give your assessment.`,
+        }],
+        maxTokens: 300,
+      })
+      if (result) setAiReport(result)
+    } catch (e) {
+      console.error('Wendy AI report failed:', e)
+    } finally {
+      setAiLoading(false)
+    }
+  }, [oci, uniqueExpressions, deptCounts, expressionCounts, criticalCount, diagnoses, balanceScore, fitScore])
+
+  useEffect(() => { fetchAIReport() }, [fetchAIReport])
+
+  const voiceReport = aiReport || localReport
 
   const deptChips = [
     { label: `${PAPERCLIP_AGENTS.length} agents`,   color: '#c9a84c' },
@@ -351,8 +390,6 @@ export default function WendyPage() {
     { label: `${deptCounts['MARKETING'] || 0} marketing`,   color: '#f060a0' },
     { label: `${deptCounts['CREATIVE'] || 0} creative`,     color: '#4ade80'  },
   ]
-
-  const criticalCount = diagnoses.filter(d => d.severity === 'critical').length
 
   return (
     <div style={{ display:'flex', height:'100%', overflow:'hidden', background:'var(--bg, #0a0a0f)' }}>
@@ -499,8 +536,30 @@ export default function WendyPage() {
             marginBottom: 16,
             paddingBottom: 8,
             borderBottom: '1px solid rgba(255,255,255,0.06)',
+            display:'flex',
+            alignItems:'center',
+            justifyContent:'space-between',
           }}>
-            Wendy's Assessment
+            <span>Wendy's Assessment{aiReport ? ' · AI' : ''}</span>
+            <button
+              onClick={fetchAIReport}
+              disabled={aiLoading}
+              style={{
+                background: 'rgba(201,168,76,0.12)',
+                border: '1px solid rgba(201,168,76,0.3)',
+                borderRadius: 4,
+                padding: '3px 10px',
+                fontSize: 9,
+                letterSpacing: '.08em',
+                color: '#c9a84c',
+                cursor: aiLoading ? 'wait' : 'pointer',
+                textTransform: 'uppercase',
+                fontFamily: "'Cinzel',serif",
+                opacity: aiLoading ? 0.5 : 1,
+              }}
+            >
+              {aiLoading ? 'Analyzing...' : 'Refresh Analysis'}
+            </button>
           </div>
 
           <div style={{
@@ -539,8 +598,10 @@ export default function WendyPage() {
               fontStyle: 'italic',
               borderLeft: '2px solid rgba(201,168,76,0.35)',
               paddingLeft: 14,
+              opacity: aiLoading && !aiReport ? 0.5 : 1,
+              transition: 'opacity 0.3s ease',
             }}>
-              "{voiceReport}"
+              "{aiLoading && !aiReport ? 'Wendy is analyzing the organization...' : voiceReport}"
             </div>
 
             {/* OCI stamp */}
