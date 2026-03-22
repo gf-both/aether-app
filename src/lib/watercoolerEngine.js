@@ -1,7 +1,9 @@
 /**
  * watercoolerEngine.js — Generate agent watercooler conversations via AI
+ * Memory-enhanced: agents remember prior conversations via Graphiti
  */
 import { callAI } from './ai'
+import { storeAgentMemory, getAgentMemories } from './memory'
 
 // ── Load & parse all 27 agent profiles ──
 const profileFiles = import.meta.glob('../agents/profiles/*.GOLEM.md', { as: 'raw', eager: true })
@@ -55,11 +57,22 @@ function randBetween(min, max) {
 }
 
 async function generateThread(group, topic) {
+  // Retrieve relevant memories for each agent in this group
+  const agentMemories = await Promise.all(
+    group.map(a => getAgentMemories(a.id, topic))
+  )
+
   const agentDescriptions = group
-    .map(a => `- ${a.emoji} ${a.name} (${a.role}). Style: "${a.workingStyle[0] || 'no style listed'}"`)
+    .map((a, i) => {
+      const memories = agentMemories[i]
+      const memContext = memories.length > 0
+        ? `\n  Prior context: "${memories.slice(0, 2).join(' | ')}"`
+        : ''
+      return `- ${a.emoji} ${a.name} (${a.role}). Style: "${a.workingStyle[0] || 'no style listed'}"${memContext}`
+    })
     .join('\n')
 
-  const systemPrompt = `You are simulating a casual Slack watercooler conversation between Paperclip org agents at a startup called GOLEM. Each agent has a distinct personality. Keep it realistic, occasionally spicy, sometimes funny, always in character. Stay brief — 1-3 sentences per message. Format response as a JSON array: [{"agentId": "agent-id", "message": "their message"}]. Return 4-8 exchanges. ONLY return the JSON array, no other text.`
+  const systemPrompt = `You are simulating a casual Slack watercooler conversation between Paperclip org agents at a startup called GOLEM. Each agent has a distinct personality and may remember prior conversations (noted as "Prior context"). Keep it realistic, occasionally spicy, sometimes funny, always in character. If an agent has prior context, let it subtly influence their tone or references. Stay brief — 1-3 sentences per message. Format response as a JSON array: [{"agentId": "agent-id", "message": "their message"}]. Return 4-8 exchanges. ONLY return the JSON array, no other text.`
 
   const userMessage = `Agents in this conversation:\n${agentDescriptions}\n\nTopic: "${topic}"\n\nGenerate a realistic watercooler conversation.`
 
@@ -108,10 +121,14 @@ export async function generateConversations(onThread) {
     const groupSize = randBetween(2, 4)
     const group = pick(agents, groupSize)
     const topic = pick(TOPICS, 1)[0]
-    return generateThread(group, topic).then(thread => {
+    return generateThread(group, topic).then(async thread => {
       if (thread) {
         threads.push(thread)
         onThread?.(thread)
+        // Store this conversation in each participant's memory (non-blocking)
+        group.forEach(agent => {
+          storeAgentMemory(agent.id, topic, thread.messages).catch(() => {})
+        })
       }
     })
   })
