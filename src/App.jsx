@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useGolemStore } from './store/useGolemStore'
 import ErrorBoundary from './components/ui/ErrorBoundary'
 import Dashboard from './pages/Dashboard'
+import IntroAnimation from './components/ui/IntroAnimation'
 import ProfilePanel from './components/overlays/ProfilePanel'
 import SynastryPanel from './components/overlays/SynastryPanel'
 import AIChatPanel from './components/overlays/AIChatPanel'
@@ -89,6 +90,10 @@ function ThemeSync() {
 }
 
 export default function App() {
+  const [showIntro, setShowIntro] = useState(
+    () => !localStorage.getItem('golem_intro_seen')
+  )
+
   return (
     <ErrorBoundary>
       <AuthSync />
@@ -97,6 +102,9 @@ export default function App() {
       <Dashboard />
       <OverlayManager />
       <Cursor />
+      {showIntro && (
+        <IntroAnimation onComplete={() => setShowIntro(false)} />
+      )}
     </ErrorBoundary>
   )
 }

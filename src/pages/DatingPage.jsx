@@ -5,6 +5,7 @@ import { getNatalChart } from '../engines/natalEngine'
 import { computeHDChart } from '../engines/hdEngine'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 import { resolvePob } from '../utils/profileUtils'
+import GolemAvatar from '../components/ui/GolemAvatar'
 
 const CONNECTION_TYPES = [
   { id: 'romantic', label: 'Romantic', icon: '💗' },
@@ -198,9 +199,7 @@ export default function DatingPage() {
                 >
                   <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
                     <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                      <div style={{ width:36, height:36, borderRadius:'50%', background:`rgba(${match.color},.15)`, border:`1px solid rgba(${match.color},.3)`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:18 }}>
-                        {match.emoji}
-                      </div>
+                      <GolemAvatar profile={match} size="md" mode="auto" />
                       <div>
                         <div style={{ fontFamily:"'Cinzel',serif", fontSize:11, letterSpacing:'.1em', color:'var(--foreground)' }}>{match.name}</div>
                         <div style={{ fontSize:10, color:'var(--muted-foreground)', marginTop:2 }}>{match.sign} · {match.hdType} · LP {match.lifePath}</div>
@@ -224,6 +223,9 @@ export default function DatingPage() {
                   {/* Expanded match story */}
                   {selectedMatch?.name === match.name && (
                     <div style={{ marginTop:14, paddingTop:14, borderTop:'1px solid rgba(201,168,76,.1)' }}>
+                      <div style={{ display:'flex', justifyContent:'center', marginBottom:12 }}>
+                        <GolemAvatar profile={match} size="xl" showGenerate={true} />
+                      </div>
                       <div style={{ fontFamily:"'Cinzel',serif", fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'var(--gold)', marginBottom:8 }}>Match Story</div>
                       <div style={{ fontSize:12, lineHeight:1.7, color:'rgba(255,255,255,.7)', marginBottom:12 }}>{match.story}</div>
 
@@ -257,7 +259,7 @@ export default function DatingPage() {
           <div style={{ maxWidth:480 }}>
             <div style={{ padding:'20px', borderRadius:12, background:'rgba(201,168,76,.06)', border:'1px solid rgba(201,168,76,.15)', marginBottom:20 }}>
               <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:14 }}>
-                <span style={{ fontSize:32 }}>🪬</span>
+                <GolemAvatar profile={profile} size="lg" showGenerate={true} />
                 <div>
                   <div style={{ fontFamily:"'Cinzel',serif", fontSize:12, letterSpacing:'.12em', textTransform:'uppercase', color:'var(--gold)' }}>Your Golem</div>
                   <div style={{ fontSize:11, color:'var(--muted-foreground)', marginTop:2 }}>Active · Matching on your behalf</div>
