@@ -1,13 +1,18 @@
 /**
- * ai.js — Backend-proxied AI calls
+ * ai.js — AI call router
  *
- * Priority:
- *  1. Supabase edge function (production)
- *  2. Direct Anthropic call (dev, when VITE_ANTHROPIC_API_KEY is set)
+ * Priority order:
+ *  1. Ollama (local, free) — default when running locally
+ *  2. Supabase edge function (production)
+ *  3. Direct Anthropic (dev fallback)
  *
- * Never ship a real key to users — the direct path is dev-only.
+ * Use `provider: 'anthropic'` to force Claude for high-stakes calls.
+ * Use `provider: 'ollama'` to force local.
  */
 import { supabase } from './supabase'
+
+const OLLAMA_URL = 'http://localhost:11434'
+const OLLAMA_MODEL = 'qwen2.5:14b'
 
 const HAS_SUPABASE =
   import.meta.env.VITE_SUPABASE_URL &&
@@ -21,6 +26,35 @@ const ANTHROPIC_KEY =
     ? import.meta.env.VITE_ANTHROPIC_API_KEY
     : null
 
+// ── Ollama ──
+async function callOllama({ systemPrompt, messages, maxTokens }) {
+  const ollamaMessages = []
+  if (systemPrompt) ollamaMessages.push({ role: 'system', content: systemPrompt })
+  ollamaMessages.push(...messages)
+
+  const res = await fetch(`${OLLAMA_URL}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: OLLAMA_MODEL,
+      messages: ollamaMessages,
+      stream: false,
+      options: { num_predict: maxTokens },
+    }),
+  })
+  if (!res.ok) throw new Error(`Ollama ${res.status}`)
+  const data = await res.json()
+  return data.message?.content || null
+}
+
+async function ollamaAvailable() {
+  try {
+    const res = await fetch(`${OLLAMA_URL}/api/tags`, { signal: AbortSignal.timeout(1500) })
+    return res.ok
+  } catch { return false }
+}
+
+// ── Supabase edge function ──
 async function callViaEdgeFunction({ systemPrompt, messages, maxTokens }) {
   const { data, error } = await supabase.functions.invoke('ai-chat', {
     body: { systemPrompt, messages, maxTokens },
@@ -29,13 +63,8 @@ async function callViaEdgeFunction({ systemPrompt, messages, maxTokens }) {
   return data?.content || null
 }
 
+// ── Direct Anthropic ──
 async function callDirectAnthropic({ systemPrompt, messages, maxTokens }) {
-  const body = {
-    model: 'claude-haiku-4-5',
-    max_tokens: maxTokens,
-    messages,
-    ...(systemPrompt ? { system: systemPrompt } : {}),
-  }
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -43,7 +72,12 @@ async function callDirectAnthropic({ systemPrompt, messages, maxTokens }) {
       'anthropic-version': '2023-06-01',
       'content-type': 'application/json',
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: maxTokens,
+      messages,
+      ...(systemPrompt ? { system: systemPrompt } : {}),
+    }),
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
@@ -53,18 +87,47 @@ async function callDirectAnthropic({ systemPrompt, messages, maxTokens }) {
   return data.content?.[0]?.text || null
 }
 
-export async function callAI({ systemPrompt, messages, maxTokens = 400 }) {
+/**
+ * callAI({ systemPrompt, messages, maxTokens, provider })
+ *
+ * provider: 'auto' (default) | 'ollama' | 'anthropic'
+ *   'auto'      → Ollama first (local), then Supabase, then direct Anthropic
+ *   'ollama'    → Force local Ollama
+ *   'anthropic' → Force Claude (Supabase in prod, direct key in dev)
+ */
+export async function callAI({ systemPrompt, messages, maxTokens = 400, provider = 'auto' }) {
   try {
-    if (HAS_SUPABASE) {
-      return await callViaEdgeFunction({ systemPrompt, messages, maxTokens })
-    } else if (ANTHROPIC_KEY) {
-      return await callDirectAnthropic({ systemPrompt, messages, maxTokens })
-    } else {
-      console.error('[ai] No AI backend configured. Set VITE_SUPABASE_URL+VITE_SUPABASE_ANON_KEY or VITE_ANTHROPIC_API_KEY in .env.local')
-      return null
+    if (provider === 'ollama') {
+      return await callOllama({ systemPrompt, messages, maxTokens })
     }
+
+    if (provider === 'anthropic') {
+      if (HAS_SUPABASE) return await callViaEdgeFunction({ systemPrompt, messages, maxTokens })
+      if (ANTHROPIC_KEY) return await callDirectAnthropic({ systemPrompt, messages, maxTokens })
+      throw new Error('No Anthropic backend configured')
+    }
+
+    // auto: Ollama → Supabase → direct Anthropic
+    if (await ollamaAvailable()) {
+      const result = await callOllama({ systemPrompt, messages, maxTokens })
+      if (result) return result
+      console.warn('[ai] Ollama returned empty, falling back')
+    }
+
+    if (HAS_SUPABASE) return await callViaEdgeFunction({ systemPrompt, messages, maxTokens })
+    if (ANTHROPIC_KEY) return await callDirectAnthropic({ systemPrompt, messages, maxTokens })
+
+    console.error('[ai] No AI backend available')
+    return null
   } catch (e) {
     console.error('[ai] callAI failed:', e)
+    // If Ollama failed, try Anthropic as fallback
+    if (provider === 'auto' && e.message?.includes('Ollama')) {
+      try {
+        if (HAS_SUPABASE) return await callViaEdgeFunction({ systemPrompt, messages, maxTokens })
+        if (ANTHROPIC_KEY) return await callDirectAnthropic({ systemPrompt, messages, maxTokens })
+      } catch {}
+    }
     return null
   }
 }

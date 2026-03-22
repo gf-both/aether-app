@@ -261,22 +261,25 @@ export default function BenchmarkPage() {
       reverseMap[label] = cond
     })
 
-    // Run all 3 conditions in parallel
+    // Run all 3 conditions in parallel — force Anthropic for benchmark responses (quality matters)
     const [golemResp, vanillaResp, antagonistResp] = await Promise.all([
       callAI({
         systemPrompt: GOLEM_SYSTEM_PROMPT,
         messages: [{ role: 'user', content: test.prompt }],
         maxTokens: 600,
+        provider: 'anthropic',
       }),
       callAI({
         systemPrompt: VANILLA_SYSTEM_PROMPT,
         messages: [{ role: 'user', content: test.prompt }],
         maxTokens: 600,
+        provider: 'anthropic',
       }),
       callAI({
         systemPrompt: ANTAGONIST_SYSTEM_PROMPT,
         messages: [{ role: 'user', content: test.prompt }],
         maxTokens: 600,
+        provider: 'anthropic',
       }),
     ])
 
@@ -296,11 +299,12 @@ ${antagonistResp || '[No response]'}
 
 Score each response (A, B, C) on the 5 dimensions. Return JSON only.`
 
-    // Call blind scorer
+    // Call blind scorer — Ollama is great for structured JSON scoring
     const scorerRaw = await callAI({
       systemPrompt: SCORER_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: scoringPrompt }],
       maxTokens: 500,
+      provider: 'auto',
     })
 
     // Parse scorer response
