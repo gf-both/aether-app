@@ -1,14 +1,14 @@
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile } from '../../hooks/useActiveProfile'
 
 export default function CareerAlignmentDetail() {
-  const profile = useActiveProfile()
+  const profile = useComputedProfile()
 
-  if (!profile?.dob || !profile?.hdType || profile.hdType === '?') {
+  if (!profile?.dob) {
     return (
       <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:12, opacity:.5, padding:40, textAlign:'center' }}>
         <div style={{ fontSize:40 }}>🧭</div>
         <div style={{ fontFamily:"'Cinzel',serif", fontSize:12, letterSpacing:'.1em', textTransform:'uppercase', color:'var(--gold)' }}>Complete your profile to see Career Alignment</div>
-        <div style={{ fontSize:11, color:'var(--muted-foreground)', maxWidth:300 }}>We need your birth data and Human Design type to generate your career alignment map.</div>
+        <div style={{ fontSize:11, color:'var(--muted-foreground)', maxWidth:300 }}>Add your birth date in Settings to generate your career alignment map.</div>
       </div>
     )
   }
