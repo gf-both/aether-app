@@ -30,7 +30,8 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'claude-haiku-4-5',
         max_tokens: maxTokens,
-        system: systemPrompt || 'You are a helpful assistant.',
+        // Only include system if non-empty — null/undefined/'' means no identity (true vanilla)
+        ...(systemPrompt ? { system: systemPrompt } : {}),
         messages: messages || [],
       }),
     })

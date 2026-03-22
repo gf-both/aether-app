@@ -43,10 +43,25 @@ IMPORTANT RULES:
 - Differentiate clearly between responses. If one is significantly better, the scores should reflect that.
 - Consider the question context when scoring — a response to an emotional question should score high on empathy.
 
-Return ONLY valid JSON in this exact format (no markdown, no explanation):
+Return ONLY valid JSON — no markdown, no code fences, no explanation before or after. Start your response with { and end with }.
+
+Format:
 {"A":{"depth":N,"empathy":N,"specificity":N,"actionability":N,"insight":N},"B":{"depth":N,"empathy":N,"specificity":N,"actionability":N,"insight":N},"C":{"depth":N,"empathy":N,"specificity":N,"actionability":N,"insight":N},"winner":"X","reasoning":"brief 1-sentence explanation"}`
 
 // ── Helpers ──
+
+// ── JSON extraction helper (handles markdown-wrapped responses) ──
+function extractJSON(raw) {
+  if (!raw) return null
+  // Strip ```json ... ``` or ``` ... ``` wrappers
+  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (fenced) return fenced[1].trim()
+  // Find first { ... } block
+  const start = raw.indexOf('{')
+  const end = raw.lastIndexOf('}')
+  if (start !== -1 && end !== -1 && end > start) return raw.slice(start, end + 1)
+  return raw.trim()
+}
 
 const CONDITION_LABELS = { golem: 'GOLEM', vanilla: 'Vanilla', antagonist: 'Antagonist' }
 const CONDITION_COLORS = { golem: '#9333ea', vanilla: '#6b7280', antagonist: '#dc2626' }
@@ -294,7 +309,7 @@ Score each response (A, B, C) on the 5 dimensions. Return JSON only.`
     let reasoning = ''
 
     try {
-      const parsed = JSON.parse(scorerRaw)
+      const parsed = JSON.parse(extractJSON(scorerRaw))
       // Map blind labels back to conditions
       for (const cond of conditions) {
         const label = labelMap[cond]
