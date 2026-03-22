@@ -54,6 +54,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aiagents', widget: 'aiagents' },
   { type: 'item', icon: '📊', label: 'Benchmark Lab', id: 'benchmark', widget: 'benchmark' },
   { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
+  { type: 'item', icon: '☕', label: 'Watercooler', id: 'watercooler', widget: 'watercooler' },
 
   { type: 'section', label: 'TOOLS' },
   { type: 'item', icon: '◈', label: 'Oracle', id: 'oracle', action: 'toggleOracle' },

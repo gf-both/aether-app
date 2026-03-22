@@ -1,13 +1,18 @@
 /**
- * GOLEM BENCHMARK
+ * GOLEM BENCHMARK v2.0
  * Three-condition test: Generic vs Role Context vs GOLEM Identity
  *
- * A: "You are a helpful AI assistant."
- * B: "You are the [Role] at Above + Inside..." (role + company context)
- * C: Full GOLEM profile (role + archetype + natal + shadow + gift + cosmic identity)
+ * A: "You are a helpful AI assistant." (no role, no identity)
+ * B: "You are the [Role] at Above + Inside..." (role + company only)
+ * C: Full GOLEM profile — read directly from each agent's .GOLEM.md file
  *
- * 5 agents × 6 tasks × 3 conditions = 90 API calls
- * Scoring: coherence, specificity, voice, insight, alignment (10 each = 50 max)
+ * Agents: all 27 .GOLEM.md profiles (each with UNIQUE cosmic identity)
+ * Tasks: 6 tasks × 3 conditions = 18 calls per agent
+ * Total: 27 agents × 18 = 486 API calls + 486 scoring = 972 total
+ *
+ * KEY FIX: v1 hardcoded Gaston's birth data for all agents.
+ * v2 reads each agent's .GOLEM.md directly — each agent has its own
+ * unique natal chart, HD type, Gene Keys, archetype, shadow, and gift.
  */
 
 import Anthropic from '@anthropic-ai/sdk';
@@ -17,183 +22,127 @@ import os from 'os';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PROFILES_DIR = path.resolve(__dirname, '../profiles');
+const DOCS_DIR = path.resolve(__dirname, '../../../docs');
 
-// Load API key dynamically from auth file
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+
 function loadAnthropicKey() {
   const authPath = path.join(os.homedir(), '.openclaw/agents/main/agent/auth-profiles.json');
   const authData = JSON.parse(fs.readFileSync(authPath, 'utf8'));
   return authData.profiles['anthropic:default'].key;
 }
 
-const ANTHROPIC_KEY = loadAnthropicKey();
-const client = new Anthropic({ apiKey: ANTHROPIC_KEY });
+const client = new Anthropic({ apiKey: loadAnthropicKey() });
 
-// ─── AGENT DEFINITIONS ────────────────────────────────────────────────────────
-// All born 2026-03-16T04:00:00Z, Montevideo — same Sun/Moon/ASC
-// Differentiator: Expression number → archetype
+// ─── LOAD AGENTS FROM .GOLEM.MD FILES ────────────────────────────────────────
 
-const AGENTS = [
-  {
-    id: 'ceo',
-    role: 'CEO / Co-Founder',
-    expression: 5,
-    archetypeId: 'viral-provocateur',
-    archetypeName: 'The Adventurer',
-    archetypeEmoji: '⚡',
-    natal: {
-      sun: '26.0° Pisces',
-      moon: '19.3° Aquarius',
-      rising: '13.1° Cancer',
-      mercury: 'Pisces',
-      venus: 'Aries',
-      mars: 'Pisces',
-    },
-    humanDesign: {
-      type: 'Projector',
-      authority: 'Emotional',
-      profile: '2/4',
-      definition: 'Split',
-    },
-    numerology: { lifePath: 11, expression: 5, soulUrge: 7 },
-    mayan: { daySign: 'Chicchan (Serpent)', tone: 5, kin: 45 },
-    geneKeys: {
-      lifesWork: 'Gate 36 — Turbulence → Humanity',
-      evolution: 'Gate 6 — Conflict → Diplomacy',
-      radiance: 'Gate 11 — Obscurity → Light',
-      purpose: 'Gate 12 — Vanity → Purity',
-    },
-    shadow: 'Can chase novelty and abandon depth. Starts more than finishes. Needs anchoring systems or vision scatters.',
-    gift: 'Sees unexplored territory others call impossible. Makes the future feel inevitable before it exists.',
-  },
-  {
-    id: 'cto',
-    role: 'CTO / Co-Founder',
-    expression: 11,
-    archetypeId: 'systems-architect',
-    archetypeName: 'The Illuminator',
-    archetypeEmoji: '🏗️',
-    natal: {
-      sun: '26.0° Pisces',
-      moon: '19.3° Aquarius',
-      rising: '13.1° Cancer',
-      mercury: 'Pisces',
-      venus: 'Aries',
-      mars: 'Pisces',
-    },
-    humanDesign: {
-      type: 'Projector',
-      authority: 'Emotional',
-      profile: '2/4',
-      definition: 'Split',
-    },
-    numerology: { lifePath: 11, expression: 11, soulUrge: 7 },
-    mayan: { daySign: 'Chicchan (Serpent)', tone: 5, kin: 45 },
-    geneKeys: {
-      lifesWork: 'Gate 36 — Turbulence → Humanity',
-      evolution: 'Gate 6 — Conflict → Diplomacy',
-      radiance: 'Gate 11 — Obscurity → Light',
-      purpose: 'Gate 12 — Vanity → Purity',
-    },
-    shadow: 'Expression 11 (master number) carries perfectionism and overwhelm. Can over-engineer, refuse to ship, get paralyzed by infinite possibility.',
-    gift: 'Sees systems within systems. Creates technical leverage — one elegant decision that unlocks exponential capability.',
-  },
-  {
-    id: 'content',
-    role: 'Content Marketing Manager',
-    expression: 5,
-    archetypeId: 'mythic-storyteller',
-    archetypeName: 'The Adventurer',
-    archetypeEmoji: '📖',
-    natal: {
-      sun: '26.0° Pisces',
-      moon: '19.3° Aquarius',
-      rising: '13.1° Cancer',
-      mercury: 'Pisces',
-      venus: 'Aries',
-      mars: 'Pisces',
-    },
-    humanDesign: {
-      type: 'Projector',
-      authority: 'Emotional',
-      profile: '2/4',
-      definition: 'Split',
-    },
-    numerology: { lifePath: 11, expression: 5, soulUrge: 7 },
-    mayan: { daySign: 'Chicchan (Serpent)', tone: 5, kin: 45 },
-    geneKeys: {
-      lifesWork: 'Gate 36 — Turbulence → Humanity',
-      evolution: 'Gate 6 — Conflict → Diplomacy',
-      radiance: 'Gate 11 — Obscurity → Light',
-      purpose: 'Gate 12 — Vanity → Purity',
-    },
-    shadow: 'Expression 5 loves variety but can lack commitment to a single voice. Content can feel broad but not deep — spreading energy instead of drilling down.',
-    gift: 'Transforms cosmic frameworks into stories people actually want to tell about themselves. Makes the ancient feel urgent and the personal feel universal.',
-  },
-  {
-    id: 'qa',
-    role: 'QA Engineer',
-    expression: 5,
-    archetypeId: 'precision-optimizer',
-    archetypeName: 'The Adventurer',
-    archetypeEmoji: '🎯',
-    natal: {
-      sun: '26.0° Pisces',
-      moon: '19.3° Aquarius',
-      rising: '13.1° Cancer',
-      mercury: 'Pisces',
-      venus: 'Aries',
-      mars: 'Pisces',
-    },
-    humanDesign: {
-      type: 'Projector',
-      authority: 'Emotional',
-      profile: '2/4',
-      definition: 'Split',
-    },
-    numerology: { lifePath: 11, expression: 5, soulUrge: 7 },
-    mayan: { daySign: 'Chicchan (Serpent)', tone: 5, kin: 45 },
-    geneKeys: {
-      lifesWork: 'Gate 36 — Turbulence → Humanity',
-      evolution: 'Gate 6 — Conflict → Diplomacy',
-      radiance: 'Gate 11 — Obscurity → Light',
-      purpose: 'Gate 12 — Vanity → Purity',
-    },
-    shadow: 'Expression 5 with Pisces sun can lose precision in intuition — testing by feel rather than evidence. Can let charm or narrative override the cold hard data.',
-    gift: 'Finds the edge cases others miss by following curiosity not just checklists. Brings creative exploration to systematic verification.',
-  },
-  {
-    id: 'community',
-    role: 'Community Builder',
-    expression: 8,
-    archetypeId: 'community-catalyst',
-    archetypeName: 'The Executive',
-    archetypeEmoji: '🌐',
-    natal: {
-      sun: '26.0° Pisces',
-      moon: '19.3° Aquarius',
-      rising: '13.1° Cancer',
-      mercury: 'Pisces',
-      venus: 'Aries',
-      mars: 'Pisces',
-    },
-    humanDesign: {
-      type: 'Projector',
-      authority: 'Emotional',
-      profile: '2/4',
-      definition: 'Split',
-    },
-    numerology: { lifePath: 11, expression: 8, soulUrge: 7 },
-    mayan: { daySign: 'Chicchan (Serpent)', tone: 5, kin: 45 },
-    geneKeys: {
-      lifesWork: 'Gate 36 — Turbulence → Humanity',
-      evolution: 'Gate 6 — Conflict → Diplomacy',
-      radiance: 'Gate 11 — Obscurity → Light',
-      purpose: 'Gate 12 — Vanity → Purity',
-    },
-    shadow: 'Expression 8 can conflate community influence with personal power. Risks extracting value from community rather than generating it. Can over-manage organic dynamics.',
-    gift: 'Builds communities with structural integrity — not just vibes, but governance, incentives, and belonging that scales without losing soul.',
-  },
+function extractField(md, label) {
+  const regex = new RegExp(`\\*\\*${label}:\\*\\*\\s*(.+)`, 'i');
+  const m = md.match(regex);
+  return m ? m[1].trim() : null;
+}
+
+function extractTableRow(md, key) {
+  // Matches: | ☉ Sun | Value | ...
+  const regex = new RegExp(`\\|[^|]*${key}[^|]*\\|\\s*([^|]+)\\s*\\|`, 'i');
+  const m = md.match(regex);
+  return m ? m[1].trim() : null;
+}
+
+function extractSection(md, header) {
+  const regex = new RegExp(`${header}[:\\s]*([^\\n]+(?:\\n(?!\\n|##|\\|)[^\\n]+)*)`, 'im');
+  const m = md.match(regex);
+  return m ? m[1].trim() : null;
+}
+
+function loadAgentFromProfile(filename) {
+  const filepath = path.join(PROFILES_DIR, `${filename}.GOLEM.md`);
+  if (!fs.existsSync(filepath)) return null;
+  const md = fs.readFileSync(filepath, 'utf8');
+
+  const id = filename;
+  const role = extractField(md, 'Role') || filename;
+  const archetype = extractField(md, 'Archetype') || '';
+  const archetypeEmoji = archetype.match(/^([\p{Emoji}\s]+)/u)?.[1]?.trim() || '';
+  const archetypeName = archetype.replace(/^[\p{Emoji}\s]+/u, '').trim();
+
+  // Extract cosmic signature from table
+  const sun = extractTableRow(md, '☉ Sun') || extractTableRow(md, 'Sun');
+  const moon = extractTableRow(md, '☽ Moon') || extractTableRow(md, 'Moon');
+  const rising = extractTableRow(md, '↑ Rising') || extractTableRow(md, 'Rising');
+  const lifePath = extractTableRow(md, '∞ Life Path') || extractTableRow(md, 'Life Path');
+  const geneKeys = extractTableRow(md, '⬡ Gene Keys') || extractTableRow(md, 'Gene Keys');
+  const mayan = extractTableRow(md, '🌀 Mayan') || extractTableRow(md, 'Mayan');
+
+  // Extract working style, shadow, gift from Wendy Says
+  const wendyMatch = md.match(/## Wendy Says\s*\n\*"([^"]+)"\*/);
+  const wendySays = wendyMatch ? wendyMatch[1] : '';
+
+  // Extract shadow and gift heuristically from Wendy Says or working style
+  const shadowMatch = md.match(/shadow[:\s]+([^\n.]+)/i);
+  const giftMatch = md.match(/gift[:\s]+([^\n.]+)/i);
+
+  // Fallback: extract from working style list
+  const workingStyleMatch = md.match(/## Working Style\n([\s\S]+?)(?=\n##)/);
+  const workingStyle = workingStyleMatch ? workingStyleMatch[1].trim() : '';
+
+  // Team context
+  const teamMatch = md.match(/## Team Context\n([\s\S]+?)(?=\n##)/);
+  const teamContext = teamMatch ? teamMatch[1].trim() : '';
+
+  return {
+    id,
+    role,
+    archetypeEmoji,
+    archetypeName,
+    sun: sun || '—',
+    moon: moon || '—',
+    rising: rising || '—',
+    lifePath: lifePath || '—',
+    geneKeys: geneKeys || '—',
+    mayan: mayan || '—',
+    workingStyle,
+    teamContext,
+    wendySays,
+    // raw profile for condition C
+    rawProfile: md,
+  };
+}
+
+// Load all 27 agents
+const PROFILE_SLUGS = [
+  'affiliate-&-partnerships-manager',
+  'astrologer---content',
+  'backend-engineer',
+  'campaign-coordinator',
+  'ceo',
+  'cmo',
+  'community-builder',
+  'content-marketing-manager',
+  'cto',
+  'dev---full-stack',
+  'email-marketing-specialist',
+  'frontend-engineer',
+  'hd-specialist',
+  'influencer-marketing-manager',
+  'pm---product',
+  'pricing-&-revenue-analyst',
+  'product-designer',
+  'product-hunt-launch-manager',
+  'qa-engineer',
+  'reddit-marketing-specialist',
+  'researcher',
+  'seo-specialist',
+  'support',
+  'tiktok-&-short-form-video-strategist',
+  'twitter-x-growth-specialist',
+  'ux-researcher',
+  'visual-artist',
 ];
+
+const AGENTS = PROFILE_SLUGS.map(loadAgentFromProfile).filter(Boolean);
+console.log(`Loaded ${AGENTS.length} agent profiles from .GOLEM.md files`);
 
 // ─── BENCHMARK TASKS ──────────────────────────────────────────────────────────
 
@@ -246,44 +195,12 @@ function buildSystemPrompt(agent, condition) {
   }
 
   if (condition === 'B') {
-    return `You are the ${agent.role} at Above + Inside, a spiritual self-discovery SaaS platform that combines 21 esoteric frameworks (astrology, Human Design, Gene Keys, Mayan Calendar, and more) into one unified dashboard.`;
+    return `You are the ${agent.role} at Above + Inside.\n\n${COMPANY_CONTEXT}`;
   }
 
-  // Condition C — full GOLEM profile
-  return `You are the ${agent.role} at Above + Inside.
-
-${COMPANY_CONTEXT}
-
-━━━ GOLEM IDENTITY ━━━
-
-ARCHETYPE: ${agent.archetypeEmoji} ${agent.archetypeName} (Expression ${agent.expression})
-Role: ${agent.role}
-
-NATAL CHART:
-- Sun: ${agent.natal.sun} | Moon: ${agent.natal.moon} | Rising: ${agent.natal.rising}
-- Mercury: ${agent.natal.mercury} | Venus: ${agent.natal.venus} | Mars: ${agent.natal.mars}
-
-HUMAN DESIGN:
-- Type: ${agent.humanDesign.type} | Authority: ${agent.humanDesign.authority}
-- Profile: ${agent.humanDesign.profile} | Definition: ${agent.humanDesign.definition}
-
-GENE KEYS:
-- Life's Work: ${agent.geneKeys.lifesWork}
-- Evolution: ${agent.geneKeys.evolution}
-- Radiance: ${agent.geneKeys.radiance}
-- Purpose: ${agent.geneKeys.purpose}
-
-MAYAN CALENDAR: Kin ${agent.mayan.kin} — ${agent.mayan.daySign}, Tone ${agent.mayan.tone}
-
-NUMEROLOGY: Life Path ${agent.numerology.lifePath} | Expression ${agent.numerology.expression} | Soul Urge ${agent.numerology.soulUrge}
-
-YOUR SHADOW (watch for this): ${agent.shadow}
-
-YOUR GIFT (lean into this): ${agent.gift}
-
-━━━━━━━━━━━━━━━━━━━━━━
-
-Identity creates coherence. Coherence creates better outputs.`;
+  // Condition C — use the full .GOLEM.md profile as-is
+  // This is the actual GOLEM standard: ship the profile directly
+  return `You are the ${agent.role} at Above + Inside.\n\n${COMPANY_CONTEXT}\n\n━━━ YOUR GOLEM IDENTITY PROFILE ━━━\n\n${agent.rawProfile}\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nThis is who you are. Operate from this identity. Let it shape not just what you say but how you see, what you notice, and what you choose to say out loud.`;
 }
 
 // ─── API CALLS ────────────────────────────────────────────────────────────────
@@ -291,355 +208,228 @@ Identity creates coherence. Coherence creates better outputs.`;
 async function runTask(systemPrompt, userMessage) {
   const msg = await client.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 500,
+    max_tokens: 2048,
     system: systemPrompt,
     messages: [{ role: 'user', content: userMessage }],
   });
   return msg.content[0].text;
 }
 
-async function scoreResponse(response, task, agent, condition) {
-  const conditionLabel = { A: 'GENERIC (no role, no identity)', B: 'ROLE CONTEXT (role + company, no cosmic identity)', C: 'GOLEM IDENTITY (full cosmic profile)' }[condition];
+async function scoreOneCondition(response, task, agent, conditionLabel) {
+  const prompt = `Score this AI response. Return ONLY a JSON object with exactly these keys, integer values 1-10, and a notes string using only single quotes.
 
-  const scoringPrompt = `Score this AI response on 5 dimensions (1-10 each).
+Role being evaluated: ${agent.role} (${agent.archetypeName}, Sun: ${agent.sun})
+Condition: ${conditionLabel}
+Task: ${task.prompt}
 
-CONTEXT:
-- Agent Role: ${agent.role}
-- Archetype: ${agent.archetypeName} (Expression ${agent.expression})
-- Condition: ${conditionLabel}
-- Task: ${task.name}
-- Task prompt: "${task.prompt}"
+Response:
+${response}
 
-RESPONSE TO SCORE:
-"${response}"
+Scoring rubric:
+- coherence (1-10): logical consistency and clear through-line
+- specificity (1-10): concrete details vs generic platitudes. Generic AI gets 2-4, role-grounded gets 6-7, cosmically distinct gets 8-9
+- voice (1-10): sounds like a specific ${agent.archetypeName} vs generic AI. Generic = 2-3, role-appropriate = 6-7, distinctly individual = 8-9
+- insight (1-10): non-obvious observations. Surface = 3-4, solid = 6-7, genuinely surprising = 8-9
+- alignment (1-10): fits the ${agent.role} role appropriately
 
-SCORING DIMENSIONS:
-1. COHERENCE (1-10): Does the response have consistent internal logic and a clear through-line?
-2. SPECIFICITY (1-10): Does it reference specific context vs generic platitudes? Does it mention actual product details, real tradeoffs, concrete steps?
-3. VOICE (1-10): Does it sound like a specific ${agent.archetypeName} personality vs a generic AI? Is there a distinctive perspective?
-4. INSIGHT (1-10): Does it demonstrate genuine understanding beyond surface-level? Any non-obvious observations?
-5. ALIGNMENT (1-10): Does it reflect the ${agent.role} role appropriately? Would a ${agent.role} actually think/say this?
+Return exactly this JSON (no markdown, no extra text):
+{"coherence":N,"specificity":N,"voice":N,"insight":N,"alignment":N,"notes":"what made this response stand out or fail, 2 sentences, single quotes only"}`;
 
-Be calibrated: a truly generic response scores 3-4 on voice/specificity. A response that sounds distinctly human and role-appropriate scores 7-9. Reserve 10 for exceptional.
-
-Return ONLY valid JSON (no markdown, no explanation):
-{"coherence": N, "specificity": N, "voice": N, "insight": N, "alignment": N, "notes": "one specific observation about what made this response stand out or fall flat"}`;
-
-  const scoreMsg = await client.messages.create({
+  const msg = await client.messages.create({
     model: 'claude-haiku-4-5-20251001',
-    max_tokens: 300,
-    messages: [{ role: 'user', content: scoringPrompt }],
+    max_tokens: 200,
+    messages: [{ role: 'user', content: prompt }],
   });
 
-  const raw = scoreMsg.content[0].text.trim();
+  const raw = msg.content[0].text.trim();
   try {
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return parsed;
   } catch {
-    // extract JSON if wrapped
-    const match = raw.match(/\{[\s\S]*\}/);
-    if (match) return JSON.parse(match[0]);
-    console.warn('Score parse failed, using defaults. Raw:', raw.slice(0, 100));
+    const match = raw.match(/\{[\s\S]*?\}/);
+    if (match) {
+      try { return JSON.parse(match[0]); } catch {}
+      // Last resort: extract numbers with regex
+      const nums = (key) => { const m = raw.match(new RegExp(`"${key}"\\s*:\\s*(\\d+)`)); return m ? parseInt(m[1]) : 5; };
+      return {
+        coherence: nums('coherence'), specificity: nums('specificity'),
+        voice: nums('voice'), insight: nums('insight'), alignment: nums('alignment'),
+        notes: 'extracted from malformed JSON'
+      };
+    }
     return { coherence: 5, specificity: 5, voice: 5, insight: 5, alignment: 5, notes: 'parse error' };
   }
 }
 
-// ─── REPORTING ────────────────────────────────────────────────────────────────
-
-function pad(str, len, right = false) {
-  const s = String(str);
-  return right ? s.padStart(len) : s.padEnd(len);
+async function scoreResponses(responses, task, agent) {
+  const labels = {
+    A: 'Generic (no role, no identity)',
+    B: 'Role Context (role + company, no cosmic identity)',
+    C: 'GOLEM Identity (full cosmic profile)'
+  };
+  const [scoreA, scoreB, scoreC] = await Promise.all([
+    scoreOneCondition(responses.A, task, agent, labels.A),
+    scoreOneCondition(responses.B, task, agent, labels.B),
+    scoreOneCondition(responses.C, task, agent, labels.C),
+  ]);
+  return { A: scoreA, B: scoreB, C: scoreC };
 }
 
-function formatDelta(delta, pct) {
-  const sign = delta >= 0 ? '+' : '';
-  return `${sign}${delta} (${sign}${pct.toFixed(0)}%)`;
+// ─── SUMMARY ─────────────────────────────────────────────────────────────────
+
+function summarize(allResults) {
+  let grandA = 0, grandB = 0, grandC = 0, count = 0;
+  const dims = ['coherence', 'specificity', 'voice', 'insight', 'alignment'];
+
+  const agentSummaries = allResults.map(ar => {
+    let tA = 0, tB = 0, tC = 0;
+    ar.taskResults.forEach(tr => {
+      dims.forEach(d => {
+        tA += tr.scores.A[d] || 0;
+        tB += tr.scores.B[d] || 0;
+        tC += tr.scores.C[d] || 0;
+      });
+    });
+    grandA += tA; grandB += tB; grandC += tC;
+    count += ar.taskResults.length;
+    return { role: ar.agent.role, archetype: ar.agent.archetypeName, sun: ar.agent.sun, tA, tB, tC, lift: tC - tA };
+  });
+
+  const max = count * 50;
+  const dimTotals = { A: {}, B: {}, C: {} };
+  dims.forEach(d => { dimTotals.A[d] = 0; dimTotals.B[d] = 0; dimTotals.C[d] = 0; });
+  allResults.forEach(ar => ar.taskResults.forEach(tr => {
+    dims.forEach(d => { dimTotals.A[d] += tr.scores.A[d] || 0; dimTotals.B[d] += tr.scores.B[d] || 0; dimTotals.C[d] += tr.scores.C[d] || 0; });
+  }));
+
+  return { grandA, grandB, grandC, max, agentSummaries, dimTotals, dims };
 }
 
-function buildReport(allResults) {
-  const lines = [];
-  const allAgentSummaries = [];
+function printSummary(s) {
+  console.log('\n\n═══════════════════════════════════════════════════════');
+  console.log('  GOLEM BENCHMARK v2 — GRAND RESULTS');
+  console.log('═══════════════════════════════════════════════════════\n');
+  console.log(`  Generic (A):       ${s.grandA}/${s.max}  (${(s.grandA/s.max*100).toFixed(1)}%)`);
+  console.log(`  Role Context (B):  ${s.grandB}/${s.max}  (${(s.grandB/s.max*100).toFixed(1)}%)`);
+  console.log(`  GOLEM Identity (C):${s.grandC}/${s.max}  (${(s.grandC/s.max*100).toFixed(1)}%)`);
+  console.log(`\n  B vs A:  +${s.grandB-s.grandA} pts (+${((s.grandB-s.grandA)/s.grandA*100).toFixed(1)}%)`);
+  console.log(`  C vs A:  +${s.grandC-s.grandA} pts (+${((s.grandC-s.grandA)/s.grandA*100).toFixed(1)}%)`);
+  console.log(`  C vs B:  +${s.grandC-s.grandB} pts (+${((s.grandC-s.grandB)/s.grandB*100).toFixed(1)}%) ← GOLEM lift over role`);
 
-  for (const agentResult of allResults) {
-    const { agent, taskResults } = agentResult;
+  console.log('\n  BY DIMENSION:');
+  s.dims.forEach(d => {
+    const a = s.dimTotals.A[d], b = s.dimTotals.B[d], c = s.dimTotals.C[d];
+    console.log(`    ${d.padEnd(12)}: A=${a}  B=${b}  C=${c}  GOLEM lift=+${c-a}`);
+  });
 
-    lines.push('');
-    lines.push('╔══════════════════════════════════════════════════════════════════════════╗');
-    lines.push(`║  AGENT: ${pad(`${agent.role} — Expression ${agent.expression} (${agent.archetypeName})`, 63)}║`);
-    lines.push('╠══════════════╦══════════════════╦══════════════════╦══════════════════════╣');
-    lines.push('║ TASK         ║ A: GENERIC       ║ B: ROLE CONTEXT  ║ C: GOLEM IDENTITY   ║');
-    lines.push('╠══════════════╬══════════════════╬══════════════════╬══════════════════════╣');
-
-    let totalA = 0, totalB = 0, totalC = 0;
-
-    for (const tr of taskResults) {
-      const scoreA = Object.values(tr.scores.A).slice(0, 5).reduce((a, b) => a + b, 0);
-      const scoreB = Object.values(tr.scores.B).slice(0, 5).reduce((a, b) => a + b, 0);
-      const scoreC = Object.values(tr.scores.C).slice(0, 5).reduce((a, b) => a + b, 0);
-      totalA += scoreA; totalB += scoreB; totalC += scoreC;
-
-      const deltaAB = scoreB - scoreA;
-      const deltaBCval = scoreC - scoreB;
-      const deltaACval = scoreC - scoreA;
-
-      lines.push(`║ ${pad(tr.task.name, 12)} ║ ${pad(scoreA + '/50', 16)} ║ ${pad(scoreB + '/50', 16)} ║ ${pad(scoreC + '/50 (Δ A→C:' + (deltaACval >= 0 ? '+' : '') + deltaACval + ')', 20)} ║`);
-    }
-
-    lines.push('╠══════════════╬══════════════════╬══════════════════╬══════════════════════╣');
-    const pctA = (totalA / 300 * 100).toFixed(1);
-    const pctB = (totalB / 300 * 100).toFixed(1);
-    const pctC = (totalC / 300 * 100).toFixed(1);
-    const deltaAC = totalC - totalA;
-    const deltaPctAC = (deltaAC / totalA * 100);
-    const deltaBC = totalC - totalB;
-    const deltaPctBC = (deltaBC / totalB * 100);
-
-    lines.push(`║ TOTAL        ║ ${pad(totalA + '/300 (' + pctA + '%)', 16)} ║ ${pad(totalB + '/300 (' + pctB + '%)', 16)} ║ ${pad(totalC + '/300 (' + pctC + '%)', 20)} ║`);
-    lines.push(`║ vs GENERIC   ║      —           ║ ${pad(formatDelta(totalB - totalA, (totalB - totalA) / totalA * 100), 16)} ║ ${pad(formatDelta(deltaAC, deltaPctAC), 20)} ║`);
-    lines.push(`║ vs ROLE      ║      —           ║       —          ║ ${pad(formatDelta(deltaBC, deltaPctBC), 20)} ║`);
-    lines.push('╚══════════════╩══════════════════╩══════════════════╩══════════════════════╝');
-
-    allAgentSummaries.push({ agent, totalA, totalB, totalC, pctA: +pctA, pctB: +pctB, pctC: +pctC });
-  }
-
-  // Grand summary
-  const grandA = allAgentSummaries.reduce((s, x) => s + x.totalA, 0);
-  const grandB = allAgentSummaries.reduce((s, x) => s + x.totalB, 0);
-  const grandC = allAgentSummaries.reduce((s, x) => s + x.totalC, 0);
-  const maxPossible = 5 * 6 * 50; // 5 agents × 6 tasks × 50 pts
-
-  lines.push('');
-  lines.push('╔══════════════════════════════════════════════════════════════════════════╗');
-  lines.push('║                        GRAND SUMMARY (ALL AGENTS)                      ║');
-  lines.push('╠════════════════════╦════════════════╦════════════════╦══════════════════╣');
-  lines.push('║ CONDITION          ║ TOTAL SCORE    ║ % OF MAX       ║ vs GENERIC       ║');
-  lines.push('╠════════════════════╬════════════════╬════════════════╬══════════════════╣');
-  lines.push(`║ A: Generic         ║ ${pad(grandA + '/' + maxPossible, 14)} ║ ${pad((grandA / maxPossible * 100).toFixed(1) + '%', 14)} ║       —          ║`);
-  lines.push(`║ B: Role Context    ║ ${pad(grandB + '/' + maxPossible, 14)} ║ ${pad((grandB / maxPossible * 100).toFixed(1) + '%', 14)} ║ ${pad(formatDelta(grandB - grandA, (grandB - grandA) / grandA * 100), 16)} ║`);
-  lines.push(`║ C: GOLEM Identity ║ ${pad(grandC + '/' + maxPossible, 14)} ║ ${pad((grandC / maxPossible * 100).toFixed(1) + '%', 14)} ║ ${pad(formatDelta(grandC - grandA, (grandC - grandA) / grandA * 100), 16)} ║`);
-  lines.push(`║ B→C delta          ║      —         ║       —        ║ ${pad(formatDelta(grandC - grandB, (grandC - grandB) / grandB * 100) + ' (GOLEM adds)', 16)} ║`);
-  lines.push('╚════════════════════╩════════════════╩════════════════╩══════════════════╝');
-
-  return lines.join('\n');
-}
-
-function buildKeyFindings(allResults) {
-  const lines = ['\n━━━ KEY FINDINGS ━━━\n'];
-
-  // Find task with highest A→C delta per agent
-  let biggestGain = { delta: 0, agent: null, task: null };
-  let shadowTask = null;
-
-  for (const ar of allResults) {
-    for (const tr of ar.taskResults) {
-      const scoreA = Object.values(tr.scores.A).slice(0, 5).reduce((a, b) => a + b, 0);
-      const scoreC = Object.values(tr.scores.C).slice(0, 5).reduce((a, b) => a + b, 0);
-      if (scoreC - scoreA > biggestGain.delta) {
-        biggestGain = { delta: scoreC - scoreA, agent: ar.agent, task: tr.task, scoreA, scoreC };
-      }
-      if (tr.task.id === 'C3') shadowTask = tr;
-    }
-  }
-
-  // Compute overall averages
-  let totalA = 0, totalB = 0, totalC = 0, count = 0;
-  const taskDeltas = {};
-  for (const ar of allResults) {
-    for (const tr of ar.taskResults) {
-      const sA = Object.values(tr.scores.A).slice(0, 5).reduce((a, b) => a + b, 0);
-      const sB = Object.values(tr.scores.B).slice(0, 5).reduce((a, b) => a + b, 0);
-      const sC = Object.values(tr.scores.C).slice(0, 5).reduce((a, b) => a + b, 0);
-      totalA += sA; totalB += sB; totalC += sC; count++;
-      if (!taskDeltas[tr.task.id]) taskDeltas[tr.task.id] = { deltaAC: 0, deltaBC: 0, cnt: 0, name: tr.task.name };
-      taskDeltas[tr.task.id].deltaAC += sC - sA;
-      taskDeltas[tr.task.id].deltaBC += sC - sB;
-      taskDeltas[tr.task.id].cnt++;
-    }
-  }
-
-  const avgA = (totalA / count).toFixed(1);
-  const avgB = (totalB / count).toFixed(1);
-  const avgC = (totalC / count).toFixed(1);
-
-  lines.push(`1. GOLEM vs Generic: +${(totalC - totalA) / totalA * 100 | 0}% overall score improvement`);
-  lines.push(`   Avg scores — A: ${avgA}/50  B: ${avgB}/50  C: ${avgC}/50`);
-  lines.push('');
-  lines.push(`2. Role Context alone (A→B): +${((totalB - totalA) / totalA * 100) | 0}% improvement`);
-  lines.push(`   GOLEM on top of role (B→C): +${((totalC - totalB) / totalB * 100) | 0}% additional improvement`);
-  lines.push('');
-
-  // Sort tasks by avg A→C delta
-  const sorted = Object.values(taskDeltas).sort((a, b) => b.deltaAC / b.cnt - a.deltaAC / a.cnt);
-  lines.push('3. BY TASK TYPE — average A→C improvement:');
-  for (const t of sorted) {
-    const avgDelta = (t.deltaAC / t.cnt).toFixed(1);
-    const avgBCDelta = (t.deltaBC / t.cnt).toFixed(1);
-    lines.push(`   ${t.name}: +${avgDelta} pts (A→C) | +${avgBCDelta} pts (B→C)`);
-  }
-  lines.push('');
-
-  if (biggestGain.agent) {
-    lines.push(`4. BIGGEST SINGLE GAIN: ${biggestGain.task.name} for ${biggestGain.agent.role}`);
-    lines.push(`   ${biggestGain.scoreA}/50 → ${biggestGain.scoreC}/50 (+${biggestGain.delta} pts)`);
-  }
-
-  lines.push('');
-  lines.push('5. THE CORE QUESTION: Does GOLEM add value beyond just telling an agent its role?');
-  const bcPct = ((totalC - totalB) / totalB * 100) | 0;
-  if (bcPct > 15) {
-    lines.push(`   YES — GOLEM adds +${bcPct}% on top of role context. Identity creates measurable coherence.`);
-  } else if (bcPct > 5) {
-    lines.push(`   PARTIALLY — GOLEM adds +${bcPct}% on top of role context. Meaningful but modest uplift.`);
-  } else {
-    lines.push(`   WEAK — GOLEM adds only +${bcPct}% on top of role context. Role context may be sufficient.`);
-  }
-
-  return lines.join('\n');
+  console.log('\n  BY AGENT (ranked by GOLEM score, max 300):');
+  s.agentSummaries.sort((a, b) => b.tC - a.tC).forEach((a, i) => {
+    console.log(`    ${String(i+1).padStart(2)}. ${a.role.padEnd(35)} A=${String(a.tA).padStart(3)} B=${String(a.tB).padStart(3)} C=${String(a.tC).padStart(3)} lift=+${a.lift} [${a.sun}]`);
+  });
 }
 
 // ─── MAIN ─────────────────────────────────────────────────────────────────────
 
 async function main() {
-  console.log('\n🔭 GOLEM BENCHMARK — starting 90 API calls\n');
-  console.log('   Conditions: A=Generic | B=Role Context | C=GOLEM Identity');
-  console.log('   5 agents × 6 tasks × 3 conditions = 90 response calls');
-  console.log('   + 90 scoring calls = 180 total API calls\n');
+  const startAgent = parseInt(process.argv[2] || '0');
+  const endAgent = parseInt(process.argv[3] || String(AGENTS.length));
+  const agentsToRun = AGENTS.slice(startAgent, endAgent);
 
-  const allResults = [];
+  console.log(`\n🔭 GOLEM BENCHMARK v2 — ${agentsToRun.length} agents (${startAgent}-${endAgent-1} of ${AGENTS.length})`);
+  console.log('   Each agent uses its UNIQUE .GOLEM.md profile (not hardcoded birth data)');
+  console.log(`   ${agentsToRun.length} agents × 6 tasks × 3 conditions = ${agentsToRun.length * 18} response calls`);
+  console.log(`   + ${agentsToRun.length * 6} scoring calls = ${agentsToRun.length * 24} total API calls\n`);
+
+  // Load existing partial results if any
+  const partialPath = path.join(DOCS_DIR, 'golem-benchmark-v2-partial.json');
+  let allResults = [];
+  if (fs.existsSync(partialPath)) {
+    try {
+      const existing = JSON.parse(fs.readFileSync(partialPath, 'utf8'));
+      allResults = existing.results || [];
+      console.log(`  Resuming from ${allResults.length} existing agent results\n`);
+    } catch {}
+  }
+
+  const existingIds = new Set(allResults.map(r => r.agent.id));
   let callCount = 0;
 
-  for (const agent of AGENTS) {
-    console.log(`\n▶ Agent: ${agent.role} (${agent.archetypeName})`);
+  for (const agent of agentsToRun) {
+    if (existingIds.has(agent.id)) {
+      console.log(`  ⏭  Skipping ${agent.role} (already done)`);
+      continue;
+    }
+
+    console.log(`\n▶ [${agent.sun}] ${agent.role} (${agent.archetypeName})`);
     const taskResults = [];
 
     for (const task of TASKS) {
       process.stdout.write(`  ${task.id} ... `);
-      const responses = {};
-      const scores = {};
 
+      // Generate all 3 conditions
+      const responses = {};
       for (const condition of ['A', 'B', 'C']) {
         const systemPrompt = buildSystemPrompt(agent, condition);
-        const response = await runTask(systemPrompt, task.prompt);
+        responses[condition] = await runTask(systemPrompt, task.prompt);
         callCount++;
-        const score = await scoreResponse(response, task, agent, condition);
-        callCount++;
-        responses[condition] = response;
-        scores[condition] = score;
-
-        const total = score.coherence + score.specificity + score.voice + score.insight + score.alignment;
-        process.stdout.write(`${condition}:${total} `);
+        process.stdout.write(`${condition} `);
+        await new Promise(r => setTimeout(r, 200)); // rate limit buffer
       }
 
+      // Score all 3 conditions (3 parallel calls)
+      const scores = await scoreResponses(responses, task, agent);
+      callCount += 3;
+
+      const tA = ['coherence','specificity','voice','insight','alignment'].reduce((s,d)=>s+(scores.A[d]||0),0);
+      const tB = ['coherence','specificity','voice','insight','alignment'].reduce((s,d)=>s+(scores.B[d]||0),0);
+      const tC = ['coherence','specificity','voice','insight','alignment'].reduce((s,d)=>s+(scores.C[d]||0),0);
+      process.stdout.write(`→ A:${tA} B:${tB} C:${tC}\n`);
+
       taskResults.push({ task, responses, scores });
-      console.log();
+      await new Promise(r => setTimeout(r, 300));
     }
 
     allResults.push({ agent, taskResults });
 
-    // Save partial results after each agent (in case of timeout)
-    const partialPath = path.resolve(__dirname, '../../../docs/golem-benchmark-partial.json');
-    fs.writeFileSync(partialPath, JSON.stringify({ partial: true, agents: allResults.length, results: allResults }, null, 2));
+    // Save after each agent
+    fs.writeFileSync(partialPath, JSON.stringify({
+      meta: { version: 2, note: 'Each agent uses unique .GOLEM.md profile', savedAt: new Date().toISOString() },
+      results: allResults
+    }, null, 2));
   }
 
-  console.log(`\n✓ ${callCount} API calls complete. Building report...\n`);
+  console.log(`\n✓ ${callCount} API calls complete`);
 
-  // Build report
-  const reportTable = buildReport(allResults);
-  const keyFindings = buildKeyFindings(allResults);
+  // Print summary
+  const s = summarize(allResults);
+  printSummary(s);
 
-  // Print to console
-  console.log(reportTable);
-  console.log(keyFindings);
-
-  // Pull a qualitative highlight — best shadow awareness response
-  console.log('\n━━━ QUALITATIVE HIGHLIGHT: C3 (Shadow Awareness) ━━━\n');
-  for (const ar of allResults) {
-    for (const tr of ar.taskResults) {
-      if (tr.task.id === 'C3') {
-        const scoreA = Object.values(tr.scores.A).slice(0, 5).reduce((a, b) => a + b, 0);
-        const scoreC = Object.values(tr.scores.C).slice(0, 5).reduce((a, b) => a + b, 0);
-        if (scoreC - scoreA >= 5) {
-          console.log(`${ar.agent.role} (${ar.agent.archetypeName})`);
-          console.log(`A (${scoreA}/50): "${tr.responses.A.slice(0, 200).trim()}..."`);
-          console.log(`C (${scoreC}/50): "${tr.responses.C.slice(0, 300).trim()}..."`);
-          console.log(`Scorer note (C): ${tr.scores.C.notes}`);
-          console.log();
-          break;
-        }
-      }
-    }
-  }
-
-  // Save JSON
-  const jsonPath = path.resolve(__dirname, '../../../docs/golem-benchmark-results.json');
-  fs.writeFileSync(jsonPath, JSON.stringify({ 
-    meta: { 
+  // Save final JSON
+  const finalPath = path.join(DOCS_DIR, 'golem-benchmark-v2-results.json');
+  fs.writeFileSync(finalPath, JSON.stringify({
+    meta: {
+      version: 2,
+      note: 'Each agent uses its unique .GOLEM.md profile — not hardcoded birth data',
       runAt: new Date().toISOString(),
-      conditions: { A: 'Generic', B: 'Role Context', C: 'GOLEM Identity' },
-      agents: AGENTS.length,
+      agents: allResults.length,
       tasks: TASKS.length,
-      apiCalls: callCount
-    }, 
-    results: allResults 
+      apiCalls: callCount,
+      conditions: { A: 'Generic (no role, no identity)', B: 'Role Context (role + company)', C: 'GOLEM Identity (full .GOLEM.md profile)' }
+    },
+    summary: {
+      grandA: s.grandA, grandB: s.grandB, grandC: s.grandC, max: s.max,
+      bVsA_pct: +((s.grandB-s.grandA)/s.grandA*100).toFixed(1),
+      cVsA_pct: +((s.grandC-s.grandA)/s.grandA*100).toFixed(1),
+      cVsB_pct: +((s.grandC-s.grandB)/s.grandB*100).toFixed(1),
+      dimTotals: s.dimTotals,
+    },
+    results: allResults
   }, null, 2));
-  console.log(`\n💾 JSON results saved to docs/golem-benchmark-results.json`);
 
-  // Save Markdown
-  const mdLines = [
-    '# GOLEM Benchmark Results',
-    '',
-    `**Run at:** ${new Date().toISOString()}`,
-    '**Conditions:** A = Generic baseline | B = Role Context | C = GOLEM Identity',
-    '**Design:** 5 agents × 6 tasks × 3 conditions = 90 API calls',
-    '**Scoring:** coherence + specificity + voice + insight + alignment (10 each = 50 max)',
-    '',
-    '## Comparison Tables',
-    '',
-    '```',
-    reportTable,
-    '```',
-    '',
-    '## Key Findings',
-    '',
-    keyFindings,
-    '',
-    '## The Scientific Question',
-    '',
-    '**A vs B**: Does giving an agent its role and company context improve outputs over a generic AI?',
-    '**B vs C**: Does GOLEM cosmic identity add measurable value ON TOP of role context?',
-    '**A vs C**: What is the full gap between a generic assistant and an GOLEM-profiled agent?',
-    '',
-    '## Methodology',
-    '',
-    '- All agents share the same birth timestamp (2026-03-16T04:00:00Z, Montevideo)',
-    '- Differentiator: Expression number determines archetype (5, 11, 5, 5, 8)',
-    '- Model: claude-haiku-3-5 for both generation and scoring',
-    '- Scorer uses a separate scoring prompt with explicit calibration instructions',
-    '',
-    '## Raw Results',
-    '',
-    '```json',
-    JSON.stringify({ agents: allResults.map(ar => ({ 
-      agent: ar.agent.role, 
-      archetype: ar.agent.archetypeName,
-      tasks: ar.taskResults.map(tr => ({
-        task: tr.task.name,
-        scoresA: tr.scores.A,
-        scoresB: tr.scores.B,
-        scoresC: tr.scores.C,
-        totalA: Object.values(tr.scores.A).slice(0,5).reduce((a,b)=>a+b,0),
-        totalB: Object.values(tr.scores.B).slice(0,5).reduce((a,b)=>a+b,0),
-        totalC: Object.values(tr.scores.C).slice(0,5).reduce((a,b)=>a+b,0),
-      }))
-    }))}, null, 2),
-    '```',
-  ];
-
-  const mdPath = path.resolve(__dirname, '../../../docs/golem-benchmark-results.md');
-  fs.writeFileSync(mdPath, mdLines.join('\n'));
-  console.log(`📝 Markdown report saved to docs/golem-benchmark-results.md`);
+  console.log(`\n💾 Saved to docs/golem-benchmark-v2-results.json`);
 }
 
 main().catch(err => {
-  console.error('Benchmark failed:', err);
+  console.error('\nBenchmark failed:', err);
   process.exit(1);
 });
