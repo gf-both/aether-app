@@ -23,6 +23,10 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '☕', label: 'Watercooler', id: 'watercooler', widget: 'watercooler' },
   { type: 'item', icon: '🐟', label: 'Microfish', id: 'microfish', widget: 'microfish' },
 
+  { type: 'section', label: 'LIFE ARC' },
+  { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
+  { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
+
   { type: 'section', label: 'HUMAN' },
 
   { type: 'section', label: 'CORE STRUCTURAL' },
@@ -54,10 +58,6 @@ const NAV_SECTIONS = [
   { type: 'section', label: 'EASTERN WISDOM' },
   { type: 'item', icon: '🪷', label: 'Vedic', id: 'vedic', widget: 'vedic' },
   { type: 'item', icon: '🏔', label: 'Tibetan', id: 'tibetan', widget: 'tibetan' },
-
-  { type: 'section', label: 'LIFE ARC' },
-  { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
-  { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
 
   { type: 'section', label: 'TOOLS' },
   { type: 'item', icon: '◈', label: 'Oracle', id: 'oracle', action: 'toggleOracle' },
