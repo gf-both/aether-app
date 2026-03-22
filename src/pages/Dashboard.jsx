@@ -1152,7 +1152,7 @@ export default function Dashboard() {
           </div>
         </div>
         {oracleOpen && !isMobile && (
-          <div style={{ gridColumn: 3, gridRow: '2 / 4', overflow: 'hidden', borderRadius: 'var(--radius)' }}>
+          <div style={{ gridColumn: 3, gridRow: 2, overflow: 'hidden', borderRadius: 'var(--radius)' }}>
             <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
           </div>
         )}
@@ -1242,7 +1242,7 @@ export default function Dashboard() {
           </div>
         </div>
         {oracleOpen && !isMobile && (
-          <div style={{ gridColumn: 3, gridRow: '2 / 4', overflow: 'hidden', borderRadius: 'var(--radius)' }}>
+          <div style={{ gridColumn: 3, gridRow: 2, overflow: 'hidden', borderRadius: 'var(--radius)' }}>
             <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
           </div>
         )}
@@ -1264,7 +1264,7 @@ export default function Dashboard() {
       {layoutMode === 'focus' && <FocusLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       {layoutMode === 'stream' && <StreamLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       {oracleOpen && !isMobile && (
-        <div style={{ gridColumn: 3, gridRow: '2 / 4', overflow: 'hidden', borderRadius: 'var(--radius)' }}>
+        <div style={{ gridColumn: 3, gridRow: 2, overflow: 'hidden', borderRadius: 'var(--radius)' }}>
           <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
         </div>
       )}

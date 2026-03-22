@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useActiveProfile } from '../hooks/useActiveProfile'
 import { useGolemStore } from '../store/useGolemStore'
+import { useComputedProfile } from '../hooks/useActiveProfile'
 import { runCompatibilitySimulation } from '../lib/golemConversation'
 
 const SCENARIOS = [
@@ -12,7 +13,8 @@ const SCENARIOS = [
 
 export default function GolemSimulation() {
   const profile = useActiveProfile()
-  const people = useGolemStore(s => s.people)
+  const people = useGolemStore(s => s.people) || []
+  const setActiveDetail = useGolemStore(s => s.setActiveDetail)
   const [selectedId, setSelectedId] = useState(null)
   const [relType, setRelType] = useState('romantic')
   const [result, setResult] = useState(null)
@@ -86,6 +88,24 @@ export default function GolemSimulation() {
         ))}
       </div>
 
+      {/* Empty constellation warning */}
+      {people.length === 0 && (
+        <div style={{ padding:'14px 18px', borderRadius:10, background:'rgba(201,168,76,.06)', border:'1px solid rgba(201,168,76,.2)', marginBottom:16, display:'flex', alignItems:'center', gap:12 }}>
+          <span style={{ fontSize:20 }}>👥</span>
+          <div>
+            <div style={{ fontSize:12, color:'var(--gold)', fontWeight:600, marginBottom:3 }}>No one in your constellation yet</div>
+            <div style={{ fontSize:11, color:'var(--muted-foreground)', lineHeight:1.6 }}>
+              Add people to simulate with them. Go to{' '}
+              <span
+                onClick={() => setActiveDetail('profile')}
+                style={{ color:'var(--gold)', cursor:'pointer', textDecoration:'underline' }}
+              >Profiles</span>
+              {' '}→ Add Person.
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Person selector */}
       <div style={{ display:'flex', gap:12, marginBottom:20, alignItems:'center' }}>
         <div style={{ padding:'10px 14px', borderRadius:8, background:'rgba(201,168,76,.06)', border:'1px solid rgba(201,168,76,.2)', fontSize:12, color:'var(--gold)', whiteSpace:'nowrap' }}>
@@ -97,7 +117,7 @@ export default function GolemSimulation() {
           onChange={e => setSelectedId(e.target.value || null)}
           style={{ flex:1, padding:'10px 14px', borderRadius:8, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:12, fontFamily:'inherit' }}
         >
-          <option value="">Select from constellation...</option>
+          <option value="">{(people || []).length === 0 ? 'No one in constellation yet — add people in Profiles' : 'Select from constellation...'}</option>
           {(people || []).map(p => <option key={p.id} value={p.id}>{p.name} ({p.rel || 'other'})</option>)}
         </select>
 
@@ -106,9 +126,11 @@ export default function GolemSimulation() {
           disabled={loading || !selectedPerson}
           style={{
             padding:'10px 20px', borderRadius:8, cursor:(loading || !selectedPerson) ? 'not-allowed' : 'pointer',
-            background:'rgba(144,80,224,.1)', border:'1px solid rgba(144,80,224,.3)',
-            color:'rgba(144,80,224,.9)', fontSize:12, fontFamily:"'Cinzel',serif", letterSpacing:'.08em', textTransform:'uppercase',
-            opacity:!selectedPerson ? 0.5 : 1, transition:'all .2s', whiteSpace:'nowrap',
+            background: !selectedPerson ? 'rgba(144,80,224,.08)' : 'rgba(144,80,224,.25)',
+            border:'1px solid rgba(144,80,224,.6)',
+            color: '#d4aaff', fontSize:12, fontFamily:"'Cinzel',serif", letterSpacing:'.08em', textTransform:'uppercase',
+            opacity:!selectedPerson ? 0.45 : 1, transition:'all .2s', whiteSpace:'nowrap',
+            fontWeight: 600,
           }}
         >
           {loading ? currentPhase || 'Running...' : 'Run Simulation'}
