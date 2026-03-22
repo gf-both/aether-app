@@ -12,6 +12,7 @@ const NAV_SECTIONS = [
   { type: 'section', label: 'AGENTS' },
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
   { type: 'item', icon: '🔮', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
+  { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
   { type: 'item', icon: '💫', label: 'Connections', id: 'dating', widget: 'dating' },
   { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aiagents', widget: 'aiagents' },
   { type: 'item', icon: '📊', label: 'Benchmark Lab', id: 'benchmark', widget: 'benchmark' },
@@ -48,9 +49,6 @@ const NAV_SECTIONS = [
   { type: 'section', label: 'EASTERN WISDOM' },
   { type: 'item', icon: '🪷', label: 'Vedic', id: 'vedic', widget: 'vedic' },
   { type: 'item', icon: '🏔', label: 'Tibetan', id: 'tibetan', widget: 'tibetan' },
-
-  { type: 'section', label: 'SYMBOLIC' },
-  { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
 
   { type: 'section', label: 'LIFE ARC' },
   { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
