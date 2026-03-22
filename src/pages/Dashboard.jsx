@@ -66,6 +66,7 @@ const SettingsPage = lazy(() => import('./SettingsPage'))
 const AdminPanel = lazy(() => import('./AdminPanel'))
 const BenchmarkPage = lazy(() => import('./BenchmarkPage'))
 const WatercoolerPage = lazy(() => import('./WatercoolerPage'))
+const OrgGraphPage = lazy(() => import('./OrgGraphPage'))
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
 import { GK_LIST } from '../data/geneKeysData'
@@ -322,6 +323,7 @@ const DETAIL_COMPONENTS = {
   dating: DatingPage,
   'golem-sim': GolemSimulation,
   watercooler: WatercoolerPage,
+  microfish: OrgGraphPage,
   settings: SettingsPage,
   admin: AdminPanel,
 }
@@ -364,6 +366,7 @@ const DETAIL_TITLES = {
   dating: 'Connections \u2014 Golem Matching',
   'golem-sim': 'Golem Simulation \u2014 See How You Interact',
   watercooler: 'Watercooler \u2014 Paperclip Team',
+  microfish: 'Microfish \u2014 Org Graph & 3-Year Evolution',
   settings: 'Settings',
   admin: 'Admin Panel \u2014 Product Architecture',
 }

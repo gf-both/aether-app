@@ -21,6 +21,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '📊', label: 'Benchmark Lab', id: 'benchmark', widget: 'benchmark' },
   { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
   { type: 'item', icon: '☕', label: 'Watercooler', id: 'watercooler', widget: 'watercooler' },
+  { type: 'item', icon: '🐟', label: 'Microfish', id: 'microfish', widget: 'microfish' },
 
   { type: 'section', label: 'HUMAN' },
 
