@@ -78,7 +78,20 @@ export const useGolemStore = create(
             sign: '?', asc: '?', moon: '?',
             hdType: '?', hdProfile: '?', hdAuth: '?', hdDef: '?',
             lifePath: '?', crossGK: '?',
+            enneagramType: primary.enneagram_type || null,
+            enneagramWing: primary.enneagram_wing || null,
+            mbtiType: primary.mbti_type || null,
+            doshaType: primary.dosha_type || null,
+            archetypeType: primary.archetype_type || null,
+            loveLanguage: primary.love_language || null,
           }
+          // Also sync top-level quiz store keys from primary profile
+          if (primary.dosha_type) updates.doshaType = primary.dosha_type
+          if (primary.love_language) updates.loveLanguage = primary.love_language
+          if (primary.enneagram_type) updates.enneagramType = primary.enneagram_type
+          if (primary.enneagram_wing) updates.enneagramWing = primary.enneagram_wing
+          if (primary.mbti_type) updates.mbtiType = primary.mbti_type
+          if (primary.archetype_type) updates.archetypeType = primary.archetype_type
         }
         if (others.length > 0) {
           updates.people = others.map(p => ({

@@ -8,6 +8,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '🜁', label: 'Identity', id: 'identity-agent', widget: 'identity-agent' },
   { type: 'item', icon: '💫', label: 'Relationship', id: 'relationship-agent', widget: 'relationship-agent' },
   { type: 'item', icon: '🧭', label: 'Life Direction', id: 'life-direction', widget: 'life-direction' },
+  { type: 'item', icon: '🕸', label: 'Patterns', id: 'pat', widget: 'pat' },
 
   { type: 'section', label: 'AGENTS' },
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
@@ -33,7 +34,6 @@ const NAV_SECTIONS = [
   { type: 'section', label: 'META SYSTEMS' },
   { type: 'item', icon: '⬡', label: 'Gene Keys', id: 'gk', widget: 'gk' },
   { type: 'item', icon: '◎', label: 'Integral Map', id: 'integral', widget: 'integral' },
-  { type: 'item', icon: '🕸', label: 'Patterns', id: 'pat', widget: 'pat' },
 
   { type: 'section', label: 'SACRED MATHEMATICS' },
   { type: 'item', icon: '∞', label: 'Numerology', id: 'num', widget: 'num' },
