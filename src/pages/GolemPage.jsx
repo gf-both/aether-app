@@ -94,6 +94,7 @@ export default function GolemPage() {
   const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
   const setPrimaryProfile = useGolemStore(s => s.setPrimaryProfile)
   const people = useGolemStore(s => s.people)
+  const setOracleContext = useGolemStore(s => s.setOracleContext)
 
   // Custom golems
   const [customGolems, setCustomGolems] = useState([])
@@ -168,6 +169,22 @@ export default function GolemPage() {
       setEditProfile({ ...selectedGolem.profile })
     }
   }, [selectedId])
+
+  // Inject oracle context whenever selected golem changes
+  useEffect(() => {
+    const gp = selectedGolem?.profile
+    setOracleContext({
+      label: `Golem — ${selectedGolem?.label || 'Clone'}`,
+      profileName: selectedGolem?.label,
+      profileData: gp ? {
+        sun: gp.sign, moon: gp.moon, asc: gp.asc,
+        hdType: gp.hdType, hdProfile: gp.hdProfile,
+        lifePath: gp.lifePath,
+      } : null,
+      note: `The user is currently talking to their ${selectedGolem?.label} golem. This golem has a different cosmic profile from the user. Answer as Oracle with awareness of BOTH profiles — the user's and the golem they're interacting with.`
+    })
+    return () => setOracleContext(null)
+  }, [selectedId, selectedGolem?.label])
 
   const activeProfile = editProfile || selectedGolem.profile
 

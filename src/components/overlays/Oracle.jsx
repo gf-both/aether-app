@@ -27,8 +27,8 @@ const QUICK_PROMPTS_BY_CONTEXT = {
   default: ['My soul purpose', 'Key shadow work', 'What to focus now', 'Synthesis reading'],
 }
 
-function buildSystemPrompt(profile, people, activeDetail) {
-  const section = activeDetail ? (DETAIL_LABELS[activeDetail] || activeDetail) : 'Dashboard overview'
+function buildSystemPrompt(profile, people, activeDetail, oracleContext) {
+  const section = oracleContext?.label || (activeDetail ? (DETAIL_LABELS[activeDetail] || activeDetail) : 'Dashboard overview')
 
   let prompt = `You are Oracle, the cosmic intelligence guide inside GOLEM — a multi-framework self-knowledge platform. You speak with depth, precision, and warmth. You synthesize insights across astrology, Human Design, numerology, Gene Keys, Kabbalah, Enneagram, and more.
 
@@ -60,10 +60,22 @@ ${activeDetail ? `Tailor your response to be relevant to ${section}. Reference s
     }
   }
 
+  // Inject page-specific context (e.g. Golem page with Antagonist selected)
+  if (oracleContext?.profileData) {
+    const gp = oracleContext.profileData
+    prompt += `\n\n## Current Screen Context\n${oracleContext.note || ''}`
+    prompt += `\nActive profile on screen: ${oracleContext.profileName}`
+    if (gp.sun) prompt += `\n- Sun: ${gp.sun}`
+    if (gp.moon) prompt += `\n- Moon: ${gp.moon}`
+    if (gp.hdType) prompt += `\n- HD: ${gp.hdType} ${gp.hdProfile || ''}`
+    if (gp.lifePath) prompt += `\n- Life Path: ${gp.lifePath}`
+  }
+
   prompt += `\n\n## Response Style
 - Keep responses 2-5 sentences unless asked for more
 - Be specific — reference their actual chart data, not generic descriptions
 - Connect insights across frameworks when relevant
+- When a specific golem/profile is active on screen, acknowledge it and relate your answer to BOTH the user and that profile
 - Speak with the tone of a wise, warm guide — not a textbook`
 
   return prompt
@@ -75,6 +87,7 @@ export default function Oracle({ open, onClose }) {
   const profile = activeViewProfile || primaryProfile
   const activeDetail = useGolemStore(s => s.activeDetail)
   const people = useGolemStore(s => s.people)
+  const oracleContext = useGolemStore(s => s.oracleContext)
 
   const contextLabel = activeDetail ? (DETAIL_LABELS[activeDetail] || activeDetail) : null
 
@@ -121,7 +134,7 @@ export default function Oracle({ open, onClose }) {
     setTyping(true)
 
     try {
-      const systemPrompt = buildSystemPrompt(profile, people, activeDetail)
+      const systemPrompt = buildSystemPrompt(profile, people, activeDetail, oracleContext)
       const aiMessages = newMessages
         .filter(m => m.role !== 'system')
         .map(m => ({ role: m.role === 'ai' ? 'assistant' : 'user', content: m.text }))

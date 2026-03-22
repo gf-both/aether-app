@@ -111,6 +111,10 @@ export const useGolemStore = create(
       activeDetail: null,
       setActiveDetail: (d) => set({ activeDetail: d }),
 
+      // Oracle context — pages can inject extra context for the Oracle panel
+      oracleContext: null,  // { label, profileName, profileData } | null
+      setOracleContext: (ctx) => set({ oracleContext: ctx }),
+
       synSelA: null,
       synSelB: null,
       setSynSel: (slot, id) => set(slot === 'A' ? { synSelA: id } : { synSelB: id }),
