@@ -468,6 +468,7 @@ Score each response (A, B, C) on the 5 dimensions. Return JSON only.`
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1200, margin: '0 auto', color: '#e0e0e0' }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
@@ -558,61 +559,63 @@ Score each response (A, B, C) on the 5 dimensions. Return JSON only.`
             <span style={{ textAlign: 'center' }}>Winner</span>
           </div>
 
-          {/* Test rows — show all tests, with results if available */}
-          {filteredSuite.map(test => {
-            const result = getResult(test.id)
-            const cat = BENCHMARK_CATEGORIES.find(c => c.id === test.category)
-            const isRunning = runningId === test.id
-
-            if (result) {
-              return (
-                <ResultRow
-                  key={test.id}
-                  result={result}
-                  expanded={expandedId === test.id}
-                  onToggle={() => setExpandedId(expandedId === test.id ? null : test.id)}
-                />
-              )
-            }
-
-            // No result yet — show as runnable
+          {/* Running indicator */}
+          {running && runningId && (() => {
+            const test = BENCHMARK_SUITE.find(t => t.id === runningId)
+            const cat = test ? BENCHMARK_CATEGORIES.find(c => c.id === test.category) : null
             return (
-              <div key={test.id} style={{
-                display: 'grid', gridTemplateColumns: '32px 1fr 80px 80px 80px 80px',
-                alignItems: 'center', padding: '10px 14px', gap: 8, fontSize: 13,
-                background: 'rgba(255,255,255,0.01)', borderRadius: 8,
-                border: '1px solid rgba(255,255,255,0.03)', marginBottom: 8,
-                opacity: isRunning ? 0.7 : 1,
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '10px 14px', marginBottom: 8,
+                background: 'rgba(201,168,76,0.06)', borderRadius: 8,
+                border: '1px solid rgba(201,168,76,0.2)', fontSize: 13, color: '#c9a84c',
               }}>
-                <span style={{ color: '#444' }}>▶</span>
-                <span style={{ color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  <span style={{ marginRight: 6 }}>{cat?.icon}</span>
-                  {test.prompt.substring(0, 80)}{test.prompt.length > 80 ? '...' : ''}
+                <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⟳</span>
+                <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {cat?.icon} {test?.prompt?.substring(0, 80)}...
                 </span>
-                <span style={{ textAlign: 'center', color: '#444' }}>—</span>
-                <span style={{ textAlign: 'center', color: '#444' }}>—</span>
-                <span style={{ textAlign: 'center', color: '#444' }}>—</span>
-                <div style={{ textAlign: 'center' }}>
-                  {isRunning ? (
-                    <span style={{ fontSize: 11, color: '#c9a84c' }}>Running...</span>
-                  ) : (
-                    <button
-                      onClick={() => runSingleBenchmark(test)}
-                      disabled={running}
-                      style={{
-                        fontSize: 10, padding: '3px 10px', borderRadius: 4,
-                        border: '1px solid rgba(201,168,76,0.3)', background: 'rgba(201,168,76,0.08)',
-                        color: '#c9a84c', cursor: running ? 'not-allowed' : 'pointer',
-                        opacity: running ? 0.4 : 1,
-                      }}
-                    >
-                      Run
-                    </button>
-                  )}
-                </div>
+                <span style={{ fontSize: 11, opacity: 0.7 }}>{progress.done}/{progress.total}</span>
               </div>
             )
-          })}
+          })()}
+
+          {/* Completed results only */}
+          {filteredResults.length === 0 && !running && (
+            <div style={{
+              textAlign: 'center', padding: '48px 24px',
+              color: '#555', fontSize: 13,
+            }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>🧪</div>
+              <div style={{ color: '#888', marginBottom: 8 }}>No results yet</div>
+              <div style={{ color: '#555', fontSize: 12 }}>Hit <strong style={{ color: '#c084fc' }}>Run Suite</strong> to start benchmarking, or run individual tests from the queue below.</div>
+              <div style={{ marginTop: 20, display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', maxWidth: 480, margin: '20px auto 0' }}>
+                {filteredSuite.slice(0, 6).map(test => {
+                  const cat = BENCHMARK_CATEGORIES.find(c => c.id === test.category)
+                  return (
+                    <button key={test.id} onClick={() => runSingleBenchmark(test)} style={{
+                      fontSize: 11, padding: '4px 12px', borderRadius: 4,
+                      border: '1px solid rgba(201,168,76,0.25)', background: 'rgba(201,168,76,0.06)',
+                      color: '#c9a84c', cursor: 'pointer',
+                    }}>
+                      {cat?.icon} {test.prompt.substring(0, 40)}…
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
+          {filteredResults
+            .slice()
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .map(result => (
+              <ResultRow
+                key={result.testId}
+                result={result}
+                expanded={expandedId === result.testId}
+                onToggle={() => setExpandedId(expandedId === result.testId ? null : result.testId)}
+              />
+            ))
+          }
 
           {/* Aggregate Stats */}
           {stats && (

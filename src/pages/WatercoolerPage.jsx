@@ -99,6 +99,9 @@ function formatTime(ts) {
 
 function Thread({ thread }) {
   const [open, setOpen] = useState(false)
+  const preview = thread.messages?.[0]
+  const remaining = thread.messages?.length - 1
+
   return (
     <div style={S.thread} onClick={() => setOpen(o => !o)}>
       <div style={S.threadHeader}>
@@ -110,6 +113,35 @@ function Thread({ thread }) {
         <span style={S.topicLabel}>{thread.topic}</span>
         <span style={S.timestamp}>{formatTime(thread.createdAt)}</span>
       </div>
+
+      {/* Message preview — always visible */}
+      {preview && !open && (
+        <div style={{
+          padding: '0 1rem 0.75rem',
+          borderTop: '1px solid rgba(255,255,255,0.04)',
+        }}>
+          <div style={{
+            ...S.bubble,
+            background: 'transparent',
+            display: 'flex', gap: '0.5rem', alignItems: 'flex-start',
+          }}>
+            <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{preview.agentEmoji}</span>
+            <div>
+              <span style={{ ...S.bubbleName, display: 'inline', marginRight: '0.4rem' }}>{preview.agentName}:</span>
+              <span style={{ ...S.bubbleText, display: 'inline', color: 'var(--muted-foreground, #aaa)' }}>
+                {preview.text.length > 120 ? preview.text.slice(0, 120) + '…' : preview.text}
+              </span>
+            </div>
+          </div>
+          {remaining > 0 && (
+            <div style={{ fontSize: '0.72rem', color: 'var(--muted-foreground, #888)', paddingLeft: '2rem', marginTop: '0.2rem' }}>
+              +{remaining} more message{remaining !== 1 ? 's' : ''} ↓
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Full thread when expanded */}
       {open && (
         <div style={S.messages}>
           {thread.messages.map((m, i) => (
