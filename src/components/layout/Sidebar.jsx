@@ -15,10 +15,14 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '🔮', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
   { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
   { type: 'item', icon: '💫', label: 'Connections', id: 'dating', widget: 'dating' },
+
+  { type: 'section', label: 'ORGANIZATION' },
   { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aiagents', widget: 'aiagents' },
   { type: 'item', icon: '📊', label: 'Benchmark Lab', id: 'benchmark', widget: 'benchmark' },
   { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
   { type: 'item', icon: '☕', label: 'Watercooler', id: 'watercooler', widget: 'watercooler' },
+
+  { type: 'section', label: 'HUMAN' },
 
   { type: 'section', label: 'CORE STRUCTURAL' },
   { type: 'item', icon: '☉', label: 'Natal Chart', id: 'natal', widget: 'natal' },
