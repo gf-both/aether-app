@@ -9,6 +9,15 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '💫', label: 'Relationship', id: 'relationship-agent', widget: 'relationship-agent' },
   { type: 'item', icon: '🧭', label: 'Life Direction', id: 'life-direction', widget: 'life-direction' },
 
+  { type: 'section', label: 'AGENTS' },
+  { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
+  { type: 'item', icon: '🔮', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
+  { type: 'item', icon: '💫', label: 'Connections', id: 'dating', widget: 'dating' },
+  { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aiagents', widget: 'aiagents' },
+  { type: 'item', icon: '📊', label: 'Benchmark Lab', id: 'benchmark', widget: 'benchmark' },
+  { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
+  { type: 'item', icon: '☕', label: 'Watercooler', id: 'watercooler', widget: 'watercooler' },
+
   { type: 'section', label: 'CORE STRUCTURAL' },
   { type: 'item', icon: '☉', label: 'Natal Chart', id: 'natal', widget: 'natal' },
   { type: 'item', icon: '☽', label: 'Transits', id: 'transits', widget: 'tr' },
@@ -46,15 +55,6 @@ const NAV_SECTIONS = [
   { type: 'section', label: 'LIFE ARC' },
   { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
   { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
-
-  { type: 'section', label: 'AGENTS' },
-  { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
-  { type: 'item', icon: '🔮', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
-  { type: 'item', icon: '💫', label: 'Connections', id: 'dating', widget: 'dating' },
-  { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aiagents', widget: 'aiagents' },
-  { type: 'item', icon: '📊', label: 'Benchmark Lab', id: 'benchmark', widget: 'benchmark' },
-  { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
-  { type: 'item', icon: '☕', label: 'Watercooler', id: 'watercooler', widget: 'watercooler' },
 
   { type: 'section', label: 'TOOLS' },
   { type: 'item', icon: '◈', label: 'Oracle', id: 'oracle', action: 'toggleOracle' },
