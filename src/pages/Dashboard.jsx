@@ -917,8 +917,9 @@ function WidgetManagerBar() {
 
 /* ── Stream Layout ── */
 function StreamLayout({ visibleWidgets, setActiveDetail }) {
+  const isMobile = window.innerWidth <= 768
   return (
-    <div style={{ gridColumn: 2, gridRow: 2, overflow: 'auto', padding: '8px 24px 40px' }}>
+    <div style={{ gridColumn: isMobile ? 1 : 2, gridRow: 2, overflow: 'auto', padding: isMobile ? '8px 10px 96px' : '8px 24px 40px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 900, margin: '0 auto' }}>
         {visibleWidgets.map(id => (
           <div key={id} className="card" style={{ height: 480, cursor: 'pointer' }}
@@ -933,10 +934,11 @@ function StreamLayout({ visibleWidgets, setActiveDetail }) {
 
 /* ── Focus Layout ── */
 function FocusLayout({ visibleWidgets, setActiveDetail }) {
+  const isMobile = window.innerWidth <= 768
   const [focusIdx, setFocusIdx] = useState(0)
   const focusId = visibleWidgets[focusIdx] || visibleWidgets[0]
   return (
-    <div style={{ gridColumn: 2, gridRow: 2, display: 'flex', overflow: 'hidden', gap: 0 }}>
+    <div style={{ gridColumn: isMobile ? 1 : 2, gridRow: 2, display: 'flex', overflow: 'hidden', gap: 0 }}>
       <div style={{ width: 56, flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 4, padding: '8px 4px', background: 'rgba(5,5,22,.5)', borderRadius: 'var(--r) 0 0 var(--r)', borderRight: '1px solid var(--accent)' }}>
         {visibleWidgets.map((id, idx) => {
           const meta = WIDGET_META[id]
@@ -1042,26 +1044,137 @@ function ConstellationLines({ wrapperRef }) {
   )
 }
 
+/* ── Mobile Drawer (slide-up nav menu) ── */
+const MOBILE_NAV_GROUPS = [
+  {
+    label: 'You',
+    items: [
+      { icon: '🜁', label: 'Identity', id: 'identity-agent' },
+      { icon: '💫', label: 'Relationship', id: 'relationship-agent' },
+      { icon: '🧭', label: 'Life Direction', id: 'life-direction' },
+      { icon: '🪬', label: 'Golem', id: 'golem' },
+    ],
+  },
+  {
+    label: 'Others',
+    items: [
+      { icon: '✦', label: 'Constellation', id: 'aiagents' },
+      { icon: '🔮', label: 'Simulation', id: 'golem-sim' },
+      { icon: '🐟', label: 'Fishbowl', id: 'watercooler' },
+      { icon: '⊕', label: 'Synastry', id: 'synastry' },
+    ],
+  },
+  {
+    label: 'Core',
+    items: [
+      { icon: '☉', label: 'Natal Chart', id: 'natal' },
+      { icon: '◈', label: 'Human Design', id: 'hd' },
+      { icon: '⬡', label: 'Gene Keys', id: 'gk' },
+      { icon: '✡', label: 'Kabbalah', id: 'kab' },
+    ],
+  },
+  {
+    label: 'Frameworks',
+    items: [
+      { icon: '☯', label: 'Enneagram', id: 'enn' },
+      { icon: '🧠', label: 'Myers-Briggs', id: 'mbti' },
+      { icon: '∞', label: 'Numerology', id: 'num' },
+      { icon: '🔺', label: 'Mayan Calendar', id: 'mayan' },
+    ],
+  },
+]
+
+function MobileDrawer({ open, onClose, setActiveDetail, setActiveNav }) {
+  if (!open) return null
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+          zIndex: 300, backdropFilter: 'blur(4px)',
+        }}
+      />
+      {/* Drawer */}
+      <div style={{
+        position: 'fixed', bottom: 64, left: 0, right: 0, zIndex: 301,
+        background: 'var(--background)',
+        borderTop: '1px solid var(--border)',
+        borderRadius: '16px 16px 0 0',
+        maxHeight: '70vh',
+        overflowY: 'auto',
+        padding: '12px 0 16px',
+        boxShadow: '0 -8px 32px rgba(0,0,0,0.4)',
+      }}>
+        {/* Handle */}
+        <div style={{ width: 36, height: 4, background: 'var(--border)', borderRadius: 2, margin: '0 auto 16px' }} />
+
+        {MOBILE_NAV_GROUPS.map(group => (
+          <div key={group.label} style={{ marginBottom: 16 }}>
+            <div style={{
+              padding: '2px 20px 6px',
+              fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase',
+              color: 'var(--muted-foreground)', opacity: 0.6,
+              fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+            }}>{group.label}</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }}>
+              {group.items.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => { setActiveDetail(item.id); setActiveNav(item.id); onClose() }}
+                  style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    padding: '10px 4px', borderRadius: 8,
+                    color: 'var(--foreground)',
+                  }}
+                >
+                  <span style={{ fontSize: 22 }}>{item.icon}</span>
+                  <span style={{ fontSize: 9, letterSpacing: '.03em', color: 'var(--muted-foreground)', textAlign: 'center', lineHeight: 1.2 }}>{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
 /* ── Mobile Bottom Navigation ── */
 function MobileBottomNav({ activeNav, setActiveNav, setActiveDetail, setOracleOpen, setActivePanel }) {
+  const [drawerOpen, setDrawerOpen] = useState(false)
   return (
-    <div className="mobile-bottom-nav">
-      <button
-        className={activeNav === 'dashboard' ? 'active' : ''}
-        onClick={() => { setActiveDetail(null); setActiveNav('dashboard') }}
-      >🏠<span>Home</span></button>
-      <button
-        className={activeNav === 'profile' ? 'active' : ''}
-        onClick={() => { setActiveDetail('profile'); setActiveNav('profile') }}
-      >👤<span>Profile</span></button>
-      <button
-        onClick={() => setOracleOpen(true)}
-      >◈<span>Oracle</span></button>
-      <button
-        className={activeNav === 'practitioner' ? 'active' : ''}
-        onClick={() => { setActiveDetail('practitioner'); setActiveNav('practitioner') }}
-      >👥<span>Practice</span></button>
-    </div>
+    <>
+      <MobileDrawer
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        setActiveDetail={setActiveDetail}
+        setActiveNav={setActiveNav}
+      />
+      <div className="mobile-bottom-nav">
+        <button
+          className={activeNav === 'dashboard' ? 'active' : ''}
+          onClick={() => { setActiveDetail(null); setActiveNav('dashboard'); setDrawerOpen(false) }}
+        ><span style={{ fontSize: 20 }}>◎</span><span>Home</span></button>
+        <button
+          className={activeNav === 'profile' ? 'active' : ''}
+          onClick={() => { setActiveDetail('profile'); setActiveNav('profile'); setDrawerOpen(false) }}
+        ><span style={{ fontSize: 20 }}>👤</span><span>Profile</span></button>
+        <button
+          onClick={() => { setOracleOpen(true); setDrawerOpen(false) }}
+        ><span style={{ fontSize: 20 }}>◈</span><span>Oracle</span></button>
+        <button
+          className={activeNav === 'aiagents' ? 'active' : ''}
+          onClick={() => { setActiveDetail('aiagents'); setActiveNav('aiagents'); setDrawerOpen(false) }}
+        ><span style={{ fontSize: 20 }}>✦</span><span>Cluster</span></button>
+        <button
+          className={drawerOpen ? 'active' : ''}
+          onClick={() => setDrawerOpen(d => !d)}
+        ><span style={{ fontSize: 20 }}>☰</span><span>Menu</span></button>
+      </div>
+    </>
   )
 }
 
@@ -1119,21 +1232,28 @@ export default function Dashboard() {
   // Oracle column width
   const oracleCol = oracleOpen && !isMobile ? ' 340px' : ''
 
+  // Derived mobile grid values
+  const mGridCols = isMobile ? '1fr' : `${sbWidth} 1fr${oracleCol}`
+  const mGridRows = isMobile ? '46px 1fr' : '46px 1fr 42px'
+  const mContentCol = isMobile ? 1 : 2
+
   // Detail view mode (shared across all layouts)
   if (activeDetail) {
     const DetailComponent = DETAIL_COMPONENTS[activeDetail]
     const title = DETAIL_TITLES[activeDetail]
     return (
       <div className="dash-root" style={{
-        display: 'grid', gridTemplateColumns: `${sbWidth} 1fr${oracleCol}`, gridTemplateRows: '46px 1fr 42px',
-        gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
+        display: 'grid', gridTemplateColumns: mGridCols, gridTemplateRows: mGridRows,
+        gap: isMobile ? '0' : '7px', padding: isMobile ? '0' : '7px 7px 7px 0',
+        width: '100%', height: '100vh', position: 'relative', zIndex: 1,
       }}>
         <Starfield />
-        <Sidebar />
-        <TopBar style={oracleOpen ? { gridColumn: '2 / -1' } : undefined} />
+        {!isMobile && <Sidebar />}
+        <TopBar />
         <div className="dash-content" style={{
-          gridColumn: 2, gridRow: 2, ...CARD_BASE,
+          gridColumn: mContentCol, gridRow: 2, ...CARD_BASE,
           display: 'flex', flexDirection: 'column', animation: 'fadeUp .35s ease backwards',
+          borderRadius: isMobile ? 0 : undefined,
         }}>
           <div style={{
             padding: '10px 18px 8px', borderBottom: '1px solid var(--accent)',
@@ -1167,67 +1287,68 @@ export default function Dashboard() {
   if (isGrid) {
     return (
       <div className="dash-root" style={{
-        display: 'grid', gridTemplateColumns: `${sbWidth} 1fr${oracleCol}`,
-        gridTemplateRows: '46px 1fr 42px', gap: '7px', padding: '7px 7px 7px 0',
+        display: 'grid', gridTemplateColumns: mGridCols,
+        gridTemplateRows: mGridRows, gap: isMobile ? '0' : '7px', padding: isMobile ? '0' : '7px 7px 7px 0',
         width: '100%', height: '100vh', position: 'relative', zIndex: 1,
       }}>
         <Starfield />
-        <Sidebar />
+        {!isMobile && <Sidebar />}
         <TopBar />
         <div className="dash-content" style={{
-          gridColumn: 2, gridRow: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          gridColumn: mContentCol, gridRow: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          borderRadius: isMobile ? 0 : undefined,
         }}>
           <DemoBanner />
-          <WidgetManagerBar />
-          <div style={{
-            flex: 1, overflowY: 'auto', overflowX: 'hidden',
-          }}>
-            <div ref={wrapperRef} style={{ position: 'relative', padding: '4px 20px 40px' }}>
-              <ConstellationLines wrapperRef={wrapperRef} />
+          {!isMobile && <WidgetManagerBar />}
+          <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+            <div ref={wrapperRef} style={{ position: 'relative', padding: isMobile ? '4px 10px 96px' : '4px 20px 40px' }}>
+              {!isMobile && <ConstellationLines wrapperRef={wrapperRef} />}
 
               {ROWS.map((row, ri) => {
                 const rowWidgets = row.widgets.filter(w => visibleWidgets.includes(w))
                 if (!rowWidgets.length) return null
                 return (
-                  <div key={ri} style={{ marginBottom: ri < ROWS.length - 1 ? 48 : 0, position: 'relative', zIndex: 1 }}>
+                  <div key={ri} style={{ marginBottom: ri < ROWS.length - 1 ? (isMobile ? 24 : 48) : 0, position: 'relative', zIndex: 1 }}>
                     {/* Decorative row header with constellation lines */}
-                    <div className="col-header" style={{ padding: '16px 0 14px' }}>
-                      <div className="col-line" style={{ '--line-c': row.border }} />
+                    <div className="col-header" style={{ padding: isMobile ? '10px 0 8px' : '16px 0 14px' }}>
+                      {!isMobile && <div className="col-line" style={{ '--line-c': row.border }} />}
                       <div className="col-header-text">
                         <div className="col-header-title" style={{ color: row.color }}>{row.label}</div>
-                        <div className="col-header-sub">{row.sub}</div>
+                        {!isMobile && <div className="col-header-sub">{row.sub}</div>}
                       </div>
-                      <div className="col-line" style={{ '--line-c': row.border }} />
+                      {!isMobile && <div className="col-line" style={{ '--line-c': row.border }} />}
                     </div>
 
                     {/* Widget row — constellation nodes */}
                     <div className="constellation-row" style={{
                       display: 'grid',
-                      gridTemplateColumns: row.cols,
-                      gap: 24,
+                      gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : row.cols,
+                      gap: isMobile ? 10 : 24,
                     }}>
                       {rowWidgets.map((widgetId) => {
                         const globalIdx = visibleWidgets.indexOf(widgetId)
-                        const h = CARD_HEIGHT
+                        const h = isMobile ? 220 : CARD_HEIGHT
                         return (
                           <div key={widgetId} data-widget={widgetId} className="card"
                             onDoubleClick={() => setActiveDetail(widgetId)}
-                            onMouseDown={(e) => startDrag(e, widgetId)}
-                            onTouchStart={(e) => startDrag(e, widgetId)}
+                            onTouchEnd={(e) => { if (e.cancelable) e.preventDefault(); setActiveDetail(widgetId) }}
+                            onMouseDown={(e) => !isMobile && startDrag(e, widgetId)}
                             style={{
                               height: h,
                               animationDelay: `${globalIdx * 0.04}s`,
-                              cursor: 'grab',
+                              cursor: isMobile ? 'pointer' : 'grab',
                               opacity: dragId === widgetId ? 0.3 : 1,
                               outline: dragOverIdx === globalIdx && dragId !== widgetId ? '2px solid rgba(201,168,76,.6)' : 'none',
                             }}
                           >
-                            <div
-                              className="widget-close"
-                              onClick={(e) => { e.stopPropagation(); toggleWidgetVisibility(widgetId) }}
-                              title="Hide widget (re-enable in ⚙ Widget Manager)"
-                            >{'−'}</div>
-                            <div style={{ position: 'absolute', top: '8px', right: '28px', zIndex: 5, pointerEvents: 'none' }}>
+                            {!isMobile && (
+                              <div
+                                className="widget-close"
+                                onClick={(e) => { e.stopPropagation(); toggleWidgetVisibility(widgetId) }}
+                                title="Hide widget (re-enable in ⚙ Widget Manager)"
+                              >{'−'}</div>
+                            )}
+                            <div style={{ position: 'absolute', top: '8px', right: isMobile ? '8px' : '28px', zIndex: 5, pointerEvents: 'none' }}>
                               <CategoryBadge widgetId={widgetId} />
                             </div>
                             <WidgetContent widgetId={widgetId} />
@@ -1246,7 +1367,7 @@ export default function Dashboard() {
             <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
           </div>
         )}
-        <StatusBar />
+        {!isMobile && <StatusBar />}
         {isMobile && <MobileBottomNav activeNav={activeNav} setActiveNav={setActiveNav} setActiveDetail={setActiveDetail} setOracleOpen={setOracleOpen} setActivePanel={setActivePanel} />}
       </div>
     )
@@ -1255,11 +1376,12 @@ export default function Dashboard() {
   // Focus, Stream
   return (
     <div className="dash-root" style={{
-      display: 'grid', gridTemplateColumns: `${sbWidth} 1fr${oracleCol}`, gridTemplateRows: '46px 1fr 42px',
-      gap: '7px', padding: '7px 7px 7px 0', width: '100%', height: '100vh', position: 'relative', zIndex: 1,
+      display: 'grid', gridTemplateColumns: mGridCols, gridTemplateRows: mGridRows,
+      gap: isMobile ? '0' : '7px', padding: isMobile ? '0' : '7px 7px 7px 0',
+      width: '100%', height: '100vh', position: 'relative', zIndex: 1,
     }}>
       <Starfield />
-      <Sidebar />
+      {!isMobile && <Sidebar />}
       <TopBar />
       {layoutMode === 'focus' && <FocusLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
       {layoutMode === 'stream' && <StreamLayout visibleWidgets={visibleWidgets} setActiveDetail={setActiveDetail} />}
@@ -1268,7 +1390,7 @@ export default function Dashboard() {
           <Oracle open={oracleOpen} onClose={() => setOracleOpen(false)} />
         </div>
       )}
-      <StatusBar />
+      {!isMobile && <StatusBar />}
       {isMobile && <MobileBottomNav activeNav={activeNav} setActiveNav={setActiveNav} setActiveDetail={setActiveDetail} setOracleOpen={setOracleOpen} setActivePanel={setActivePanel} />}
     </div>
   )

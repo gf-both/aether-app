@@ -4,9 +4,14 @@ export default function Cursor() {
   const c1Ref = useRef(null)
   const c2Ref = useRef(null)
 
+  // Disable on touch devices
+  const isTouch = typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches
+  if (isTouch) return null
+
   useEffect(() => {
     const c1 = c1Ref.current
     const c2 = c2Ref.current
+    if (!c1 || !c2) return
     const handler = (e) => {
       c1.style.left = e.clientX + 'px'
       c1.style.top = e.clientY + 'px'
