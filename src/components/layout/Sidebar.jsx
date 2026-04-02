@@ -1,30 +1,31 @@
 import { useGolemStore } from '../../store/useGolemStore'
 
 // Section-grouped nav structure
+// Restructured: YOU (core agents + golem + timeline + career + integral map),
+//               OTHERS (synastry, simulation, watercooler, connections),
+//               CONSTELLATION (profiles — dynamic, replaces AI Agents)
+// Removed: Wendy, Benchmark Lab
 const NAV_SECTIONS = [
   { type: 'item', icon: '◎', label: 'Dashboard', id: 'dashboard' },
 
-  { type: 'section', label: 'CORE AGENTS' },
+  { type: 'section', label: 'YOU' },
   { type: 'item', icon: '🜁', label: 'Identity', id: 'identity-agent', widget: 'identity-agent' },
   { type: 'item', icon: '💫', label: 'Relationship', id: 'relationship-agent', widget: 'relationship-agent' },
   { type: 'item', icon: '🧭', label: 'Life Direction', id: 'life-direction', widget: 'life-direction' },
   { type: 'item', icon: '🕸', label: 'Patterns', id: 'pat', widget: 'pat' },
-
-  { type: 'section', label: 'AGENTS' },
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
-  { type: 'item', icon: '🔮', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
-  { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
-  { type: 'item', icon: '💫', label: 'Connections', id: 'dating', widget: 'dating' },
-
-  { type: 'section', label: 'LIFE ARC' },
   { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
   { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
+  { type: 'item', icon: '◎', label: 'Integral Map', id: 'integral', widget: 'integral' },
 
-  { type: 'section', label: 'ORGANIZATION' },
-  { type: 'item', icon: '🤖', label: 'AI Agents', id: 'aiagents', widget: 'aiagents' },
-  { type: 'item', icon: '📊', label: 'Benchmark Lab', id: 'benchmark', widget: 'benchmark' },
-  { type: 'item', icon: '🧬', label: 'Wendy', id: 'wendy', widget: 'wendy' },
+  { type: 'section', label: 'OTHERS' },
+  { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
+  { type: 'item', icon: '🔮', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
   { type: 'item', icon: '☕', label: 'Watercooler', id: 'watercooler', widget: 'watercooler' },
+  { type: 'item', icon: '💫', label: 'Connections', id: 'dating', widget: 'dating' },
+
+  { type: 'section', label: 'CONSTELLATION' },
+  { type: 'item', icon: '✦', label: 'Constellation', id: 'aiagents', widget: 'aiagents' },
 
   { type: 'section', label: 'HUMAN' },
 
@@ -41,7 +42,6 @@ const NAV_SECTIONS = [
 
   { type: 'section', label: 'META SYSTEMS' },
   { type: 'item', icon: '⬡', label: 'Gene Keys', id: 'gk', widget: 'gk' },
-  { type: 'item', icon: '◎', label: 'Integral Map', id: 'integral', widget: 'integral' },
 
   { type: 'section', label: 'SACRED MATHEMATICS' },
   { type: 'item', icon: '∞', label: 'Numerology', id: 'num', widget: 'num' },

@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { generateConversations, getAllAgents } from '../lib/watercoolerEngine'
+import { generateConstellationConversation } from '../lib/constellationWatercooler'
 import { loadThreads, addThreads, clearThreads } from '../lib/watercoolerStore'
 import { callAI } from '../lib/ai'
+import { useGolemStore } from '../store/useGolemStore'
 
 // ── Role colors ──
 const ROLE_COLORS = {
@@ -548,20 +550,40 @@ export default function WatercoolerPage() {
   const [threads, setThreads] = useState([])
   const [loading, setLoading] = useState(false)
   const [view, setView] = useState('feed') // 'feed' | 'microfish'
+  const [mode, setMode] = useState('constellation') // 'constellation' | 'org'
+
+  const primaryProfile = useGolemStore((s) => s.primaryProfile)
+  const people = useGolemStore((s) => s.people)
 
   useEffect(() => { setThreads(loadThreads()) }, [])
 
   const handleGenerate = useCallback(async () => {
     setLoading(true)
     try {
-      const newThreads = await generateConversations((thread) => {
-        setThreads(prev => [thread, ...prev])
-      })
-      if (newThreads.length) setThreads(addThreads(newThreads))
+      if (mode === 'constellation') {
+        // Constellation mode: golems of your profiles interact
+        const allProfiles = [
+          { ...primaryProfile, _isPrimary: true },
+          ...people,
+        ]
+        const convoThread = await generateConstellationConversation(allProfiles)
+        if (convoThread) {
+          setThreads(prev => [convoThread, ...prev])
+          addThreads([convoThread])
+        }
+      } else {
+        // Org mode: AI agent team conversations
+        const newThreads = await generateConversations((thread) => {
+          setThreads(prev => [thread, ...prev])
+        })
+        if (newThreads.length) setThreads(addThreads(newThreads))
+      }
     } finally { setLoading(false) }
-  }, [])
+  }, [mode, primaryProfile, people])
 
   const handleClear = useCallback(() => { setThreads(clearThreads()) }, [])
+
+  const constellationCount = 1 + (people?.length || 0)
 
   return (
     <div style={S.page}>
@@ -570,9 +592,27 @@ export default function WatercoolerPage() {
       <div style={S.header}>
         <div style={S.titleBlock}>
           <div style={S.title}>☕ Watercooler</div>
-          <div style={S.subtitle}>The Paperclip team, unfiltered</div>
+          <div style={S.subtitle}>
+            {mode === 'constellation'
+              ? `Your constellation golems explore the spaces between their charts · ${constellationCount} profiles`
+              : 'The Golem team, unfiltered'}
+          </div>
         </div>
         <div style={S.controls}>
+          {/* Mode toggle */}
+          <button
+            style={mode === 'constellation' ? S.btnActive : S.btn}
+            onClick={() => setMode('constellation')}
+            title="Constellation profiles interact"
+          >✦ Constellation</button>
+          <button
+            style={mode === 'org' ? S.btnActive : S.btn}
+            onClick={() => setMode('org')}
+            title="Org agent team conversations"
+          >🤖 Org</button>
+
+          <span style={{ width: 1, height: 20, background: 'var(--border, #333)', flexShrink: 0 }} />
+
           {/* View toggle */}
           <button
             style={view === 'feed' ? S.btnActive : S.btn}
@@ -601,7 +641,13 @@ export default function WatercoolerPage() {
         <div style={S.feed}>
           {loading && threads.length === 0 && (<><SkeletonThread /><SkeletonThread /><SkeletonThread /></>)}
           {!loading && threads.length === 0 && (
-            <div style={S.empty}>No conversations yet. Hit Generate to get the team talking.</div>
+            <div style={S.empty}>
+              {mode === 'constellation'
+                ? constellationCount < 2
+                  ? 'Add people to your constellation in Profiles to unlock golem dialogues.'
+                  : 'Your constellation golems are ready to talk. Hit Generate to begin.'
+                : 'No conversations yet. Hit Generate to get the team talking.'}
+            </div>
           )}
           {threads.map(t => <Thread key={t.id} thread={t} />)}
         </div>

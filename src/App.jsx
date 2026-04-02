@@ -9,7 +9,7 @@ import SynastryPanel from './components/overlays/SynastryPanel'
 import AIChatPanel from './components/overlays/AIChatPanel'
 // Oracle is now embedded in Dashboard layout (not an overlay)
 import AuthModal from './components/auth/AuthModal'
-import Starfield from './components/ui/Starfield'
+import ParticleField from './components/ui/ParticleField'
 import Cursor from './components/ui/Cursor'
 import { onAuthStateChange, getUser } from './lib/auth'
 import { getUserProfile } from './lib/db'
@@ -98,7 +98,7 @@ export default function App() {
     <ErrorBoundary>
       <AuthSync />
       <ThemeSync />
-      <Starfield />
+      <ParticleField />
       <Dashboard />
       <OverlayManager />
       <Cursor />
