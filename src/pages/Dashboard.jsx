@@ -1255,17 +1255,17 @@ export default function Dashboard() {
           display: 'flex', flexDirection: 'column', animation: 'fadeUp .35s ease backwards',
           borderRadius: isMobile ? 0 : undefined,
         }}>
-          <div style={{
+          <div className="detail-header" style={{
             padding: '10px 18px 8px', borderBottom: '1px solid var(--accent)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
           }}>
-            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--foreground)' }}>{title}</span>
-            <div onClick={() => setActiveDetail(null)} style={{
-              padding: '4px 14px', borderRadius: 8, background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
-              fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--foreground)', cursor: 'pointer', transition: 'all .2s',
-            }}>Back to Dashboard</div>
+            <span style={{ fontFamily: "'Cinzel',serif", fontSize: isMobile ? 9 : 11, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--foreground)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, marginRight: 8 }}>{title}</span>
+            <div onClick={() => setActiveDetail(null)} className="detail-back" style={{
+              padding: '4px 10px', borderRadius: 8, background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
+              fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.08em', color: 'var(--foreground)', cursor: 'pointer', transition: 'all .2s', flexShrink: 0, whiteSpace: 'nowrap',
+            }}>← Back</div>
           </div>
-          <div style={{ flex: 1, overflow: 'auto' }}>
+          <div className="detail-scroll-wrap" style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
             <Suspense fallback={<div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', opacity:.3, fontFamily:"'Cinzel',serif", fontSize:11, textTransform:'uppercase', letterSpacing:'.1em' }}>Loading...</div>}>
               {DetailComponent && <DetailComponent />}
             </Suspense>

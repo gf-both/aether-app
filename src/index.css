@@ -828,18 +828,112 @@ html:not(.dark) .nbg { opacity: 0.1; }
   /* Text sizing */
   body { font-size: 14px; }
 
-  /* Scrollable containers get momentum scrolling */
-  [style*="overflow-y: auto"], [style*="overflow: auto"] {
-    -webkit-overflow-scrolling: touch;
-  }
+  /* Momentum scrolling on touch */
+  .detail-scroll-wrap { -webkit-overflow-scrolling: touch; }
 
   /* Overlays: full width */
-  [style*="profile-panel"], .ai-chat-panel { width: 100vw !important; left: 0 !important; right: 0 !important; }
-
-  /* Oracle: full-screen on mobile */
+  .ai-chat-panel { width: 100vw !important; left: 0 !important; right: 0 !important; }
   .oracle-panel { inset: 0 !important; border-radius: 0 !important; }
+}
 
-  /* Bottom spacing for all scrollable content */
-  .dash-content > div { padding-bottom: 80px; }
-  .dash-content > [style*="overflow"] { padding-bottom: 0; }
+/* ═══════════════════════════════════════════════
+   MOBILE DETAIL VIEW — comprehensive layout fix
+   Targets the detail-scroll-wrap container to:
+   1. Kill nested self-scrolling inside detail components
+   2. Collapse all multi-column grids to single column
+   3. Prevent horizontal overflow
+   ═══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* The single scroll context for detail views */
+  .detail-scroll-wrap {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 72px;
+  }
+
+  /* Kill inner self-scroll on root element of each detail component.
+     These all have height:100% + overflowY:auto which creates nested scroll. */
+  .detail-scroll-wrap > * {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow-y: visible !important;
+    overflow-x: hidden !important;
+    /* Reduce the 24px 28px padding to be mobile-tight */
+    padding: 16px 14px !important;
+  }
+
+  /* Kill nested scroll on any intermediate wrappers too */
+  .detail-scroll-wrap > * > * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Force ALL inline-styled grids to single column.
+     React compiles gridTemplateColumns → grid-template-columns in DOM. */
+  .detail-scroll-wrap [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Keep 2-col for small items (stat grids etc.) that benefit from it */
+  .detail-scroll-wrap [style*="grid-template-columns: repeat(2"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* But force collapse of 3+ col grids and "1fr 1fr" wide-column layouts */
+  .detail-scroll-wrap [style*="grid-template-columns: repeat(3"],
+  .detail-scroll-wrap [style*="grid-template-columns: repeat(4"],
+  .detail-scroll-wrap [style*="grid-template-columns: repeat(5"],
+  .detail-scroll-wrap [style*="grid-template-columns: 1fr 1fr"],
+  .detail-scroll-wrap [style*="grid-template-columns: 1fr 1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Canvas and SVG: scale down to fit, never overflow */
+  .detail-scroll-wrap canvas,
+  .detail-scroll-wrap svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* Prevent any fixed-width element wider than viewport */
+  .detail-scroll-wrap * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Flex rows that might overflow: allow wrapping */
+  .detail-scroll-wrap [style*="display: flex"][style*="flex-direction: row"],
+  .detail-scroll-wrap [style*="display: flex"]:not([style*="flex-direction: column"]) {
+    flex-wrap: wrap;
+  }
+
+  /* Bottom nav padding so content isn't hidden behind it */
+  .detail-scroll-wrap::after {
+    content: '';
+    display: block;
+    height: 72px;
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   MOBILE GRID (home) — card layout tightening
+   ═══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Grid view: 2 columns, compact cards */
+  .constellation-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  /* Cards: fixed height, no inner scroll visible */
+  .card { overflow: hidden !important; }
+
+  /* Section headers: compact */
+  .col-header { padding: 8px 0 6px !important; }
+  .col-header-sub { display: none !important; }
+  .col-header-title { font-size: 9px !important; }
+
+  /* Widget canvas: fill card, no overflow */
+  .card canvas { max-width: 100% !important; }
 }
