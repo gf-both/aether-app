@@ -107,35 +107,36 @@ export default function GolemSimulation() {
       )}
 
       {/* Person selector */}
-      <div style={{ display:'flex', gap:12, marginBottom:20, alignItems:'center' }}>
-        <div style={{ padding:'10px 14px', borderRadius:8, background:'rgba(201,168,76,.06)', border:'1px solid rgba(201,168,76,.2)', fontSize:12, color:'var(--gold)', whiteSpace:'nowrap' }}>
+      <div style={{ display:'flex', gap:10, marginBottom:12, alignItems:'center' }}>
+        <div style={{ padding:'10px 14px', borderRadius:8, background:'rgba(201,168,76,.06)', border:'1px solid rgba(201,168,76,.2)', fontSize:12, color:'var(--gold)', whiteSpace:'nowrap', flexShrink:0 }}>
           🪬 {profile.name || 'You'}
         </div>
-        <div style={{ fontSize:18, color:'var(--muted-foreground)' }}>↔</div>
+        <div style={{ fontSize:18, color:'var(--muted-foreground)', flexShrink:0 }}>↔</div>
         <select
           value={selectedId || ''}
           onChange={e => setSelectedId(e.target.value || null)}
-          style={{ flex:1, padding:'10px 14px', borderRadius:8, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:12, fontFamily:'inherit' }}
+          style={{ flex:1, minWidth:0, padding:'10px 14px', borderRadius:8, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:12, fontFamily:'inherit' }}
         >
           <option value="">{(people || []).length === 0 ? 'No one in constellation yet — add people in Profiles' : 'Select from constellation...'}</option>
           {(people || []).map(p => <option key={p.id} value={p.id}>{p.name} ({p.rel || 'other'})</option>)}
         </select>
-
-        <button
-          onClick={runSim}
-          disabled={loading || !selectedPerson}
-          style={{
-            padding:'10px 20px', borderRadius:8, cursor:(loading || !selectedPerson) ? 'not-allowed' : 'pointer',
-            background: !selectedPerson ? 'rgba(144,80,224,.08)' : 'rgba(144,80,224,.25)',
-            border:'1px solid rgba(144,80,224,.6)',
-            color: '#d4aaff', fontSize:12, fontFamily:"'Cinzel',serif", letterSpacing:'.08em', textTransform:'uppercase',
-            opacity:!selectedPerson ? 0.45 : 1, transition:'all .2s', whiteSpace:'nowrap',
-            fontWeight: 600,
-          }}
-        >
-          {loading ? currentPhase || 'Running...' : 'Run Simulation'}
-        </button>
       </div>
+
+      <button
+        onClick={runSim}
+        disabled={loading || !selectedPerson}
+        style={{
+          width:'100%', padding:'12px 20px', borderRadius:8, marginBottom:20,
+          cursor: loading ? 'wait' : !selectedPerson ? 'not-allowed' : 'pointer',
+          background: !selectedPerson ? 'rgba(144,80,224,.05)' : 'rgba(144,80,224,.2)',
+          border:`1px solid ${!selectedPerson ? 'rgba(144,80,224,.25)' : 'rgba(144,80,224,.7)'}`,
+          color: !selectedPerson ? 'rgba(212,170,255,.35)' : '#d4aaff',
+          fontSize:12, fontFamily:"'Cinzel',serif", letterSpacing:'.1em', textTransform:'uppercase',
+          fontWeight:600, transition:'all .2s',
+        }}
+      >
+        {loading ? (currentPhase || 'Running…') : 'Run Simulation'}
+      </button>
 
       {/* Results */}
       {result && !result.error && (

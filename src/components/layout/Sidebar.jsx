@@ -19,13 +19,11 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '◎', label: 'Integral Map', id: 'integral', widget: 'integral' },
 
   { type: 'section', label: 'OTHERS' },
+  { type: 'item', icon: '✦', label: 'Constellation', id: 'aiagents', widget: 'aiagents' },
   { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
   { type: 'item', icon: '🔮', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
-  { type: 'item', icon: '☕', label: 'Watercooler', id: 'watercooler', widget: 'watercooler' },
+  { type: 'item', icon: '🐟', label: 'Fishbowl', id: 'watercooler', widget: 'watercooler' },
   { type: 'item', icon: '💫', label: 'Connections', id: 'dating', widget: 'dating' },
-
-  { type: 'section', label: 'CONSTELLATION' },
-  { type: 'item', icon: '✦', label: 'Constellation', id: 'aiagents', widget: 'aiagents' },
 
   { type: 'section', label: 'HUMAN' },
 
@@ -34,14 +32,12 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '☽', label: 'Transits', id: 'transits', widget: 'tr' },
   { type: 'item', icon: '◈', label: 'Human Design', id: 'hd', widget: 'hd' },
   { type: 'item', icon: '✡', label: 'Kabbalah', id: 'kab', widget: 'kab' },
+  { type: 'item', icon: '⬡', label: 'Gene Keys', id: 'gk', widget: 'gk' },
 
   { type: 'section', label: 'ARCHETYPAL' },
   { type: 'item', icon: '🌸', label: 'Mayan Calendar', id: 'mayan', widget: 'mayan' },
   { type: 'item', icon: '🐉', label: 'Chinese Zodiac', id: 'chi', widget: 'chi' },
   { type: 'item', icon: '🏛', label: 'Egyptian', id: 'egyptian', widget: 'egyptian' },
-
-  { type: 'section', label: 'META SYSTEMS' },
-  { type: 'item', icon: '⬡', label: 'Gene Keys', id: 'gk', widget: 'gk' },
 
   { type: 'section', label: 'SACRED MATHEMATICS' },
   { type: 'item', icon: '∞', label: 'Numerology', id: 'num', widget: 'num' },

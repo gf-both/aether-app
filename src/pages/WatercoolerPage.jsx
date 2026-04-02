@@ -1,56 +1,42 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { generateConversations, getAllAgents } from '../lib/watercoolerEngine'
 import { generateConstellationConversation } from '../lib/constellationWatercooler'
 import { loadThreads, addThreads, clearThreads } from '../lib/watercoolerStore'
-import { callAI } from '../lib/ai'
 import { useGolemStore } from '../store/useGolemStore'
 
-// ── Role colors ──
-const ROLE_COLORS = {
-  marketing: '#3b82f6', cmo: '#3b82f6', growth: '#3b82f6', brand: '#3b82f6', content: '#3b82f6',
-  engineering: '#10b981', developer: '#10b981', tech: '#10b981', infrastructure: '#10b981', platform: '#10b981',
-  design: '#a855f7', creative: '#a855f7', ux: '#a855f7', ui: '#a855f7',
-  ops: '#f59e0b', operations: '#f59e0b', hr: '#f59e0b', finance: '#f59e0b', people: '#f59e0b', admin: '#f59e0b',
-  strategy: '#ec4899', ceo: '#ec4899', founder: '#ec4899', vision: '#ec4899', product: '#ec4899', lead: '#ec4899',
+// ── Relationship colors ──
+const REL_COLORS = {
+  partner: '#d43070', spouse: '#f0a03c', 'ex-spouse': '#b03050', 'ex-partner': '#b03050',
+  mother: '#d43070', father: '#40ccdd', sibling: '#9050e0', child: '#60b030',
+  grandparent: '#40ccdd', 'close-friend': '#6450ff', friend: '#8844ff',
+  colleague: '#60a0c8', mentor: '#9050e0', 'business-partner': '#c9a84c',
+  other: '#6b7280',
 }
-const LEGEND = [
-  { label: 'Marketing', color: '#3b82f6' },
-  { label: 'Engineering', color: '#10b981' },
-  { label: 'Design', color: '#a855f7' },
-  { label: 'Ops/HR', color: '#f59e0b' },
-  { label: 'Strategy', color: '#ec4899' },
-  { label: 'Other', color: '#6b7280' },
-]
-function getRoleColor(role) {
-  const lower = (role || '').toLowerCase()
-  for (const [key, color] of Object.entries(ROLE_COLORS)) {
-    if (lower.includes(key)) return color
-  }
-  return '#6b7280'
-}
+function getRelColor(rel) { return REL_COLORS[rel] || '#c9a84c' }
 
-function buildGraphData(agents, threads) {
+function buildGraphData(profiles, threads) {
   const convCounts = {}
   const edgeMap = {}
   const edgeTimestamps = {}
-  agents.forEach(a => { convCounts[a.id] = 0 })
+  profiles.forEach(p => { convCounts[String(p.id || p.name)] = 0 })
   threads.forEach(thread => {
     const participants = new Set()
-    const msgs = thread.messages || []
-    msgs.forEach(m => {
-      const id = m.agentId || m.agent
-      if (id && convCounts[id] !== undefined) participants.add(id)
-    })
     if (thread.participants) {
-      thread.participants.forEach(p => { if (convCounts[p.id] !== undefined) participants.add(p.id) })
+      thread.participants.forEach(p => {
+        const key = String(p.id)
+        if (convCounts[key] !== undefined) participants.add(key)
+      })
     }
+    thread.messages?.forEach(m => {
+      const key = String(m.agentId || m.agent || '')
+      if (convCounts[key] !== undefined) participants.add(key)
+    })
     participants.forEach(id => { convCounts[id] = (convCounts[id] || 0) + 1 })
     const parts = [...participants]
     for (let i = 0; i < parts.length; i++) {
       for (let j = i + 1; j < parts.length; j++) {
         const key = [parts[i], parts[j]].sort().join('|')
         edgeMap[key] = (edgeMap[key] || 0) + 1
-        edgeTimestamps[key] = thread.createdAt || thread.timestamp || Date.now()
+        edgeTimestamps[key] = thread.createdAt || Date.now()
       }
     }
   })
@@ -61,9 +47,9 @@ function buildGraphData(agents, threads) {
   return { convCounts, edges }
 }
 
-function findTopConnected(agents, edges, n = 3) {
+function findTopConnected(profiles, edges, n = 3) {
   const counts = {}
-  agents.forEach(a => { counts[a.id] = 0 })
+  profiles.forEach(p => { counts[String(p.id || p.name)] = 0 })
   edges.forEach(e => {
     counts[e.source] = (counts[e.source] || 0) + e.weight
     counts[e.target] = (counts[e.target] || 0) + e.weight
@@ -71,14 +57,6 @@ function findTopConnected(agents, edges, n = 3) {
   return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, n).map(([id]) => id)
 }
 
-function extractJSON(raw) {
-  if (!raw) return null
-  const fenced = raw.match(/```(?:json)?\s*([\s\S]*?)```/)
-  if (fenced) return fenced[1].trim()
-  const start = raw.indexOf('{'), end = raw.lastIndexOf('}')
-  if (start !== -1 && end !== -1 && end > start) return raw.slice(start, end + 1)
-  return raw.trim()
-}
 
 // ── Feed Styles ──
 const S = {
@@ -255,7 +233,7 @@ function SkeletonThread() {
 }
 
 // ── Microfish canvas view ──
-function MicrofishView({ threads }) {
+function MicrofishView({ threads, profiles }) {
   const canvasRef = useRef(null)
   const nodesRef = useRef([])
   const edgesRef = useRef([])
@@ -265,49 +243,35 @@ function MicrofishView({ threads }) {
   const hoverRef = useRef(null)
   const mouseRef = useRef({ x: 0, y: 0 })
   const topRef = useRef([])
-  const evolutionCacheRef = useRef(null)
 
-  const [agents, setAgents] = useState([])
   const [edgeCount, setEdgeCount] = useState(0)
   const [paused, setPaused] = useState(false)
   const [tooltip, setTooltip] = useState(null)
-  const [year, setYear] = useState(0)
-  const [simulating, setSimulating] = useState(false)
-  const [narrative, setNarrative] = useState('')
-  const [evolutionCache, setEvolutionCache] = useState({})
   const [scale, setScale] = useState(1)
 
   // Init
   useEffect(() => {
-    const allAgents = getAllAgents()
-    setAgents(allAgents)
-    const { convCounts, edges } = buildGraphData(allAgents, threads)
+    if (!profiles.length) return
+    const { convCounts, edges } = buildGraphData(profiles, threads)
     setEdgeCount(edges.length)
     edgesRef.current = edges
-    topRef.current = findTopConnected(allAgents, edges)
+    topRef.current = findTopConnected(profiles, edges)
 
-    const cx = 0, cy = 0, radius = 220
-    nodesRef.current = allAgents.map((agent, i) => {
-      const angle = (2 * Math.PI * i) / allAgents.length
+    const radius = 200
+    nodesRef.current = profiles.map((p, i) => {
+      const id = String(p.id || p.name)
+      const angle = (2 * Math.PI * i) / profiles.length
       return {
-        id: agent.id, name: agent.name, role: agent.role, emoji: agent.emoji,
-        x: cx + radius * Math.cos(angle) + (Math.random() - 0.5) * 30,
-        y: cy + radius * Math.sin(angle) + (Math.random() - 0.5) * 30,
+        id, name: p.name, rel: p._isPrimary ? 'you' : (p.rel || 'other'), emoji: p.emoji || '✦',
+        x: radius * Math.cos(angle) + (Math.random() - 0.5) * 30,
+        y: radius * Math.sin(angle) + (Math.random() - 0.5) * 30,
         vx: 0, vy: 0,
-        influence: Math.max(1, convCounts[agent.id] || 1),
-        color: getRoleColor(agent.role),
+        influence: Math.max(1, convCounts[id] || 1),
+        color: p._isPrimary ? '#c9a84c' : getRelColor(p.rel),
         phase: Math.random() * Math.PI * 2,
       }
     })
-
-    // Load cached evolutions
-    const cache = {}
-    for (let y = 1; y <= 3; y++) {
-      const stored = localStorage.getItem(`orgEvolution_Y${y}`)
-      if (stored) { try { cache[y] = JSON.parse(stored) } catch {} }
-    }
-    setEvolutionCache(cache)
-  }, [threads])
+  }, [threads, profiles])
 
   // Render loop
   useEffect(() => {
@@ -386,42 +350,22 @@ function MicrofishView({ threads }) {
         ctx.stroke()
       })
 
-      // Evolution edges
-      const evo = evolutionCacheRef.current
-      if (evo) {
-        ;(evo.alliances || []).forEach(([aid, bid]) => {
-          const a = nodeMap[aid], b = nodeMap[bid]
-          if (!a || !b) return
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y)
-          ctx.strokeStyle = 'rgba(16,185,129,0.4)'; ctx.lineWidth = 2
-          ctx.setLineDash([4, 4]); ctx.stroke(); ctx.setLineDash([])
-        })
-        ;(evo.tensions || []).forEach(([aid, bid]) => {
-          const a = nodeMap[aid], b = nodeMap[bid]
-          if (!a || !b) return
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y)
-          ctx.strokeStyle = 'rgba(239,68,68,0.4)'; ctx.lineWidth = 2
-          ctx.setLineDash([2, 6]); ctx.stroke(); ctx.setLineDash([])
-        })
-      }
-
       // Nodes
       const top3 = topRef.current
       nodes.forEach(n => {
-        const r = Math.max(7, 4 + n.influence * 2.5)
+        const r = Math.max(8, 5 + n.influence * 2.5)
         const isTop = top3.includes(n.id)
         if (isTop) {
-          const glow = ctx.createRadialGradient(n.x, n.y, r, n.x, n.y, r * 2.5)
-          glow.addColorStop(0, 'rgba(201,168,76,0.35)'); glow.addColorStop(1, 'rgba(201,168,76,0)')
-          ctx.beginPath(); ctx.arc(n.x, n.y, r * 2.5, 0, Math.PI * 2)
+          const glow = ctx.createRadialGradient(n.x, n.y, r, n.x, n.y, r * 2.8)
+          glow.addColorStop(0, `${n.color}55`); glow.addColorStop(1, `${n.color}00`)
+          ctx.beginPath(); ctx.arc(n.x, n.y, r * 2.8, 0, Math.PI * 2)
           ctx.fillStyle = glow; ctx.fill()
         }
         ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2)
-        ctx.fillStyle = n.color; ctx.fill()
-        if (isTop) { ctx.strokeStyle = '#c9a84c'; ctx.lineWidth = 2; ctx.stroke() }
-        ctx.fillStyle = '#ccc'; ctx.font = '9px monospace'; ctx.textAlign = 'center'
-        const shortName = n.name.split('—')[0].split('-')[0].trim().split(' ')[0]
-        ctx.fillText(shortName, n.x, n.y + r + 12)
+        ctx.fillStyle = n.color + 'cc'; ctx.fill()
+        ctx.strokeStyle = n.color; ctx.lineWidth = 1.5; ctx.stroke()
+        ctx.fillStyle = '#ddd'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center'
+        ctx.fillText(n.name.split(' ')[0], n.x, n.y + r + 14)
       })
       ctx.restore()
 
@@ -430,9 +374,9 @@ function MicrofishView({ threads }) {
       const my = (mouseRef.current.y - H / 2) / s
       let hoveredNode = null
       for (const n of nodes) {
-        const r = Math.max(7, 4 + n.influence * 2.5)
+        const r = Math.max(8, 5 + n.influence * 2.5)
         const dx = mx - n.x, dy = my - n.y
-        if (dx * dx + dy * dy < (r + 6) * (r + 6)) { hoveredNode = n; break }
+        if (dx * dx + dy * dy < (r + 8) * (r + 8)) { hoveredNode = n; break }
       }
       hoverRef.current = hoveredNode
     }
@@ -441,27 +385,8 @@ function MicrofishView({ threads }) {
     return () => { cancelAnimationFrame(animRef.current); ro.disconnect() }
   }, [])
 
-  useEffect(() => { evolutionCacheRef.current = year > 0 ? (evolutionCache[year] || null) : null }, [year, evolutionCache])
   useEffect(() => { pausedRef.current = paused }, [paused])
   useEffect(() => { scaleRef.current = scale }, [scale])
-
-  useEffect(() => {
-    if (year === 0 || !evolutionCache[year]) return
-    const evo = evolutionCache[year]
-    if (evo.influences) {
-      nodesRef.current.forEach(n => {
-        if (evo.influences[n.id] !== undefined) n.influence = evo.influences[n.id]
-      })
-    }
-    setNarrative(evo.narrative || '')
-  }, [year, evolutionCache])
-
-  useEffect(() => {
-    if (year !== 0) return
-    const { convCounts } = buildGraphData(agents, threads)
-    nodesRef.current.forEach(n => { n.influence = Math.max(1, convCounts[n.id] || 1) })
-    setNarrative('')
-  }, [year, agents, threads])
 
   const handleMouseMove = useCallback((e) => {
     const rect = canvasRef.current?.getBoundingClientRect()
@@ -470,26 +395,13 @@ function MicrofishView({ threads }) {
     setTooltip(hoverRef.current ? { x: e.clientX, y: e.clientY, node: hoverRef.current } : null)
   }, [])
 
-  async function simulateYear(y) {
-    setSimulating(true)
-    const agentSummary = agents.map(a => `${a.id}: ${a.name} (${a.role})`).join('\n')
-    const result = await callAI({
-      systemPrompt: 'You are an organizational dynamics simulator. Return only valid JSON, no markdown.',
-      messages: [{
-        role: 'user', content:
-          `Simulate YEAR ${y} evolution of 27-agent AI org "Paperclip".\n\nAgents:\n${agentSummary}\n\nReturn JSON only:\n{"influences":{"agent-id":1-10},"alliances":[["id","id"]],"tensions":[["id","id"]],"narrative":"2-3 sentence summary."}`
-      }],
-      maxTokens: 1200,
-    })
-    if (result) {
-      try {
-        const data = JSON.parse(extractJSON(result))
-        localStorage.setItem(`orgEvolution_Y${y}`, JSON.stringify(data))
-        setEvolutionCache(prev => ({ ...prev, [y]: data }))
-        setYear(y)
-      } catch (e) { console.error('evolution parse failed', e) }
-    }
-    setSimulating(false)
+  if (!profiles.length) {
+    return (
+      <div style={{ ...S.fishWrap, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:12 }}>
+        <div style={{ fontSize:32 }}>🐟</div>
+        <div style={{ color:'#888', fontFamily:'monospace', fontSize:13 }}>Add people to your constellation to see the graph</div>
+      </div>
+    )
   }
 
   return (
@@ -497,17 +409,8 @@ function MicrofishView({ threads }) {
       <canvas ref={canvasRef} style={S.fishCanvas} onMouseMove={handleMouseMove} onMouseLeave={() => setTooltip(null)} />
 
       <div style={S.fishTopLeft}>
-        <div style={S.fishTitle}>◈ MICROFISH</div>
-        <div style={S.fishSubtitle}>{agents.length} agents · {edgeCount} edges</div>
-      </div>
-
-      <div style={S.fishTopRight}>
-        {LEGEND.map(l => (
-          <div key={l.label} style={S.fishLegendItem}>
-            <span style={{ ...S.fishLegendDot, backgroundColor: l.color }} />
-            <span style={S.fishLegendLabel}>{l.label}</span>
-          </div>
-        ))}
+        <div style={S.fishTitle}>🐟 FISHBOWL</div>
+        <div style={S.fishSubtitle}>{profiles.length} people · {edgeCount} connections</div>
       </div>
 
       <div style={S.fishBottomRight}>
@@ -516,29 +419,11 @@ function MicrofishView({ threads }) {
         <button style={S.fishCtrlBtn} onClick={() => setPaused(p => !p)}>{paused ? '▶' : '⏸'}</button>
       </div>
 
-      <div style={S.fishTimeline}>
-        <div style={S.fishTimelineTrack}>
-          {[0, 1, 2, 3].map(y => (
-            <button
-              key={y}
-              style={{ ...S.fishYearBtn, ...(year === y ? S.fishYearBtnActive : {}) }}
-              onClick={() => { if (y > 0 && !evolutionCache[y]) simulateYear(y); else setYear(y) }}
-              disabled={simulating}
-            >
-              {y === 0 ? 'Now' : `Year ${y}`}{y > 0 && !evolutionCache[y] ? ' ⟡' : ''}
-            </button>
-          ))}
-        </div>
-        {simulating && <div style={S.fishSimulating}>Simulating evolution…</div>}
-      </div>
-
-      {narrative && <div style={S.fishNarrative}>{narrative}</div>}
-
       {tooltip && (
         <div style={{ ...S.fishTooltip, left: tooltip.x + 12, top: tooltip.y - 40 }}>
           <div style={S.fishTooltipName}>{tooltip.node.emoji} {tooltip.node.name}</div>
-          <div style={S.fishTooltipRole}>{tooltip.node.role}</div>
-          <div style={S.fishTooltipStat}>Conversations: {tooltip.node.influence}</div>
+          <div style={S.fishTooltipRole}>{tooltip.node.rel}</div>
+          <div style={S.fishTooltipStat}>Dialogues: {tooltip.node.influence}</div>
         </div>
       )}
     </div>
@@ -550,40 +435,29 @@ export default function WatercoolerPage() {
   const [threads, setThreads] = useState([])
   const [loading, setLoading] = useState(false)
   const [view, setView] = useState('feed') // 'feed' | 'microfish'
-  const [mode, setMode] = useState('constellation') // 'constellation' | 'org'
 
   const primaryProfile = useGolemStore((s) => s.primaryProfile)
   const people = useGolemStore((s) => s.people)
+
+  const allProfiles = [
+    { ...primaryProfile, _isPrimary: true },
+    ...(people || []),
+  ].filter(p => p.name)
 
   useEffect(() => { setThreads(loadThreads()) }, [])
 
   const handleGenerate = useCallback(async () => {
     setLoading(true)
     try {
-      if (mode === 'constellation') {
-        // Constellation mode: golems of your profiles interact
-        const allProfiles = [
-          { ...primaryProfile, _isPrimary: true },
-          ...people,
-        ]
-        const convoThread = await generateConstellationConversation(allProfiles)
-        if (convoThread) {
-          setThreads(prev => [convoThread, ...prev])
-          addThreads([convoThread])
-        }
-      } else {
-        // Org mode: AI agent team conversations
-        const newThreads = await generateConversations((thread) => {
-          setThreads(prev => [thread, ...prev])
-        })
-        if (newThreads.length) setThreads(addThreads(newThreads))
+      const convoThread = await generateConstellationConversation(allProfiles)
+      if (convoThread) {
+        setThreads(prev => [convoThread, ...prev])
+        addThreads([convoThread])
       }
     } finally { setLoading(false) }
-  }, [mode, primaryProfile, people])
+  }, [allProfiles])
 
   const handleClear = useCallback(() => { setThreads(clearThreads()) }, [])
-
-  const constellationCount = 1 + (people?.length || 0)
 
   return (
     <div style={S.page}>
@@ -591,29 +465,14 @@ export default function WatercoolerPage() {
 
       <div style={S.header}>
         <div style={S.titleBlock}>
-          <div style={S.title}>☕ Watercooler</div>
+          <div style={S.title}>🐟 Fishbowl</div>
           <div style={S.subtitle}>
-            {mode === 'constellation'
-              ? `Your constellation golems explore the spaces between their charts · ${constellationCount} profiles`
-              : 'The Golem team, unfiltered'}
+            {allProfiles.length < 2
+              ? 'Add people in Profiles to start the dialogues'
+              : `Your constellation speaks · ${allProfiles.length} profiles`}
           </div>
         </div>
         <div style={S.controls}>
-          {/* Mode toggle */}
-          <button
-            style={mode === 'constellation' ? S.btnActive : S.btn}
-            onClick={() => setMode('constellation')}
-            title="Constellation profiles interact"
-          >✦ Constellation</button>
-          <button
-            style={mode === 'org' ? S.btnActive : S.btn}
-            onClick={() => setMode('org')}
-            title="Org agent team conversations"
-          >🤖 Org</button>
-
-          <span style={{ width: 1, height: 20, background: 'var(--border, #333)', flexShrink: 0 }} />
-
-          {/* View toggle */}
           <button
             style={view === 'feed' ? S.btnActive : S.btn}
             onClick={() => setView('feed')}
@@ -621,10 +480,10 @@ export default function WatercoolerPage() {
           <button
             style={view === 'microfish' ? S.btnActive : S.btn}
             onClick={() => setView('microfish')}
-          >◈ Microfish</button>
+          >🐟 Graph</button>
           {view === 'feed' && (
             <>
-              <button style={S.btnPrimary} onClick={handleGenerate} disabled={loading}>
+              <button style={S.btnPrimary} onClick={handleGenerate} disabled={loading || allProfiles.length < 2}>
                 {loading ? 'Generating…' : 'Generate'}
               </button>
               {threads.length > 0 && (
@@ -636,17 +495,15 @@ export default function WatercoolerPage() {
       </div>
 
       {view === 'microfish' ? (
-        <MicrofishView threads={threads} />
+        <MicrofishView threads={threads} profiles={allProfiles} />
       ) : (
         <div style={S.feed}>
           {loading && threads.length === 0 && (<><SkeletonThread /><SkeletonThread /><SkeletonThread /></>)}
           {!loading && threads.length === 0 && (
             <div style={S.empty}>
-              {mode === 'constellation'
-                ? constellationCount < 2
-                  ? 'Add people to your constellation in Profiles to unlock golem dialogues.'
-                  : 'Your constellation golems are ready to talk. Hit Generate to begin.'
-                : 'No conversations yet. Hit Generate to get the team talking.'}
+              {allProfiles.length < 2
+                ? 'Add people to your constellation in Profiles to unlock golem dialogues.'
+                : 'Your constellation golems are ready to talk. Hit Generate to begin.'}
             </div>
           )}
           {threads.map(t => <Thread key={t.id} thread={t} />)}
