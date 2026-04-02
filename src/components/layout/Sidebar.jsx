@@ -35,7 +35,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '⬡', label: 'Gene Keys', id: 'gk', widget: 'gk' },
 
   { type: 'section', label: 'ARCHETYPAL' },
-  { type: 'item', icon: '🌸', label: 'Mayan Calendar', id: 'mayan', widget: 'mayan' },
+  { type: 'item', icon: '🔺', label: 'Mayan Calendar', id: 'mayan', widget: 'mayan' },
   { type: 'item', icon: '🐉', label: 'Chinese Zodiac', id: 'chi', widget: 'chi' },
   { type: 'item', icon: '🏛', label: 'Egyptian', id: 'egyptian', widget: 'egyptian' },
 

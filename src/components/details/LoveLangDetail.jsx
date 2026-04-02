@@ -216,7 +216,7 @@ function hexToRgba(hex, alpha) {
 }
 
 export default function LoveLangDetail() {
-  const loveLanguage = useGolemStore((s) => s.loveLanguage)
+  const loveLanguage = useGolemStore((s) => s.loveLanguage || s.primaryProfile?.loveLanguage)
 
   const primary = loveLanguage
     ? LOVE_LANGUAGES.find(l => l.name === loveLanguage)

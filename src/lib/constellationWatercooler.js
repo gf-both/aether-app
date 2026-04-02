@@ -27,28 +27,55 @@ function pick(arr, n) {
   return shuffled.slice(0, Math.min(n, arr.length))
 }
 
+// Return null for missing/placeholder values
+function val(v) { return v && v !== '?' ? v : null }
+
 function profileSummary(p) {
   const parts = []
-  if (p.sign) parts.push(`${p.sign} Sun`)
-  if (p.moon) parts.push(`${p.moon} Moon`)
-  if (p.asc) parts.push(`${p.asc} Rising`)
-  if (p.hdType) parts.push(`${p.hdType} ${p.hdProfile || ''}`.trim())
-  if (p.lifePath) parts.push(`Life Path ${p.lifePath}`)
+  if (val(p.sign)) parts.push(`${p.sign} Sun`)
+  if (val(p.moon)) parts.push(`${p.moon} Moon`)
+  if (val(p.asc)) parts.push(`${p.asc} Rising`)
+  if (val(p.hdType)) parts.push(`${p.hdType}${val(p.hdProfile) ? ` ${p.hdProfile}` : ''}`.trim())
+  if (val(p.lifePath)) parts.push(`Life Path ${p.lifePath}`)
   if (p.enneagramType) parts.push(`Enneagram ${p.enneagramType}`)
   if (p.mbtiType) parts.push(p.mbtiType)
   return parts.join(' · ') || 'Unknown profile'
 }
 
-// Template-based fallback responses
+// Template-based fallback responses — gracefully handle missing data
 const TEMPLATES = [
-  (speaker, other) => `I've been thinking about how my ${speaker.sign || 'cosmic'} nature interacts with your ${other.sign || 'cosmic'} energy. There's something almost electric in the space between us — a pull that's hard to name but impossible to ignore.`,
-  (speaker, other) => `As a ${speaker.hdType || 'being'}, I process our connection differently than you might expect. Where you ${other.hdType === 'Generator' ? 'respond with your gut' : other.hdType === 'Projector' ? 'see so clearly' : other.hdType === 'Manifestor' ? 'initiate boldly' : 'reflect everything back'}, I ${speaker.hdType === 'Generator' ? 'wait for something to light up' : speaker.hdType === 'Projector' ? 'wait until I\'m truly seen' : speaker.hdType === 'Manifestor' ? 'feel the urge to just begin' : 'need to sample everything first'}.`,
-  (speaker, other) => `Your Life Path ${other.lifePath || '?'} asks fundamentally different questions than my ${speaker.lifePath || '?'}. But I think that's where the alchemy lives — in the gap between what we're each seeking.`,
-  (speaker, other) => `What strikes me most is how your ${other.moon || 'emotional'} Moon holds space in a way my ${speaker.moon || 'emotional'} Moon desperately needs. We process feelings through such different lenses, and yet somehow it works.`,
-  (speaker, other) => `I keep noticing how our shadows interlock. Where I contract, you expand. The Gene Keys would say we're activating each other's gift frequencies just by being in proximity.`,
-  (speaker, other) => `From a Kabbalistic view, we're walking different paths on the Tree of Life. But they intersect at the most interesting sephiroth. That's not coincidence — that's architecture.`,
-  (speaker, other) => `Sometimes I wonder if our charts were designed to be read together. Your ${other.asc || 'rising'} ascendant softens what my ${speaker.asc || 'rising'} ascendant sharpens. It's like cosmic call and response.`,
-  (speaker, other) => `The numerology between us is fascinating. My ${speaker.lifePath || '?'} and your ${other.lifePath || '?'} — the hidden harmonics there speak to a deeper purpose in our connection.`,
+  (speaker, other) => {
+    const ss = val(speaker.sign), os = val(other.sign)
+    return `I've been thinking about how my ${ss || 'inner'} nature interacts with your ${os || 'essence'}. There's something almost electric in the space between us — a pull that's hard to name but impossible to ignore.`
+  },
+  (speaker, other) => {
+    const sh = val(speaker.hdType), oh = val(other.hdType)
+    const otherVerb = oh === 'Generator' ? 'respond with your gut' : oh === 'Projector' ? 'see so clearly' : oh === 'Manifestor' ? 'initiate boldly' : 'hold space the way you do'
+    const selfVerb = sh === 'Generator' ? 'wait for something to light up' : sh === 'Projector' ? 'wait until I\'m truly seen' : sh === 'Manifestor' ? 'feel the urge to just begin' : 'need to process from the outside in'
+    return `As ${sh ? `a ${sh}` : 'the being I am'}, I process our connection differently. Where you ${otherVerb}, I ${selfVerb}.`
+  },
+  (speaker, other) => {
+    const sl = val(speaker.lifePath), ol = val(other.lifePath)
+    if (sl && ol) return `Your Life Path ${ol} asks fundamentally different questions than my ${sl}. But I think that's where the alchemy lives — in the gap between what we're each seeking.`
+    return `We're walking fundamentally different paths, and that difference is exactly what creates the charge between us. The tension is not accidental — it's where the growth lives.`
+  },
+  (speaker, other) => {
+    const sm = val(speaker.moon), om = val(other.moon)
+    if (sm && om) return `What strikes me most is how your ${om} Moon holds space in a way my ${sm} Moon desperately needs. We process feelings through such different lenses, and yet somehow it works.`
+    return `What strikes me is how differently we process emotion. You hold space in a way I need, and I suspect I mirror something back to you that you can't easily access alone.`
+  },
+  () => `I keep noticing how our shadows interlock. Where I contract, you expand. The Gene Keys would say we're activating each other's gift frequencies just by being in proximity.`,
+  () => `From a Kabbalistic view, we're walking different paths on the Tree of Life. But they intersect at the most interesting sephiroth. That's not coincidence — that's architecture.`,
+  (speaker, other) => {
+    const sa = val(speaker.asc), oa = val(other.asc)
+    if (sa && oa) return `Sometimes I wonder if our charts were designed to be read together. Your ${oa} ascendant softens what my ${sa} ascendant sharpens. It's like cosmic call and response.`
+    return `Sometimes I wonder if our patterns were designed to be read together. What you soften, I sharpen. What I open, you ground. It's like cosmic call and response.`
+  },
+  (speaker, other) => {
+    const sl = val(speaker.lifePath), ol = val(other.lifePath)
+    if (sl && ol) return `The numerology between us is fascinating. My ${sl} and your ${ol} — the hidden harmonics there speak to a deeper purpose in our connection.`
+    return `There's a resonance between our numbers, our timing, our arrival in each other's lives. Nothing about this feels random.`
+  },
 ]
 
 function generateFallbackMessages(group, topic) {
@@ -104,7 +131,11 @@ Format as JSON array: [{"name": "...", "text": "..."}]
 Each person should reference their specific chart data (signs, types, life paths) when speaking.`
 
   try {
-    const response = await callAI(userPrompt, { system: systemPrompt, temperature: 0.85 })
+    const response = await callAI({
+      systemPrompt,
+      messages: [{ role: 'user', content: userPrompt }],
+      maxTokens: 600,
+    })
     const jsonMatch = response.match(/\[[\s\S]*\]/)
     if (jsonMatch) {
       const parsed = JSON.parse(jsonMatch[0])

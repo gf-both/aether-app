@@ -232,6 +232,13 @@ function SkeletonThread() {
   )
 }
 
+const YEAR_NARRATIVES = [
+  null,
+  'In one year, recurring dialogues deepen — the most active bonds grow denser, while peripheral connections begin to define themselves.',
+  'At two years, patterns clarify: some bonds have become foundational, others have drifted into the background. The constellation restructures around what actually holds.',
+  'At three years, the network stabilizes. Remaining strong connections have become load-bearing — each node reflects who stayed in the field of genuine proximity.',
+]
+
 // ── Microfish canvas view ──
 function MicrofishView({ threads, profiles }) {
   const canvasRef = useRef(null)
@@ -243,11 +250,13 @@ function MicrofishView({ threads, profiles }) {
   const hoverRef = useRef(null)
   const mouseRef = useRef({ x: 0, y: 0 })
   const topRef = useRef([])
+  const yearRef = useRef(0)
 
   const [edgeCount, setEdgeCount] = useState(0)
   const [paused, setPaused] = useState(false)
   const [tooltip, setTooltip] = useState(null)
   const [scale, setScale] = useState(1)
+  const [year, setYear] = useState(0)
 
   // Init
   useEffect(() => {
@@ -337,23 +346,25 @@ function MicrofishView({ threads, profiles }) {
       ctx.scale(s, s)
 
       const now = Date.now()
+      const yr = yearRef.current
+      const ym = 1 + yr * 0.5 // year multiplier for influence
       // Edges
       edges.forEach(e => {
         const a = nodeMap[e.source], b = nodeMap[e.target]
         if (!a || !b) return
         const age = (now - (e.timestamp || now)) / (1000 * 60 * 60 * 24 * 30)
-        const opacity = Math.max(0.07, 0.45 - age * 0.05)
+        const opacity = Math.max(0.07, Math.min(0.75, (0.45 - age * 0.05) * ym))
         ctx.beginPath()
         ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y)
-        ctx.strokeStyle = `rgba(201,168,76,${opacity})`
-        ctx.lineWidth = Math.min(4, 0.4 + e.weight * 0.7)
+        ctx.strokeStyle = yr > 0 ? `rgba(144,80,224,${opacity})` : `rgba(201,168,76,${opacity})`
+        ctx.lineWidth = Math.min(5, (0.4 + e.weight * 0.7) * (1 + yr * 0.3))
         ctx.stroke()
       })
 
       // Nodes
       const top3 = topRef.current
       nodes.forEach(n => {
-        const r = Math.max(8, 5 + n.influence * 2.5)
+        const r = Math.max(8, (5 + n.influence * 2.5) * Math.sqrt(ym))
         const isTop = top3.includes(n.id)
         if (isTop) {
           const glow = ctx.createRadialGradient(n.x, n.y, r, n.x, n.y, r * 2.8)
@@ -387,6 +398,7 @@ function MicrofishView({ threads, profiles }) {
 
   useEffect(() => { pausedRef.current = paused }, [paused])
   useEffect(() => { scaleRef.current = scale }, [scale])
+  useEffect(() => { yearRef.current = year }, [year])
 
   const handleMouseMove = useCallback((e) => {
     const rect = canvasRef.current?.getBoundingClientRect()
@@ -418,6 +430,28 @@ function MicrofishView({ threads, profiles }) {
         <button style={S.fishCtrlBtn} onClick={() => setScale(s => Math.max(0.3, s - 0.2))}>−</button>
         <button style={S.fishCtrlBtn} onClick={() => setPaused(p => !p)}>{paused ? '▶' : '⏸'}</button>
       </div>
+
+      {/* Year timeline */}
+      <div style={S.fishTimeline}>
+        <div style={S.fishTimelineTrack}>
+          {['Now', '+1 yr', '+2 yr', '+3 yr'].map((label, i) => (
+            <button
+              key={i}
+              style={{ ...S.fishYearBtn, ...(year === i ? S.fishYearBtnActive : {}) }}
+              onClick={() => setYear(i)}
+            >{label}</button>
+          ))}
+        </div>
+        {year > 0 && (
+          <div style={S.fishSimulating}>
+            ◈ Projecting constellation evolution · {year} year{year > 1 ? 's' : ''} forward
+          </div>
+        )}
+      </div>
+
+      {year > 0 && YEAR_NARRATIVES[year] && (
+        <div style={S.fishNarrative}>{YEAR_NARRATIVES[year]}</div>
+      )}
 
       {tooltip && (
         <div style={{ ...S.fishTooltip, left: tooltip.x + 12, top: tooltip.y - 40 }}>

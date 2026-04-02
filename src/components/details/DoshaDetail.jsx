@@ -257,7 +257,7 @@ function DoshaCard({ doshaKey, isPrimary, isSecondary }) {
 
 /* ---- Main Detail Component ---- */
 export default function DoshaDetail() {
-  const doshaType = useGolemStore(s => s.doshaType)
+  const doshaType = useGolemStore(s => s.doshaType || s.primaryProfile?.doshaType)
   const [showQuiz, setShowQuiz] = useState(false)
 
   // Parse dosha type

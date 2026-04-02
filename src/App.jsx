@@ -91,7 +91,7 @@ function ThemeSync() {
 
 export default function App() {
   const [showIntro, setShowIntro] = useState(
-    () => !localStorage.getItem('golem_intro_seen_v3')
+    () => !localStorage.getItem('golem_intro_seen_v4')
   )
 
   return (
