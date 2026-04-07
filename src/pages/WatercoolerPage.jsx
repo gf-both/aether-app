@@ -232,12 +232,54 @@ function SkeletonThread() {
   )
 }
 
-const YEAR_NARRATIVES = [
-  null,
-  'In one year, recurring dialogues deepen — the most active bonds grow denser, while peripheral connections begin to define themselves.',
-  'At two years, patterns clarify: some bonds have become foundational, others have drifted into the background. The constellation restructures around what actually holds.',
-  'At three years, the network stabilizes. Remaining strong connections have become load-bearing — each node reflects who stayed in the field of genuine proximity.',
-]
+function buildYearNarrative(profiles, edges, year) {
+  if (!year || !profiles.length) return null
+  const top = findTopConnected(profiles, edges, 2)
+  const topNames = top.map(id => {
+    const p = profiles.find(x => String(x.id || x.name) === id)
+    return p ? p.name.split(' ')[0] : null
+  }).filter(Boolean)
+
+  const partner = profiles.find(p => p.rel === 'partner' || p.rel === 'spouse')
+  const exes = profiles.filter(p => p.rel === 'ex-partner' || p.rel === 'ex-spouse')
+  const colleagues = profiles.filter(p => p.rel === 'colleague' || p.rel === 'business-partner')
+  const friends = profiles.filter(p => p.rel === 'friend' || p.rel === 'close-friend')
+
+  const topStr = topNames.length ? topNames.join(' and ') : 'your closest nodes'
+
+  if (year === 1) {
+    const partnerLine = partner
+      ? ` ${partner.name.split(' ')[0]}'s presence intensifies — the bond either deepens into true intimacy or begins showing its structural cracks.`
+      : ' Romantic potential with a new person may crystallize if the field has been held open.'
+    const exLine = exes.length
+      ? ` ${exes[0].name.split(' ')[0]}'s node dims further — distance confirms the severing was real.`
+      : ''
+    return `In one year, ${topStr} emerge as load-bearing relationships — dialogue has hardened into pattern.${partnerLine}${exLine} Peripheral connections start self-sorting: those who didn't initiate begin to fade from the active field.`
+  }
+  if (year === 2) {
+    const colLine = colleagues.length
+      ? ` The ${colleagues[0].name.split(' ')[0]} axis either becomes a lasting alliance or dissolves when the project ends.`
+      : ''
+    const friendLine = friends.length > 1
+      ? ` Of your ${friends.length} friends, roughly half remain in consistent contact — the rest recede to seasonal orbit.`
+      : ' Close friendships that survived year one have proven their structural integrity.'
+    const partnerLine = partner
+      ? ` With ${partner.name.split(' ')[0]}: if year one opened a wound, year two asks whether it healed or calcified.`
+      : exes.length ? ` ${exes[0].name.split(' ')[0]} is effectively gone from the active field — the energy has been returned.` : ''
+    return `At two years, the constellation has restructured.${colLine}${friendLine}${partnerLine} The bonds that remain are no longer circumstantial — they are chosen. ${topStr} anchor your relational world.`
+  }
+  if (year === 3) {
+    const survivalStr = profiles.length > 4
+      ? `Of your original ${profiles.length} connections, 3–4 remain truly active`
+      : `Your ${profiles.length}-person constellation has reached steady state`
+    const partnerLine = partner
+      ? ` ${partner.name.split(' ')[0]} is either fully woven into your life or the relationship has completed its arc — three years is long enough for truth.`
+      : ''
+    const legacyLine = exes.length ? ` ${exes.map(e => e.name.split(' ')[0]).join(' and ')} exist only in memory — their nodes have gone dark.` : ''
+    return `At three years, the field has stabilized. ${survivalStr} — these are the people you are genuinely building with.${partnerLine}${legacyLine} What remains is not what was easiest — it's what was most real. ${topStr} have become part of your permanent architecture.`
+  }
+  return null
+}
 
 // ── Microfish canvas view ──
 function MicrofishView({ threads, profiles }) {
@@ -449,8 +491,8 @@ function MicrofishView({ threads, profiles }) {
         )}
       </div>
 
-      {year > 0 && YEAR_NARRATIVES[year] && (
-        <div style={S.fishNarrative}>{YEAR_NARRATIVES[year]}</div>
+      {year > 0 && (
+        <div style={S.fishNarrative}>{buildYearNarrative(profiles, edgesRef.current, year)}</div>
       )}
 
       {tooltip && (

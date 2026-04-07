@@ -1,240 +1,171 @@
+import { useState } from 'react'
 import { useActiveProfile } from '../../hooks/useActiveProfile'
 import IntegralFigure from '../canvas/IntegralFigure'
 
 const ZONES = [
   {
-    id: 'crown', label: 'Crown Center', icon: '\u2727', color: 'var(--violet2)',
-    colBase: 'rgba(144,80,224,',
+    id: 'crown', label: 'Crown', icon: '✧', color: 'rgba(144,80,224,',
     systems: [
-      { framework: 'Kabbalah', value: 'Kether (Crown)', desc: 'The source of divine will, connection to transcendent awareness and the origin point of consciousness.' },
-      { framework: 'Numerology', value: null, desc: 'Your Life Path number reveals the overarching theme and purpose of your incarnation.' },
-      { framework: 'Chakra', value: 'Sahasrara', desc: 'Thousand-petaled lotus. Connection to cosmic consciousness and the infinite.' },
+      { fw: 'Kabbalah',    key: 'kab',  getVal: p => 'Kether — Divine Will', desc: 'The source of transcendent awareness. Crown of the Tree of Life.' },
+      { fw: 'Numerology',  key: 'num',  getVal: p => `Life Path ${p.lifePath || '?'}`, desc: 'The overarching theme and soul purpose of your incarnation.' },
+      { fw: 'Chakra',      key: 'cha',  getVal: () => 'Sahasrāra', desc: 'Thousand-petaled lotus. Cosmic consciousness and infinite connection.' },
     ],
   },
   {
-    id: 'third', label: 'Third Eye Center', icon: '\u25CE', color: 'var(--muted-foreground)',
-    colBase: 'rgba(100,120,220,',
+    id: 'third', label: 'Third Eye', icon: '◎', color: 'rgba(100,120,220,',
     systems: [
-      { framework: 'Enneagram', value: null, desc: 'Your core personality type reveals how you perceive and interact with reality at the deepest level.' },
-      { framework: 'MBTI', value: null, desc: 'Your cognitive function stack determines how you process information and make decisions.' },
-      { framework: 'Chakra', value: 'Ajna', desc: 'Command center. Intuition, insight, and the capacity to see beyond the veil of illusion.' },
+      { fw: 'Enneagram',   key: 'enn',  getVal: p => p.enneagramType ? `Type ${p.enneagramType}${p.enneagramWing ? `w${p.enneagramWing}` : ''}` : 'Take quiz →', desc: 'Core perception type — how your psyche filters and interprets reality.' },
+      { fw: 'Myers-Briggs', key: 'mbti', getVal: p => p.mbtiType || 'Not determined', desc: 'Cognitive function stack — how you process information and decide.' },
+      { fw: 'Chakra',      key: 'cha',  getVal: () => 'Ājñā', desc: 'Command center. Intuition, insight, and vision beyond the veil.' },
     ],
   },
   {
-    id: 'throat', label: 'Throat Center', icon: '\u25C8', color: 'var(--aqua2)',
-    colBase: 'rgba(64,204,221,',
+    id: 'throat', label: 'Throat', icon: '◈', color: 'rgba(64,204,221,',
     systems: [
-      { framework: 'Astrology', value: null, desc: 'Mercury governs communication, thought patterns, and how you process and share information.' },
-      { framework: 'Human Design', value: null, desc: 'Your Authority determines how you make correct decisions aligned with your true nature.' },
-      { framework: 'Chakra', value: 'Vishuddha', desc: 'Purification. Authentic self-expression, truth-speaking, and creative manifestation through word.' },
+      { fw: 'Astrology',      key: 'astr', getVal: p => `Mercury in ${p.sign || '?'}`, desc: 'Mercury colors how you communicate, think, and transmit ideas.' },
+      { fw: 'Human Design',   key: 'hd',   getVal: p => p.hdAuth ? `${p.hdAuth} Authority` : 'Authority unknown', desc: 'Your Decision Authority — how you make aligned choices.' },
+      { fw: 'Chakra',         key: 'cha',  getVal: () => 'Viśuddha', desc: 'Purification through authentic expression. Truth-speaking, creative voice.' },
     ],
   },
   {
-    id: 'heart', label: 'Heart Center', icon: '\u2609', color: 'var(--foreground)',
-    colBase: 'rgba(201,168,76,',
+    id: 'heart', label: 'Heart', icon: '☉', color: 'rgba(201,168,76,',
     systems: [
-      { framework: 'Astrology', value: null, desc: 'Your Sun sign represents your core identity, life force, and the central organizing principle of your psyche.' },
-      { framework: 'Kabbalah', value: 'Tiphareth (Beauty)', desc: 'The heart of the Tree of Life. The integrator of all opposites -- beauty born from balance.' },
-      { framework: 'Gene Keys', value: null, desc: 'Your Purpose sphere reveals the highest expression of your creative genius when fully awakened.' },
+      { fw: 'Astrology',   key: 'astr', getVal: p => `Sun in ${p.sign || '?'}`, desc: 'Your Sun sign — core identity, vitality, and the organizing principle of your self.' },
+      { fw: 'Kabbalah',    key: 'kab',  getVal: () => 'Tiphereth — Beauty', desc: 'Heart of the Tree. Integrator of opposites — beauty born from perfect balance.' },
+      { fw: 'Gene Keys',   key: 'gk',   getVal: p => p.crossGK ? `Key ${p.crossGK.split('|')[0]?.split('/')[0]}` : 'Gene Key ?', desc: 'Your Purpose sphere — the highest expression of your creative genius.' },
     ],
   },
   {
-    id: 'solar', label: 'Solar Plexus Center', icon: '\u2642', color: 'var(--foreground)',
-    colBase: 'rgba(240,192,64,',
+    id: 'solar', label: 'Solar Plexus', icon: '⊕', color: 'rgba(240,192,64,',
     systems: [
-      { framework: 'Human Design', value: null, desc: 'Your Definition type reveals how energy flows through your bodygraph and how you process experience.' },
-      { framework: 'Human Design', value: null, desc: 'Your Profile describes the costume you wear and the role you play in the grand theater of life.' },
-      { framework: 'Chakra', value: 'Manipura', desc: 'Lustrous gem. Personal power, will, determination, and the fire of transformation.' },
+      { fw: 'Human Design', key: 'hd', getVal: p => p.hdDef ? `${p.hdDef} Definition` : 'Definition unknown', desc: 'Your Definition type — how energy flows through your bodygraph.' },
+      { fw: 'Human Design', key: 'hd', getVal: p => p.hdProfile ? `Profile ${p.hdProfile}` : 'Profile unknown', desc: 'The costume you wear and the role you play in the theater of life.' },
+      { fw: 'Chakra',       key: 'cha', getVal: () => 'Maṇipūra', desc: 'Lustrous gem. Personal will, transformation, and the fire of self-determination.' },
     ],
   },
   {
-    id: 'sacral', label: 'Sacral Center', icon: '\u263D', color: 'var(--rose2)',
-    colBase: 'rgba(238,102,68,',
+    id: 'sacral', label: 'Sacral', icon: '☽', color: 'rgba(238,102,68,',
     systems: [
-      { framework: 'Astrology', value: null, desc: 'Your Moon sign reveals your emotional nature, instinctive reactions, and the subconscious patterns that drive you.' },
-      { framework: 'Human Design', value: null, desc: 'Your Type is the most fundamental aspect of your design -- it determines your aura and life strategy.' },
-      { framework: 'Mayan', value: null, desc: 'Your Mayan Kin represents your galactic signature and cosmic mission in this incarnation.' },
+      { fw: 'Astrology',    key: 'astr', getVal: p => `Moon in ${p.moon || '?'}`, desc: 'Your Moon sign — emotional nature, instinctive patterns, and the subconscious driver.' },
+      { fw: 'Human Design', key: 'hd',   getVal: p => p.hdType || 'Type unknown', desc: 'Your Type — the most fundamental aspect of your design and aura.' },
+      { fw: 'Mayan',        key: 'mayan', getVal: () => 'Galactic Kin', desc: 'Your Mayan signature — galactic mission and cosmic frequency.' },
     ],
   },
   {
-    id: 'root', label: 'Root Center', icon: '\u2644', color: 'var(--rose)',
-    colBase: 'rgba(212,48,112,',
+    id: 'root', label: 'Root', icon: '⊞', color: 'rgba(212,48,112,',
     systems: [
-      { framework: 'Astrology', value: null, desc: 'Your Ascendant (Rising sign) is the mask you wear, your physical appearance, and how the world first perceives you.' },
-      { framework: 'Kabbalah', value: 'Malkuth (Kingdom)', desc: 'The physical realm and embodied presence. Grounded manifestation -- bringing the spiritual into matter.' },
-      { framework: 'Chinese', value: null, desc: 'Your Chinese zodiac animal reveals deep ancestral patterns, yearly rhythms, and earthly nature.' },
+      { fw: 'Astrology',  key: 'astr', getVal: p => `${p.asc || '?'} Rising`, desc: 'Your Ascendant — the mask you wear and how the world first perceives you.' },
+      { fw: 'Kabbalah',   key: 'kab',  getVal: () => 'Malkuth — Kingdom', desc: 'The physical realm. Embodied manifestation — bringing the spiritual into matter.' },
+      { fw: 'Chinese',    key: 'chi',  getVal: () => 'Earthly Branch', desc: 'Chinese zodiac animal — ancestral patterns and earthly rhythms.' },
     ],
   },
 ]
 
-/* ---- shared styles ---- */
-const S = {
-  panel: {
-    width: '100%', height: '100%', overflowY: 'auto', padding: '24px 28px',
-    display: 'flex', flexDirection: 'column', gap: 28,
-    background: 'var(--card)', color: 'var(--foreground)',
-    fontFamily: "'Cormorant Garamond', Georgia, serif",
-  },
-  sectionTitle: {
-    fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
-    borderBottom: '1px solid var(--accent)', marginBottom: 4,
-  },
-  heading: {
-    fontFamily: "'Cinzel', serif", fontSize: 18, fontWeight: 600, letterSpacing: '.18em',
-    color: 'var(--foreground)', marginBottom: 4,
-  },
-  subHeading: {
-    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.15em',
-    textTransform: 'uppercase', color: 'var(--foreground)', marginBottom: 8,
-  },
-  mono: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 12, fontWeight: 500, color: 'var(--foreground)',
-  },
-  monoSm: {
-    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
-  },
-  row: {
-    display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px',
-    borderRadius: 8, background: 'var(--secondary)',
-    border: '1px solid var(--border)', transition: 'background .2s',
-  },
-  glass: {
-    background: 'var(--card)', border: '1px solid var(--border)',
-    borderRadius: 13, padding: 18, backdropFilter: 'blur(12px)',
-  },
-  badge: (bg, border, color) => ({
-    display: 'inline-block', padding: '3px 10px', borderRadius: 12,
-    fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.1em',
-    textTransform: 'uppercase', background: bg, border: `1px solid ${border}`, color,
-  }),
-  interpretation: {
-    fontSize: 14, lineHeight: 1.7, color: 'var(--muted-foreground)', fontStyle: 'italic',
-    padding: '14px 18px', borderRadius: 10,
-    background: 'var(--accent)', border: '1px solid var(--border)',
-  },
-}
-
 export default function IntegralDetail() {
   const profile = useActiveProfile()
+  const [activeZone, setActiveZone] = useState('heart')
 
-  // Fill in dynamic values
-  const filledZones = ZONES.map(z => {
-    const systems = z.systems.map(sys => {
-      let value = sys.value
-      switch (z.id) {
-        case 'crown':
-          if (sys.framework === 'Numerology') value = `Life Path ${profile.lifePath || '?'}`
-          break
-        case 'third':
-          if (sys.framework === 'Enneagram') value = 'Type ? (take quiz)'
-          if (sys.framework === 'MBTI') value = profile.mbtiType || 'Not determined'
-          break
-        case 'throat':
-          if (sys.framework === 'Astrology') value = `Mercury in ${profile.sign || '?'}`
-          if (sys.framework === 'Human Design') value = `${profile.hdAuth || '?'} Authority`
-          break
-        case 'heart':
-          if (sys.framework === 'Astrology') value = `Sun in ${profile.sign || '?'}`
-          if (sys.framework === 'Gene Keys') value = `Key ${profile.crossGK?.split('|')[0]?.split('/')[0] || '?'}`
-          break
-        case 'solar':
-          if (sys.framework === 'Human Design' && sys.desc.includes('Definition')) value = `${profile.hdDef || '?'} Definition`
-          if (sys.framework === 'Human Design' && sys.desc.includes('Profile')) value = `Profile ${profile.hdProfile || '?'}`
-          break
-        case 'sacral':
-          if (sys.framework === 'Astrology') value = `Moon in ${profile.moon || '?'}`
-          if (sys.framework === 'Human Design') value = `${profile.hdType || '?'}`
-          if (sys.framework === 'Mayan') value = 'Galactic Kin'
-          break
-        case 'root':
-          if (sys.framework === 'Astrology') value = `${profile.asc || '?'} Rising`
-          if (sys.framework === 'Chinese') value = 'Metal Rooster'
-          break
-      }
-      return { ...sys, value: value || sys.value }
-    })
-    return { ...z, systems }
-  })
+  const zone = ZONES.find(z => z.id === activeZone) || ZONES[3]
 
   return (
-    <div style={S.panel}>
-      {/* HEADER */}
-      <div>
-        <div style={S.heading}>{'\u25CE'} Integral Consciousness Map</div>
-        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
-          A diagnostic scan of your consciousness -- all systems unified through the body
-        </div>
-      </div>
-
-      {/* INTERACTIVE FIGURE */}
-      <div>
-        <div style={S.sectionTitle}>Consciousness Body Map</div>
+    <div style={{
+      display: 'flex', flexDirection: 'column', height: '100%',
+      fontFamily: "'Cormorant Garamond', Georgia, serif",
+    }}>
+      {/* Canvas figure — main hero */}
+      <div style={{ flex: '0 0 420px', position: 'relative', overflow: 'hidden', borderBottom: '1px solid var(--border)' }}>
+        <IntegralFigure />
+        {/* Zone selector pills overlaid at bottom of canvas */}
         <div style={{
-          ...S.glass, padding: 0, overflow: 'hidden',
-          height: 500, position: 'relative',
+          position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+          display: 'flex', gap: 5, flexWrap: 'wrap', justifyContent: 'center',
+          padding: '0 16px',
         }}>
-          <IntegralFigure />
+          {ZONES.map(z => {
+            const isActive = z.id === activeZone
+            return (
+              <button
+                key={z.id}
+                onClick={() => setActiveZone(z.id)}
+                style={{
+                  padding: '4px 10px', borderRadius: 12, cursor: 'pointer',
+                  fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
+                  textTransform: 'uppercase',
+                  background: isActive ? z.color + '0.25)' : 'rgba(5,5,20,0.75)',
+                  border: `1px solid ${isActive ? z.color + '0.6)' : 'rgba(255,255,255,0.08)'}`,
+                  color: isActive ? '#fff' : 'rgba(255,255,255,0.4)',
+                  backdropFilter: 'blur(8px)',
+                  transition: 'all .15s',
+                }}
+              >
+                {z.icon} {z.label}
+              </button>
+            )
+          })}
         </div>
       </div>
 
-      {/* CONSCIOUSNESS ZONES */}
-      <div>
-        <div style={S.sectionTitle}>Energy Centers &amp; System Integration</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {filledZones.map((z) => (
-            <div key={z.id} style={{
-              ...S.glass,
-              borderColor: z.colBase + '.15)',
-              display: 'flex', flexDirection: 'column', gap: 10,
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 20, color: z.color }}>{z.icon}</span>
-                <div style={{
-                  fontFamily: "'Cinzel', serif", fontSize: 14, fontWeight: 600,
-                  letterSpacing: '.1em', color: z.color,
-                }}>{z.label}</div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {z.systems.map((sys, si) => (
-                  <div key={si} style={{
-                    ...S.row,
-                    flexDirection: 'column', alignItems: 'stretch', gap: 4,
-                    padding: '10px 14px',
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <span style={S.badge(
-                        z.colBase + '.08)', z.colBase + '.2)', z.color,
-                      )}>{sys.framework}</span>
-                      <span style={{
-                        ...S.mono, color: z.color, fontSize: 13,
-                      }}>{sys.value}</span>
-                    </div>
-                    <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
-                      {sys.desc}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+      {/* Detail panel */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+        {/* Zone header */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{
+            fontFamily: "'Cinzel',serif", fontSize: 16, fontWeight: 600,
+            letterSpacing: '.12em', textTransform: 'uppercase',
+            color: zone.color + '0.9)', marginBottom: 4,
+          }}>
+            {zone.icon} {zone.label} Center
+          </div>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>
+            {zone.systems.length} integrated systems
+          </div>
         </div>
-      </div>
 
-      {/* INTEGRATION ANALYSIS */}
-      <div>
-        <div style={S.sectionTitle}>Integration Analysis</div>
-        <div style={S.interpretation}>
-          Your Integral Consciousness Map reveals a <span style={{ color: 'var(--foreground)' }}>strongly activated central channel</span> --
-          the crown-to-root spine of awareness is fully lit, indicating a soul path focused on
-          embodied integration. The <span style={{ color: 'var(--aqua2)' }}>{profile.hdType || '?'} strategy</span> operates
-          through the throat center, while your <span style={{ color: 'var(--violet2)' }}>Life Path {profile.lifePath || '?'}</span> provides
-          the crown directive. The heart center, ruled by your <span style={{ color: 'var(--foreground)' }}>{profile.sign || '?'} Sun</span> and
-          aligned with Tiphareth, is the great integrator -- all systems converge here.
-          Your <span style={{ color: 'var(--rose2)' }}>{profile.moon || '?'} Moon</span> anchors the sacral center,
-          giving emotional depth to the {profile.hdDef || '?'} definition pattern of your bodygraph.
-          The task is not to master each system separately, but to feel how they all describe
-          <span style={{ color: 'var(--foreground)' }}> one unified field of consciousness</span> -- yours.
+        {/* Systems */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+          {zone.systems.map((sys, i) => {
+            const val = sys.getVal(profile)
+            return (
+              <div key={i} style={{
+                padding: '12px 16px', borderRadius: 10,
+                background: zone.color + '0.04)',
+                border: `1px solid ${zone.color + '0.18)'}`,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+                  <span style={{
+                    display: 'inline-block', padding: '2px 8px', borderRadius: 10,
+                    fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.1em',
+                    textTransform: 'uppercase',
+                    background: zone.color + '0.1)',
+                    border: `1px solid ${zone.color + '0.25)'}`,
+                    color: zone.color + '0.9)',
+                  }}>{sys.fw}</span>
+                  <span style={{
+                    fontSize: 13, fontFamily: "'Cinzel',serif",
+                    color: zone.color + '0.95)', fontWeight: 600,
+                  }}>{val}</span>
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                  {sys.desc}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Integration paragraph */}
+        <div style={{
+          padding: '14px 18px', borderRadius: 10,
+          background: 'var(--accent)', border: '1px solid var(--border)',
+          fontSize: 13, lineHeight: 1.8, color: 'var(--muted-foreground)', fontStyle: 'italic',
+        }}>
+          Your <span style={{ color: 'var(--foreground)', fontStyle: 'normal' }}>{profile.hdType || '?'} Human Design</span> operates
+          through the throat, while your <span style={{ color: zone.color + '0.9)', fontStyle: 'normal' }}>
+            Life Path {profile.lifePath || '?'}
+          </span> provides the crown directive.
+          The heart center, ruled by your <span style={{ color: 'var(--foreground)', fontStyle: 'normal' }}>{profile.sign || '?'} Sun</span>,
+          is the great integrator — where {profile.moon || '?'} Moon emotions and {profile.hdDef || '?'} definition meet.
+          Select each center above to explore how all systems converge into one unified field of consciousness.
         </div>
       </div>
     </div>

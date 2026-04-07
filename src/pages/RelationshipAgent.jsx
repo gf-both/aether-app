@@ -12,7 +12,19 @@ export default function RelationshipAgent() {
   const [loading, setLoading] = useState(false)
   const [section, setSection] = useState('attraction')
 
-  const selectedPerson = people?.find(p => p.id === selectedPersonId)
+  const selectedPerson = people?.find(p => String(p.id) === String(selectedPersonId))
+
+  function buildFallback(a, b, type) {
+    const typeMap = { romantic: 'romantic', cofounder: 'cofounder', family: 'family', friendship: 'friendship', business: 'business' }
+    const t = typeMap[type] || 'relationship'
+    return {
+      attraction: `${a.name} (${a.sign || '?'} Sun, ${a.hdType || '?'}) and ${b.name} (${b.sign || '?'} Sun, ${b.hdType || '?'}) are drawn together through a ${t} pull rooted in archetypal complementarity. The ${a.sign || 'solar'} and ${b.sign || 'lunar'} polarity creates natural magnetic tension. What each lacks, the other embodies — this pairing reflects a classic soul-recognition dynamic.`,
+      shadow: `${a.name}'s ${a.moon || '?'} Moon meets ${b.name}'s ${b.moon || '?'} Moon — where these emotional currents diverge, unconscious friction emerges. ${a.name} may trigger ${b.name}'s core wound around autonomy; ${b.name} may awaken ${a.name}'s deeper need for recognition. The shadow material of each activates the other's unresolved patterns.`,
+      communication: `${a.hdType || 'their'} and ${b.hdType || 'their'} Human Design types create a specific conversational rhythm. Where one speaks from authority, the other listens from reception. Their Mercury dynamics — shaped by ${a.sign || '?'} and ${b.sign || '?'} — determine whether information flows or becomes a site of misunderstanding. Direct expression is always more effective than inference here.`,
+      power: `The ${a.hdType || '?'} and ${b.hdType || '?'} dynamic creates an asymmetry in how energy is initiated and received. In ${t} context, this tends toward a fluid exchange when both honor their strategies, or a power struggle when ego overrides design. ${a.name} leads through ${a.hdType === 'Generator' || a.hdType === 'Manifesting Generator' ? 'response' : 'invitation'}; ${b.name} through ${b.hdType === 'Generator' || b.hdType === 'Manifesting Generator' ? 'response' : 'projection or manifestation'}.`,
+      pattern: `The repeating loop in this ${t} pairing is the cycle of resonance and rupture — deep connection followed by withdrawal or friction, then reconnection at a deeper level. The lesson offered is learning to remain present through difference rather than projecting onto the other. The gift of this relationship is the mirror it holds up to each person's unintegrated self.`,
+    }
+  }
 
   function buildRelationshipPrompt(personA, personB) {
     return `You are a master relationship pattern analyst. Analyze the dynamic between these two people using their symbolic profiles.
@@ -72,10 +84,13 @@ DO NOT give generic compatibility advice. Identify the SPECIFIC patterns, trigge
         }
 
         setResult(sections)
-        setSection('attraction')
+      } else {
+        setResult(buildFallback(profile, selectedPerson, relType))
       }
+      setSection('attraction')
     } catch (e) {
       console.error('Relationship analysis error:', e)
+      setResult(buildFallback(profile, selectedPerson, relType))
     }
     setLoading(false)
   }

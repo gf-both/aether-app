@@ -15,7 +15,7 @@ const NAV_SECTIONS = [
   { icon: '\u221E', label: 'Numerology', widget: 'num' },
   { icon: '\u2B21', label: 'Gene Keys', widget: 'gk' },
   null,
-  { icon: '\uD83C\uDF38', label: 'Mayan Calendar', widget: 'mayan' },
+  { icon: '🔺', label: 'Mayan Calendar', widget: 'mayan' },
   { icon: '\u262F', label: 'Enneagram', widget: 'enn' },
   { icon: '\uD83D\uDC09', label: 'Chinese Zodiac', widget: 'chi' },
   null,
@@ -38,7 +38,6 @@ const NAV_SECTIONS = [
   { icon: '\uD83D\uDCCB', label: 'Client Portal', widget: 'client' },
   null,
   { icon: '\u2728', label: 'GOLEM', widget: 'golem' },
-  { icon: '\uD83C\uDFDB\uFE0F', label: 'Company', widget: 'company' },
 ]
 
 function HamburgerMenu() {

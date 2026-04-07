@@ -21,7 +21,7 @@ export default function GolemSimulation() {
   const [loading, setLoading] = useState(false)
   const [currentPhase, setCurrentPhase] = useState('')
 
-  const selectedPerson = (people || []).find(p => p.id === selectedId)
+  const selectedPerson = (people || []).find(p => String(p.id) === String(selectedId))
 
   async function runSim() {
     if (!profile || !selectedPerson) return
