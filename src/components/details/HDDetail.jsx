@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import HumanDesign from '../canvas/HumanDesign'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { computeHDChart } from '../../engines/hdEngine'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../../data/hdData'
 

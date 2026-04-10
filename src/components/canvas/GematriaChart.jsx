@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { HEBREW_ALPHABET, GEMATRIA_PROFILE, getGematriaProfile } from '../../data/gematriaData'
 import { DEFAULT_PRIMARY_PROFILE } from '../../data/primaryProfile'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 
 // Compute chart data from engine (dynamic, reads profile)
 // Returns null when name or dob is missing

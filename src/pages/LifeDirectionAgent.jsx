@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useActiveProfile } from '../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../hooks/useActiveProfile'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 import { computeHDChart } from '../engines/hdEngine'
 import { callAI } from '../lib/ai'

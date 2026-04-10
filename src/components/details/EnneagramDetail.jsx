@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { ENNEAGRAM_TYPES, ENNEAGRAM_PROFILE, ENNEAGRAM_QUIZ, INSTINCTUAL_VARIANTS, TRIAD_COLORS } from '../../data/enneagramData'
 import EnneagramSymbol from '../canvas/EnneagramSymbol'
 import EnneagramQuizOverlay from '../overlays/EnneagramQuiz'

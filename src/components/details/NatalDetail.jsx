@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import NatalWheel from '../canvas/NatalWheel'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getNatalChart } from '../../engines/natalEngine'
 
 const PLANET_SYMS = {

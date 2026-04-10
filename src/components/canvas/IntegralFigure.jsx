@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile } from '../../hooks/useActiveProfile'
 
 // Zone definitions mapped to body regions
 const ZONES = [
@@ -149,7 +149,7 @@ export default function IntegralFigure() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const hovRef = useRef(-1)
-  const profile = useActiveProfile()
+  const profile = useComputedProfile()
 
   useCanvasResize(canvasRef)
 

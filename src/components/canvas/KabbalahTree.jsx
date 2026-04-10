@@ -2,7 +2,7 @@ import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { SEPHIROTH, PATHS, PATH_COLORS } from '../../data/kabbalahData'
 import { getKabbalahProfile, profileToKabArgs } from '../../engines/kabbalahEngine'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 
 export default function KabbalahTree() {
   const canvasRef = useRef(null)

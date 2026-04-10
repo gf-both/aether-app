@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { MBTI_TYPES, MBTI_FUNCTIONS, MBTI_QUIZ_QUESTIONS } from '../../data/mbtiData'
 import MBTIQuizOverlay from '../overlays/MBTIQuiz'
 

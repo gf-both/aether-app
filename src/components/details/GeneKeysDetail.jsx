@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { GK_LIST, computeGeneKeysData } from '../../data/geneKeysData'
 import GeneKeysWheel from '../canvas/GeneKeysWheel'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 // computeGeneKeysData can be called with custom birth params to derive a live profile
 
 const GK_DETAIL_STATIC = [

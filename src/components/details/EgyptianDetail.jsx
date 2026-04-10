@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { EGYPTIAN_SIGNS, EGYPTIAN_PROFILE, getEgyptianSign } from '../../data/egyptianData'
 
 /* ---- shared styles (matching app conventions) ---- */

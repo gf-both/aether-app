@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import TransitWheel from '../canvas/TransitWheel'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getNatalChart } from '../../engines/natalEngine'
 
 const PLANET_ORDER = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto']

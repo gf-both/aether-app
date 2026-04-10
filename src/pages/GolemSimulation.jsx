@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { useActiveProfile } from '../hooks/useActiveProfile'
-import { useGolemStore } from '../store/useGolemStore'
 import { useComputedProfile } from '../hooks/useActiveProfile'
+import { useGolemStore } from '../store/useGolemStore'
 import { runCompatibilitySimulation } from '../lib/golemConversation'
 
 const SCENARIOS = [
@@ -12,7 +11,7 @@ const SCENARIOS = [
 ]
 
 export default function GolemSimulation() {
-  const profile = useActiveProfile()
+  const profile = useComputedProfile()
   const people = useGolemStore(s => s.people) || []
   const setActiveDetail = useGolemStore(s => s.setActiveDetail)
   const [selectedId, setSelectedId] = useState(null)

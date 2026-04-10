@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getTibetanProfile, TIBETAN_ELEMENT_NAMES_TIB } from '../../engines/tibetanEngine'
 
 const ANIMALS = ['Horse','Sheep','Monkey','Bird','Dog','Pig','Mouse','Ox','Tiger','Rabbit','Dragon','Snake']

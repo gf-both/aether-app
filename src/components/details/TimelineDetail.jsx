@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useCallback } from 'react'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getVedicChart } from '../../engines/vedicEngine'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
 

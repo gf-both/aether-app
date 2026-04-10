@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
 
 const CORE_COLORS = {

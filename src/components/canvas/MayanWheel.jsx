@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, SEAL_COLORS, computeFullProfile } from '../../data/mayanData'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 
 const DAY_SIGN_EMOJI = {
   'Imix': '🐊', 'Ik': '💨', 'Akbal': '🌙', 'Kan': '🌱', 'Chicchan': '🐍',

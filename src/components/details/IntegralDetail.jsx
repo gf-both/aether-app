@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile } from '../../hooks/useActiveProfile'
 import IntegralFigure from '../canvas/IntegralFigure'
 
 const ZONES = [
@@ -62,7 +62,7 @@ const ZONES = [
 ]
 
 export default function IntegralDetail() {
-  const profile = useActiveProfile()
+  const profile = useComputedProfile()
   const [activeZone, setActiveZone] = useState('heart')
 
   const zone = ZONES.find(z => z.id === activeZone) || ZONES[3]

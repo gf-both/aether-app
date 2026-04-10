@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { SEPHIROTH, PATHS } from '../../data/kabbalahData'
 import { getKabbalahProfile, profileToKabArgs } from '../../engines/kabbalahEngine'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import KabbalahTree from '../canvas/KabbalahTree'
 
 const SEPHIROTH_INTERP = [

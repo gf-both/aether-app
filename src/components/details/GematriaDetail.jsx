@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { HEBREW_ALPHABET, GEMATRIA_METHODS, GEMATRIA_PROFILE, getGematriaProfile } from '../../data/gematriaData'
 
 // Build a dynamically-computed profile from the engine, merged with the rich

@@ -1,6 +1,6 @@
 import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, CASTLES, EARTH_FAMILIES, COLOR_FAMILIES, SEAL_COLORS, computeFullProfile, getMayanProfile } from '../../data/mayanData'
 import MayanWheel from '../canvas/MayanWheel'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 
 /* ---- Day Sign data with emoji & element ---- */
 const DAY_SIGNS = {

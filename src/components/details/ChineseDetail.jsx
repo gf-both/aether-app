@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { CHINESE_ANIMALS, FIVE_ELEMENTS, CHINESE_PROFILE as STATIC_PROFILE } from '../../data/chineseData'
 import { getChineseProfileFromDob } from '../../engines/chineseEngine'
 

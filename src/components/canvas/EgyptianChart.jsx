@@ -1,6 +1,6 @@
 import { useEffect, useRef, useMemo } from 'react'
 import { useCanvasResize } from '../../hooks/useCanvasResize'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { EGYPTIAN_SIGNS, EGYPTIAN_PROFILE, getEgyptianSign } from '../../data/egyptianData'
 
 export default function EgyptianChart() {
