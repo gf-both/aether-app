@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import TransitWheel from '../canvas/TransitWheel'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
+import { useGolemStore } from '../../store/useGolemStore'
 import { getNatalChart } from '../../engines/natalEngine'
 
 const PLANET_ORDER = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto']
@@ -41,21 +42,21 @@ function findAspect(transitLon, natalLon) {
   return null
 }
 
-/** Compute live transits against natal chart */
+/** Compute live transits against natal chart — reads raw store directly to avoid stale memo */
 function useCurrentTransits() {
-  const profile = useActiveProfile()
+  const raw = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
   return useMemo(() => {
-    const dob = parseDOB(profile.dob)
-    const tob = parseTOB(profile.tob)
+    const dob = parseDOB(raw?.dob)
+    const tob = parseTOB(raw?.tob)
     if (!dob) return []
     let natal
     try {
       natal = getNatalChart({
         day: dob.day, month: dob.month, year: dob.year,
         hour: tob.hour, minute: tob.minute,
-        lat: profile.birthLat || 0,
-        lon: profile.birthLon || 0,
-        timezone: profile.birthTimezone ?? 0,
+        lat: raw.birthLat || 0,
+        lon: raw.birthLon || 0,
+        timezone: raw.birthTimezone ?? 0,
       })
     } catch { return [] }
 
@@ -66,8 +67,8 @@ function useCurrentTransits() {
       current = getNatalChart({
         day: now.getDate(), month: now.getMonth() + 1, year: now.getFullYear(),
         hour: now.getUTCHours(), minute: now.getUTCMinutes(),
-        lat: profile.birthLat || 0,
-        lon: profile.birthLon || 0,
+        lat: raw.birthLat || 0,
+        lon: raw.birthLon || 0,
         timezone: 0,  // already UTC
       })
     } catch { return [] }
@@ -114,7 +115,8 @@ function useCurrentTransits() {
       })
     }
     return transits
-  }, [profile.dob, profile.birthLat, profile.birthLon, profile.birthTimezone])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [raw?.id, raw?.name, raw?.dob, raw?.tob, raw?.birthLat, raw?.birthLon, raw?.birthTimezone])
 }
 
 const CURRENT_TRANSITS = [
@@ -255,10 +257,9 @@ const S = {
 export default function TransitsDetail() {
   const profile = useActiveProfile()
   const liveTransits = useCurrentTransits()
-  // Only fall back to static if we have a profile (static data is Gaston's)
   const hasDob = !!(profile?.dob)
-  const CURRENT_TRANSITS_LIVE = liveTransits.length > 0 ? liveTransits : (hasDob ? CURRENT_TRANSITS : [])
-  const isEmptyState = !hasDob && liveTransits.length === 0
+  const CURRENT_TRANSITS_LIVE = liveTransits.length > 0 ? liveTransits : []
+  const isEmptyState = !hasDob
 
   if (isEmptyState) return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:12, opacity:.5 }}>
