@@ -56,9 +56,13 @@ async function ollamaAvailable() {
 
 // ── Supabase edge function ──
 async function callViaEdgeFunction({ systemPrompt, messages, maxTokens }) {
-  const { data, error } = await supabase.functions.invoke('ai-chat', {
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Edge function timeout')), 10000)
+  )
+  const invoke = supabase.functions.invoke('ai-chat', {
     body: { systemPrompt, messages, maxTokens },
   })
+  const { data, error } = await Promise.race([invoke, timeout])
   if (error) throw error
   return data?.content || null
 }
@@ -67,6 +71,7 @@ async function callViaEdgeFunction({ systemPrompt, messages, maxTokens }) {
 async function callDirectAnthropic({ systemPrompt, messages, maxTokens }) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
+    signal: AbortSignal.timeout(12000),
     headers: {
       'x-api-key': ANTHROPIC_KEY,
       'anthropic-version': '2023-06-01',

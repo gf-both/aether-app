@@ -6,6 +6,50 @@ import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 import { resolvePob } from '../utils/profileUtils'
 
 /**
+ * computePersonData — pure function, computes sign/moon/asc/hdType/lifePath
+ * for any person object that has dob. Safe to call in render or useMemo.
+ */
+export function computePersonData(raw) {
+  if (!raw?.dob) return raw
+  const p = { ...raw }
+
+  if (!p.sign || p.sign === '?' || !p.moon || p.moon === '?') {
+    try {
+      const [y, m, d] = p.dob.split('-').map(Number)
+      const [h, min] = (p.tob || '12:00').split(':').map(Number)
+      const { lat, lon, tz } = resolvePob(p)
+      const chart = getNatalChart({ day: d, month: m, year: y, hour: h || 12, minute: min || 0, lat, lon, timezone: tz })
+      if (chart) {
+        p.sign = p.sign && p.sign !== '?' ? p.sign : (chart.planets?.sun?.sign || '?')
+        p.moon = p.moon && p.moon !== '?' ? p.moon : (chart.planets?.moon?.sign || '?')
+        p.asc  = p.asc  && p.asc  !== '?' ? p.asc  : (chart.angles?.asc?.sign || '?')
+      }
+    } catch {}
+  }
+
+  if (!p.hdType || p.hdType === '?') {
+    try {
+      const hd = computeHDChart({ dateOfBirth: p.dob, timeOfBirth: p.tob || '12:00', utcOffset: p.birthTimezone ?? -3 })
+      if (hd) {
+        p.hdType    = hd.type
+        p.hdProfile = hd.profile
+        p.hdAuth    = hd.authority
+        p.hdDef     = hd.definition
+      }
+    } catch {}
+  }
+
+  if (!p.lifePath || p.lifePath === '?') {
+    try {
+      const num = getNumerologyProfileFromDob(p.dob, p.name || 'X', {})
+      if (num?.core?.lifePath) p.lifePath = num.core.lifePath.val
+    } catch {}
+  }
+
+  return p
+}
+
+/**
  * useActiveProfile — always returns the currently active profile.
  * When viewing another person's chart (activeViewProfile), returns that.
  * When viewing your own, returns primaryProfile.
@@ -78,6 +122,19 @@ export function useComputedProfile() {
  */
 export function usePrimaryProfile() {
   return useGolemStore(s => s.primaryProfile)
+}
+
+/**
+ * useComputedPeople — returns the people array with computed fields (sign/moon/asc/hdType/lifePath)
+ * filled in from each person's birth data, same as useComputedProfile does for primary.
+ */
+export function useComputedPeople() {
+  const people = useGolemStore(s => s.people)
+  return useMemo(
+    () => (people || []).map(computePersonData),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [people]
+  )
 }
 
 /**

@@ -8,6 +8,7 @@
 
 import { useState, useCallback } from 'react'
 import { useGolemStore } from '../store/useGolemStore'
+import { useComputedProfile, useComputedPeople } from '../hooks/useActiveProfile'
 import { runGolemExchange } from '../lib/golemConversation'
 
 const REL_COLORS = {
@@ -115,18 +116,20 @@ function GolemDialogue({ primaryProfile, otherProfile, onClose }) {
     const prompt = pick(DIALOGUE_PROMPTS)(primaryProfile, otherProfile)
     const turns = []
 
-    // 3 exchange turns
-    for (let i = 0; i < 3; i++) {
+    // 2 exchange turns — enough for a meaningful dialogue without hanging
+    const SCENARIOS = [
+      prompt,
+      `Continue the conversation. React to what ${otherProfile.name} just said, then bring it to a close.`,
+    ]
+
+    for (let i = 0; i < SCENARIOS.length; i++) {
       const history = turns.flatMap(t => [
         { role: 'assistant', content: t.golemA },
         { role: 'user', content: t.golemB },
       ])
 
-      const scenario = i === 0 ? prompt
-        : i === 1 ? `Continue this conversation. React to what ${otherProfile.name} just said.`
-        : `Bring this to a close. What do you want to leave ${otherProfile.name} with?`
-
-      const exchange = await runGolemExchange(primaryProfile, otherProfile, scenario, history, 'connection')
+      const exchange = await runGolemExchange(primaryProfile, otherProfile, SCENARIOS[i], history, 'connection')
+      if (!exchange) break
       turns.push(exchange)
 
       setMessages(prev => [
@@ -134,8 +137,6 @@ function GolemDialogue({ primaryProfile, otherProfile, onClose }) {
         { from: 'a', name: primaryProfile.name || 'You', text: exchange.golemA, color: colorA },
         { from: 'b', name: otherProfile.name, text: exchange.golemB, color: colorB },
       ])
-
-      await new Promise(r => setTimeout(r, 200))
     }
 
     setLoading(false)
@@ -340,8 +341,8 @@ function ProfileDetail({ p, primaryProfile, onClose, onStartDialogue }) {
 
 // ── Main page ──
 export default function AIAgentsPage() {
-  const primaryProfile = useGolemStore(s => s.primaryProfile)
-  const people = useGolemStore(s => s.people) || []
+  const primaryProfile = useComputedProfile()
+  const people = useComputedPeople()
   const setActiveDetail = useGolemStore(s => s.setActiveDetail)
   const [selected, setSelected] = useState(null)
   const [dialogueTarget, setDialogueTarget] = useState(null)
