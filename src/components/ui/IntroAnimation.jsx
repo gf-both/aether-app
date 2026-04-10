@@ -124,10 +124,10 @@ export default function IntroAnimation({ onComplete }) {
       // Speed multiplier: faster in top-down, slows in helio
       const orbitSpeed = t < 2.5 ? 0.8 : lerp(0.8, 0.25, tiltProg)
 
-      // Sun position: stationary during top-down, then moves in helio phase
-      const sunSpeed = helioProg > 0 ? helioProg * helioProg * 0.35 : 0
-      const sunX = cx + Math.cos(t * 0.0 - Math.PI * 0.5) * sunSpeed * W * 0.001 * (t - 4.0) * W * 0.05
-      const sunY = cy - helioProg * H * 0.18  // sun drifts upward as we see it travel
+      // Sun position: stationary during top-down, then sweeps RIGHT in helio phase
+      const sunTravelProg = easeInOut(clamp01((t - 4.0) / 1.2))
+      const sunX = cx + sunTravelProg * W * 0.32
+      const sunY = cy - sunTravelProg * H * 0.06
 
       // ── Draw orbital rings (top-down / tilting) ──
       if (helioProg < 0.7) {
@@ -251,17 +251,21 @@ export default function IntroAnimation({ onComplete }) {
         ctx.fillStyle = sunGlow
         ctx.fill()
 
-        // Sun travel trail in helio phase
+        // Sun travel trail — sweeps LEFT behind the sun as it moves right
         if (helioProg > 0) {
-          const trailLen = Math.min(W * 0.4, helioProg * W * 0.5)
-          const sunTrail = ctx.createLinearGradient(sunX, sunY, sunX, sunY + trailLen)
-          sunTrail.addColorStop(0, `rgba(255,200,80,${0.18 * helioProg})`)
-          sunTrail.addColorStop(1, `rgba(255,140,0,0)`)
+          const trailLen = sunTravelProg * W * 0.38
+          // Wide glowing wake fading to the left
+          const sunTrail = ctx.createLinearGradient(sunX, sunY, sunX - trailLen, sunY)
+          sunTrail.addColorStop(0, `rgba(255,220,100,${0.22 * helioProg})`)
+          sunTrail.addColorStop(0.5, `rgba(255,160,40,${0.10 * helioProg})`)
+          sunTrail.addColorStop(1, `rgba(255,100,0,0)`)
+          ctx.save()
           ctx.beginPath()
-          ctx.arc(sunX, sunY + trailLen * 0.3, trailLen * 0.12, 0, Math.PI * 2)
+          ctx.ellipse(sunX - trailLen * 0.42, sunY, trailLen * 0.5, trailLen * 0.06, 0, 0, Math.PI * 2)
           ctx.fillStyle = sunTrail
-          ctx.globalAlpha = helioProg * 0.3
+          ctx.globalAlpha = helioProg * 0.55
           ctx.fill()
+          ctx.restore()
           ctx.globalAlpha = 1
         }
       }

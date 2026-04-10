@@ -171,8 +171,9 @@ function getASC(ramc, oblDeg, latDeg) {
   // Standard rule: RAMC quadrant determines which root to take.
   //   if RAMC is in (90, 270) => the atan2 result needs no correction
   //   if RAMC is in (270, 90) => add 180°
-  const ramcMod = mod360(ramc)
-  if (ramcMod > 270 || ramcMod < 90) {
+  const mc = getMC(ramc, oblDeg)
+  const ascRelToMC = mod360(asc - mc)
+  if (ascRelToMC > 270 || ascRelToMC < 90) {
     asc = mod360(asc + 180)
   }
 

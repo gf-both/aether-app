@@ -1,9 +1,16 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// DEV SEED PROFILES — REMOVE FOR PRODUCTION
+// To clear: set DEFAULT_PRIMARY_PROFILE back to empty fields,
+//           set DEFAULT_PEOPLE back to [].
+// ─────────────────────────────────────────────────────────────────────────────
+
 export const DEFAULT_PRIMARY_PROFILE = {
-  name: '',
-  dob: '',
-  tob: '',
-  pob: '',
-  gender: '',
+  // DEV SEED — Gaston Frydlewski
+  name: 'Gaston Frydlewski',
+  dob: '1981-01-23',
+  tob: '12:00',
+  pob: 'Buenos Aires, Argentina',
+  gender: 'male',
   emoji: '✦',
   sign: '?',
   asc: '?',
@@ -14,18 +21,50 @@ export const DEFAULT_PRIMARY_PROFILE = {
   hdDef: '?',
   lifePath: '?',
   crossGK: '?',
-  birthLat: 0,
-  birthLon: 0,
-  birthTimezone: 0,
-  enneagramType: null,
-  enneagramWing: null,
-  mbtiType: null,
-  doshaType: null,
+  birthLat: -34.6037,
+  birthLon: -58.3816,
+  birthTimezone: -3,
+  enneagramType: 4,
+  enneagramWing: 5,
+  enneagramInstinct: 'sx',
+  mbtiType: 'INFJ',
+  doshaType: 'Tridoshic',
   archetypeType: null,
-  loveLanguage: null,
+  loveLanguage: 'Words of Affirmation',
 }
 
-export const DEFAULT_PEOPLE = []
+export const DEFAULT_PEOPLE = [
+  // DEV SEED — Maria Raquel Waingarten
+  {
+    id: 100001,
+    name: 'Maria Raquel Waingarten',
+    dob: '1982-04-23',
+    tob: '17:25',
+    pob: 'Buenos Aires, Argentina',
+    gender: 'female',
+    rel: 'ex-spouse',
+    emoji: '💔',
+    sign: '?',
+    asc: '?',
+    moon: '?',
+    hdType: '?',
+    hdProfile: '?',
+    hdAuth: '?',
+    hdDef: '?',
+    lifePath: '?',
+    crossGK: '?',
+    birthLat: -34.6037,
+    birthLon: -58.3816,
+    birthTimezone: -3,
+    enneagramType: 2,
+    enneagramWing: null,
+    enneagramInstinct: 'sx',
+    mbtiType: null,
+    doshaType: null,
+    archetypeType: null,
+    loveLanguage: null,
+  },
+]
 
 export const REL_CONFIG = {
   // Family
