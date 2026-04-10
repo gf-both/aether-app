@@ -219,7 +219,7 @@ function ProfileSwitcher() {
             <span style={{ fontSize: 7, opacity: .5 }}>{open ? '\u25B2' : '\u25BC'}</span>
           </div>
           <div className="apb-detail">
-            {displayProfile.hdType} {displayProfile.hdProfile} &middot; {formatDOB(profile.dob)} &middot; {profile.tob || '?'} &middot; {profile.pob}
+            {(displayProfile.sign && displayProfile.sign !== '?') ? `${displayProfile.sign} · ` : ''}{formatDOB(displayProfile.dob)} &middot; {displayProfile.tob || ''} &middot; {displayProfile.pob}
           </div>
         </div>
       </div>

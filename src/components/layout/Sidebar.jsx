@@ -87,12 +87,7 @@ export default function Sidebar() {
       return
     }
     if (item.widget) {
-      if (activeDetail === item.widget) {
-        setActiveDetail(null)
-        setActiveNav('dashboard')
-      } else {
-        setActiveDetail(item.widget)
-      }
+      setActiveDetail(item.widget)
     }
   }
 
