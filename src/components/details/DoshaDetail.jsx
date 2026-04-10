@@ -263,16 +263,26 @@ export default function DoshaDetail() {
   // Parse dosha type
   let primary = null, secondary = null, tertiary = null
   let scores = null
-  if (doshaType) {
+  const isTridoshic = doshaType && /tri/i.test(doshaType) && !doshaType.toLowerCase().includes('-')
+  if (doshaType && !isTridoshic) {
     const parts = doshaType.split('-')
     primary = parts[0] ? parts[0].toLowerCase() : null
     secondary = parts[1] ? parts[1].toLowerCase() : null
     // Derive the third dosha
     const allDoshas = ['vata', 'pitta', 'kapha']
     tertiary = allDoshas.find(d => d !== primary && d !== secondary) || null
-    // Estimate scores from ordering (rough heuristic when real scores unavailable)
-    scores = { [primary]: 45, [secondary]: 35 }
+    // Validate keys exist in DOSHA_DATA — fall back to null if not
+    if (primary && !DOSHA_DATA[primary]) { primary = null }
+    if (secondary && !DOSHA_DATA[secondary]) { secondary = null }
+    if (tertiary && !DOSHA_DATA[tertiary]) { tertiary = null }
+    // Estimate scores from ordering
+    scores = {}
+    if (primary) scores[primary] = 45
+    if (secondary) scores[secondary] = 35
     if (tertiary) scores[tertiary] = 20
+  } else if (isTridoshic) {
+    primary = 'vata'; secondary = 'pitta'; tertiary = 'kapha'
+    scores = { vata: 33, pitta: 33, kapha: 34 }
   }
 
   return (
@@ -316,7 +326,9 @@ export default function DoshaDetail() {
             <div style={{ ...S.sectionTitle, borderBottom: 'none', paddingBottom: 4 }}>Constitution Type</div>
             <div style={{ ...S.heading, fontSize: 22, letterSpacing: '.22em', color: 'rgba(201,168,76,0.9)' }}>{doshaType}</div>
             <div style={{ ...S.monoSm, marginTop: 4 }}>
-              {DOSHA_DATA[primary]?.name} dominant with {DOSHA_DATA[secondary]?.name} secondary influence
+              {isTridoshic
+                ? 'All three doshas in equal balance — rare and blessed constitution'
+                : `${DOSHA_DATA[primary]?.name || ''} dominant${secondary ? ` with ${DOSHA_DATA[secondary]?.name} secondary influence` : ''}`}
             </div>
           </div>
 
