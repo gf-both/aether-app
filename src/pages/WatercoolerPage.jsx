@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { generateConstellationConversation } from '../lib/constellationWatercooler'
 import { loadThreads, addThreads, clearThreads } from '../lib/watercoolerStore'
 import { useGolemStore } from '../store/useGolemStore'
+import { computePersonData } from '../hooks/useActiveProfile'
 
 // ── Relationship colors ──
 const REL_COLORS = {
@@ -232,52 +233,186 @@ function SkeletonThread() {
   )
 }
 
+// ── Enneagram psychological data for narrative generation ──
+const ENNEA = {
+  1: {
+    name: 'Reformer', shadow: 'repressed anger expressed as relentless correction',
+    gift: 'moral integrity and a love that actually holds you to your best self',
+    coping: 'corrects the world to manage inner tension',
+    wound: 'believing they are fundamentally flawed and must earn their place',
+    relPattern: 'holds partners to impossible standards while denying their own imperfections',
+    yr1: 'brings discipline and clarity — the bond feels principled and real',
+    yr2: 'criticism hardens into pattern; the partner feels perpetually evaluated, never enough',
+    yr3: 'if they soften into acceptance, the gift fully arrives: unmatched reliability and a love that sees you with clear eyes',
+  },
+  2: {
+    name: 'Helper', shadow: 'hidden resentment fermenting beneath compulsive giving',
+    gift: 'unconditional warmth and the rare capacity to make someone feel truly held',
+    coping: 'gives in order to be loved — turns service into a bid for worthiness',
+    wound: 'believing they are only lovable when useful to others',
+    relPattern: 'creates invisible debts through giving, then collapses when those go unrecognized',
+    yr1: 'floods the bond with warmth and attentive presence — it feels like finally being held',
+    yr2: 'resentment begins leaking through: the giving was never free, it was a contract',
+    yr3: 'if they stop performing love and start receiving it, they become capable of genuine intimacy for the first time',
+  },
+  3: {
+    name: 'Achiever', shadow: 'performing connection rather than inhabiting it',
+    gift: 'infectious inspiration and the capacity to make partners feel like their best selves',
+    coping: 'succeeds and excels to feel worthy of love',
+    wound: 'believing their value is entirely conditional on what they produce',
+    relPattern: 'optimizes the relationship like a project — efficient, impressive, emotionally absent',
+    yr1: 'shows up magnetic and high-functioning — the relationship accelerates beautifully',
+    yr2: 'the mask begins to slip; the partner wants the person, not the performance',
+    yr3: 'if they reveal themselves underneath the achievement, the gift arrives: someone who genuinely builds alongside you',
+  },
+  4: {
+    name: 'Individualist', shadow: 'melancholy and the compulsion to be extraordinary rather than present',
+    gift: 'unmatched emotional depth and a presence that transforms everyone it truly touches',
+    coping: 'withdraws into interiority when feeling ordinary, misunderstood, or suffocated',
+    wound: 'believing they are fundamentally different from others and therefore unlovable as they are',
+    relPattern: 'oscillates between longing for total union and retreating the moment it gets too close',
+    yr1: 'is intensely present when feeling seen — the depth feels like recognition no one else has offered',
+    yr2: 'the withdrawals deepen into a pattern the partner cannot navigate; closeness itself becomes the trigger',
+    yr3: 'if they risk being ordinary and loved anyway, they discover that belonging does not require being exceptional',
+  },
+  5: {
+    name: 'Investigator', shadow: 'emotional withdrawal behind the fortress of the intellect',
+    gift: 'penetrating wisdom and a presence — when they choose to give it — that is unlike anything else',
+    coping: 'retreats into ideas and analysis to avoid the terror of emotional depletion',
+    wound: 'believing the world will always take more than they can regenerate',
+    relPattern: 'disappears — not from cruelty but from a private fear of being emptied by intimacy',
+    yr1: 'offers rare and precise intimacy in small doses that feel like treasure',
+    yr2: 'the distance becomes a wall; the partner cannot reach them when presence is needed most',
+    yr3: 'if they learn that being present does not drain them, they become one of the most devoted people alive',
+  },
+  6: {
+    name: 'Loyalist', shadow: 'anxiety projected outward as perpetual doubt and unconscious testing',
+    gift: 'fierce, hard-won loyalty and a courage that emerges precisely when everything is at stake',
+    coping: 'tests the bond repeatedly to confirm it will not be withdrawn',
+    wound: 'believing that the support they need will always ultimately disappear',
+    relPattern: 'creates the very abandonment they fear by doubting until the partner finally breaks',
+    yr1: 'warm and fiercely committed once trust forms — though the testing begins almost immediately',
+    yr2: 'doubt escalates and becomes a distorting lens; they scan for betrayal that is not there',
+    yr3: 'if they find genuine safety and stay in it, they become unshakeable — the most loyal partner imaginable',
+  },
+  7: {
+    name: 'Enthusiast', shadow: 'compulsive escape into possibility as a strategy for avoiding pain',
+    gift: 'expansive joy and the visionary capacity to make any future feel genuinely alive',
+    coping: 'reframes, pivots, and accelerates when emotions turn heavy',
+    wound: 'believing that remaining in pain will annihilate them',
+    relPattern: 'leaves emotionally long before leaving physically — always one option away from the present',
+    yr1: 'intoxicating — the bond feels like adventure, possibility, and oxygen',
+    yr2: 'the lightness becomes avoidance; difficult truths are spun into plans rather than felt',
+    yr3: 'if they stay when it is painful, they discover a depth in themselves they did not know was possible',
+  },
+  8: {
+    name: 'Challenger', shadow: 'domination used as armor to protect a profound and hidden tenderness',
+    gift: 'ferocious protectiveness and an uncompromising honesty that can forge something unbreakable',
+    coping: 'escalates and controls to avoid the vulnerability of being hurt',
+    wound: 'believing that softness will be weaponized against them the moment it is shown',
+    relPattern: 'overwhelms the field until the partner either breaks or earns a trust that then becomes absolute',
+    yr1: 'commands and protects simultaneously — the bond is magnetic and slightly destabilizing',
+    yr2: 'the intensity either forges an unbreakable alliance or crushes everything in its path',
+    yr3: 'if they let themselves be seen as tender, the full gift emerges: a fierce and devoted love like no other',
+  },
+  9: {
+    name: 'Peacemaker', shadow: 'self-erasure performed as love, until there is no self left to give',
+    gift: 'a unifying presence that can hold all sides of a conflict without collapsing',
+    coping: 'merges with the partner and the relationship to avoid the threat of conflict',
+    wound: 'believing their own needs and presence will disrupt or destroy everything',
+    relPattern: 'disappears into the relationship while slowly suffocating from the loss of themselves',
+    yr1: 'adapts perfectly — the bond feels easy, harmonious, effortless',
+    yr2: 'the erased self begins surfacing through passive resistance and unexplained distance',
+    yr3: 'if they reclaim their voice inside the bond, they become the rare partner who can love without consuming or being consumed',
+  },
+}
+
 function buildYearNarrative(profiles, edges, year) {
   if (!year || !profiles.length) return null
-  const top = findTopConnected(profiles, edges, 2)
-  const topNames = top.map(id => {
-    const p = profiles.find(x => String(x.id || x.name) === id)
-    return p ? p.name.split(' ')[0] : null
-  }).filter(Boolean)
 
-  const partner = profiles.find(p => p.rel === 'partner' || p.rel === 'spouse')
-  const exes = profiles.filter(p => p.rel === 'ex-partner' || p.rel === 'ex-spouse')
-  const colleagues = profiles.filter(p => p.rel === 'colleague' || p.rel === 'business-partner')
-  const friends = profiles.filter(p => p.rel === 'friend' || p.rel === 'close-friend')
+  const primary = profiles.find(p => p._isPrimary) || profiles[0]
+  const focal =
+    profiles.find(p => !p._isPrimary && ['partner', 'spouse'].includes(p.rel)) ||
+    profiles.find(p => !p._isPrimary && ['ex-spouse', 'ex-partner'].includes(p.rel)) ||
+    profiles.find(p => !p._isPrimary && ['close-friend', 'friend'].includes(p.rel)) ||
+    profiles.find(p => !p._isPrimary)
 
-  const topStr = topNames.length ? topNames.join(' and ') : 'your closest nodes'
+  if (!focal) return null
+
+  const An = primary.name?.split(' ')[0] || 'You'
+  const Bn = focal.name?.split(' ')[0] || 'them'
+  const isEx = ['ex-spouse', 'ex-partner'].includes(focal.rel)
+
+  const Ae = ENNEA[primary.enneagramType]
+  const Be = ENNEA[focal.enneagramType]
+  const hasBoth = Ae && Be
+
+  // HD supplement (if computed)
+  const Ahd = primary.hdType && primary.hdType !== '?' ? primary.hdType : null
+  const Bhd = focal.hdType && focal.hdType !== '?' ? focal.hdType : null
+  const hdLine = Ahd && Bhd
+    ? ` Energetically: ${An} as a ${Ahd} meeting ${Bn} as a ${Bhd} — two different modes of moving through the world.`
+    : Ahd ? ` ${An}'s ${Ahd} energy shapes how this dynamic moves.` : ''
 
   if (year === 1) {
-    const partnerLine = partner
-      ? ` ${partner.name.split(' ')[0]}'s presence intensifies — the bond either deepens into true intimacy or begins showing its structural cracks.`
-      : ' Romantic potential with a new person may crystallize if the field has been held open.'
-    const exLine = exes.length
-      ? ` ${exes[0].name.split(' ')[0]}'s node dims further — distance confirms the severing was real.`
-      : ''
-    return `In one year, ${topStr} emerge as load-bearing relationships — dialogue has hardened into pattern.${partnerLine}${exLine} Peripheral connections start self-sorting: those who didn't initiate begin to fade from the active field.`
+    if (hasBoth) {
+      return (
+        `In the first year, ${An}'s ${Ae.name} pattern meets ${Bn}'s ${Be.name} shadow. ` +
+        `${An} ${Ae.yr1}. ${Bn} ${Be.yr1}. ` +
+        `The field is still lit by projection — what they see in each other is more mirror than person. ` +
+        `${An}'s core wound (${Ae.wound}) has not yet been touched; ${Bn}'s (${Be.wound}) remains below the surface.` +
+        `${hdLine} ` +
+        `The gift beginning to emerge between them: ${Ae.gift} in contact with ${Be.gift}.`
+      )
+    }
+    return (
+      `In the first year, the bond between ${An} and ${Bn} is still building its grammar. ` +
+      `What they offer each other has not yet been tested — the connection is real but has not yet met the real versions of each person.` +
+      `${hdLine}`
+    )
   }
+
   if (year === 2) {
-    const colLine = colleagues.length
-      ? ` The ${colleagues[0].name.split(' ')[0]} axis either becomes a lasting alliance or dissolves when the project ends.`
-      : ''
-    const friendLine = friends.length > 1
-      ? ` Of your ${friends.length} friends, roughly half remain in consistent contact — the rest recede to seasonal orbit.`
-      : ' Close friendships that survived year one have proven their structural integrity.'
-    const partnerLine = partner
-      ? ` With ${partner.name.split(' ')[0]}: if year one opened a wound, year two asks whether it healed or calcified.`
-      : exes.length ? ` ${exes[0].name.split(' ')[0]} is effectively gone from the active field — the energy has been returned.` : ''
-    return `At two years, the constellation has restructured.${colLine}${friendLine}${partnerLine} The bonds that remain are no longer circumstantial — they are chosen. ${topStr} anchor your relational world.`
+    if (hasBoth) {
+      return (
+        `At two years, the shadow is no longer hidden. ` +
+        `${An}'s pattern — ${Ae.relPattern} — has become visible and legible to ${Bn}. ` +
+        `${Bn}'s pattern — ${Be.relPattern} — has done the same. ` +
+        `${An} ${Ae.yr2}. ${Bn} ${Be.yr2}. ` +
+        `The wound at the center of the bond: ${An}'s ${Ae.wound} colliding with ${Bn}'s ${Be.wound}. ` +
+        `This is the year most bonds either transform or dissolve — the question is whether both people can see their pattern clearly enough to choose differently.` +
+        (isEx ? ` If this is where the bond ended, it was not failure — it was the pattern completing itself.` : '')
+      )
+    }
+    return (
+      `At two years, the constellation has met the real. The version of ${Bn} that ${An} imagined has given way to the person who actually exists — with their shadows intact. ` +
+      `What has been built is either structural or it is theater.` +
+      (isEx ? ` If the bond ended here, it held its shape exactly as long as it was meant to.` : '')
+    )
   }
+
   if (year === 3) {
-    const survivalStr = profiles.length > 4
-      ? `Of your original ${profiles.length} connections, 3–4 remain truly active`
-      : `Your ${profiles.length}-person constellation has reached steady state`
-    const partnerLine = partner
-      ? ` ${partner.name.split(' ')[0]} is either fully woven into your life or the relationship has completed its arc — three years is long enough for truth.`
-      : ''
-    const legacyLine = exes.length ? ` ${exes.map(e => e.name.split(' ')[0]).join(' and ')} exist only in memory — their nodes have gone dark.` : ''
-    return `At three years, the field has stabilized. ${survivalStr} — these are the people you are genuinely building with.${partnerLine}${legacyLine} What remains is not what was easiest — it's what was most real. ${topStr} have become part of your permanent architecture.`
+    if (hasBoth) {
+      const transformA = `${An} has moved toward ${Ae.yr3}`
+      const transformB = `${Bn} has moved toward ${Be.yr3}`
+      const giftLine = isEx
+        ? `What ${An} carries forward from contact with ${Bn}'s ${Be.shadow}: a deeper relationship with ${Ae.gift}. What the rupture taught: that the wound (${Ae.wound}) needed to be seen before it could be moved through.`
+        : `${transformA}. ${transformB}. The gifts that required the wound to emerge — ${Ae.gift} and ${Be.gift} — are now legible to each other, perhaps for the first time.`
+      return (
+        `At three years, the field has stabilized into truth. ` +
+        giftLine +
+        ` Three years is long enough for the pattern to have been seen, resisted, surrendered to, or transformed. ` +
+        `What remains — or what was released — is not what was easiest. It is what was most real.`
+      )
+    }
+    return (
+      `At three years, ${An}'s constellation has reached its true form. ` +
+      `The bonds that endured are not circumstantial — they are structural. ` +
+      `What was released made space. What remained proved itself.` +
+      (isEx ? ` ${Bn}'s chapter is complete — not erased, but integrated.` : ` ${Bn} has become part of the permanent architecture.`)
+    )
   }
+
   return null
 }
 
@@ -516,8 +651,8 @@ export default function WatercoolerPage() {
   const people = useGolemStore((s) => s.people)
 
   const allProfiles = [
-    { ...primaryProfile, _isPrimary: true },
-    ...(people || []),
+    { ...computePersonData(primaryProfile), _isPrimary: true },
+    ...(people || []).map(computePersonData),
   ].filter(p => p.name)
 
   useEffect(() => { setThreads(loadThreads()) }, [])
