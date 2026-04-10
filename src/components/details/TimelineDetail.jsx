@@ -473,7 +473,7 @@ export default function TimelineDetail() {
   const result = useMemo(() => {
     try {
       return buildEvents(profile)
-    } catch {
+    } catch (e) {
       console.error('TimelineDetail error:', e)
       return null
     }

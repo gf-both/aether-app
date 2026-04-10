@@ -17,7 +17,7 @@ export default function ChineseZodiac() {
       if (!dob) return null
       const [hour, minute] = (tob || '12:00').split(':').map(Number)
       return getChineseProfileFromDob(dob, { hour: isNaN(hour) ? 12 : hour, minute: isNaN(minute) ? 0 : minute })
-    } catch {
+    } catch (e) {
       console.error('ChineseEngine error:', e)
       return null
     }

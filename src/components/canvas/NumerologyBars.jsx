@@ -57,7 +57,7 @@ export default function NumerologyBars() {
         nums: bars.map(b => b.n),
         labs: bars.map(b => b.l),
       }
-    } catch {
+    } catch (e) {
       console.error('NumerologyBars engine error:', e)
       return { nums: null, labs: null }
     }

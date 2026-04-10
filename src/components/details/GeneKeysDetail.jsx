@@ -122,7 +122,7 @@ export default function GeneKeysDetail() {
       const [hour, minute] = tob.split(':').map(Number)
       const timezone = profile.birthTimezone ?? -3
       return computeGeneKeysData({ day, month, year, hour: hour || 12, minute: minute || 0, timezone })
-    } catch {
+    } catch (e) {
       console.error('GeneKeysDetail error:', e)
       return null
     }

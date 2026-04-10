@@ -32,9 +32,9 @@ export function computePersonData(raw) {
       const hd = computeHDChart({ dateOfBirth: p.dob, timeOfBirth: p.tob || '12:00', utcOffset: p.birthTimezone ?? -3 })
       if (hd) {
         p.hdType    = hd.type
-        p.hdProfile = hd.profile
-        p.hdAuth    = hd.authority
-        p.hdDef     = hd.definition
+        p.hdProfile = (p.hdProfile && p.hdProfile !== '?') ? p.hdProfile : hd.profile
+        p.hdAuth    = (p.hdAuth && p.hdAuth !== '?') ? p.hdAuth : hd.authority
+        p.hdDef     = (p.hdDef && p.hdDef !== '?') ? p.hdDef : hd.definition
       }
     } catch {}
   }
@@ -96,9 +96,10 @@ export function useComputedProfile() {
         })
         if (hd) {
           p.hdType    = hd.type
-          p.hdProfile = hd.profile
-          p.hdAuth    = hd.authority
-          p.hdDef     = hd.definition
+          // Preserve hardcoded profile if set (overrides engine, fixes edge cases)
+          p.hdProfile = (p.hdProfile && p.hdProfile !== '?') ? p.hdProfile : hd.profile
+          p.hdAuth    = (p.hdAuth && p.hdAuth !== '?') ? p.hdAuth : hd.authority
+          p.hdDef     = (p.hdDef && p.hdDef !== '?') ? p.hdDef : hd.definition
         }
       } catch {}
     }

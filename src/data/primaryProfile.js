@@ -48,7 +48,7 @@ export const DEFAULT_PEOPLE = [
     asc: '?',
     moon: '?',
     hdType: '?',
-    hdProfile: '?',
+    hdProfile: '2/4',
     hdAuth: '?',
     hdDef: '?',
     lifePath: '?',

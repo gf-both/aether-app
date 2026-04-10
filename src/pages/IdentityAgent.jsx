@@ -12,6 +12,7 @@ export default function IdentityAgent() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [section, setSection] = useState('mission')
+  const [aiError, setAiError] = useState(null)
 
   // Compute all engine outputs
   const engineData = useMemo(() => {
@@ -97,6 +98,7 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
     if (!profile?.dob || !profile?.name) return
     setLoading(true)
     setResult(null)
+    setAiError(null)
 
     try {
       const prompt = buildSynthesisPrompt()
@@ -123,9 +125,12 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
 
         setResult(sections)
         setSection('mission')
+      } else {
+        setAiError('No AI backend is configured. Add your Anthropic API key or Supabase edge function to enable identity synthesis.')
       }
     } catch (e) {
       console.error('Identity synthesis error:', e)
+      setAiError(e?.message || 'Synthesis failed. Check your AI configuration.')
     }
     setLoading(false)
   }
@@ -175,6 +180,11 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
         >
           {loading ? 'Synthesizing across all frameworks...' : result ? 'Re-synthesize' : 'Run Identity Synthesis'}
         </button>
+        {aiError && (
+          <div style={{ marginTop:12, padding:'10px 14px', borderRadius:7, background:'rgba(212,48,112,.08)', border:'1px solid rgba(212,48,112,.25)', color:'rgba(240,96,160,.85)', fontSize:11, lineHeight:1.6, maxWidth:480 }}>
+            {aiError}
+          </div>
+        )}
       </div>
 
       {result && (
