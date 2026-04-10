@@ -285,7 +285,7 @@ function ArchetypeQuiz() {
 }
 
 export default function ArchetypeDetail() {
-  const archetypeType = useGolemStore((s) => s.archetypeType)
+  const archetypeType = useGolemStore((s) => (s.activeViewProfile || s.primaryProfile)?.archetypeType)
   const setArchetypeType = useGolemStore((s) => s.setArchetypeType)
   const [showQuiz, setShowQuiz] = useState(false)
 

@@ -199,17 +199,38 @@ export const useGolemStore = create(
       showWidgetManager: false,
       setShowWidgetManager: (v) => set({ showWidgetManager: v }),
 
-      // Dosha type (Ayurvedic constitution, e.g. 'Vata-Pitta')
-      doshaType: null,
-      setDoshaType: (type) => set({ doshaType: type }),
+      // Dosha type — writes to the active profile, not a global field
+      doshaType: null, // legacy field kept for migration compatibility
+      setDoshaType: (type) => set((s) => {
+        if (s.activeViewProfile) {
+          const updated = { ...s.activeViewProfile, doshaType: type }
+          const people = s.people.map(p => p.id === updated.id ? updated : p)
+          return { activeViewProfile: updated, people }
+        }
+        return { primaryProfile: { ...s.primaryProfile, doshaType: type } }
+      }),
 
-      // Archetype type (Jungian, e.g. 'The Magician')
-      archetypeType: null,
-      setArchetypeType: (type) => set({ archetypeType: type }),
+      // Archetype type — writes to the active profile
+      archetypeType: null, // legacy field kept for migration compatibility
+      setArchetypeType: (type) => set((s) => {
+        if (s.activeViewProfile) {
+          const updated = { ...s.activeViewProfile, archetypeType: type }
+          const people = s.people.map(p => p.id === updated.id ? updated : p)
+          return { activeViewProfile: updated, people }
+        }
+        return { primaryProfile: { ...s.primaryProfile, archetypeType: type } }
+      }),
 
-      // Love Language (e.g. 'Quality Time')
-      loveLanguage: null,
-      setLoveLanguage: (lang) => set({ loveLanguage: lang }),
+      // Love Language — writes to the active profile
+      loveLanguage: null, // legacy field kept for migration compatibility
+      setLoveLanguage: (lang) => set((s) => {
+        if (s.activeViewProfile) {
+          const updated = { ...s.activeViewProfile, loveLanguage: lang }
+          const people = s.people.map(p => p.id === updated.id ? updated : p)
+          return { activeViewProfile: updated, people }
+        }
+        return { primaryProfile: { ...s.primaryProfile, loveLanguage: lang } }
+      }),
 
       // Subscription
       subscription: 'free', // 'free' | 'explorer' | 'practitioner'
