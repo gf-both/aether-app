@@ -24,7 +24,6 @@ import DoshaSymbol from '../components/canvas/DoshaSymbol'
 import LoveLangSymbol from '../components/canvas/LoveLangSymbol'
 import ArchetypeSymbol from '../components/canvas/ArchetypeSymbol'
 import TibetanWheel from '../components/canvas/TibetanWheel'
-import IntegralFigure from '../components/canvas/IntegralFigure'
 import NatalDetail from '../components/details/NatalDetail'
 import HDDetail from '../components/details/HDDetail'
 import KabbalahDetail from '../components/details/KabbalahDetail'
@@ -39,7 +38,6 @@ import PatternsDetail from '../components/details/PatternsDetail'
 import MBTIDetail from '../components/details/MBTIDetail'
 import EgyptianDetail from '../components/details/EgyptianDetail'
 import VedicDetail from '../components/details/VedicDetail'
-import IntegralDetail from '../components/details/IntegralDetail'
 import SynastryDetail from '../components/details/SynastryDetail'
 import ProfileDetail from '../components/details/ProfileDetail'
 import TibetanDetail from '../components/details/TibetanDetail'
@@ -233,8 +231,8 @@ const ROWS = [
     sub: 'Consciousness Maps \u00B7 Gene Keys \u00B7 Cross-Framework Intelligence',
     color: 'var(--aqua2)',
     border: 'rgba(64,204,221,.3)',
-    widgets: ['gk', 'integral', 'pat'],
-    cols: '1fr 1.3fr 1fr',
+    widgets: ['gk', 'pat'],
+    cols: '1fr 1fr',
   },
   {
     label: 'SACRED MATHEMATICS',
@@ -282,14 +280,13 @@ const CARD_HEIGHT = 520
 
 const CONSTELLATION_LINKS = [
   ['gk', 'hd'], ['natal', 'tr'], ['num', 'gem'], ['enn', 'mbti'],
-  ['kab', 'integral'], ['natal', 'hd'], ['mayan', 'chi'],
+  ['kab', 'gk'], ['natal', 'hd'], ['mayan', 'chi'],
 ]
 
 const DETAIL_COMPONENTS = {
   'identity-agent': IdentityAgent,
   'relationship-agent': RelationshipAgent,
   'life-direction': LifeDirectionAgent,
-  integral: IntegralDetail,
   natal: NatalDetail,
   hd: HDDetail,
   kab: KabbalahDetail,
@@ -332,7 +329,6 @@ const DETAIL_TITLES = {
   'identity-agent': 'Identity Synthesis \u2014 Who Am I Really?',
   'relationship-agent': 'Relationship Patterns \u2014 Why Do I Repeat This?',
   'life-direction': 'Life Direction \u2014 Where Should My Life Go?',
-  integral: 'Integral Consciousness \u2014 Full Map',
   natal: 'Natal Astrology \u2014 Full Profile',
   hd: 'Human Design \u2014 Full Profile',
   kab: 'Kabbalah \u2014 Full Profile',
@@ -460,13 +456,6 @@ function WidgetContent({ widgetId }) {
     } catch { return null }
   }, [profile?.dob])
   switch (widgetId) {
-    case 'integral':
-      return (
-        <>
-          <div className="ch"><span className="ct">Integral Consciousness &middot; Body Map</span><span className="ci">{'\u25CE'}</span></div>
-          <div className="cb"><IntegralFigure /></div>
-        </>
-      )
     case 'natal':
       return <NatalWidget />
     case 'hd':
@@ -717,7 +706,6 @@ const CARD_BASE = {
 }
 
 const WIDGET_META = {
-  integral: { icon: '\u25CE', label: 'Integral Map', sub: 'Consciousness \u00B7 Body Scan' },
   natal: { icon: '\u2609', label: 'Natal Astrology', sub: 'Zodiac Wheel \u00B7 Aspects' },
   hd: { icon: '\u25C8', label: 'Human Design', sub: 'Rave Chart \u00B7 Body Graph' },
   kab: { icon: '\u2721', label: 'Kabbalah', sub: 'Tree of Life \u00B7 Sephiroth' },
@@ -744,7 +732,6 @@ const WIDGET_META = {
 
 /* ── Category Badges ── */
 const WIDGET_CATEGORIES = {
-  integral: { label: 'META', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   natal:    { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   tr:       { label: 'WESTERN', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   vedic:    { label: 'EASTERN', color: 'rgba(160,100,255,.8)', bg: 'rgba(160,100,255,.08)', border: 'rgba(160,100,255,.2)' },
@@ -826,7 +813,7 @@ function DemoBanner() {
 }
 
 /* ── Widget Manager Bar ── */
-const ALL_WIDGET_IDS = ['integral', 'natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'dosha', 'archetype', 'lovelang', 'timeline', 'career']
+const ALL_WIDGET_IDS = ['natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'dosha', 'archetype', 'lovelang', 'timeline', 'career']
 
 function WidgetManagerBar() {
   const widgetOrder = useGolemStore((s) => s.widgetOrder)

@@ -20,7 +20,6 @@ const ALL_WIDGETS = [
   { id: 'hd',        label: 'Human Design',  icon: '◈' },
   { id: 'kab',       label: 'Kabbalah',      icon: '✡' },
   { id: 'gk',        label: 'Gene Keys',     icon: '⬡' },
-  { id: 'integral',  label: 'Integral Map',  icon: '◎' },
   { id: 'pat',       label: 'Patterns',      icon: '🕸' },
   { id: 'mayan',     label: 'Mayan Calendar',icon: '🔺' },
   { id: 'chi',       label: 'Chinese Zodiac',icon: '🐉' },

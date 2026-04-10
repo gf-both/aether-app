@@ -16,8 +16,6 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
   { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
   { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
-  { type: 'item', icon: '◎', label: 'Integral Map', id: 'integral', widget: 'integral' },
-
   { type: 'section', label: 'OTHERS' },
   { type: 'item', icon: '✦', label: 'Constellation', id: 'aiagents', widget: 'aiagents' },
   { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },

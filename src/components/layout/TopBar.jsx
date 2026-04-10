@@ -4,8 +4,6 @@ import { useGolemStore } from '../../store/useGolemStore'
 import { useClock } from '../../hooks/useClock'
 
 const NAV_SECTIONS = [
-  { icon: '\u25CE', label: 'Integral Map', widget: 'integral' },
-  null,
   { icon: '\u2609', label: 'Natal Chart', widget: 'natal' },
   { icon: '\u263D', label: 'Transits', widget: 'tr' },
   null,

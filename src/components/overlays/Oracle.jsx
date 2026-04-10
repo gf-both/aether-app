@@ -8,7 +8,7 @@ import { callAI } from '../../lib/ai'
 
 const DETAIL_LABELS = {
   natal: 'Natal Chart', tr: 'Transits', hd: 'Human Design', kab: 'Kabbalah',
-  gk: 'Gene Keys', integral: 'Integral Map', pat: 'Patterns', mayan: 'Mayan Calendar',
+  gk: 'Gene Keys', pat: 'Patterns', mayan: 'Mayan Calendar',
   enn: 'Enneagram', chi: 'Chinese Zodiac', gem: 'Gematria', mbti: 'Myers-Briggs',
   egyptian: 'Egyptian', vedic: 'Vedic Astrology', tibetan: 'Tibetan', num: 'Numerology',
   dosha: 'Dosha', archetype: 'Archetype', lovelang: 'Love Language', timeline: 'Timeline',
