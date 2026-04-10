@@ -14,6 +14,10 @@ import { supabase } from './supabase'
 const OLLAMA_URL = 'http://localhost:11434'
 const OLLAMA_MODEL = 'qwen2.5:14b'
 
+// Only attempt Ollama when running locally — avoids Chrome's "access local network"
+// permission popup when the app is served from a remote host (Vercel, etc.)
+const IS_LOCAL_DEV = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+
 const HAS_SUPABASE =
   import.meta.env.VITE_SUPABASE_URL &&
   !import.meta.env.VITE_SUPABASE_URL.includes('placeholder') &&
@@ -112,8 +116,8 @@ export async function callAI({ systemPrompt, messages, maxTokens = 400, provider
       throw new Error('No Anthropic backend configured')
     }
 
-    // auto: Ollama → Supabase → direct Anthropic
-    if (await ollamaAvailable()) {
+    // auto: Ollama (local dev only) → Supabase → direct Anthropic
+    if (IS_LOCAL_DEV && await ollamaAvailable()) {
       const result = await callOllama({ systemPrompt, messages, maxTokens })
       if (result) return result
       console.warn('[ai] Ollama returned empty, falling back')
@@ -126,8 +130,8 @@ export async function callAI({ systemPrompt, messages, maxTokens = 400, provider
     return null
   } catch (e) {
     console.error('[ai] callAI failed:', e)
-    // If Ollama failed, try Anthropic as fallback
-    if (provider === 'auto' && e.message?.includes('Ollama')) {
+    // If Ollama failed (local dev), try Anthropic as fallback
+    if (IS_LOCAL_DEV && provider === 'auto' && e.message?.includes('Ollama')) {
       try {
         if (HAS_SUPABASE) return await callViaEdgeFunction({ systemPrompt, messages, maxTokens })
         if (ANTHROPIC_KEY) return await callDirectAnthropic({ systemPrompt, messages, maxTokens })
