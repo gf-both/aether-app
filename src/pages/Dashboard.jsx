@@ -262,6 +262,14 @@ const ROWS = [
     cols: 'repeat(6, 1fr)',
   },
   {
+    label: 'THE UNCONSCIOUS',
+    sub: 'Dream Journal \u00B7 Synchronicities \u00B7 Jungian Symbols \u00B7 Acausal Field',
+    color: 'rgba(130,90,220,1)',
+    border: 'rgba(130,90,220,.3)',
+    widgets: ['dream', 'sync'],
+    cols: '1fr 1fr',
+  },
+  {
     label: 'PRACTICE & RITUAL',
     sub: '12 Ancient Traditions \u00B7 Moon-Aligned \u00B7 Shadow Work \u00B7 Guided Practice',
     color: '#e0a040',
