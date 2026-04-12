@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle', 'dream', 'vedic', 'tibetan', 'timeline', 'career']
+const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle', 'ritual', 'dream', 'sync', 'vedic', 'tibetan', 'timeline', 'career']
 
 export const useGolemStore = create(
   persist(
@@ -376,10 +376,19 @@ export const useGolemStore = create(
         set((s) => ({ dreams: s.dreams.map(d => d.id === id ? { ...d, ...updates } : d) })),
       deleteDream: (id) =>
         set((s) => ({ dreams: s.dreams.filter(d => d.id !== id) })),
+
+      // ─── Synchronicity Log ────────────────────────────────────────────────
+      syncs: [],
+      addSync: (sync) =>
+        set((s) => ({ syncs: [sync, ...s.syncs] })),
+      updateSync: (id, updates) =>
+        set((s) => ({ syncs: s.syncs.map(e => e.id === id ? { ...e, ...updates } : e) })),
+      deleteSync: (id) =>
+        set((s) => ({ syncs: s.syncs.filter(e => e.id !== id) })),
     }),
     {
       name: 'golem-store',
-      version: 7,
+      version: 9,
       migrate: (persistedState, version) => {
         if (version < 2) {
           return { ...persistedState, primaryProfile: undefined }
@@ -408,6 +417,25 @@ export const useGolemStore = create(
             if (cycleIdx >= 0) order.splice(cycleIdx + 1, 0, 'dream')
             else order.push('dream')
             persistedState = { ...persistedState, widgetOrder: [...order], dreams: persistedState.dreams || [] }
+          }
+        }
+        if (version < 8) {
+          const order = persistedState.widgetOrder || []
+          if (!order.includes('ritual')) {
+            const dreamIdx = order.indexOf('dream')
+            if (dreamIdx >= 0) order.splice(dreamIdx, 0, 'ritual')
+            else order.push('ritual')
+            persistedState = { ...persistedState, widgetOrder: [...order] }
+          }
+        }
+        if (version < 9) {
+          // Add 'sync' after 'dream' if not already present
+          const order = persistedState.widgetOrder || []
+          if (!order.includes('sync')) {
+            const dreamIdx = order.indexOf('dream')
+            if (dreamIdx >= 0) order.splice(dreamIdx + 1, 0, 'sync')
+            else order.push('sync')
+            persistedState = { ...persistedState, widgetOrder: [...order], syncs: persistedState.syncs || [] }
           }
         }
         return persistedState

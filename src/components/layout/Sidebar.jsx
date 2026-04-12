@@ -14,6 +14,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '💫', label: 'Relationship', id: 'relationship-agent', widget: 'relationship-agent' },
   { type: 'item', icon: '🧭', label: 'Life Direction', id: 'life-direction', widget: 'life-direction' },
   { type: 'item', icon: '🕸', label: 'Patterns', id: 'pat', widget: 'pat' },
+  { type: 'item', icon: '🪷', label: 'Rituals', id: 'ritual', widget: 'ritual' },
   { type: 'item', icon: '🪬', label: 'Golem', id: 'golem', widget: 'golem' },
   { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
   { type: 'item', icon: '🧭', label: 'Career', id: 'career', widget: 'career' },
@@ -50,6 +51,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '💗', label: 'Love Language', id: 'lovelang', widget: 'lovelang' },
   { type: 'item', icon: '🌙', label: 'Cycle', id: 'cycle', widget: 'cycle' },
   { type: 'item', icon: '✦', label: 'Dreams', id: 'dream', widget: 'dream' },
+  { type: 'item', icon: '⟡', label: 'Synchronicities', id: 'sync', widget: 'sync' },
 
   { type: 'section', label: 'EASTERN WISDOM' },
   { type: 'item', icon: '🪷', label: 'Vedic', id: 'vedic', widget: 'vedic' },

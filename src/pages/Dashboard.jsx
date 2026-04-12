@@ -52,6 +52,11 @@ import CycleWheel from '../components/canvas/CycleWheel'
 import CycleDetail from '../components/details/CycleDetail'
 import DreamSymbol from '../components/canvas/DreamSymbol'
 import DreamDetail from '../components/details/DreamDetail'
+import SyncCanvas from '../components/canvas/SyncCanvas'
+import SyncDetail from '../components/details/SyncDetail'
+import RitualWheel from '../components/canvas/RitualWheel'
+import RitualDetail from '../components/details/RitualDetail'
+import { getRecommendedRituals } from '../engines/ritualEngine'
 const PricingPage = lazy(() => import('./PricingPage'))
 const PractitionerPortal = lazy(() => import('./PractitionerPortal'))
 const ClientPortal = lazy(() => import('./ClientPortal'))
@@ -257,6 +262,14 @@ const ROWS = [
     cols: 'repeat(6, 1fr)',
   },
   {
+    label: 'PRACTICE & RITUAL',
+    sub: '12 Ancient Traditions \u00B7 Moon-Aligned \u00B7 Shadow Work \u00B7 Guided Practice',
+    color: '#e0a040',
+    border: 'rgba(224,160,64,.3)',
+    widgets: ['ritual'],
+    cols: '1fr',
+  },
+  {
     label: 'EASTERN WISDOM',
     sub: 'Jyotish \u00B7 Sidereal \u00B7 Nakshatras \u00B7 Dasha',
     color: 'rgba(160,100,255,1)',
@@ -312,7 +325,9 @@ const DETAIL_COMPONENTS = {
   archetype: ArchetypeDetail,
   lovelang: LoveLangDetail,
   cycle: CycleDetail,
+  ritual: RitualDetail,
   dream: DreamDetail,
+  sync: SyncDetail,
   timeline: TimelineDetail,
   career: CareerAlignmentDetail,
   synastry: SynastryDetail,
@@ -358,7 +373,9 @@ const DETAIL_TITLES = {
   archetype: 'Archetype Assessment \u2014 Jungian Pattern',
   lovelang: 'Love Languages \u2014 How You Give & Receive Love',
   cycle: 'Cycle \u00B7 Moon Phases \u2014 Your Lunar Rhythm',
+  ritual: 'Rituals \u2014 Ancient Practices \u00B7 12 Traditions \u00B7 Moon-Aligned',
   dream: 'Dream Journal \u2014 Symbols \u00B7 Patterns \u00B7 The Unconscious',
+  sync: 'Synchronicities \u2014 The Acausal Field \u00B7 Meaningful Coincidences',
   timeline: 'Life Timeline \u2014 Life Arc of Your Journey',
   career: 'Career Alignment \u2014 Your Cosmic Professional Blueprint',
   profile: 'Profiles \u2014 Constellation',
@@ -424,6 +441,7 @@ function WidgetContent({ widgetId }) {
   const globalLoveLanguage = useGolemStore((s) => s.loveLanguage)
   const setActiveQuiz = useGolemStore((s) => s.setActiveQuiz)
   const dreams = useGolemStore((s) => s.dreams)
+  const syncs = useGolemStore((s) => s.syncs)
   const doshaType = profile?.doshaType ?? globalDoshaType
   const archetypeType = profile?.archetypeType ?? globalArchetypeType
   const loveLanguage = profile?.loveLanguage ?? globalLoveLanguage
@@ -813,6 +831,21 @@ function WidgetContent({ widgetId }) {
         </>
       )
     }
+    case 'ritual': {
+      const ritualResult = getRecommendedRituals(profile)
+      const topR = ritualResult.topRecommendation
+      return (
+        <>
+          <div className="ch">
+            <span className="ct">Rituals{topR ? ` · ${topR.name}` : ' · 12 Traditions'}</span>
+            <span className="ci">{'🪷'}</span>
+          </div>
+          <div className="cb">
+            <RitualWheel topRitual={topR} score={topR?.score} />
+          </div>
+        </>
+      )
+    }
     case 'dream': {
       const recentDream = dreams[0]
       return (
@@ -823,6 +856,20 @@ function WidgetContent({ widgetId }) {
           </div>
           <div className="cb">
             <DreamSymbol dreams={dreams} />
+          </div>
+        </>
+      )
+    }
+    case 'sync': {
+      const recentSync = syncs[0]
+      return (
+        <>
+          <div className="ch">
+            <span className="ct">Synchronicities{recentSync ? ` · ${recentSync.title}` : ' · The Field is Speaking'}</span>
+            <span className="ci">{'⟡'}</span>
+          </div>
+          <div className="cb">
+            <SyncCanvas syncs={syncs} />
           </div>
         </>
       )
@@ -867,7 +914,9 @@ const WIDGET_META = {
   archetype: { icon: '⬡', label: 'Archetype', sub: 'Jungian Pattern \u00B7 12 Archetypes' },
   lovelang: { icon: '🤗', label: 'Love Languages', sub: 'Give & Receive \u00B7 5 Languages' },
   cycle: { icon: '☽', label: 'Cycle', sub: 'Menstrual \u00B7 Moon Phases \u00B7 Fertility' },
+  ritual: { icon: '🪷', label: 'Rituals', sub: '12 Traditions \u00B7 Moon-Aligned \u00B7 Ancient Practices' },
   dream: { icon: '✦', label: 'Dream Journal', sub: 'Jungian Symbols \u00B7 Patterns \u00B7 Archetypes' },
+  sync: { icon: '⟡', label: 'Synchronicities', sub: 'Acausal Field \u00B7 Numbers \u00B7 Signs' },
   timeline: { icon: '⟳', label: 'Life Timeline', sub: 'Life Arc \u00B7 Key Life Events' },
   career: { icon: '◈', label: 'Career Alignment', sub: 'profile \u00B7 Role Matching' },
   practitioner: { icon: '\uD83C\uDFE5', label: 'Practitioner Portal', sub: 'Clients \u00B7 Sessions \u00B7 Revenue' },
@@ -895,7 +944,9 @@ const WIDGET_CATEGORIES = {
   archetype:{ label: 'JUNGIAN', color: 'rgba(168,120,232,.8)', bg: 'rgba(168,120,232,.08)', border: 'rgba(168,120,232,.2)' },
   lovelang: { label: 'RELATIONAL', color: 'rgba(238,136,102,.8)', bg: 'rgba(238,136,102,.08)', border: 'rgba(238,136,102,.2)' },
   cycle:    { label: 'LUNAR', color: 'rgba(196,77,122,.8)', bg: 'rgba(196,77,122,.08)', border: 'rgba(196,77,122,.2)' },
+  ritual:   { label: 'RITUAL', color: 'rgba(224,160,64,.8)', bg: 'rgba(224,160,64,.08)', border: 'rgba(224,160,64,.2)' },
   dream:    { label: 'DREAMS', color: 'rgba(130,90,220,.8)', bg: 'rgba(130,90,220,.08)', border: 'rgba(130,90,220,.2)' },
+  sync:     { label: 'SYNC', color: 'rgba(201,168,76,.8)', bg: 'rgba(201,168,76,.06)', border: 'rgba(201,168,76,.2)' },
   timeline: { label: 'TIMELINE', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   career:   { label: 'CAREER',   color: 'rgba(96,180,255,.8)', bg: 'rgba(96,180,255,.08)',  border: 'rgba(96,180,255,.2)'  },
 }
@@ -959,7 +1010,7 @@ function DemoBanner() {
 }
 
 /* ── Widget Manager Bar ── */
-const ALL_WIDGET_IDS = ['natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'dosha', 'archetype', 'lovelang', 'timeline', 'career']
+const ALL_WIDGET_IDS = ['natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'dosha', 'archetype', 'lovelang', 'cycle', 'ritual', 'dream', 'sync', 'timeline', 'career']
 
 function WidgetManagerBar() {
   const widgetOrder = useGolemStore((s) => s.widgetOrder)
