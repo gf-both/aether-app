@@ -50,6 +50,8 @@ import CareerWheel from '../components/canvas/CareerWheel'
 import TimelineWidget from '../components/canvas/TimelineWidget'
 import CycleWheel from '../components/canvas/CycleWheel'
 import CycleDetail from '../components/details/CycleDetail'
+import DreamSymbol from '../components/canvas/DreamSymbol'
+import DreamDetail from '../components/details/DreamDetail'
 const PricingPage = lazy(() => import('./PricingPage'))
 const PractitionerPortal = lazy(() => import('./PractitionerPortal'))
 const ClientPortal = lazy(() => import('./ClientPortal'))
@@ -310,6 +312,7 @@ const DETAIL_COMPONENTS = {
   archetype: ArchetypeDetail,
   lovelang: LoveLangDetail,
   cycle: CycleDetail,
+  dream: DreamDetail,
   timeline: TimelineDetail,
   career: CareerAlignmentDetail,
   synastry: SynastryDetail,
@@ -355,6 +358,7 @@ const DETAIL_TITLES = {
   archetype: 'Archetype Assessment \u2014 Jungian Pattern',
   lovelang: 'Love Languages \u2014 How You Give & Receive Love',
   cycle: 'Cycle \u00B7 Moon Phases \u2014 Your Lunar Rhythm',
+  dream: 'Dream Journal \u2014 Symbols \u00B7 Patterns \u00B7 The Unconscious',
   timeline: 'Life Timeline \u2014 Life Arc of Your Journey',
   career: 'Career Alignment \u2014 Your Cosmic Professional Blueprint',
   profile: 'Profiles \u2014 Constellation',
@@ -419,6 +423,7 @@ function WidgetContent({ widgetId }) {
   const globalArchetypeType = useGolemStore((s) => s.archetypeType)
   const globalLoveLanguage = useGolemStore((s) => s.loveLanguage)
   const setActiveQuiz = useGolemStore((s) => s.setActiveQuiz)
+  const dreams = useGolemStore((s) => s.dreams)
   const doshaType = profile?.doshaType ?? globalDoshaType
   const archetypeType = profile?.archetypeType ?? globalArchetypeType
   const loveLanguage = profile?.loveLanguage ?? globalLoveLanguage
@@ -808,6 +813,20 @@ function WidgetContent({ widgetId }) {
         </>
       )
     }
+    case 'dream': {
+      const recentDream = dreams[0]
+      return (
+        <>
+          <div className="ch">
+            <span className="ct">Dream Journal{recentDream ? ` · ${recentDream.title}` : ' · Record & Decode'}</span>
+            <span className="ci">{'✦'}</span>
+          </div>
+          <div className="cb">
+            <DreamSymbol dreams={dreams} />
+          </div>
+        </>
+      )
+    }
     case 'timeline': return <TimelineWidget />
     case 'career': return (
       <>
@@ -848,6 +867,7 @@ const WIDGET_META = {
   archetype: { icon: '⬡', label: 'Archetype', sub: 'Jungian Pattern \u00B7 12 Archetypes' },
   lovelang: { icon: '🤗', label: 'Love Languages', sub: 'Give & Receive \u00B7 5 Languages' },
   cycle: { icon: '☽', label: 'Cycle', sub: 'Menstrual \u00B7 Moon Phases \u00B7 Fertility' },
+  dream: { icon: '✦', label: 'Dream Journal', sub: 'Jungian Symbols \u00B7 Patterns \u00B7 Archetypes' },
   timeline: { icon: '⟳', label: 'Life Timeline', sub: 'Life Arc \u00B7 Key Life Events' },
   career: { icon: '◈', label: 'Career Alignment', sub: 'profile \u00B7 Role Matching' },
   practitioner: { icon: '\uD83C\uDFE5', label: 'Practitioner Portal', sub: 'Clients \u00B7 Sessions \u00B7 Revenue' },
@@ -875,6 +895,7 @@ const WIDGET_CATEGORIES = {
   archetype:{ label: 'JUNGIAN', color: 'rgba(168,120,232,.8)', bg: 'rgba(168,120,232,.08)', border: 'rgba(168,120,232,.2)' },
   lovelang: { label: 'RELATIONAL', color: 'rgba(238,136,102,.8)', bg: 'rgba(238,136,102,.08)', border: 'rgba(238,136,102,.2)' },
   cycle:    { label: 'LUNAR', color: 'rgba(196,77,122,.8)', bg: 'rgba(196,77,122,.08)', border: 'rgba(196,77,122,.2)' },
+  dream:    { label: 'DREAMS', color: 'rgba(130,90,220,.8)', bg: 'rgba(130,90,220,.08)', border: 'rgba(130,90,220,.2)' },
   timeline: { label: 'TIMELINE', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   career:   { label: 'CAREER',   color: 'rgba(96,180,255,.8)', bg: 'rgba(96,180,255,.08)',  border: 'rgba(96,180,255,.2)'  },
 }

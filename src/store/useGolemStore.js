@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle', 'vedic', 'tibetan', 'timeline', 'career']
+const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle', 'dream', 'vedic', 'tibetan', 'timeline', 'career']
 
 export const useGolemStore = create(
   persist(
@@ -367,10 +367,19 @@ export const useGolemStore = create(
             { ...client, id: client.id || Date.now().toString() },
           ],
         })),
+
+      // ─── Dream Journal ────────────────────────────────────────────────────
+      dreams: [],
+      addDream: (dream) =>
+        set((s) => ({ dreams: [dream, ...s.dreams] })),
+      updateDream: (id, updates) =>
+        set((s) => ({ dreams: s.dreams.map(d => d.id === id ? { ...d, ...updates } : d) })),
+      deleteDream: (id) =>
+        set((s) => ({ dreams: s.dreams.filter(d => d.id !== id) })),
     }),
     {
       name: 'golem-store',
-      version: 6,
+      version: 7,
       migrate: (persistedState, version) => {
         if (version < 2) {
           return { ...persistedState, primaryProfile: undefined }
@@ -383,16 +392,22 @@ export const useGolemStore = create(
           }
         }
         if (version < 6) {
-          // Add 'cycle' after 'lovelang' if not already present
           const order = persistedState.widgetOrder || []
           if (!order.includes('cycle')) {
             const llIdx = order.indexOf('lovelang')
-            if (llIdx >= 0) {
-              order.splice(llIdx + 1, 0, 'cycle')
-            } else {
-              order.push('cycle')
-            }
+            if (llIdx >= 0) order.splice(llIdx + 1, 0, 'cycle')
+            else order.push('cycle')
             persistedState = { ...persistedState, widgetOrder: [...order] }
+          }
+        }
+        if (version < 7) {
+          // Add 'dream' after 'cycle' if not already present
+          const order = persistedState.widgetOrder || []
+          if (!order.includes('dream')) {
+            const cycleIdx = order.indexOf('cycle')
+            if (cycleIdx >= 0) order.splice(cycleIdx + 1, 0, 'dream')
+            else order.push('dream')
+            persistedState = { ...persistedState, widgetOrder: [...order], dreams: persistedState.dreams || [] }
           }
         }
         return persistedState

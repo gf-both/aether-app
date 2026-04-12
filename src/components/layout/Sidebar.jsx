@@ -49,6 +49,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '🎭', label: 'Archetype', id: 'archetype', widget: 'archetype' },
   { type: 'item', icon: '💗', label: 'Love Language', id: 'lovelang', widget: 'lovelang' },
   { type: 'item', icon: '🌙', label: 'Cycle', id: 'cycle', widget: 'cycle' },
+  { type: 'item', icon: '✦', label: 'Dreams', id: 'dream', widget: 'dream' },
 
   { type: 'section', label: 'EASTERN WISDOM' },
   { type: 'item', icon: '🪷', label: 'Vedic', id: 'vedic', widget: 'vedic' },
