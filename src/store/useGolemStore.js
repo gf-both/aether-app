@@ -370,16 +370,29 @@ export const useGolemStore = create(
     }),
     {
       name: 'golem-store',
-      version: 5,
+      version: 6,
       migrate: (persistedState, version) => {
         if (version < 2) {
           return { ...persistedState, primaryProfile: undefined }
         }
         if (version < 5) {
-          return {
+          persistedState = {
             ...persistedState,
             hiddenWidgets: [],
             widgetOrder: ['natal', 'tr', 'hd', 'kab', 'num', 'gk', 'mayan', 'enn', 'chi', 'gem', 'pat', 'mbti', 'egyptian', 'vedic', 'tibetan', 'dosha', 'archetype', 'lovelang', 'timeline']
+          }
+        }
+        if (version < 6) {
+          // Add 'cycle' after 'lovelang' if not already present
+          const order = persistedState.widgetOrder || []
+          if (!order.includes('cycle')) {
+            const llIdx = order.indexOf('lovelang')
+            if (llIdx >= 0) {
+              order.splice(llIdx + 1, 0, 'cycle')
+            } else {
+              order.push('cycle')
+            }
+            persistedState = { ...persistedState, widgetOrder: [...order] }
           }
         }
         return persistedState
