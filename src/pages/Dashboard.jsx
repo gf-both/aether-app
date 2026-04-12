@@ -48,6 +48,8 @@ import TimelineDetail from '../components/details/TimelineDetail'
 import CareerAlignmentDetail from '../components/details/CareerAlignmentDetail'
 import CareerWheel from '../components/canvas/CareerWheel'
 import TimelineWidget from '../components/canvas/TimelineWidget'
+import CycleWheel from '../components/canvas/CycleWheel'
+import CycleDetail from '../components/details/CycleDetail'
 const PricingPage = lazy(() => import('./PricingPage'))
 const PractitionerPortal = lazy(() => import('./PractitionerPortal'))
 const ClientPortal = lazy(() => import('./ClientPortal'))
@@ -65,9 +67,10 @@ const AdminPanel = lazy(() => import('./AdminPanel'))
 const BenchmarkPage = lazy(() => import('./BenchmarkPage'))
 const WatercoolerPage = lazy(() => import('./WatercoolerPage'))
 const OrgGraphPage = lazy(() => import('./OrgGraphPage'))
+const HomePage = lazy(() => import('./HomePage'))
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../data/hdData'
 import { computeHDChart, buildHDTags } from '../engines/hdEngine'
-import { GK_LIST } from '../data/geneKeysData'
+import { GK_LIST, computeGeneKeysData } from '../data/geneKeysData'
 import { MAYAN_PROFILE, computeFullProfile as computeMayanProfile } from '../data/mayanData'
 import { getChineseProfileFromDob } from '../engines/chineseEngine'
 import { ENNEAGRAM_PROFILE, ENNEAGRAM_TYPES } from '../data/enneagramData'
@@ -77,6 +80,7 @@ import { CROSS_FRAMEWORK_ALIGNMENTS } from '../data/patternsData'
 import { EGYPTIAN_PROFILE } from '../data/egyptianData'
 import { getEgyptianSign } from '../engines/egyptianEngine'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
+import { computeCycleProfile, getMoonPhase } from '../engines/cycleEngine'
 
 // ── Drag-to-reorder hook (pointer events, works on mouse + touch) ──
 function useDragReorder(widgetOrder, setWidgetOrder, hiddenWidgets) {
@@ -244,11 +248,11 @@ const ROWS = [
   },
   {
     label: 'SELF KNOWLEDGE',
-    sub: 'Personality \u00B7 Types \u00B7 Quizzes \u00B7 Dosha \u00B7 Archetypes',
+    sub: 'Personality \u00B7 Types \u00B7 Quizzes \u00B7 Dosha \u00B7 Archetypes \u00B7 Cycle',
     color: '#a878e8',
     border: 'rgba(168,120,232,.3)',
-    widgets: ['enn', 'mbti', 'dosha', 'archetype', 'lovelang'],
-    cols: 'repeat(5, 1fr)',
+    widgets: ['enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle'],
+    cols: 'repeat(6, 1fr)',
   },
   {
     label: 'EASTERN WISDOM',
@@ -305,6 +309,7 @@ const DETAIL_COMPONENTS = {
   dosha: DoshaDetail,
   archetype: ArchetypeDetail,
   lovelang: LoveLangDetail,
+  cycle: CycleDetail,
   timeline: TimelineDetail,
   career: CareerAlignmentDetail,
   synastry: SynastryDetail,
@@ -323,6 +328,7 @@ const DETAIL_COMPONENTS = {
   microfish: OrgGraphPage,
   settings: SettingsPage,
   admin: AdminPanel,
+  homepage: HomePage,
 }
 
 const DETAIL_TITLES = {
@@ -348,6 +354,7 @@ const DETAIL_TITLES = {
   dosha: 'Ayurvedic Dosha \u2014 Mind-Body Constitution',
   archetype: 'Archetype Assessment \u2014 Jungian Pattern',
   lovelang: 'Love Languages \u2014 How You Give & Receive Love',
+  cycle: 'Cycle \u00B7 Moon Phases \u2014 Your Lunar Rhythm',
   timeline: 'Life Timeline \u2014 Life Arc of Your Journey',
   career: 'Career Alignment \u2014 Your Cosmic Professional Blueprint',
   profile: 'Profiles \u2014 Constellation',
@@ -365,6 +372,7 @@ const DETAIL_TITLES = {
   microfish: 'Microfish \u2014 Org Graph & 3-Year Evolution',
   settings: 'Settings',
   admin: 'Admin Panel \u2014 Product Architecture',
+  homepage: 'GOLEM \u2014 Know Thyself',
 }
 
 function NatalWidget() {
@@ -410,6 +418,7 @@ function WidgetContent({ widgetId }) {
   const globalDoshaType = useGolemStore((s) => s.doshaType)
   const globalArchetypeType = useGolemStore((s) => s.archetypeType)
   const globalLoveLanguage = useGolemStore((s) => s.loveLanguage)
+  const setActiveQuiz = useGolemStore((s) => s.setActiveQuiz)
   const doshaType = profile?.doshaType ?? globalDoshaType
   const archetypeType = profile?.archetypeType ?? globalArchetypeType
   const loveLanguage = profile?.loveLanguage ?? globalLoveLanguage
@@ -503,12 +512,12 @@ function WidgetContent({ widgetId }) {
         ? getNumerologyProfileFromDob(profile.dob, profile.name.toUpperCase(), {})
         : null
       const dynamicCells = np ? [
-        { val: np.lifePath?.val || '?', label: 'Life Path', hl: true },
-        { val: np.expression?.val || '?', label: 'Expression' },
-        { val: np.soulUrge?.val || '?', label: 'Soul Urge' },
-        { val: np.birthday?.val || '?', label: 'Birthday' },
-        { val: np.personality?.val || '?', label: 'Personality' },
-        { val: np.maturity?.val || '?', label: 'Maturity' },
+        { val: np.core.lifePath?.val ?? '?', label: 'Life Path', hl: true },
+        { val: np.core.expression?.val ?? '?', label: 'Expression' },
+        { val: np.core.soulUrge?.val ?? '?', label: 'Soul Urge' },
+        { val: np.core.birthday?.val ?? '?', label: 'Birthday' },
+        { val: np.core.personality?.val ?? '?', label: 'Personality' },
+        { val: np.core.maturity?.val ?? '?', label: 'Maturity' },
       ] : null
       if (!dynamicCells) return (
         <>
@@ -518,8 +527,8 @@ function WidgetContent({ widgetId }) {
           </div>
         </>
       )
-      const lpVal = np?.lifePath?.val ?? '?'
-      const lpLabel = np?.lifePath?.title || ''
+      const lpVal = np?.core?.lifePath?.val ?? '?'
+      const lpLabel = np?.core?.lifePath?.title || ''
       const masterNums = (dynamicCells ?? []).filter(c => [11,22,33].includes(Number(c.val))).map(c => c.val)
       return (
         <>
@@ -550,7 +559,21 @@ function WidgetContent({ widgetId }) {
         </>
       )
     }
-    case 'gk':
+    case 'gk': {
+      // Compute GK data dynamically from active profile
+      let dynamicGKList = GK_LIST // fallback to default
+      if (profile?.dob) {
+        try {
+          const [year, month, day] = profile.dob.split('-').map(Number)
+          const tob = profile?.tob || '00:00'
+          const [hour, minute] = tob.split(':').map(Number)
+          const timezone = profile?.birthTimezone ?? -3
+          const { GK_LIST: computed } = computeGeneKeysData({ day, month, year, hour: hour || 0, minute: minute || 0, timezone })
+          dynamicGKList = computed
+        } catch (e) {
+          console.error('GK widget compute error:', e)
+        }
+      }
       return (
         <>
           <div className="ch"><span className="ct">Gene Keys &middot; Hologenetic Profile</span><span className="ci">{'\u2B21'}</span></div>
@@ -558,7 +581,7 @@ function WidgetContent({ widgetId }) {
             <div className="gk-outer">
               <div className="gk-main"><GeneKeysWheel /></div>
               <div className="gk-list">
-                {GK_LIST.map((item, i) => (
+                {dynamicGKList.map((item, i) => (
                   <div key={i} className="gk-item">
                     <div className="gk-num">{item.num}</div>
                     <div className="gk-info">
@@ -578,6 +601,7 @@ function WidgetContent({ widgetId }) {
           </div>
         </>
       )
+    }
     case 'tr':
       return (
         <>
@@ -608,13 +632,25 @@ function WidgetContent({ widgetId }) {
           <div className="cb"><MayanWheel /></div>
         </>
       )
-    case 'enn':
+    case 'enn': {
+      if (!enneagramType) {
+        return (
+          <>
+            <div className="ch"><span className="ct">Enneagram · Take Quiz</span><span className="ci">{'\u262F'}</span></div>
+            <div className="cb" onClick={() => setActiveQuiz('enneagram')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 32, opacity: 0.4 }}>☯</div>
+              <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
+            </div>
+          </>
+        )
+      }
       return (
         <>
-          <div className="ch"><span className="ct">Enneagram{enneagramType ? ` \u00B7 Type ${enneagramType}w${enneagramWing || ENNEAGRAM_TYPES[enneagramType - 1]?.wings[0]}` : ' \u00B7 Take Quiz'}</span><span className="ci">{'\u262F'}</span></div>
+          <div className="ch"><span className="ct">Enneagram · Type {enneagramType}w{enneagramWing || ENNEAGRAM_TYPES[enneagramType - 1]?.wings[0]}</span><span className="ci">{'\u262F'}</span></div>
           <div className="cb"><EnneagramSymbol typeOverride={enneagramType} wingOverride={enneagramWing} /></div>
         </>
       )
+    }
     case 'chi':
       return (
         <>
@@ -636,13 +672,25 @@ function WidgetContent({ widgetId }) {
           <div className="cb"><PatternsWeb /></div>
         </>
       )
-    case 'mbti':
+    case 'mbti': {
+      if (!mbtiType) {
+        return (
+          <>
+            <div className="ch"><span className="ct">Myers-Briggs · Take Quiz</span><span className="ci">{'\u{1F9E0}'}</span></div>
+            <div className="cb" onClick={() => setActiveQuiz('mbti')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 32, opacity: 0.4 }}>🧠</div>
+              <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
+            </div>
+          </>
+        )
+      }
       return (
         <>
-          <div className="ch"><span className="ct">Myers-Briggs &middot; {mbtiType || 'Take Quiz'}</span><span className="ci">{'\u{1F9E0}'}</span></div>
+          <div className="ch"><span className="ct">Myers-Briggs · {mbtiType}</span><span className="ci">{'\u{1F9E0}'}</span></div>
           <div className="cb"><MBTIChart type={mbtiType} /></div>
         </>
       )
+    }
     case 'egyptian':
       return (
         <>
@@ -664,27 +712,102 @@ function WidgetContent({ widgetId }) {
           <div className="cb"><TibetanWheel /></div>
         </>
       )
-    case 'dosha':
+    case 'dosha': {
+      if (!doshaType) {
+        return (
+          <>
+            <div className="ch"><span className="ct">Ayurvedic Dosha · Take Quiz</span><span className="ci">{'☯'}</span></div>
+            <div className="cb" onClick={() => setActiveQuiz('dosha')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 32, opacity: 0.4 }}>☯</div>
+              <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
+            </div>
+          </>
+        )
+      }
       return (
         <>
-          <div className="ch"><span className="ct">Ayurvedic Dosha &middot; {doshaType || 'Take Quiz'}</span><span className="ci">{'☯'}</span></div>
+          <div className="ch"><span className="ct">Ayurvedic Dosha · {doshaType}</span><span className="ci">{'☯'}</span></div>
           <div className="cb"><DoshaSymbol /></div>
         </>
       )
-    case 'archetype':
+    }
+    case 'archetype': {
+      if (!archetypeType) {
+        return (
+          <>
+            <div className="ch"><span className="ct">Archetype · Take Quiz</span><span className="ci">{'⬡'}</span></div>
+            <div className="cb" onClick={() => setActiveQuiz('archetype')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 32, opacity: 0.4 }}>⬡</div>
+              <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
+            </div>
+          </>
+        )
+      }
       return (
         <>
-          <div className="ch"><span className="ct">Archetype &middot; {archetypeType || 'Take Quiz'}</span><span className="ci">{'⬡'}</span></div>
+          <div className="ch"><span className="ct">Archetype · {archetypeType}</span><span className="ci">{'⬡'}</span></div>
           <div className="cb"><ArchetypeSymbol /></div>
         </>
       )
-    case 'lovelang':
+    }
+    case 'lovelang': {
+      if (!loveLanguage) {
+        return (
+          <>
+            <div className="ch"><span className="ct">Love Language · Take Quiz</span><span className="ci">{'🤗'}</span></div>
+            <div className="cb" onClick={() => setActiveQuiz('lovelang')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+              <div style={{ fontSize: 32, opacity: 0.4 }}>🤗</div>
+              <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
+            </div>
+          </>
+        )
+      }
       return (
         <>
-          <div className="ch"><span className="ct">Love Language &middot; {loveLanguage || 'Take Quiz'}</span><span className="ci">{'🤗'}</span></div>
+          <div className="ch"><span className="ct">Love Language · {loveLanguage}</span><span className="ci">{'🤗'}</span></div>
           <div className="cb"><LoveLangSymbol /></div>
         </>
       )
+    }
+    case 'cycle': {
+      const lastPeriod = profile?.lastPeriodDate
+      const cycleLen = profile?.cycleLength || 28
+      const cycle = lastPeriod ? computeCycleProfile(lastPeriod, cycleLen) : null
+      const currentMoon = getMoonPhase()
+      return (
+        <>
+          <div className="ch"><span className="ct">Cycle{cycle ? ` · ${cycle.currentPhase.name} · Day ${cycle.cycleDay}` : ' · Moon Phases'}</span><span className="ci">{'☽'}</span></div>
+          <div className="cb">
+            {cycle ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '100%' }}>
+                <div style={{ flex: 1 }}><CycleWheel cycleDay={cycle.cycleDay} cycleLength={cycle.cycleLength} /></div>
+                <div style={{ display: 'flex', gap: 6, padding: '0 4px' }}>
+                  <div style={{ flex: 1, padding: '6px 8px', borderRadius: 6, background: cycle.currentPhase.color + '15', border: `1px solid ${cycle.currentPhase.color}30`, textAlign: 'center' }}>
+                    <div style={{ fontSize: 14 }}>{cycle.currentPhase.emoji}</div>
+                    <div style={{ fontSize: 9, color: cycle.currentPhase.color, fontFamily: "'Cinzel',serif" }}>{cycle.currentPhase.name}</div>
+                  </div>
+                  <div style={{ flex: 1, padding: '6px 8px', borderRadius: 6, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.12)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 14 }}>{currentMoon.phaseEmoji}</div>
+                    <div style={{ fontSize: 9, color: '#c9a84c', fontFamily: "'Cinzel',serif" }}>{currentMoon.phaseName}</div>
+                  </div>
+                  <div style={{ flex: 1, padding: '6px 8px', borderRadius: 6, background: 'rgba(201,168,76,.04)', border: '1px solid rgba(201,168,76,.08)', textAlign: 'center' }}>
+                    <div style={{ fontSize: 12, color: '#c9a84c', fontFamily: "'Cinzel',serif" }}>{cycle.moonCycleAlignment.score}%</div>
+                    <div style={{ fontSize: 8, color: 'var(--muted-foreground)' }}>Alignment</div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8 }}>
+                <div style={{ fontSize: 32 }}>{currentMoon.phaseEmoji}</div>
+                <div style={{ fontSize: 11, color: '#c9a84c', fontFamily: "'Cinzel',serif" }}>{currentMoon.phaseName}</div>
+                <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>{currentMoon.illumination}% illuminated</div>
+                <div style={{ fontSize: 9, color: 'rgba(196,77,122,.7)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em', marginTop: 8 }}>Log cycle to unlock</div>
+              </div>
+            )}
+          </div>
+        </>
+      )
+    }
     case 'timeline': return <TimelineWidget />
     case 'career': return (
       <>
@@ -724,6 +847,7 @@ const WIDGET_META = {
   dosha: { icon: '☯', label: 'Ayurvedic Dosha', sub: 'Vata \u00B7 Pitta \u00B7 Kapha' },
   archetype: { icon: '⬡', label: 'Archetype', sub: 'Jungian Pattern \u00B7 12 Archetypes' },
   lovelang: { icon: '🤗', label: 'Love Languages', sub: 'Give & Receive \u00B7 5 Languages' },
+  cycle: { icon: '☽', label: 'Cycle', sub: 'Menstrual \u00B7 Moon Phases \u00B7 Fertility' },
   timeline: { icon: '⟳', label: 'Life Timeline', sub: 'Life Arc \u00B7 Key Life Events' },
   career: { icon: '◈', label: 'Career Alignment', sub: 'profile \u00B7 Role Matching' },
   practitioner: { icon: '\uD83C\uDFE5', label: 'Practitioner Portal', sub: 'Clients \u00B7 Sessions \u00B7 Revenue' },
@@ -750,6 +874,7 @@ const WIDGET_CATEGORIES = {
   dosha:    { label: 'AYURVEDA', color: 'rgba(68,204,136,.8)', bg: 'rgba(68,204,136,.08)', border: 'rgba(68,204,136,.2)' },
   archetype:{ label: 'JUNGIAN', color: 'rgba(168,120,232,.8)', bg: 'rgba(168,120,232,.08)', border: 'rgba(168,120,232,.2)' },
   lovelang: { label: 'RELATIONAL', color: 'rgba(238,136,102,.8)', bg: 'rgba(238,136,102,.08)', border: 'rgba(238,136,102,.2)' },
+  cycle:    { label: 'LUNAR', color: 'rgba(196,77,122,.8)', bg: 'rgba(196,77,122,.08)', border: 'rgba(196,77,122,.2)' },
   timeline: { label: 'TIMELINE', color: 'rgba(201,168,76,.8)', bg: 'var(--accent)', border: 'rgba(201,168,76,.2)' },
   career:   { label: 'CAREER',   color: 'rgba(96,180,255,.8)', bg: 'rgba(96,180,255,.08)',  border: 'rgba(96,180,255,.2)'  },
 }

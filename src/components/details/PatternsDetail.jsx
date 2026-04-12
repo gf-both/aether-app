@@ -166,6 +166,28 @@ export default function PatternsDetail() {
         </div>
       </div>
 
+      {/* ═══ PATTERN SYNTHESIS SUMMARY ═══ */}
+      <div style={{ padding: '16px 20px', borderRadius: 10, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.12)' }}>
+        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(201,168,76,.6)', marginBottom: 8 }}>
+          Pattern Synthesis
+        </div>
+        <div style={{ fontSize: 13, lineHeight: 1.8, color: 'rgba(255,255,255,.7)', fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+          Your frameworks reveal{' '}
+          <span style={{ color: 'var(--gold)' }}>{CROSS_FRAMEWORK_ALIGNMENTS.length} active alignments</span>
+          {' '}across {new Set(CROSS_FRAMEWORK_ALIGNMENTS.flatMap(a => a.frameworks)).size} systems.{' '}
+          {TIMING_PATTERNS.filter(t => t.activation === 'active').length > 0 && (
+            <><span style={{ color: '#60b030' }}>{TIMING_PATTERNS.filter(t => t.activation === 'active').length} pattern{TIMING_PATTERNS.filter(t => t.activation === 'active').length > 1 ? 's' : ''} {TIMING_PATTERNS.filter(t => t.activation === 'active').length === 1 ? 'is' : 'are'} currently active</span> — these are live windows where your frameworks intersect in real time.{' '}</>
+          )}
+          The strongest connections emerge between{' '}
+          <span style={{ color: 'var(--gold)' }}>
+            {CROSS_FRAMEWORK_ALIGNMENTS.sort((a, b) => b.strength - a.strength).slice(0, 2).map(a => a.title).join(' and ')}
+          </span>.{' '}
+          {PROFILE_PATTERN_MATCHES.length > 0 && (
+            <>Among your constellation, <span style={{ color: '#40ccdd' }}>{PROFILE_PATTERN_MATCHES.length} people</span> share resonant patterns with you.</>
+          )}
+        </div>
+      </div>
+
       {/* ═══ ACTIVE TIMING PATTERNS ═══ */}
       <div>
         <div style={S.sectionTitle}>Active Timing Patterns</div>

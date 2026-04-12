@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'vedic', 'tibetan', 'timeline', 'career']
+const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle', 'vedic', 'tibetan', 'timeline', 'career']
 
 export const useGolemStore = create(
   persist(
@@ -166,6 +166,10 @@ export const useGolemStore = create(
       // Oracle AI panel state
       oracleOpen: false,
       setOracleOpen: (v) => set({ oracleOpen: v }),
+
+      // Active quiz overlay
+      activeQuiz: null, // 'enneagram' | 'mbti' | 'dosha' | 'archetype' | 'lovelang' | null
+      setActiveQuiz: (quiz) => set({ activeQuiz: quiz }),
 
       // Sidebar collapse state
       sidebarCollapsed: false,

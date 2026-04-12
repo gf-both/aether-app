@@ -7,6 +7,7 @@ import { useGolemStore } from '../../store/useGolemStore'
 // Removed: Wendy, Benchmark Lab
 const NAV_SECTIONS = [
   { type: 'item', icon: '◎', label: 'Dashboard', id: 'dashboard' },
+  { type: 'item', icon: '✦', label: 'Website', id: 'homepage', widget: 'homepage' },
 
   { type: 'section', label: 'YOU' },
   { type: 'item', icon: '🜁', label: 'Identity', id: 'identity-agent', widget: 'identity-agent' },

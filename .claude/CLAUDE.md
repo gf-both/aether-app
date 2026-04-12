@@ -64,8 +64,9 @@ GOLEM is a self-knowledge and relationship intelligence platform. It integrates 
 
 ## Agent Directory
 
-6 agents in `.claude/agents/`. Each calibrated for the $1M ARR target.
+9 agents in `.claude/agents/`. Each calibrated for the $1M ARR target.
 
+### Business Agents
 | Command | Agent | $1M Mandate |
 |---------|-------|-------------|
 | `/ceo` | CEO Orchestrator | Phase sequencing, weekly briefs, blocker removal, decision routing |
@@ -74,6 +75,13 @@ GOLEM is a self-knowledge and relationship intelligence platform. It integrates 
 | `/finance` | Business & Finance | Stripe owner. Every dollar tracked. Monthly models. 96.7% margin target. |
 | `/community` | Community & Support | 600 practitioners in 12 months. Practitioner community IS the business. |
 | `/launch` | Launch & Operations | Waitlist, beta program, launch execution, analytics, email sequences. |
+
+### Creative & Product Agents
+| Command | Agent | Mandate |
+|---------|-------|---------|
+| `/ui` | UI Expert | Visual identity, interface design, dark cosmic aesthetic, component specs, responsive strategy |
+| `/copy` | Copywriter | Every word GOLEM puts in front of users — headlines, microcopy, emails, AI prompts, CTAs |
+| `/connections` | Connections PO | Golem Connections (dating/matching) — product vision, matching algorithm, user flows, photo enhancement |
 
 ### How to Use an Agent
 1. Open Claude Code or Cowork in this repo
@@ -86,6 +94,9 @@ GOLEM is a self-knowledge and relationship intelligence platform. It integrates 
 - Revenue questions → `/finance`
 - User feedback → `/community`
 - Launch readiness → `/launch`
+- UI/visual decisions → `/ui`
+- Copy review → `/copy`
+- Connections features → `/connections` → `/product` for implementation
 - Cross-domain decisions → `/ceo` → Gaston if needed
 
 ## Voice & Tone

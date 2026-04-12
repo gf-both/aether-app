@@ -1,344 +1,349 @@
+import { useRef, useEffect, useState } from 'react'
+
 /**
- * IntroAnimation.jsx — Solar System → Heliocentric Vortex
- *
- * Phase 1 (0–2.5s): Top-down view of solar system orbiting the sun
- * Phase 2 (2.5–4.0s): Camera tilts to side, sun begins moving through space
- * Phase 3 (4.0–5.2s): Heliocentric vortex — planets spiral in sun's wake
- * Phase 4 (5.2–6.5s): GOLEM wordmark rises, fade out
- *
- * Pure Canvas 2D — no dependencies.
- * Only shows on first visit (localStorage key: golem_intro_seen_v4).
+ * GOLEM Intro — 3D particle formation sequence.
+ * Particles scatter → coalesce into geodesic sphere → compress → burst → wordmark.
+ * Uses same WebGL approach as ParticleField for visual consistency.
  */
 
-import { useEffect, useRef, useState } from 'react'
+const VERT = `
+  attribute vec3 aPos;
+  attribute vec3 aScatter;
+  attribute float aSize;
+  attribute float aPhase;
+  attribute float aColorId;
 
-const STORAGE_KEY = 'golem_intro_seen_v4'
+  uniform float uTime;
+  uniform float uProgress;
+  uniform mat4 uProj;
+  uniform mat4 uView;
+  uniform float uDpr;
+  uniform float uExplosion;
 
-// Planet data — semi-major axis (AU relative), orbital period (years), visual
-const PLANETS = [
-  { r: 0.39, period: 0.24, color: '#b0b0b0', size: 2.2,  name: 'Mercury' },
-  { r: 0.72, period: 0.62, color: '#e8d4a0', size: 3.5,  name: 'Venus'   },
-  { r: 1.00, period: 1.00, color: '#4488ee', size: 4.0,  name: 'Earth'   },
-  { r: 1.52, period: 1.88, color: '#cc5533', size: 3.2,  name: 'Mars'    },
-  { r: 2.60, period: 5.00, color: '#d4b080', size: 7.5,  name: 'Jupiter' },
-  { r: 3.50, period: 9.00, color: '#d4c090', size: 6.5,  name: 'Saturn'  },
-]
+  varying float vAlpha;
+  varying float vColorId;
+  varying float vDepth;
 
-// Stars background
-function genStars(n) {
-  const s = []
-  for (let i = 0; i < n; i++) {
-    s.push({
-      x: Math.random(),
-      y: Math.random(),
-      r: 0.3 + Math.random() * 1.2,
-      a: 0.2 + Math.random() * 0.7,
-      phase: Math.random() * Math.PI * 2,
-    })
+  void main() {
+    float t = uTime * 0.001;
+    float id = aPhase;
+
+    // Phase blending: scattered → sphere → compressed → exploded
+    vec3 spherePos = aPos;
+    vec3 scatterPos = aScatter * 4.0;
+
+    // Coalesce: scattered → sphere (progress 0→0.4)
+    float coalesce = smoothstep(0.0, 0.4, uProgress);
+    vec3 pos = mix(scatterPos, spherePos, coalesce);
+
+    // Compress (progress 0.5→0.7)
+    float compress = smoothstep(0.5, 0.7, uProgress);
+    float expand = smoothstep(0.7, 0.75, uProgress);
+    float scale = 1.0 - compress * 0.6 + expand * 0.6;
+    pos *= scale;
+
+    // Explosion (progress 0.75→1.0)
+    float explosion = smoothstep(0.75, 1.0, uProgress) * uExplosion;
+    vec3 explodeDir = normalize(aPos + vec3(0.001));
+    pos += explodeDir * explosion * 3.0;
+
+    // Gentle breathing once formed
+    float breath = sin(t * 0.8) * 0.05 * coalesce;
+    pos *= 1.0 + breath;
+
+    // Per-particle drift
+    float drift = 0.03 * (1.0 - coalesce * 0.7);
+    pos += vec3(
+      sin(t * 0.5 + id * 6.28) * drift,
+      cos(t * 0.3 + id * 4.13) * drift,
+      sin(t * 0.4 + id * 2.71) * drift
+    );
+
+    vec4 viewPos = uView * vec4(pos, 1.0);
+    gl_Position = uProj * viewPos;
+
+    float dist = -viewPos.z;
+    vDepth = clamp((dist - 1.0) / 5.0, 0.0, 1.0);
+
+    float baseSize = aSize * (1.0 + explosion * 2.0);
+    gl_PointSize = baseSize * uDpr * (2.8 / max(dist, 0.5));
+
+    float twinkle = 0.5 + 0.5 * sin(t * (2.0 + fract(id * 1.37) * 3.0) + id * 6.28);
+    float depthFade = 1.0 - vDepth * 0.5;
+
+    // Brighter during compression
+    float intensityBoost = 1.0 + compress * 0.8 - explosion * 0.3;
+    vAlpha = twinkle * depthFade * 0.7 * intensityBoost;
+    vColorId = aColorId;
+  }
+`
+
+const FRAG = `
+  precision mediump float;
+  varying float vAlpha;
+  varying float vColorId;
+  varying float vDepth;
+
+  void main() {
+    float d = length(gl_PointCoord - 0.5) * 2.0;
+    if (d > 1.0) discard;
+
+    float core = exp(-d * d * 3.0);
+    float halo = exp(-d * d * 0.6) * 0.4;
+    float alpha = (core + halo) * vAlpha;
+
+    vec3 col;
+    if (vColorId < 0.3) col = vec3(0.88, 0.72, 0.35);
+    else if (vColorId < 0.55) col = vec3(0.95, 0.85, 0.55);
+    else if (vColorId < 0.7) col = vec3(0.55, 0.65, 0.88);
+    else if (vColorId < 0.85) col = vec3(0.85, 0.35, 0.55);
+    else col = vec3(0.25, 0.78, 0.68);
+
+    col = mix(col, vec3(1.0, 0.98, 0.9), core * core * 0.7);
+    col = mix(col, vec3(0.7, 0.7, 0.75), vDepth * 0.2);
+
+    gl_FragColor = vec4(col, alpha);
+  }
+`
+
+function createShader(gl, type, source) {
+  const s = gl.createShader(type)
+  gl.shaderSource(s, source)
+  gl.compileShader(s)
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.error('Shader:', gl.getShaderInfoLog(s))
+    gl.deleteShader(s)
+    return null
   }
   return s
 }
 
-const STARS = genStars(800)
+function createProgram(gl, vs, fs) {
+  const p = gl.createProgram()
+  gl.attachShader(p, vs)
+  gl.attachShader(p, fs)
+  gl.linkProgram(p)
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    console.error('Program:', gl.getProgramInfoLog(p))
+    return null
+  }
+  return p
+}
+
+function fibSphere(count, radius) {
+  const pts = new Float32Array(count * 3)
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5))
+  for (let i = 0; i < count; i++) {
+    const y = 1 - (i / (count - 1)) * 2
+    const r = Math.sqrt(1 - y * y) * radius
+    const theta = goldenAngle * i
+    pts[i * 3] = Math.cos(theta) * r
+    pts[i * 3 + 1] = y * radius
+    pts[i * 3 + 2] = Math.sin(theta) * r
+  }
+  return pts
+}
+
+function mat4Perspective(fov, aspect, near, far) {
+  const f = 1 / Math.tan(fov / 2)
+  const nf = 1 / (near - far)
+  return new Float32Array([f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2 * far * near * nf, 0])
+}
+
+function mat4LookAt(eye, center, up) {
+  const zx = eye[0] - center[0], zy = eye[1] - center[1], zz = eye[2] - center[2]
+  let len = 1 / Math.sqrt(zx * zx + zy * zy + zz * zz)
+  const z0 = zx * len, z1 = zy * len, z2 = zz * len
+  const xx = up[1] * z2 - up[2] * z1, xy = up[2] * z0 - up[0] * z2, xz = up[0] * z1 - up[1] * z0
+  len = Math.sqrt(xx * xx + xy * xy + xz * xz)
+  const x0 = len ? xx / len : 0, x1 = len ? xy / len : 0, x2 = len ? xz / len : 0
+  const y0 = z1 * x2 - z2 * x1, y1 = z2 * x0 - z0 * x2, y2 = z0 * x1 - z1 * x0
+  return new Float32Array([x0, y0, z0, 0, x1, y1, z1, 0, x2, y2, z2, 0,
+    -(x0 * eye[0] + x1 * eye[1] + x2 * eye[2]),
+    -(y0 * eye[0] + y1 * eye[1] + y2 * eye[2]),
+    -(z0 * eye[0] + z1 * eye[1] + z2 * eye[2]), 1])
+}
 
 export default function IntroAnimation({ onComplete }) {
   const canvasRef = useRef(null)
   const rafRef = useRef(null)
   const startRef = useRef(null)
-  const [wordmarkVisible, setWordmarkVisible] = useState(false)
-  const [subtitleVisible, setSubtitleVisible] = useState(false)
-  const [containerOpacity, setContainerOpacity] = useState(1)
-  const triggeredRef = useRef(false)
-
-  function skip() {
-    localStorage.setItem(STORAGE_KEY, '1')
-    cancelAnimationFrame(rafRef.current)
-    setContainerOpacity(0)
-    setTimeout(onComplete, 500)
-  }
+  const [phase, setPhase] = useState(0) // 0=particles, 1=wordmark, 2=done
+  const [opacity, setOpacity] = useState(1)
 
   useEffect(() => {
+    localStorage.setItem('golem_intro_seen_v4', '1')
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
 
-    // Planet trails for heliocentric phase
-    const trails = PLANETS.map(() => [])
+    const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: false, antialias: false })
+    if (!gl) { onComplete?.(); return }
+
+    const vs = createShader(gl, gl.VERTEX_SHADER, VERT)
+    const fs = createShader(gl, gl.FRAGMENT_SHADER, FRAG)
+    if (!vs || !fs) { onComplete?.(); return }
+    const prog = createProgram(gl, vs, fs)
+    if (!prog) { onComplete?.(); return }
+    gl.useProgram(prog)
+
+    const COUNT = 8000
+    const spherePos = fibSphere(COUNT, 1.0)
+    const scatterPos = new Float32Array(COUNT * 3)
+    const sizes = new Float32Array(COUNT)
+    const phases = new Float32Array(COUNT)
+    const colorIds = new Float32Array(COUNT)
+
+    for (let i = 0; i < COUNT; i++) {
+      // Random scatter positions (sphere around origin, radius 2-6)
+      const theta = Math.random() * Math.PI * 2
+      const phi = Math.acos(2 * Math.random() - 1)
+      const r = 2 + Math.random() * 4
+      scatterPos[i * 3] = r * Math.sin(phi) * Math.cos(theta)
+      scatterPos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
+      scatterPos[i * 3 + 2] = r * Math.cos(phi)
+      sizes[i] = Math.random() * 3 + 1
+      phases[i] = Math.random()
+      const rr = Math.random()
+      colorIds[i] = rr < 0.4 ? Math.random() * 0.3 : rr < 0.65 ? 0.3 + Math.random() * 0.25 : rr < 0.8 ? 0.55 + Math.random() * 0.15 : rr < 0.92 ? 0.7 + Math.random() * 0.15 : 0.85 + Math.random() * 0.15
+    }
+
+    function makeBuf(data, attr, size) {
+      const buf = gl.createBuffer()
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf)
+      gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW)
+      const loc = gl.getAttribLocation(prog, attr)
+      if (loc >= 0) { gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0) }
+      return buf
+    }
+
+    const bufs = [
+      makeBuf(spherePos, 'aPos', 3),
+      makeBuf(scatterPos, 'aScatter', 3),
+      makeBuf(sizes, 'aSize', 1),
+      makeBuf(phases, 'aPhase', 1),
+      makeBuf(colorIds, 'aColorId', 1),
+    ]
+
+    const uTime = gl.getUniformLocation(prog, 'uTime')
+    const uProgress = gl.getUniformLocation(prog, 'uProgress')
+    const uProj = gl.getUniformLocation(prog, 'uProj')
+    const uView = gl.getUniformLocation(prog, 'uView')
+    const uDpr = gl.getUniformLocation(prog, 'uDpr')
+    const uExplosion = gl.getUniformLocation(prog, 'uExplosion')
+
+    gl.enable(gl.BLEND)
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
+    gl.disable(gl.DEPTH_TEST)
+
+    const DURATION = 7000 // 7 seconds total
 
     function resize() {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
+      const dpr = Math.min(window.devicePixelRatio, 2)
+      canvas.width = window.innerWidth * dpr
+      canvas.height = window.innerHeight * dpr
+      canvas.style.width = window.innerWidth + 'px'
+      canvas.style.height = window.innerHeight + 'px'
+      gl.viewport(0, 0, canvas.width, canvas.height)
     }
+
+    function draw(time) {
+      if (!startRef.current) startRef.current = time
+      const elapsed = time - startRef.current
+      const progress = Math.min(elapsed / DURATION, 1)
+
+      const dpr = Math.min(window.devicePixelRatio, 2)
+      const aspect = window.innerWidth / window.innerHeight
+
+      gl.clearColor(0.02, 0.01, 0.05, 1)
+      gl.clear(gl.COLOR_BUFFER_BIT)
+
+      // Camera slowly pulls back
+      const camDist = 3.5 - progress * 0.3
+      const camAngle = progress * 0.5
+      const eye = [
+        camDist * Math.sin(0.3 + camAngle * 0.3) * Math.sin(0.8),
+        camDist * Math.cos(0.8),
+        camDist * Math.sin(0.8) * Math.cos(0.3 + camAngle * 0.3),
+      ]
+
+      const proj = mat4Perspective(Math.PI / 4, aspect, 0.1, 50)
+      const view = mat4LookAt(eye, [0, 0, 0], [0, 1, 0])
+
+      // Explosion factor (ramps up after burst)
+      const explosionFactor = progress > 0.75 ? (progress - 0.75) / 0.25 : 0
+
+      gl.uniform1f(uTime, time)
+      gl.uniform1f(uProgress, progress)
+      gl.uniformMatrix4fv(uProj, false, proj)
+      gl.uniformMatrix4fv(uView, false, view)
+      gl.uniform1f(uDpr, dpr)
+      gl.uniform1f(uExplosion, explosionFactor)
+
+      gl.drawArrays(gl.POINTS, 0, COUNT)
+
+      // Phase transitions
+      if (progress > 0.65 && phase === 0) setPhase(1) // Show wordmark
+      if (progress >= 1) {
+        setPhase(2)
+        // Fade out
+        setTimeout(() => setOpacity(0), 200)
+        setTimeout(() => onComplete?.(), 900)
+        return
+      }
+
+      rafRef.current = requestAnimationFrame(draw)
+    }
+
     resize()
     window.addEventListener('resize', resize)
+    rafRef.current = requestAnimationFrame(draw)
 
-    function easeInOut(x) {
-      return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2
-    }
-    function clamp01(x) { return Math.max(0, Math.min(1, x)) }
-    function lerp(a, b, t) { return a + (b - a) * t }
-
-    function animate(ts) {
-      if (!startRef.current) startRef.current = ts
-      const t = (ts - startRef.current) / 1000
-
-      const W = canvas.width, H = canvas.height
-      const cx = W / 2, cy = H / 2
-
-      ctx.clearRect(0, 0, W, H)
-
-      // ── Background: deep space ──
-      ctx.fillStyle = '#000007'
-      ctx.fillRect(0, 0, W, H)
-
-      const globalFade = clamp01(t / 0.5)
-
-      // Stars
-      STARS.forEach(s => {
-        const twinkle = 0.6 + Math.sin(t * 0.8 + s.phase) * 0.4
-        ctx.beginPath()
-        ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(220,230,255,${s.a * twinkle * globalFade})`
-        ctx.fill()
-      })
-
-      // ── Phase timing ──
-      // Phase 1: top-down  [0 – 2.5s]
-      // Phase 2: tilt      [2.5 – 4.0s]
-      // Phase 3: helio     [4.0 – 5.2s]
-      // Phase 4: wordmark  [5.2+]
-
-      // How far we've tilted (0=top-down, 1=side)
-      const tiltProg = easeInOut(clamp01((t - 2.5) / 1.5))
-      // Camera angle: top-down is 90° above horizon → tilt to 18°
-      const camAngle = lerp(Math.PI / 2, Math.PI * 0.1, tiltProg)
-
-      // Heliocentric phase progress
-      const helioProg = clamp01((t - 4.0) / 1.2)
-
-      // Orbital scale — the AU scaling to pixels
-      const maxR = PLANETS[PLANETS.length - 1].r
-      const systemRadius = Math.min(W, H) * 0.38
-      const auToPx = systemRadius / maxR
-
-      // Speed multiplier: faster in top-down, slows in helio
-      const orbitSpeed = t < 2.5 ? 0.8 : lerp(0.8, 0.25, tiltProg)
-
-      // Sun position: stationary during top-down, then sweeps RIGHT in helio phase
-      const sunTravelProg = easeInOut(clamp01((t - 4.0) / 1.2))
-      const sunX = cx + sunTravelProg * W * 0.32
-      const sunY = cy - sunTravelProg * H * 0.06
-
-      // ── Draw orbital rings (top-down / tilting) ──
-      if (helioProg < 0.7) {
-        const ringAlpha = clamp01(1 - helioProg * 1.5) * globalFade
-        PLANETS.forEach(p => {
-          const rx = p.r * auToPx
-          // Perspective: Y squishes with camera angle
-          const ry = rx * Math.sin(camAngle)
-          ctx.beginPath()
-          ctx.ellipse(sunX, sunY, rx, ry, 0, 0, Math.PI * 2)
-          ctx.strokeStyle = `rgba(255,255,255,${0.06 * ringAlpha})`
-          ctx.lineWidth = 0.7
-          ctx.stroke()
-        })
-      }
-
-      // ── Draw planets ──
-      PLANETS.forEach((p, i) => {
-        const angle = (t * orbitSpeed * (2 * Math.PI) / p.period) + (i * Math.PI * 0.3)
-        const rx = p.r * auToPx
-        const ry = rx * Math.sin(camAngle)
-
-        let px, py
-        if (helioProg < 0.01) {
-          // Pure orbital (top-down / tilt)
-          px = sunX + Math.cos(angle) * rx
-          py = sunY + Math.sin(angle) * ry
-        } else {
-          // Heliocentric: planet orbits moving sun
-          // Sun is moving, planet position is orbit around sun's current pos
-          px = sunX + Math.cos(angle) * rx * 0.7
-          py = sunY + Math.sin(angle) * ry * 0.7
-        }
-
-        // Record trail for heliocentric phase
-        if (helioProg > 0) {
-          trails[i].push({ x: px, y: py, t })
-          // Trim old trail points
-          const maxAge = 1.8
-          while (trails[i].length > 0 && t - trails[i][0].t > maxAge) trails[i].shift()
-
-          // Draw trail
-          if (trails[i].length > 2) {
-            ctx.beginPath()
-            ctx.moveTo(trails[i][0].x, trails[i][0].y)
-            for (let k = 1; k < trails[i].length; k++) {
-              const age = t - trails[i][k].t
-              const trailAlpha = (1 - age / maxAge) * 0.35 * helioProg
-              ctx.lineTo(trails[i][k].x, trails[i][k].y)
-            }
-            ctx.strokeStyle = p.color + '88'
-            ctx.lineWidth = 1.2
-            ctx.stroke()
-
-            // Draw fading dots along trail
-            for (let k = 0; k < trails[i].length; k += 4) {
-              const age = t - trails[i][k].t
-              const a = (1 - age / maxAge) * 0.4 * helioProg
-              ctx.beginPath()
-              ctx.arc(trails[i][k].x, trails[i][k].y, p.size * 0.3, 0, Math.PI * 2)
-              ctx.fillStyle = p.color + Math.round(a * 255).toString(16).padStart(2, '0')
-              ctx.fill()
-            }
-          }
-        }
-
-        // Draw planet
-        const pAlpha = globalFade * (helioProg > 0.9 ? clamp01(1 - (helioProg - 0.9) * 10) : 1)
-        const glowR = p.size * 3
-        const g = ctx.createRadialGradient(px, py, 0, px, py, glowR)
-        g.addColorStop(0, p.color + 'ff')
-        g.addColorStop(0.4, p.color + '99')
-        g.addColorStop(1, p.color + '00')
-        ctx.beginPath()
-        ctx.arc(px, py, glowR, 0, Math.PI * 2)
-        ctx.fillStyle = g
-        ctx.globalAlpha = pAlpha
-        ctx.fill()
-
-        ctx.beginPath()
-        ctx.arc(px, py, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = p.color
-        ctx.fill()
-
-        // Saturn ring
-        if (i === 5) {
-          ctx.save()
-          ctx.translate(px, py)
-          ctx.scale(1, Math.sin(camAngle) * 0.35 + 0.15)
-          ctx.beginPath()
-          ctx.ellipse(0, 0, p.size * 2.2, p.size * 2.2, 0, 0, Math.PI * 2)
-          ctx.strokeStyle = `rgba(212,192,144,${0.45 * pAlpha})`
-          ctx.lineWidth = 2
-          ctx.stroke()
-          ctx.restore()
-        }
-
-        ctx.globalAlpha = 1
-      })
-
-      // ── Sun ──
-      {
-        const sunAlpha = globalFade
-        // Outer corona
-        const corona = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 80)
-        corona.addColorStop(0, `rgba(255,240,180,${0.15 * sunAlpha})`)
-        corona.addColorStop(0.4, `rgba(255,200,80,${0.05 * sunAlpha})`)
-        corona.addColorStop(1, `rgba(255,140,0,0)`)
-        ctx.beginPath()
-        ctx.arc(sunX, sunY, 80, 0, Math.PI * 2)
-        ctx.fillStyle = corona
-        ctx.fill()
-
-        // Sun body
-        const sunGlow = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 22)
-        sunGlow.addColorStop(0, `rgba(255,255,220,${sunAlpha})`)
-        sunGlow.addColorStop(0.4, `rgba(255,220,80,${sunAlpha})`)
-        sunGlow.addColorStop(1, `rgba(255,140,0,${0.8 * sunAlpha})`)
-        ctx.beginPath()
-        ctx.arc(sunX, sunY, 22, 0, Math.PI * 2)
-        ctx.fillStyle = sunGlow
-        ctx.fill()
-
-        // Sun travel trail — sweeps LEFT behind the sun as it moves right
-        if (helioProg > 0) {
-          const trailLen = sunTravelProg * W * 0.38
-          // Wide glowing wake fading to the left
-          const sunTrail = ctx.createLinearGradient(sunX, sunY, sunX - trailLen, sunY)
-          sunTrail.addColorStop(0, `rgba(255,220,100,${0.22 * helioProg})`)
-          sunTrail.addColorStop(0.5, `rgba(255,160,40,${0.10 * helioProg})`)
-          sunTrail.addColorStop(1, `rgba(255,100,0,0)`)
-          ctx.save()
-          ctx.beginPath()
-          ctx.ellipse(sunX - trailLen * 0.42, sunY, trailLen * 0.5, trailLen * 0.06, 0, 0, Math.PI * 2)
-          ctx.fillStyle = sunTrail
-          ctx.globalAlpha = helioProg * 0.55
-          ctx.fill()
-          ctx.restore()
-          ctx.globalAlpha = 1
-        }
-      }
-
-      // ── Trigger wordmark ──
-      if (t > 5.2 && !triggeredRef.current) {
-        triggeredRef.current = true
-        setWordmarkVisible(true)
-        setTimeout(() => setSubtitleVisible(true), 600)
-        setTimeout(() => {
-          localStorage.setItem(STORAGE_KEY, '1')
-          setContainerOpacity(0)
-          setTimeout(onComplete, 700)
-        }, 2000)
-      }
-
-      if (t < 8) rafRef.current = requestAnimationFrame(animate)
-    }
-
-    rafRef.current = requestAnimationFrame(animate)
     return () => {
-      cancelAnimationFrame(rafRef.current)
       window.removeEventListener('resize', resize)
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      bufs.forEach(b => gl.deleteBuffer(b))
+      gl.deleteProgram(prog)
+      gl.deleteShader(vs)
+      gl.deleteShader(fs)
     }
-  }, [])
+  }, [onComplete])
 
   return (
     <div
-      onClick={skip}
       style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 9999,
-        background: '#000007',
-        cursor: 'pointer',
-        opacity: containerOpacity,
-        transition: 'opacity 0.7s ease',
+        position: 'fixed', inset: 0, zIndex: 9999,
+        background: 'rgb(5,3,15)',
+        opacity, transition: 'opacity 0.7s ease-out',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}
+      onClick={() => { setOpacity(0); setTimeout(() => onComplete?.(), 500) }}
     >
-      <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0 }} />
 
-      {/* GOLEM wordmark */}
+      {/* Wordmark overlay */}
       <div style={{
-        position: 'absolute',
-        inset: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
+        position: 'relative', zIndex: 1, textAlign: 'center',
+        opacity: phase >= 1 ? 1 : 0,
+        transform: phase >= 1 ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'all 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
         pointerEvents: 'none',
-        gap: 14,
       }}>
         <div style={{
           fontFamily: "'Cinzel', serif",
-          fontSize: 'clamp(52px, 11vw, 104px)',
+          fontSize: 'clamp(36px, 8vw, 72px)',
           fontWeight: 700,
-          letterSpacing: '0.35em',
-          color: '#fff',
-          textShadow: '0 0 60px rgba(255,255,255,0.3), 0 0 120px rgba(201,168,76,0.2)',
-          opacity: wordmarkVisible ? 1 : 0,
-          transform: wordmarkVisible ? 'translateY(0)' : 'translateY(20px)',
-          transition: 'opacity 0.8s ease, transform 0.8s ease',
+          letterSpacing: '0.4em',
+          color: 'rgba(201,168,76,0.9)',
+          textShadow: '0 0 40px rgba(201,168,76,0.3), 0 0 80px rgba(201,168,76,0.1)',
         }}>
           GOLEM
         </div>
-
         <div style={{
           fontFamily: "'Cinzel', serif",
-          fontSize: 'clamp(9px, 1.4vw, 13px)',
+          fontSize: 'clamp(10px, 2vw, 14px)',
           letterSpacing: '0.5em',
-          color: 'rgba(255,255,255,0.35)',
-          opacity: subtitleVisible ? 1 : 0,
-          transition: 'opacity 0.8s ease',
+          color: 'rgba(201,168,76,0.4)',
+          marginTop: 8,
         }}>
           KNOW THYSELF
         </div>
@@ -346,15 +351,11 @@ export default function IntroAnimation({ onComplete }) {
 
       {/* Skip hint */}
       <div style={{
-        position: 'absolute',
-        bottom: 28,
-        right: 32,
-        fontSize: 11,
-        letterSpacing: '0.15em',
-        color: 'rgba(255,255,255,0.2)',
-        fontFamily: "'Cinzel', serif",
+        position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)',
+        fontSize: 10, letterSpacing: '.2em', color: 'rgba(201,168,76,0.2)',
+        fontFamily: "'Cinzel',serif", textTransform: 'uppercase',
       }}>
-        TAP TO SKIP
+        tap to skip
       </div>
     </div>
   )
