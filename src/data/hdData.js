@@ -9,17 +9,17 @@
  */
 
 // Canvas layout data for body graph rendering (positions in 0-1 normalized coords)
-// Spread out for legibility — uses full 0.15-0.85 range horizontally, 0.04-0.88 vertically
+// Maximally spread — uses full vertical range 0.05-0.92, horizontal 0.22-0.78
 export const CENTERS = [
-  { name: 'HEAD',   xf: .50, yf: .04, shape: 'tri_up',    defined: false, col: 'rgba(120,130,170,' },
-  { name: 'AJNA',   xf: .50, yf: .18, shape: 'tri_down',  defined: false, col: 'rgba(120,130,170,' },
-  { name: 'THROAT', xf: .50, yf: .32, shape: 'rect',      defined: true,  col: 'rgba(80,80,200,' },
-  { name: 'G/SELF', xf: .50, yf: .48, shape: 'diamond',   defined: true,  col: 'rgba(240,200,40,' },
-  { name: 'HEART',  xf: .76, yf: .46, shape: 'tri_right', defined: false, col: 'rgba(120,130,170,' },
-  { name: 'SACRAL', xf: .50, yf: .64, shape: 'rect',      defined: false, col: 'rgba(120,130,170,' },
-  { name: 'SPLEEN', xf: .24, yf: .53, shape: 'tri_left',  defined: true,  col: 'rgba(80,80,200,' },
-  { name: 'SOLAR',  xf: .76, yf: .64, shape: 'tri_right', defined: true,  col: 'rgba(80,80,200,' },
-  { name: 'ROOT',   xf: .50, yf: .82, shape: 'rect',      defined: true,  col: 'rgba(80,80,200,' },
+  { name: 'HEAD',   xf: .50, yf: .05, shape: 'tri_up',    defined: false, col: 'rgba(120,130,170,' },
+  { name: 'AJNA',   xf: .50, yf: .20, shape: 'tri_down',  defined: false, col: 'rgba(120,130,170,' },
+  { name: 'THROAT', xf: .50, yf: .35, shape: 'rect',      defined: true,  col: 'rgba(80,80,200,' },
+  { name: 'G/SELF', xf: .50, yf: .50, shape: 'diamond',   defined: true,  col: 'rgba(240,200,40,' },
+  { name: 'HEART',  xf: .78, yf: .48, shape: 'tri_right', defined: false, col: 'rgba(120,130,170,' },
+  { name: 'SACRAL', xf: .50, yf: .67, shape: 'rect',      defined: false, col: 'rgba(120,130,170,' },
+  { name: 'SPLEEN', xf: .22, yf: .56, shape: 'tri_left',  defined: true,  col: 'rgba(80,80,200,' },
+  { name: 'SOLAR',  xf: .78, yf: .67, shape: 'tri_right', defined: true,  col: 'rgba(80,80,200,' },
+  { name: 'ROOT',   xf: .50, yf: .85, shape: 'rect',      defined: true,  col: 'rgba(80,80,200,' },
 ]
 
 // Canvas center index map (name → index in CENTERS array)
@@ -35,17 +35,17 @@ export const CHANNELS = [
   [5,8,false],[6,5,false],[4,7,false],[7,8,true],[6,8,true],[2,7,false],
 ]
 
-// Gate label positions on canvas — adjusted to match spread-out centers
+// Gate label positions on canvas — matched to maximally-spread centers
 export const GATES = [
-  { x: .50, y: .11, g: '64 61 63' },          // HEAD-AJNA channel
-  { x: .50, y: .24, g: '47 24 4' },            // AJNA area
-  { x: .50, y: .28, g: '17 11 43' },            // AJNA-THROAT
-  { x: .50, y: .40, g: '62 23 56' },            // THROAT-G
-  { x: .50, y: .56, g: '1 13 25 46' },          // G-SACRAL
-  { x: .34, y: .53, g: '57 44' },               // SPLEEN side
-  { x: .66, y: .53, g: '21 26' },               // HEART side
-  { x: .50, y: .73, g: '14 2 5 29' },           // SACRAL-ROOT
-  { x: .50, y: .88, g: '53 60 52 19 58 41' },   // ROOT area
+  { x: .50, y: .12, g: '64 61 63' },          // HEAD-AJNA
+  { x: .50, y: .26, g: '47 24 4' },            // AJNA
+  { x: .50, y: .30, g: '17 11 43' },            // AJNA-THROAT
+  { x: .50, y: .42, g: '62 23 56' },            // THROAT-G
+  { x: .50, y: .58, g: '1 13 25 46' },          // G-SACRAL
+  { x: .33, y: .56, g: '57 44' },               // SPLEEN side
+  { x: .67, y: .56, g: '21 26' },               // HEART side
+  { x: .50, y: .76, g: '14 2 5 29' },           // SACRAL-ROOT
+  { x: .50, y: .92, g: '53 60 52 19 58 41' },   // ROOT area
 ]
 
 // Planet symbols (used in planet tables)
