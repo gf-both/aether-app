@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 
+const TAU = Math.PI * 2
+
 /**
  * GOLEM Intro — 3D particle formation sequence.
  * Particles scatter → coalesce into a random sacred geometry figure → compress → burst → wordmark.
@@ -420,6 +422,119 @@ function hexagram(count) {
 }
 
 // ─── Figure catalog ─────────────────────────────────────────
+function dnaHelix(count) {
+  // Double helix — two intertwined sine/cosine strands with cross-bars
+  const pts = new Float32Array(count * 3)
+  for (let i = 0; i < count; i++) {
+    const t = i / count
+    if (t < 0.4) {
+      // Strand A (sine)
+      const st = t / 0.4
+      const y = (st - 0.5) * 2.4
+      const angle = st * Math.PI * 6
+      pts[i*3] = Math.cos(angle) * 0.4
+      pts[i*3+1] = y
+      pts[i*3+2] = Math.sin(angle) * 0.4
+    } else if (t < 0.8) {
+      // Strand B (cosine, offset by pi)
+      const st = (t - 0.4) / 0.4
+      const y = (st - 0.5) * 2.4
+      const angle = st * Math.PI * 6 + Math.PI
+      pts[i*3] = Math.cos(angle) * 0.4
+      pts[i*3+1] = y
+      pts[i*3+2] = Math.sin(angle) * 0.4
+    } else {
+      // Cross-bars (base pairs connecting the two strands)
+      const st = (t - 0.8) / 0.2
+      const barIdx = Math.floor(st * 12)
+      const barT = (st * 12) % 1
+      const y = (barIdx / 12 - 0.5) * 2.4
+      const angle = (barIdx / 12) * Math.PI * 6
+      const ax = Math.cos(angle) * 0.4, az = Math.sin(angle) * 0.4
+      const bx = Math.cos(angle + Math.PI) * 0.4, bz = Math.sin(angle + Math.PI) * 0.4
+      pts[i*3] = ax * (1 - barT) + bx * barT
+      pts[i*3+1] = y + (Math.random() - 0.5) * 0.02
+      pts[i*3+2] = az * (1 - barT) + bz * barT
+    }
+    pts[i*3] += (Math.random() - 0.5) * 0.015
+    pts[i*3+1] += (Math.random() - 0.5) * 0.015
+    pts[i*3+2] += (Math.random() - 0.5) * 0.015
+  }
+  return pts
+}
+
+function yinYang(count) {
+  // Yin-Yang: outer circle + S-curve + two inner dots
+  const pts = new Float32Array(count * 3)
+  for (let i = 0; i < count; i++) {
+    const t = i / count
+    const depth = (Math.random() - 0.5) * 0.08
+    if (t < 0.35) {
+      // Outer circle
+      const a = (t / 0.35) * TAU
+      pts[i*3] = Math.cos(a) * 0.9; pts[i*3+1] = Math.sin(a) * 0.9; pts[i*3+2] = depth
+    } else if (t < 0.55) {
+      // Upper S-curve (semicircle radius 0.45, centered at (0, 0.45))
+      const a = ((t - 0.35) / 0.2) * Math.PI
+      pts[i*3] = Math.cos(a) * 0.45; pts[i*3+1] = Math.sin(a) * 0.45 + 0.45; pts[i*3+2] = depth
+    } else if (t < 0.75) {
+      // Lower S-curve (semicircle radius 0.45, centered at (0, -0.45))
+      const a = ((t - 0.55) / 0.2) * Math.PI + Math.PI
+      pts[i*3] = Math.cos(a) * 0.45; pts[i*3+1] = Math.sin(a) * 0.45 - 0.45; pts[i*3+2] = depth
+    } else if (t < 0.875) {
+      // Yang dot (small circle at 0, 0.45)
+      const a = Math.random() * TAU; const r = Math.random() * 0.1
+      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = 0.45 + Math.sin(a) * r; pts[i*3+2] = depth
+    } else {
+      // Yin dot (small circle at 0, -0.45)
+      const a = Math.random() * TAU; const r = Math.random() * 0.1
+      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = -0.45 + Math.sin(a) * r; pts[i*3+2] = depth
+    }
+  }
+  return pts
+}
+
+function omSymbol(count) {
+  // Om/Aum — approximated as connected curves forming ॐ shape
+  // Bottom bowl + upper curve + tail + crescent + dot
+  const pts = new Float32Array(count * 3)
+  for (let i = 0; i < count; i++) {
+    const t = i / count
+    const z = (Math.random() - 0.5) * 0.06
+    if (t < 0.25) {
+      // Bottom bowl (open curve, like a 3)
+      const a = (t / 0.25) * Math.PI * 1.3 + Math.PI * 0.3
+      const r = 0.4
+      pts[i*3] = Math.cos(a) * r - 0.15; pts[i*3+1] = Math.sin(a) * r - 0.3; pts[i*3+2] = z
+    } else if (t < 0.45) {
+      // Upper body curve (larger arc)
+      const st = (t - 0.25) / 0.2
+      const a = st * Math.PI * 1.2 - Math.PI * 0.1
+      const r = 0.5
+      pts[i*3] = Math.cos(a) * r + 0.1; pts[i*3+1] = Math.sin(a) * r + 0.15; pts[i*3+2] = z
+    } else if (t < 0.6) {
+      // Tail swooping right and up
+      const st = (t - 0.45) / 0.15
+      pts[i*3] = 0.3 + st * 0.4; pts[i*3+1] = 0.15 + Math.sin(st * Math.PI) * 0.3; pts[i*3+2] = z
+    } else if (t < 0.75) {
+      // Vertical stroke (virama/chandrabindu stem)
+      const st = (t - 0.6) / 0.15
+      pts[i*3] = 0.45 + (Math.random() - 0.5) * 0.03; pts[i*3+1] = 0.3 + st * 0.5; pts[i*3+2] = z
+    } else if (t < 0.9) {
+      // Crescent (chandrabindu arc) at top
+      const a = ((t - 0.75) / 0.15) * Math.PI + Math.PI
+      pts[i*3] = 0.45 + Math.cos(a) * 0.18; pts[i*3+1] = 0.85 + Math.sin(a) * 0.08; pts[i*3+2] = z
+    } else {
+      // Bindu (dot above crescent)
+      const a = Math.random() * TAU; const r = Math.random() * 0.06
+      pts[i*3] = 0.45 + Math.cos(a) * r; pts[i*3+1] = 1.0 + Math.sin(a) * r; pts[i*3+2] = z
+    }
+    pts[i*3] += (Math.random() - 0.5) * 0.012
+    pts[i*3+1] += (Math.random() - 0.5) * 0.012
+  }
+  return pts
+}
+
 const FIGURES = [
   { name: 'Geodesic Sphere', generator: (n) => fibSphere(n, 1.0), label: 'Universal Form' },
   { name: 'Merkaba', generator: merkaba, label: 'Light Vehicle · Hebrew' },
@@ -428,6 +543,9 @@ const FIGURES = [
   { name: 'Dragon', generator: chineseDragon, label: 'Celestial Guardian · Chinese' },
   { name: 'Tree of Life', generator: treeOfLife, label: 'Etz Chaim · Kabbalistic' },
   { name: 'Hexagram', generator: hexagram, label: 'Star of David · Sacred Geometry' },
+  { name: 'DNA Helix', generator: dnaHelix, label: 'Double Helix · The Code of Life' },
+  { name: 'Yin Yang', generator: yinYang, label: 'Supreme Ultimate · Taoist' },
+  { name: 'Om', generator: omSymbol, label: 'Aum · The Primordial Sound · Sanskrit' },
 ]
 
 export default function IntroAnimation({ onComplete }) {
@@ -504,7 +622,7 @@ export default function IntroAnimation({ onComplete }) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
     gl.disable(gl.DEPTH_TEST)
 
-    const DURATION = 13000 // 13 seconds — shape holds ~6s
+    const DURATION = 15000 // 15 seconds — shape holds ~7s
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio, 2)

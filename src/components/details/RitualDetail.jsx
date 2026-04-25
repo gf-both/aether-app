@@ -7,252 +7,310 @@ const ELEMENTS = { fire: '🔥', water: '💧', air: '🌬', earth: '🌍', spir
 const DIFFICULTY = { beginner: { label: 'Beginner', color: '#60b030' }, intermediate: { label: 'Intermediate', color: '#e8a040' }, advanced: { label: 'Advanced', color: '#d44070' } }
 const TAU = Math.PI * 2
 
-// ─── Step-aware particle animation ───
-// Parses the ritual step text to determine what shape to render
-// fire/candle → flame, breath → expanding circle, eyes → eye shape,
-// heart → heart, water → waves, earth/sit → mountain, spin/turn → spiral, etc.
+// ─── Step-aware ritual visualization ───
+// Uses Canvas 2D paths, lines, curves, and gradients — NOT particle blobs.
+// Each shape is rendered as clean geometry with glow, animated smoothly.
 
 function detectShape(text) {
   if (!text) return 'sphere'
   const t = text.toLowerCase()
-  if (t.includes('fire') || t.includes('flame') || t.includes('candle') || t.includes('light') || t.includes('burn') || t.includes('ignite')) return 'flame'
+  if (t.includes('fire') || t.includes('flame') || t.includes('candle') || t.includes('burn') || t.includes('ignite') || t.includes('copal')) return 'flame'
   if (t.includes('breath') || t.includes('inhale') || t.includes('exhale') || t.includes('pranayama')) return 'breath'
   if (t.includes('heart') || t.includes('love') || t.includes('compassion') || t.includes('kindness')) return 'heart'
   if (t.includes('eye') || t.includes('gaze') || t.includes('see') || t.includes('vision') || t.includes('third eye') || t.includes('perceive')) return 'eye'
-  if (t.includes('water') || t.includes('ocean') || t.includes('river') || t.includes('wave') || t.includes('flow') || t.includes('lake')) return 'water'
-  if (t.includes('earth') || t.includes('ground') || t.includes('mountain') || t.includes('root') || t.includes('floor') || t.includes('sit')) return 'mountain'
-  if (t.includes('spin') || t.includes('turn') || t.includes('whirl') || t.includes('orbit') || t.includes('spiral') || t.includes('circl')) return 'spiral'
-  if (t.includes('tree') || t.includes('spine') || t.includes('channel') || t.includes('pillar') || t.includes('vertical')) return 'tree'
-  if (t.includes('star') || t.includes('crown') || t.includes('above') || t.includes('heaven') || t.includes('sky') || t.includes('divine')) return 'star'
-  if (t.includes('hand') || t.includes('palm') || t.includes('touch') || t.includes('finger')) return 'hands'
-  if (t.includes('silence') || t.includes('still') || t.includes('quiet') || t.includes('listen') || t.includes('rest')) return 'stillness'
+  if (t.includes('water') || t.includes('ocean') || t.includes('river') || t.includes('wave') || t.includes('flow') || t.includes('lake') || t.includes('offering')) return 'water'
+  if (t.includes('earth') || t.includes('ground') || t.includes('mountain') || t.includes('root') || t.includes('floor') || t.includes('sit') || t.includes('descen')) return 'mountain'
+  if (t.includes('spin') || t.includes('turn') || t.includes('whirl') || t.includes('orbit') || t.includes('spiral') || t.includes('circl') || t.includes('direction')) return 'spiral'
+  if (t.includes('tree') || t.includes('spine') || t.includes('channel') || t.includes('pillar') || t.includes('vertical') || t.includes('central') || t.includes('crown')) return 'tree'
+  if (t.includes('star') || t.includes('heaven') || t.includes('sky') || t.includes('divine') || t.includes('light') || t.includes('white')) return 'star'
+  if (t.includes('hand') || t.includes('palm') || t.includes('touch') || t.includes('finger') || t.includes('lips') || t.includes('mouth')) return 'hands'
+  if (t.includes('silence') || t.includes('still') || t.includes('quiet') || t.includes('listen') || t.includes('rest') || t.includes('awareness')) return 'stillness'
   if (t.includes('sun') || t.includes('sunrise') || t.includes('dawn') || t.includes('east')) return 'sun'
   if (t.includes('moon') || t.includes('lunar') || t.includes('night')) return 'moon'
   if (t.includes('speak') || t.includes('chant') || t.includes('mantra') || t.includes('vibrat') || t.includes('voice') || t.includes('repeat') || t.includes('say')) return 'sound'
   return 'sphere'
 }
 
-function generateShapePoints(shape, count) {
-  const pts = []
-  for (let i = 0; i < count; i++) {
-    const t = i / count
-    let x = 0, y = 0, hueBase = Math.random()
-    switch (shape) {
-      case 'flame': {
-        // Teardrop flame shape, particles rise
-        const w = (1 - t) * 0.4 * (0.5 + 0.5 * Math.sin(t * 8))
-        x = (Math.random() - 0.5) * w
-        y = -0.6 + t * 1.4 // bottom to top
-        hueBase = t < 0.4 ? Math.random() * 0.15 : t < 0.7 ? 0.15 + Math.random() * 0.15 : 0.3 + Math.random() * 0.25
-        break
-      }
-      case 'breath': {
-        // Concentric expanding/contracting rings
-        const ring = Math.floor(t * 5)
-        const a = Math.random() * TAU
-        const r = 0.12 + ring * 0.15
-        x = Math.cos(a) * r; y = Math.sin(a) * r
-        hueBase = 0.55 + Math.random() * 0.15
-        break
-      }
-      case 'heart': {
-        // Heart curve (parametric)
-        const a = t * TAU
-        x = 0.5 * 16 * Math.pow(Math.sin(a), 3) / 16
-        y = 0.5 * (13 * Math.cos(a) - 5 * Math.cos(2*a) - 2 * Math.cos(3*a) - Math.cos(4*a)) / 16
-        hueBase = 0.7 + Math.random() * 0.15
-        break
-      }
-      case 'eye': {
-        // Almond eye shape with iris
-        if (t < 0.6) {
-          // Eye outline (two arcs)
-          const a = (t / 0.6) * Math.PI
-          const upper = t < 0.3
-          x = Math.cos(a) * 0.7
-          y = Math.sin(a) * (upper ? 0.35 : 0.35) * (upper ? 1 : -1)
-          if (t >= 0.3) y = -Math.sin((t-0.3)/0.3 * Math.PI) * 0.35
-        } else {
-          // Iris circle
-          const a = Math.random() * TAU
-          const r = Math.random() * 0.2
-          x = Math.cos(a) * r; y = Math.sin(a) * r
-        }
-        hueBase = 0.55 + Math.random() * 0.2
-        break
-      }
-      case 'water': {
-        // Sine waves layered
-        const row = Math.floor(t * 5)
-        const wt = (t * 5) % 1
-        x = -0.8 + wt * 1.6
-        y = -0.4 + row * 0.2 + Math.sin(wt * TAU * 2 + row) * 0.08
-        hueBase = 0.55 + Math.random() * 0.15
-        break
-      }
-      case 'mountain': {
-        // Triangle mountain with base
-        if (t < 0.6) {
-          // Mountain triangle
-          const mt = t / 0.6
-          const side = mt < 0.5 ? 0 : 1
-          const st = (mt * 2) % 1
-          if (side === 0) { x = -0.6 * (1 - st); y = -0.5 + st * 1.0 }
-          else { x = 0.6 * (1 - st); y = 0.5 - st * 1.0 }
-          x += (Math.random() - 0.5) * 0.06
-        } else {
-          // Ground line
-          x = (Math.random() - 0.5) * 1.4; y = -0.5 + (Math.random() - 0.5) * 0.06
-        }
-        hueBase = 0.85 + Math.random() * 0.15
-        break
-      }
-      case 'spiral': {
-        const a = t * TAU * 4
-        const r = 0.05 + t * 0.75
-        x = Math.cos(a) * r; y = Math.sin(a) * r
-        hueBase = t
-        break
-      }
-      case 'tree': {
-        // Trunk + branches
-        if (t < 0.3) {
-          // Trunk
-          x = (Math.random() - 0.5) * 0.08; y = -0.7 + t / 0.3 * 1.0
-        } else {
-          // Branches radiating from top
-          const branch = Math.floor((t - 0.3) / 0.7 * 7)
-          const bt = ((t - 0.3) / 0.7 * 7) % 1
-          const a = -Math.PI/2 + (branch / 7 - 0.5) * Math.PI * 0.8
-          const r = bt * 0.5
-          x = Math.cos(a) * r; y = 0.3 + Math.sin(a) * r
-        }
-        hueBase = 0.85 + Math.random() * 0.15
-        break
-      }
-      case 'star': {
-        // 5-pointed star
-        const points = 5
-        const a = t * TAU
-        const spiky = Math.floor(a / (TAU / points / 2)) % 2 === 0
-        const r = spiky ? 0.7 : 0.3
-        x = Math.cos(a - Math.PI/2) * r; y = Math.sin(a - Math.PI/2) * r
-        hueBase = Math.random() * 0.3
-        break
-      }
-      case 'hands': {
-        // Two palm shapes (circles with finger lines)
-        const hand = t < 0.5 ? -1 : 1
-        const ht = (t * 2) % 1
-        if (ht < 0.6) {
-          // Palm circle
-          const a = Math.random() * TAU; const r = Math.random() * 0.25
-          x = hand * 0.3 + Math.cos(a) * r; y = Math.sin(a) * r
-        } else {
-          // Fingers
-          const finger = Math.floor((ht - 0.6) / 0.4 * 5)
-          const ft = ((ht - 0.6) / 0.4 * 5) % 1
-          const fa = (-0.4 + finger * 0.2)
-          x = hand * 0.3 + Math.sin(fa) * ft * 0.35; y = 0.25 + ft * 0.35
-        }
-        hueBase = 0.0 + Math.random() * 0.3
-        break
-      }
-      case 'stillness': {
-        // Single point expanding/contracting — sparse, centered
-        const a = Math.random() * TAU
-        const r = Math.random() * 0.15 + Math.random() * Math.random() * 0.4
-        x = Math.cos(a) * r; y = Math.sin(a) * r
-        hueBase = 0.0 + Math.random() * 0.25
-        break
-      }
-      case 'sun': {
-        // Circle with rays
-        if (t < 0.5) {
-          const a = Math.random() * TAU; const r = Math.random() * 0.25
-          x = Math.cos(a) * r; y = Math.sin(a) * r
-        } else {
-          const ray = Math.floor((t - 0.5) * 2 * 12)
-          const rt = ((t - 0.5) * 24) % 1
-          const a = ray * TAU / 12
-          const r = 0.3 + rt * 0.45
-          x = Math.cos(a) * r; y = Math.sin(a) * r
-        }
-        hueBase = Math.random() * 0.3
-        break
-      }
-      case 'moon': {
-        // Crescent
-        const a = Math.random() * TAU
-        const r1 = 0.5, r2 = 0.4, offset = 0.2
-        const px = Math.cos(a) * r1, py = Math.sin(a) * r1
-        const dist = Math.sqrt((px - offset) ** 2 + py ** 2)
-        if (dist > r2) { x = px; y = py } else { x = px + 0.15; y = py }
-        hueBase = 0.55 + Math.random() * 0.15
-        break
-      }
-      case 'sound': {
-        // Sound waves — concentric arcs emanating from center-left
-        const wave = Math.floor(t * 5)
-        const wt = (t * 5) % 1
-        const a = (wt - 0.5) * Math.PI * 0.8
-        const r = 0.15 + wave * 0.14
-        x = -0.3 + Math.cos(a) * r; y = Math.sin(a) * r
-        hueBase = 0.0 + Math.random() * 0.3
-        break
-      }
-      default: {
-        const a = Math.random() * TAU; const r = Math.random() * 0.6
-        x = Math.cos(a) * r; y = Math.sin(a) * r
-      }
-    }
-    pts.push({ x, y, size: Math.random() * 2.2 + 0.8, phase: Math.random() * TAU, hue: hueBase, speed: 0.3 + Math.random() * 0.7 })
-  }
-  return pts
+// ─── Draw functions: clean line/path geometry with glow ───
+
+const SHAPE_COLORS = {
+  flame:     { primary: '#ff9030', secondary: '#ff5010', glow: 'rgba(255,140,40,' },
+  breath:    { primary: '#80c8ff', secondary: '#a0d8ff', glow: 'rgba(140,200,255,' },
+  heart:     { primary: '#e04080', secondary: '#ff6090', glow: 'rgba(230,80,140,' },
+  eye:       { primary: '#90a8e0', secondary: '#b0c0ff', glow: 'rgba(160,180,240,' },
+  water:     { primary: '#40a0e8', secondary: '#70c0ff', glow: 'rgba(80,170,240,' },
+  mountain:  { primary: '#70b050', secondary: '#90c870', glow: 'rgba(110,180,80,' },
+  spiral:    { primary: '#c9a84c', secondary: '#e0c070', glow: 'rgba(200,170,80,' },
+  tree:      { primary: '#60a848', secondary: '#a0c080', glow: 'rgba(100,170,70,' },
+  star:      { primary: '#e0c050', secondary: '#f0d878', glow: 'rgba(230,200,90,' },
+  hands:     { primary: '#d0a860', secondary: '#e0c080', glow: 'rgba(210,170,100,' },
+  stillness: { primary: '#a0a8b8', secondary: '#c0c8d8', glow: 'rgba(180,185,200,' },
+  sun:       { primary: '#f0b030', secondary: '#ffd060', glow: 'rgba(240,180,50,' },
+  moon:      { primary: '#b0b8d8', secondary: '#d0d8f0', glow: 'rgba(180,190,220,' },
+  sound:     { primary: '#c0a0e0', secondary: '#d8c0f0', glow: 'rgba(190,160,225,' },
+  sphere:    { primary: '#c9a84c', secondary: '#e0c070', glow: 'rgba(200,170,80,' },
 }
 
-// Color palettes per shape type
-function getShapeColor(shape, hue, alpha) {
+function drawShape(ctx, shape, cx, cy, scale, t) {
+  const col = SHAPE_COLORS[shape] || SHAPE_COLORS.sphere
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round'
+
+  // Outer glow layer
+  ctx.shadowColor = col.glow + '0.4)'; ctx.shadowBlur = 20
+
   switch (shape) {
-    case 'flame': return hue < 0.15 ? `rgba(255,200,60,${alpha})` : hue < 0.3 ? `rgba(255,140,30,${alpha})` : `rgba(255,80,20,${alpha})`
-    case 'water': return hue < 0.6 ? `rgba(80,160,240,${alpha})` : `rgba(120,200,255,${alpha})`
-    case 'heart': return hue < 0.75 ? `rgba(230,60,120,${alpha})` : `rgba(255,120,160,${alpha})`
-    case 'breath': return `rgba(160,200,255,${alpha})`
-    case 'mountain': case 'tree': return hue < 0.9 ? `rgba(100,180,80,${alpha})` : `rgba(160,140,100,${alpha})`
-    case 'sun': return hue < 0.15 ? `rgba(255,220,80,${alpha})` : `rgba(255,180,40,${alpha})`
-    case 'moon': return `rgba(200,210,240,${alpha})`
-    case 'sound': return hue < 0.15 ? `rgba(224,184,90,${alpha})` : `rgba(200,170,255,${alpha})`
-    case 'stillness': return `rgba(200,200,220,${alpha})`
+    case 'flame': {
+      // Animated flame with multiple layers
+      for (let layer = 0; layer < 3; layer++) {
+        const flicker = Math.sin(t * 4 + layer * 2) * 0.05
+        const sway = Math.sin(t * 2.5 + layer) * scale * 0.06
+        const h = scale * (0.7 - layer * 0.15)
+        const w = scale * (0.25 - layer * 0.05)
+        ctx.beginPath()
+        ctx.moveTo(cx + sway, cy + h * 0.5)
+        ctx.bezierCurveTo(cx - w + sway + flicker * scale, cy + h * 0.1, cx - w * 0.6 + sway, cy - h * 0.4, cx + sway, cy - h * 0.5 + Math.sin(t * 5) * scale * 0.03)
+        ctx.bezierCurveTo(cx + w * 0.6 + sway, cy - h * 0.4, cx + w + sway - flicker * scale, cy + h * 0.1, cx + sway, cy + h * 0.5)
+        ctx.closePath()
+        const alpha = 0.35 - layer * 0.1
+        ctx.fillStyle = layer === 0 ? `rgba(255,80,20,${alpha})` : layer === 1 ? `rgba(255,150,40,${alpha})` : `rgba(255,220,80,${alpha})`
+        ctx.fill()
+        ctx.strokeStyle = layer === 2 ? col.secondary : col.primary
+        ctx.lineWidth = 1.5 - layer * 0.3; ctx.globalAlpha = 0.6 - layer * 0.15; ctx.stroke(); ctx.globalAlpha = 1
+      }
+      break
+    }
+    case 'breath': {
+      const breathPhase = Math.sin(t * 0.8)
+      for (let ring = 0; ring < 4; ring++) {
+        const r = scale * (0.15 + ring * 0.15) * (1 + breathPhase * 0.25)
+        const alpha = 0.5 - ring * 0.1
+        ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU)
+        ctx.strokeStyle = col.glow + alpha + ')'; ctx.lineWidth = 2 - ring * 0.3; ctx.stroke()
+      }
+      // Center dot pulses
+      const cr = scale * 0.06 * (1.2 + breathPhase * 0.3)
+      const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr)
+      cg.addColorStop(0, col.glow + '0.8)'); cg.addColorStop(1, 'transparent')
+      ctx.beginPath(); ctx.arc(cx, cy, cr, 0, TAU); ctx.fillStyle = cg; ctx.fill()
+      break
+    }
+    case 'heart': {
+      const beat = 1 + Math.sin(t * 2) * 0.06
+      const s = scale * 0.028 * beat
+      ctx.beginPath()
+      for (let i = 0; i <= 200; i++) {
+        const a = (i / 200) * TAU
+        const hx = cx + s * 16 * Math.pow(Math.sin(a), 3)
+        const hy = cy - s * (13 * Math.cos(a) - 5 * Math.cos(2*a) - 2 * Math.cos(3*a) - Math.cos(4*a))
+        i === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy)
+      }
+      ctx.closePath()
+      ctx.fillStyle = col.glow + '0.15)'; ctx.fill()
+      ctx.strokeStyle = col.primary; ctx.lineWidth = 2; ctx.stroke()
+      // Inner glow
+      const hg = ctx.createRadialGradient(cx, cy - scale * 0.05, 0, cx, cy, scale * 0.35)
+      hg.addColorStop(0, col.glow + '0.25)'); hg.addColorStop(1, 'transparent')
+      ctx.beginPath(); ctx.arc(cx, cy - scale * 0.05, scale * 0.35, 0, TAU); ctx.fillStyle = hg; ctx.fill()
+      break
+    }
+    case 'eye': {
+      const blink = Math.max(0, Math.sin(t * 0.3)) // open/close
+      const eyeH = scale * 0.28 * blink
+      // Upper lid
+      ctx.beginPath(); ctx.moveTo(cx - scale * 0.5, cy)
+      ctx.quadraticCurveTo(cx, cy - eyeH, cx + scale * 0.5, cy)
+      // Lower lid
+      ctx.quadraticCurveTo(cx, cy + eyeH * 0.7, cx - scale * 0.5, cy)
+      ctx.closePath()
+      ctx.fillStyle = col.glow + '0.1)'; ctx.fill()
+      ctx.strokeStyle = col.primary; ctx.lineWidth = 1.5; ctx.stroke()
+      // Iris
+      if (blink > 0.3) {
+        const ir = scale * 0.12 * blink
+        const ig = ctx.createRadialGradient(cx, cy, ir * 0.3, cx, cy, ir)
+        ig.addColorStop(0, col.glow + '0.6)'); ig.addColorStop(0.7, col.primary); ig.addColorStop(1, 'transparent')
+        ctx.beginPath(); ctx.arc(cx, cy, ir, 0, TAU); ctx.fillStyle = ig; ctx.fill()
+        // Pupil
+        ctx.beginPath(); ctx.arc(cx, cy, ir * 0.35, 0, TAU); ctx.fillStyle = 'rgba(10,8,20,0.8)'; ctx.fill()
+        // Catchlight
+        ctx.beginPath(); ctx.arc(cx + ir * 0.2, cy - ir * 0.2, ir * 0.12, 0, TAU); ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fill()
+      }
+      break
+    }
+    case 'water': {
+      for (let row = 0; row < 5; row++) {
+        const yy = cy + (row - 2) * scale * 0.18
+        const alpha = 0.4 - Math.abs(row - 2) * 0.08
+        ctx.beginPath()
+        for (let x = -1; x <= 1; x += 0.01) {
+          const wx = cx + x * scale * 0.7
+          const wy = yy + Math.sin(x * 8 + t * 2 + row * 1.5) * scale * 0.06
+          x === -1 ? ctx.moveTo(wx, wy) : ctx.lineTo(wx, wy)
+        }
+        ctx.strokeStyle = col.glow + alpha + ')'; ctx.lineWidth = 2.5 - row * 0.3; ctx.stroke()
+      }
+      break
+    }
+    case 'mountain': {
+      // Mountain silhouette with snow cap
+      ctx.beginPath()
+      ctx.moveTo(cx - scale * 0.7, cy + scale * 0.35)
+      ctx.lineTo(cx - scale * 0.1, cy - scale * 0.4)
+      ctx.lineTo(cx, cy - scale * 0.35) // snow cap notch
+      ctx.lineTo(cx + scale * 0.1, cy - scale * 0.4)
+      ctx.lineTo(cx + scale * 0.7, cy + scale * 0.35)
+      ctx.closePath()
+      ctx.fillStyle = col.glow + '0.1)'; ctx.fill()
+      ctx.strokeStyle = col.primary; ctx.lineWidth = 1.5; ctx.stroke()
+      // Ground line
+      ctx.beginPath(); ctx.moveTo(cx - scale * 0.8, cy + scale * 0.35); ctx.lineTo(cx + scale * 0.8, cy + scale * 0.35)
+      ctx.strokeStyle = col.glow + '0.3)'; ctx.lineWidth = 1; ctx.stroke()
+      // Snow cap glow
+      const sg = ctx.createRadialGradient(cx, cy - scale * 0.35, 0, cx, cy - scale * 0.2, scale * 0.15)
+      sg.addColorStop(0, 'rgba(220,230,255,0.3)'); sg.addColorStop(1, 'transparent')
+      ctx.beginPath(); ctx.arc(cx, cy - scale * 0.35, scale * 0.15, 0, TAU); ctx.fillStyle = sg; ctx.fill()
+      break
+    }
+    case 'spiral': {
+      ctx.beginPath()
+      for (let i = 0; i <= 300; i++) {
+        const a = (i / 300) * TAU * 3 + t * 0.3
+        const r = (i / 300) * scale * 0.55
+        const sx = cx + Math.cos(a) * r, sy = cy + Math.sin(a) * r
+        i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy)
+      }
+      ctx.strokeStyle = col.primary; ctx.lineWidth = 2; ctx.globalAlpha = 0.6; ctx.stroke(); ctx.globalAlpha = 1
+      break
+    }
+    case 'tree': {
+      // Trunk
+      ctx.beginPath(); ctx.moveTo(cx, cy + scale * 0.5); ctx.lineTo(cx, cy - scale * 0.1)
+      ctx.strokeStyle = col.glow + '0.5)'; ctx.lineWidth = 3; ctx.stroke()
+      // Branches
+      const branches = 7
+      for (let b = 0; b < branches; b++) {
+        const a = -Math.PI / 2 + (b / (branches - 1) - 0.5) * Math.PI * 0.8
+        const len = scale * (0.25 + Math.sin(t * 0.5 + b) * 0.03)
+        ctx.beginPath(); ctx.moveTo(cx, cy - scale * 0.1)
+        ctx.lineTo(cx + Math.cos(a) * len, cy - scale * 0.1 + Math.sin(a) * len)
+        ctx.strokeStyle = col.glow + '0.4)'; ctx.lineWidth = 1.5; ctx.stroke()
+        // Leaf glow at tip
+        const lg = ctx.createRadialGradient(cx + Math.cos(a) * len, cy - scale * 0.1 + Math.sin(a) * len, 0, cx + Math.cos(a) * len, cy - scale * 0.1 + Math.sin(a) * len, scale * 0.06)
+        lg.addColorStop(0, col.glow + '0.4)'); lg.addColorStop(1, 'transparent')
+        ctx.beginPath(); ctx.arc(cx + Math.cos(a) * len, cy - scale * 0.1 + Math.sin(a) * len, scale * 0.06, 0, TAU); ctx.fillStyle = lg; ctx.fill()
+      }
+      break
+    }
+    case 'star': {
+      const rot = t * 0.15
+      ctx.beginPath()
+      for (let i = 0; i <= 10; i++) {
+        const a = (i / 10) * TAU - Math.PI / 2 + rot
+        const r = i % 2 === 0 ? scale * 0.5 : scale * 0.2
+        const sx = cx + Math.cos(a) * r, sy = cy + Math.sin(a) * r
+        i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy)
+      }
+      ctx.closePath()
+      ctx.fillStyle = col.glow + '0.12)'; ctx.fill()
+      ctx.strokeStyle = col.primary; ctx.lineWidth = 1.5; ctx.stroke()
+      // Center glow
+      const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, scale * 0.15)
+      cg.addColorStop(0, col.glow + '0.5)'); cg.addColorStop(1, 'transparent')
+      ctx.beginPath(); ctx.arc(cx, cy, scale * 0.15, 0, TAU); ctx.fillStyle = cg; ctx.fill()
+      break
+    }
+    case 'sound': {
+      // Sound waves emanating from left
+      const ox = cx - scale * 0.3
+      for (let w = 0; w < 5; w++) {
+        const r = scale * (0.1 + w * 0.1) + Math.sin(t * 3 + w) * scale * 0.02
+        const alpha = 0.5 - w * 0.08
+        ctx.beginPath(); ctx.arc(ox, cy, r, -Math.PI * 0.4, Math.PI * 0.4)
+        ctx.strokeStyle = col.glow + alpha + ')'; ctx.lineWidth = 2.5 - w * 0.3; ctx.stroke()
+      }
+      // Source dot
+      ctx.beginPath(); ctx.arc(ox, cy, scale * 0.04, 0, TAU); ctx.fillStyle = col.primary; ctx.fill()
+      break
+    }
+    case 'sun': {
+      // Sun disc + rays
+      const pulse = 1 + Math.sin(t * 1.5) * 0.05
+      const sr = scale * 0.18 * pulse
+      const sg = ctx.createRadialGradient(cx, cy, sr * 0.3, cx, cy, sr)
+      sg.addColorStop(0, col.glow + '0.7)'); sg.addColorStop(1, col.glow + '0.1)')
+      ctx.beginPath(); ctx.arc(cx, cy, sr, 0, TAU); ctx.fillStyle = sg; ctx.fill()
+      // Rays
+      for (let r = 0; r < 12; r++) {
+        const a = r * TAU / 12 + t * 0.1
+        const inner = sr * 1.3, outer = sr * 1.3 + scale * 0.2
+        ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner)
+        ctx.lineTo(cx + Math.cos(a) * outer, cy + Math.sin(a) * outer)
+        ctx.strokeStyle = col.glow + '0.35)'; ctx.lineWidth = 2; ctx.stroke()
+      }
+      break
+    }
+    case 'moon': {
+      const mr = scale * 0.3
+      // Outer circle
+      ctx.beginPath(); ctx.arc(cx, cy, mr, 0, TAU)
+      ctx.fillStyle = col.glow + '0.12)'; ctx.fill()
+      ctx.strokeStyle = col.primary; ctx.lineWidth = 1.5; ctx.stroke()
+      // Inner cutout for crescent
+      ctx.beginPath(); ctx.arc(cx + mr * 0.4, cy, mr * 0.85, 0, TAU)
+      ctx.fillStyle = 'rgba(5,3,15,0.8)'; ctx.fill()
+      break
+    }
+    case 'hands': {
+      // Open palms
+      for (const side of [-1, 1]) {
+        const hx = cx + side * scale * 0.22
+        // Palm oval
+        ctx.beginPath(); ctx.ellipse(hx, cy + scale * 0.05, scale * 0.12, scale * 0.16, 0, 0, TAU)
+        ctx.strokeStyle = col.glow + '0.35)'; ctx.lineWidth = 1.5; ctx.stroke()
+        // Fingers
+        for (let f = 0; f < 5; f++) {
+          const fa = (-0.5 + f * 0.25) * side
+          const fx = hx + Math.sin(fa) * scale * 0.08
+          const fy = cy - scale * 0.12
+          ctx.beginPath(); ctx.moveTo(fx, fy)
+          ctx.lineTo(fx + Math.sin(fa) * scale * 0.15, fy - scale * 0.18 - (f === 2 ? scale * 0.04 : 0))
+          ctx.strokeStyle = col.glow + '0.3)'; ctx.lineWidth = 1.2; ctx.stroke()
+        }
+      }
+      break
+    }
+    case 'stillness': {
+      // Single pulsing glow — minimal
+      const pulse = 0.5 + 0.5 * Math.sin(t * 0.6)
+      const sr = scale * 0.15 * (0.8 + pulse * 0.4)
+      const sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, sr * 3)
+      sg.addColorStop(0, col.glow + (0.3 + pulse * 0.2).toFixed(2) + ')')
+      sg.addColorStop(0.5, col.glow + '0.08)'); sg.addColorStop(1, 'transparent')
+      ctx.beginPath(); ctx.arc(cx, cy, sr * 3, 0, TAU); ctx.fillStyle = sg; ctx.fill()
+      // Tiny center dot
+      ctx.beginPath(); ctx.arc(cx, cy, 2, 0, TAU); ctx.fillStyle = col.primary; ctx.fill()
+      break
+    }
     default: {
-      if (hue < .3) return `rgba(224,184,90,${alpha})`
-      if (hue < .55) return `rgba(242,216,140,${alpha})`
-      if (hue < .7) return `rgba(140,166,224,${alpha})`
-      if (hue < .85) return `rgba(216,90,140,${alpha})`
-      return `rgba(64,200,172,${alpha})`
+      // Gentle orbiting dots
+      for (let i = 0; i < 12; i++) {
+        const a = (i / 12) * TAU + t * 0.2
+        const r = scale * 0.3
+        const dx = cx + Math.cos(a) * r, dy = cy + Math.sin(a) * r
+        ctx.beginPath(); ctx.arc(dx, dy, 2, 0, TAU)
+        ctx.fillStyle = col.glow + '0.5)'; ctx.fill()
+      }
     }
   }
+  ctx.shadowBlur = 0
 }
 
 function InlineParticles({ stepText, active }) {
   const canvasRef = useRef(null)
-  const particlesRef = useRef(null)
   const shapeRef = useRef('sphere')
-  const targetRef = useRef(null)
-  const transitionRef = useRef(0) // 0=at current, 1=at target
 
-  // When step text changes, generate new target positions
   useEffect(() => {
-    const shape = detectShape(stepText)
-    shapeRef.current = shape
-    const newPts = generateShapePoints(shape, 600)
-    if (!particlesRef.current) {
-      // First render — set directly
-      particlesRef.current = newPts
-    } else {
-      // Animate transition: store target, let draw loop interpolate
-      targetRef.current = newPts
-      transitionRef.current = 0
-    }
+    shapeRef.current = detectShape(stepText)
   }, [stepText])
 
   useEffect(() => {
@@ -270,81 +328,16 @@ function InlineParticles({ stepText, active }) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
 
-      const particles = particlesRef.current
-      if (!particles || particles.length === 0) { raf = requestAnimationFrame(draw); return }
-
-      // Transition interpolation
-      if (targetRef.current && transitionRef.current < 1) {
-        transitionRef.current = Math.min(1, transitionRef.current + 0.025)
-        const lerp = transitionRef.current
-        const target = targetRef.current
-        for (let i = 0; i < particles.length && i < target.length; i++) {
-          particles[i].x = particles[i].x * (1-lerp) + target[i].x * lerp
-          particles[i].y = particles[i].y * (1-lerp) + target[i].y * lerp
-          particles[i].hue = particles[i].hue * (1-lerp) + target[i].hue * lerp
-        }
-        if (lerp >= 1) {
-          particlesRef.current = target
-          targetRef.current = null
-        }
-      }
-
-      const cx = W/2, cy = H/2, scale = Math.min(W, H) * 0.38
+      const cx = W / 2, cy = H / 2, scale = Math.min(W, H) * 0.4
       const t = time * 0.001
-      const shape = shapeRef.current
 
-      // Shape-specific animation modifiers
-      const isFlame = shape === 'flame'
-      const isBreath = shape === 'breath'
-      const isSpiral = shape === 'spiral'
+      drawShape(ctx, shapeRef.current, cx, cy, scale, t)
 
-      for (const p of particles) {
-        let px = p.x, py = p.y
-
-        // Shape-specific motion
-        if (isFlame) {
-          // Flames flicker and rise
-          px += Math.sin(t * 3 + p.phase * 5) * 0.04
-          py += Math.sin(t * 2 + p.phase) * 0.02 + t * 0.01 % 0.05
-        } else if (isBreath) {
-          // Breathing expansion/contraction
-          const breathScale = 1 + 0.2 * Math.sin(t * 0.8)
-          px *= breathScale; py *= breathScale
-        } else if (isSpiral) {
-          // Slow rotation
-          const a = t * 0.3
-          const rx = px * Math.cos(a) - py * Math.sin(a)
-          const ry = px * Math.sin(a) + py * Math.cos(a)
-          px = rx; py = ry
-        } else {
-          // Default gentle breathing
-          const b = 1 + 0.04 * Math.sin(t * 1.5 + p.phase)
-          px *= b; py *= b
-        }
-
-        // Gentle float for all
-        py += Math.sin(t * 0.6 + p.phase) * 0.008
-
-        const sx = cx + px * scale
-        const sy = cy - py * scale
-        const alpha = 0.3 + 0.5 * (0.5 + 0.5 * Math.sin(t * 1.2 * p.speed + p.phase))
-        const r = p.size * (active ? 1.2 : 0.9)
-
-        // Glow
-        const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 3.5)
-        grd.addColorStop(0, getShapeColor(shape, p.hue, alpha.toFixed(2)))
-        grd.addColorStop(1, 'transparent')
-        ctx.beginPath(); ctx.arc(sx, sy, r * 3.5, 0, TAU); ctx.fillStyle = grd; ctx.fill()
-
-        // Core
-        ctx.beginPath(); ctx.arc(sx, sy, r, 0, TAU)
-        ctx.fillStyle = getShapeColor(shape, p.hue, Math.min(1, alpha + 0.3).toFixed(2)); ctx.fill()
-      }
       raf = requestAnimationFrame(draw)
     }
     raf = requestAnimationFrame(draw)
     return () => { if (raf) cancelAnimationFrame(raf) }
-  }, [active])
+  }, [stepText, active])
 
   return <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
 }
