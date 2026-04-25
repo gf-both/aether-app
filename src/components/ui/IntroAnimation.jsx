@@ -324,48 +324,53 @@ function mayanPyramid(count) {
 }
 
 function chineseDragon(count) {
-  // Sinuous S-curve dragon body with head and tail flourishes
+  // Dragon: cloud-like body along S-curve, no visible spine line
+  // All particles placed at random positions along the body with minimum radial offset
   const pts = new Float32Array(count * 3)
   for (let i = 0; i < count; i++) {
-    const t = i / count
+    // Pick a random position along the body (not sequential — avoids line artifacts)
+    const t = Math.random()
+
     // Spine: S-curve
-    const spineT = t * 4 - 2 // -2 to 2
+    const spineT = t * 4 - 2
     const sx = spineT * 0.6
     const sy = Math.sin(spineT * Math.PI * 0.8) * 0.6
     const sz = Math.cos(spineT * Math.PI * 0.5) * 0.4
 
-    // Body radius varies — thick in middle, thin at ends
-    const bodyR = 0.15 + 0.25 * Math.sin(t * Math.PI) // 0 at ends, max at center
+    // Body radius — minimum 0.08 so there's no thin spine visible
+    const bodyR = Math.max(0.08, 0.15 + 0.25 * Math.sin(t * Math.PI))
 
-    // Head (first 15%)
+    // Head cloud (first 15%)
     let hx = 0, hy = 0, hz = 0
     if (t < 0.15) {
       const ht = t / 0.15
-      hx = (Math.random() - 0.5) * (0.4 - ht * 0.2)
-      hy = (Math.random() - 0.5) * (0.5 - ht * 0.3) + 0.15
-      hz = (Math.random() - 0.5) * 0.3
+      hx = (Math.random() - 0.5) * (0.5 - ht * 0.25)
+      hy = (Math.random() - 0.5) * (0.5 - ht * 0.3) + 0.2
+      hz = (Math.random() - 0.5) * 0.35
     }
 
-    // Whiskers/horns (particles near head extend upward)
+    // Whiskers/horns
     if (t < 0.08) {
       const wt = t / 0.08
       hy += (1 - wt) * 0.4
-      hx += Math.sin(wt * 6) * 0.15
+      hx += Math.sin(wt * 6) * 0.2
     }
 
-    // Tail flourish (last 10%)
-    if (t > 0.9) {
-      const tt = (t - 0.9) / 0.1
-      hz += Math.sin(tt * Math.PI * 3) * 0.3 * tt
-      hy += Math.cos(tt * Math.PI * 2) * 0.2 * tt
+    // Tail flourish
+    if (t > 0.88) {
+      const tt = (t - 0.88) / 0.12
+      hz += Math.sin(tt * Math.PI * 3) * 0.35 * tt
+      hy += Math.cos(tt * Math.PI * 2) * 0.25 * tt
     }
 
-    const angle = Math.random() * Math.PI * 2
-    const r = Math.random() * bodyR
+    // Radial offset — always at least 30% of bodyR from spine (prevents line)
+    const angle = Math.random() * TAU
+    const minR = bodyR * 0.3
+    const r = minR + Math.random() * (bodyR - minR)
 
-    pts[i*3]   = sx + Math.cos(angle) * r * 0.5 + hx
+    pts[i*3]   = sx + Math.cos(angle) * r * 0.6 + hx
     pts[i*3+1] = sy + Math.sin(angle) * r + hy
-    pts[i*3+2] = sz + (Math.random() - 0.5) * bodyR + hz
+    pts[i*3+2] = sz + Math.cos(angle + 1) * r * 0.5 + hz
   }
   return pts
 }
@@ -476,65 +481,90 @@ function dnaHelix(count) {
 }
 
 function yinYang(count) {
-  // Proper Yin-Yang: filled halves with S-curve divider + two eyes
-  // Light half (right/top) and dark half (left/bottom) with dots
+  // Yin-Yang with clear visual separation:
+  // - Dense bright particles for yang (light) half
+  // - Sparse dim particles for yin (dark) half
+  // - Thick S-curve divider line
+  // - Two eyes clearly visible
+  // Uses colorId channel: yang particles get hue < 0.3 (gold), yin get hue > 0.7 (blue/teal)
   const pts = new Float32Array(count * 3)
-  const R = 0.9 // outer radius
+  const R = 0.85
+
+  // Helper: is point (px,py) in the yang (light) half?
+  // Yang = right semicircle + upper small bulge (semicircle r=R/2 at 0,R/2)
+  //        minus lower indent (semicircle r=R/2 at 0,-R/2)
+  function isYang(px, py) {
+    // In the upper half: yang includes the upper small semicircle
+    if (py >= 0) {
+      const dUpper = Math.sqrt(px * px + (py - R/2) * (py - R/2))
+      if (dUpper <= R/2) return true  // inside upper bulge
+      return px > 0 // right side
+    } else {
+      // In the lower half: yang excludes the lower small semicircle
+      const dLower = Math.sqrt(px * px + (py + R/2) * (py + R/2))
+      if (dLower <= R/2) return false // inside lower indent (yin territory)
+      return px > 0 // right side
+    }
+  }
 
   for (let i = 0; i < count; i++) {
     const t = i / count
-    const z = (Math.random() - 0.5) * 0.06
+    const z = (Math.random() - 0.5) * 0.05
 
-    if (t < 0.2) {
-      // Outer circle edge — thick ring
-      const a = (t / 0.2) * TAU
-      const rr = R + (Math.random() - 0.5) * 0.04
-      pts[i*3] = Math.cos(a) * rr; pts[i*3+1] = Math.sin(a) * rr; pts[i*3+2] = z
-    } else if (t < 0.5) {
-      // Yang (light) half — right side, fill with particles
-      // Yang occupies: right semicircle + upper small bulge - lower small indent
-      const st = (t - 0.2) / 0.3
-      const a = (st - 0.5) * Math.PI // -π/2 to π/2 (right half)
-      const r = Math.random() * R * 0.85
-      let px = Math.cos(a) * r
-      let py = Math.sin(a) * r
-      // Adjust for S-curve: if in upper half, extend left via small semicircle
-      if (py > 0 && px < 0) {
-        // Upper-left quadrant: only include if within the upper bulge
-        const distFromUpperCenter = Math.sqrt(px * px + (py - R/2) * (py - R/2))
-        if (distFromUpperCenter > R/2) { px = Math.abs(px) * 0.3; } // push back to right
+    if (t < 0.15) {
+      // Outer circle — thick edge ring
+      const a = (t / 0.15) * TAU
+      const jitter = (Math.random() - 0.5) * 0.03
+      pts[i*3] = Math.cos(a) * (R + jitter)
+      pts[i*3+1] = Math.sin(a) * (R + jitter)
+      pts[i*3+2] = z
+    } else if (t < 0.3) {
+      // S-curve divider — THICK line (many particles for visibility)
+      const st = (t - 0.15) / 0.15
+      if (st < 0.5) {
+        // Upper arc: semicircle centered at (0, R/2), going from right to left
+        const a = (st / 0.5) * Math.PI
+        const jitter = (Math.random() - 0.5) * 0.025
+        pts[i*3] = Math.cos(a) * (R/2 + jitter)
+        pts[i*3+1] = Math.sin(a) * (R/2 + jitter) + R/2
+      } else {
+        // Lower arc: semicircle centered at (0, -R/2), going from left to right
+        const a = ((st - 0.5) / 0.5) * Math.PI + Math.PI
+        const jitter = (Math.random() - 0.5) * 0.025
+        pts[i*3] = Math.cos(a) * (R/2 + jitter)
+        pts[i*3+1] = Math.sin(a) * (R/2 + jitter) - R/2
       }
+      pts[i*3+2] = z * 0.3
+    } else if (t < 0.65) {
+      // Yang half — DENSE bright particles (fill the yang region)
+      let px, py, attempts = 0
+      do {
+        const a = Math.random() * TAU
+        const r = Math.random() * R * 0.88
+        px = Math.cos(a) * r; py = Math.sin(a) * r
+        attempts++
+      } while (!isYang(px, py) && attempts < 20)
+      if (!isYang(px, py)) { px = Math.random() * R * 0.5; py = Math.random() * R * 0.5 }
       pts[i*3] = px; pts[i*3+1] = py; pts[i*3+2] = z
-    } else if (t < 0.8) {
-      // Yin (dark) half — left side, sparser particles (it's the "dark" side)
-      const st = (t - 0.5) / 0.3
-      const a = Math.PI/2 + st * Math.PI // π/2 to 3π/2 (left half)
-      const r = Math.random() * R * 0.85
-      let px = Math.cos(a) * r
-      let py = Math.sin(a) * r
-      if (py < 0 && px > 0) {
-        const distFromLowerCenter = Math.sqrt(px * px + (py + R/2) * (py + R/2))
-        if (distFromLowerCenter > R/2) { px = -Math.abs(px) * 0.3; }
-      }
+    } else if (t < 0.88) {
+      // Yin half — SPARSE dim particles (fill the yin region)
+      let px, py, attempts = 0
+      do {
+        const a = Math.random() * TAU
+        const r = Math.random() * R * 0.88
+        px = Math.cos(a) * r; py = Math.sin(a) * r
+        attempts++
+      } while (isYang(px, py) && attempts < 20)
+      if (isYang(px, py)) { px = -Math.random() * R * 0.5; py = -Math.random() * R * 0.5 }
       pts[i*3] = px; pts[i*3+1] = py; pts[i*3+2] = z
-    } else if (t < 0.86) {
-      // S-curve dividing line — upper arc (semicircle r=R/2 centered at 0, R/2)
-      const a = ((t - 0.8) / 0.06) * Math.PI // 0 to π
-      const sr = R / 2
-      pts[i*3] = Math.cos(a) * sr; pts[i*3+1] = Math.sin(a) * sr + R/2; pts[i*3+2] = z * 0.3
-    } else if (t < 0.92) {
-      // S-curve dividing line — lower arc (semicircle r=R/2 centered at 0, -R/2)
-      const a = ((t - 0.86) / 0.06) * Math.PI + Math.PI // π to 2π
-      const sr = R / 2
-      pts[i*3] = Math.cos(a) * sr; pts[i*3+1] = Math.sin(a) * sr - R/2; pts[i*3+2] = z * 0.3
-    } else if (t < 0.96) {
-      // Yang eye (dark dot in light half) — filled small circle at (0, R/2)
-      const a = Math.random() * TAU; const r = Math.random() * R * 0.1
-      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = R/2 + Math.sin(a) * r; pts[i*3+2] = z * 0.3
+    } else if (t < 0.94) {
+      // Yang eye (dark dot in light half) at (0, R/2) — dense
+      const a = Math.random() * TAU; const r = Math.random() * R * 0.09
+      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = R/2 + Math.sin(a) * r; pts[i*3+2] = z * 0.2
     } else {
-      // Yin eye (light dot in dark half) — filled small circle at (0, -R/2)
-      const a = Math.random() * TAU; const r = Math.random() * R * 0.1
-      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = -R/2 + Math.sin(a) * r; pts[i*3+2] = z * 0.3
+      // Yin eye (light dot in dark half) at (0, -R/2) — dense
+      const a = Math.random() * TAU; const r = Math.random() * R * 0.09
+      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = -R/2 + Math.sin(a) * r; pts[i*3+2] = z * 0.2
     }
   }
   return pts
