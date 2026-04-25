@@ -835,7 +835,7 @@ const FIGURES = [
   { name: 'Merkaba', generator: merkaba, label: 'Light Vehicle · Hebrew' },
   { name: 'Ankh', generator: ankh, label: 'Key of Life · Egyptian' },
   { name: 'Stepped Pyramid', generator: mayanPyramid, label: 'Temple of Time · Mayan' },
-  { name: 'Dragon', generator: chineseDragon, label: 'Celestial Guardian · Chinese' },
+  { name: 'Dragon', generator: chineseDragon, label: 'Celestial Guardian · Chinese', particles: 20000 },
   { name: 'Tree of Life', generator: treeOfLife, label: 'Etz Chaim · Kabbalistic' },
   { name: 'DNA Helix', generator: dnaHelix, label: 'Double Helix · The Code of Life' },
   { name: 'Yin Yang', generator: yinYang, label: 'Twin Fish · Taoist' },
@@ -867,8 +867,8 @@ export default function IntroAnimation({ onComplete }) {
     if (!prog) { onComplete?.(); return }
     gl.useProgram(prog)
 
-    const COUNT = 8000
     const figure = figureRef.current
+    const COUNT = figure.particles || 8000
     const figurePos = figure.generator(COUNT)
     const scatterPos = new Float32Array(COUNT * 3)
     const sizes = new Float32Array(COUNT)
