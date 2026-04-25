@@ -1061,9 +1061,11 @@ export default function IntroAnimation({ onComplete }) {
         </div>
         <div style={{
           fontFamily: "'Cinzel', serif",
-          fontSize: 'clamp(10px, 2vw, 14px)',
+          fontSize: 'clamp(12px, 2.5vw, 18px)',
+          fontWeight: 600,
           letterSpacing: '0.5em',
-          color: 'rgba(201,168,76,0.4)',
+          color: 'rgba(201,168,76,0.85)',
+          textShadow: '0 0 20px rgba(201,168,76,0.3), 0 0 50px rgba(201,168,76,0.1)',
           marginTop: 8,
         }}>
           KNOW THYSELF
@@ -1073,7 +1075,7 @@ export default function IntroAnimation({ onComplete }) {
           fontFamily: "'Cormorant Garamond', serif",
           fontSize: 'clamp(9px, 1.5vw, 12px)',
           letterSpacing: '0.3em',
-          color: 'rgba(201,168,76,0.25)',
+          color: 'rgba(201,168,76,0.5)',
           marginTop: 16,
           fontStyle: 'italic',
         }}>
@@ -1084,7 +1086,7 @@ export default function IntroAnimation({ onComplete }) {
       {/* Skip hint */}
       <div style={{
         position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)',
-        fontSize: 10, letterSpacing: '.2em', color: 'rgba(201,168,76,0.2)',
+        fontSize: 10, letterSpacing: '.2em', color: 'rgba(201,168,76,0.45)',
         fontFamily: "'Cinzel',serif", textTransform: 'uppercase',
       }}>
         tap to skip
