@@ -165,69 +165,67 @@ function fibSphere(count, radius) {
 }
 
 function merkaba(count) {
-  // Proper Merkaba: two interlocking tetrahedra with particles on FACES, not just edges
-  // Creates a recognizable 3D Star of David / star tetrahedron
+  // Merkaba: two interlocking regular tetrahedra forming a 3D Star of David
+  // Uses exact coordinates for regular tetrahedra inscribed in a sphere
   const pts = new Float32Array(count * 3)
-  const s = 1.1
+  const R = 1.2 // circumscribed sphere radius
 
-  // Regular tetrahedron pointing UP (apex at top)
+  // Regular tetrahedron pointing UP — vertices on a sphere of radius R
+  // Apex at top, equilateral triangle base below
+  const sq2 = Math.sqrt(2), sq3 = Math.sqrt(3), sq6 = Math.sqrt(6)
   const tetUp = [
-    [0, s, 0],                                    // apex
-    [-s * 0.943, -s * 0.333, 0],                   // base front
-    [s * 0.471, -s * 0.333, s * 0.816],            // base right
-    [s * 0.471, -s * 0.333, -s * 0.816],           // base left
+    [0, R, 0],                                                      // apex (top)
+    [R * 2 * sq2 / 3, -R / 3, 0],                                   // base front
+    [-R * sq2 / 3, -R / 3, R * sq6 / 3],                            // base back-right
+    [-R * sq2 / 3, -R / 3, -R * sq6 / 3],                           // base back-left
   ]
-  // Regular tetrahedron pointing DOWN (apex at bottom) — rotated 60° around Y
+  // Regular tetrahedron pointing DOWN — inverted and rotated 60° around Y
   const tetDn = [
-    [0, -s, 0],                                    // apex
-    [s * 0.943, s * 0.333, 0],                     // base front
-    [-s * 0.471, s * 0.333, -s * 0.816],           // base right
-    [-s * 0.471, s * 0.333, s * 0.816],            // base left
+    [0, -R, 0],                                                     // apex (bottom)
+    [-R * 2 * sq2 / 3, R / 3, 0],                                   // base front
+    [R * sq2 / 3, R / 3, -R * sq6 / 3],                             // base back-right
+    [R * sq2 / 3, R / 3, R * sq6 / 3],                              // base back-left
   ]
 
-  // Faces (triangles) for each tetrahedron
-  const facesUp = [[0,1,2], [0,2,3], [0,3,1], [1,2,3]]
-  const facesDn = [[0,1,2], [0,2,3], [0,3,1], [1,2,3]]
+  const faces = [[0,1,2], [0,2,3], [0,3,1], [1,2,3]]
 
-  // Helper: random point on a triangle surface using barycentric coordinates
-  function randOnTriangle(v0, v1, v2) {
+  // Barycentric random point on triangle
+  function randTri(v0, v1, v2) {
     let u = Math.random(), w = Math.random()
     if (u + w > 1) { u = 1 - u; w = 1 - w }
-    const t = 1 - u - w
-    return [
-      v0[0]*t + v1[0]*u + v2[0]*w,
-      v0[1]*t + v1[1]*u + v2[1]*w,
-      v0[2]*t + v1[2]*u + v2[2]*w,
-    ]
+    const s = 1 - u - w
+    return [v0[0]*s+v1[0]*u+v2[0]*w, v0[1]*s+v1[1]*u+v2[1]*w, v0[2]*s+v1[2]*u+v2[2]*w]
   }
-
-  const edgeDensity = 0.3 // 30% on edges for definition, 70% on faces for volume
 
   for (let i = 0; i < count; i++) {
     const t = i / count
     const tet = t < 0.5 ? tetUp : tetDn
-    const faces = t < 0.5 ? facesUp : facesDn
+    const r = Math.random()
 
-    if (Math.random() > edgeDensity) {
-      // Point on face surface
-      const faceIdx = Math.floor(Math.random() * 4)
-      const [a, b, c] = faces[faceIdx]
-      const p = randOnTriangle(tet[a], tet[b], tet[c])
+    if (r < 0.55) {
+      // 55% on faces — solid triangular surfaces
+      const fi = Math.floor(Math.random() * 4)
+      const [a, b, c] = faces[fi]
+      const p = randTri(tet[a], tet[b], tet[c])
       pts[i*3] = p[0]; pts[i*3+1] = p[1]; pts[i*3+2] = p[2]
-    } else {
-      // Point on edge for crisp definition
-      const edges = [[0,1],[0,2],[0,3],[1,2],[2,3],[3,1]]
-      const [a, b] = edges[Math.floor(Math.random() * 6)]
+    } else if (r < 0.85) {
+      // 30% on edges — crisp definition lines
+      const edgeList = [[0,1],[0,2],[0,3],[1,2],[2,3],[3,1]]
+      const [a, b] = edgeList[Math.floor(Math.random() * 6)]
       const lerp = Math.random()
       pts[i*3]   = tet[a][0]*(1-lerp) + tet[b][0]*lerp
       pts[i*3+1] = tet[a][1]*(1-lerp) + tet[b][1]*lerp
       pts[i*3+2] = tet[a][2]*(1-lerp) + tet[b][2]*lerp
+    } else {
+      // 15% on vertices — bright points at corners
+      const vi = Math.floor(Math.random() * 4)
+      pts[i*3] = tet[vi][0]; pts[i*3+1] = tet[vi][1]; pts[i*3+2] = tet[vi][2]
     }
 
-    // Minimal jitter for particle feel without losing shape
-    pts[i*3]   += (Math.random()-0.5) * 0.015
-    pts[i*3+1] += (Math.random()-0.5) * 0.015
-    pts[i*3+2] += (Math.random()-0.5) * 0.015
+    // Very subtle jitter
+    pts[i*3]   += (Math.random()-0.5) * 0.012
+    pts[i*3+1] += (Math.random()-0.5) * 0.012
+    pts[i*3+2] += (Math.random()-0.5) * 0.012
   }
   return pts
 }
@@ -506,7 +504,7 @@ export default function IntroAnimation({ onComplete }) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
     gl.disable(gl.DEPTH_TEST)
 
-    const DURATION = 12000 // 12 seconds — shape holds for ~5s
+    const DURATION = 13000 // 13 seconds — shape holds ~6s
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio, 2)
