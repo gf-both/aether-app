@@ -133,24 +133,14 @@ export default function HumanDesign() {
       ctx.clearRect(0, 0, W, H)
       pulse += 0.018
 
-      // ─── Coordinate system: fit body graph to canvas with padding ───
-      // Body graph data spans ~x:0.15-0.85, y:0.01-0.97 in normalized coords.
-      // We want it centered, filling available space with some padding.
-      const pad = 0.04 // 4% padding
-      const aspect = 0.6 // body graph is taller than wide (roughly 0.7:1)
-      const availW = W * (1 - pad * 2)
-      const availH = H * (1 - pad * 2)
-      // Scale to fit: use the dimension that constrains
-      const fitByWidth = availW
-      const fitByHeight = availH * aspect
-      const graphW = Math.min(fitByWidth, fitByHeight)
-      const graphH = graphW / aspect
-      const offsetX = (W - graphW) / 2
-      const offsetY = (H - graphH) / 2
+      // ─── Coordinate system: fill the canvas, small padding ───
+      const padX = W * 0.03
+      const padY = H * 0.02
+      const graphW = W - padX * 2
+      const graphH = H - padY * 2
 
-      // Transform normalized (0-1) coords to screen coords
-      function tx(xf) { return offsetX + xf * graphW }
-      function ty(yf) { return offsetY + yf * graphH }
+      function tx(xf) { return padX + xf * graphW }
+      function ty(yf) { return padY + yf * graphH }
 
       const sz = Math.min(graphW, graphH) * 0.068
       const particles = particlesRef.current

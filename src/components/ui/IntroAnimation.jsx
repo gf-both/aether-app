@@ -233,55 +233,47 @@ function merkaba(count) {
 }
 
 function ankh(count) {
-  // Egyptian Ankh — teardrop/oval loop on top (NO line across), T-cross below
+  // Egyptian Ankh — CLOSED oval loop on top (full circle, no gap, no interior fill)
+  // T-cross below. No dot in the middle.
   const pts = new Float32Array(count * 3)
   for (let i = 0; i < count; i++) {
     const t = i / count
-    let x, y, z = (Math.random() - 0.5) * 0.08
+    let x, y, z = (Math.random() - 0.5) * 0.06
 
-    if (t < 0.3) {
-      // Teardrop loop (top) — oval from bottom-center up and around, open at bottom
-      // Use angle from π*0.15 to π*1.85 (skipping the bottom to avoid the cross-line)
-      const angle = 0.15 * Math.PI + (t / 0.3) * Math.PI * 1.7
-      const rx = 0.45, ry = 0.6
-      x = Math.cos(angle) * rx
-      y = Math.sin(angle) * ry + 0.75
-    } else if (t < 0.35) {
-      // Fill the loop interior with sparse particles for volume
-      const a = Math.random() * TAU
-      const r = Math.random() * 0.3
-      x = Math.cos(a) * r * 0.45
-      y = Math.sin(a) * r * 0.5 + 0.75
-      if (y < 0.35) y = 0.35 + Math.random() * 0.1 // keep above shaft
+    if (t < 0.35) {
+      // Full closed oval loop — complete circle, no skip
+      const angle = (t / 0.35) * TAU
+      const rx = 0.42, ry = 0.55
+      x = Math.cos(angle) * rx + (Math.random() - 0.5) * 0.025
+      y = Math.sin(angle) * ry + 0.7 + (Math.random() - 0.5) * 0.025
     } else if (t < 0.6) {
-      // Vertical shaft — thick line of particles
+      // Vertical shaft — from bottom of loop down
       const st = (t - 0.35) / 0.25
-      x = (Math.random() - 0.5) * 0.06
-      y = 0.2 - st * 1.8
-      z = (Math.random() - 0.5) * 0.06
+      x = (Math.random() - 0.5) * 0.05
+      y = 0.15 - st * 1.7
+      z = (Math.random() - 0.5) * 0.05
     } else if (t < 0.75) {
       // Horizontal crossbar
       const st = (t - 0.6) / 0.15
       x = (st - 0.5) * 1.2
-      y = -0.1 + (Math.random() - 0.5) * 0.06
-      z = (Math.random() - 0.5) * 0.06
+      y = -0.15 + (Math.random() - 0.5) * 0.05
+      z = (Math.random() - 0.5) * 0.05
     } else {
-      // Surface fill — thicken all parts
+      // Thicken: extra particles along loop and cross edges only (NO interior fill)
       const part = Math.random()
-      const noise = 0.04
-      if (part < 0.4) {
-        // Around the loop
-        const a = 0.15 * Math.PI + Math.random() * Math.PI * 1.7
-        x = Math.cos(a) * 0.45 + (Math.random() - 0.5) * noise * 2
-        y = Math.sin(a) * 0.6 + 0.75 + (Math.random() - 0.5) * noise * 2
-      } else if (part < 0.7) {
-        // Around the shaft
-        x = (Math.random() - 0.5) * noise * 3
-        y = 0.2 - Math.random() * 1.8
+      if (part < 0.45) {
+        // Loop edge thickening
+        const a = Math.random() * TAU
+        x = Math.cos(a) * 0.42 + (Math.random() - 0.5) * 0.04
+        y = Math.sin(a) * 0.55 + 0.7 + (Math.random() - 0.5) * 0.04
+      } else if (part < 0.75) {
+        // Shaft thickening
+        x = (Math.random() - 0.5) * 0.05
+        y = 0.15 - Math.random() * 1.7
       } else {
-        // Around the crossbar
+        // Crossbar thickening
         x = (Math.random() - 0.5) * 1.2
-        y = -0.1 + (Math.random() - 0.5) * noise * 3
+        y = -0.15 + (Math.random() - 0.5) * 0.05
       }
     }
     pts[i*3] = x; pts[i*3+1] = y; pts[i*3+2] = z
@@ -340,20 +332,20 @@ function chineseDragon(count) {
     // Body radius — minimum 0.08 so there's no thin spine visible
     const bodyR = Math.max(0.08, 0.15 + 0.25 * Math.sin(t * Math.PI))
 
-    // Head cloud (first 15%)
+    // Head cloud (first 22%) — BIGGER
     let hx = 0, hy = 0, hz = 0
-    if (t < 0.15) {
-      const ht = t / 0.15
-      hx = (Math.random() - 0.5) * (0.5 - ht * 0.25)
-      hy = (Math.random() - 0.5) * (0.5 - ht * 0.3) + 0.2
-      hz = (Math.random() - 0.5) * 0.35
+    if (t < 0.22) {
+      const ht = t / 0.22
+      hx = (Math.random() - 0.5) * (0.7 - ht * 0.3)
+      hy = (Math.random() - 0.5) * (0.7 - ht * 0.35) + 0.3
+      hz = (Math.random() - 0.5) * 0.45
     }
 
-    // Whiskers/horns
-    if (t < 0.08) {
-      const wt = t / 0.08
-      hy += (1 - wt) * 0.4
-      hx += Math.sin(wt * 6) * 0.2
+    // Whiskers/horns — extend further
+    if (t < 0.12) {
+      const wt = t / 0.12
+      hy += (1 - wt) * 0.55
+      hx += Math.sin(wt * 5) * 0.3
     }
 
     // Tail flourish
@@ -481,132 +473,143 @@ function dnaHelix(count) {
 }
 
 function yinYang(count) {
-  // Yin-Yang with clear visual separation:
-  // - Dense bright particles for yang (light) half
-  // - Sparse dim particles for yin (dark) half
-  // - Thick S-curve divider line
-  // - Two eyes clearly visible
-  // Uses colorId channel: yang particles get hue < 0.3 (gold), yin get hue > 0.7 (blue/teal)
+  // Yin-Yang: clear thick S-curve dividing line is the PRIMARY visual element.
+  // Outer ring + very thick S-line + two filled halves + two eyes.
   const pts = new Float32Array(count * 3)
   const R = 0.85
-
-  // Helper: is point (px,py) in the yang (light) half?
-  // Yang = right semicircle + upper small bulge (semicircle r=R/2 at 0,R/2)
-  //        minus lower indent (semicircle r=R/2 at 0,-R/2)
-  function isYang(px, py) {
-    // In the upper half: yang includes the upper small semicircle
-    if (py >= 0) {
-      const dUpper = Math.sqrt(px * px + (py - R/2) * (py - R/2))
-      if (dUpper <= R/2) return true  // inside upper bulge
-      return px > 0 // right side
-    } else {
-      // In the lower half: yang excludes the lower small semicircle
-      const dLower = Math.sqrt(px * px + (py + R/2) * (py + R/2))
-      if (dLower <= R/2) return false // inside lower indent (yin territory)
-      return px > 0 // right side
-    }
-  }
+  const halfR = R / 2
 
   for (let i = 0; i < count; i++) {
     const t = i / count
-    const z = (Math.random() - 0.5) * 0.05
+    const z = (Math.random() - 0.5) * 0.04
 
-    if (t < 0.15) {
-      // Outer circle — thick edge ring
-      const a = (t / 0.15) * TAU
-      const jitter = (Math.random() - 0.5) * 0.03
-      pts[i*3] = Math.cos(a) * (R + jitter)
-      pts[i*3+1] = Math.sin(a) * (R + jitter)
+    if (t < 0.18) {
+      // Outer circle ring — thick
+      const a = (t / 0.18) * TAU
+      pts[i*3] = Math.cos(a) * R + (Math.random() - 0.5) * 0.03
+      pts[i*3+1] = Math.sin(a) * R + (Math.random() - 0.5) * 0.03
       pts[i*3+2] = z
-    } else if (t < 0.3) {
-      // S-curve divider — THICK line (many particles for visibility)
-      const st = (t - 0.15) / 0.15
+    } else if (t < 0.42) {
+      // S-CURVE — very thick (24% of all particles = unmissable)
+      // Two semicircles forming the S:
+      // Upper: semicircle r=halfR centered at (0, +halfR), from angle 0→π (right to left)
+      // Lower: semicircle r=halfR centered at (0, -halfR), from angle π→2π (left to right)
+      const st = (t - 0.18) / 0.24
+      const jitter = (Math.random() - 0.5) * 0.035  // thick line
       if (st < 0.5) {
-        // Upper arc: semicircle centered at (0, R/2), going from right to left
-        const a = (st / 0.5) * Math.PI
-        const jitter = (Math.random() - 0.5) * 0.025
-        pts[i*3] = Math.cos(a) * (R/2 + jitter)
-        pts[i*3+1] = Math.sin(a) * (R/2 + jitter) + R/2
+        const a = (st / 0.5) * Math.PI  // 0 to π
+        pts[i*3] = Math.cos(a) * halfR + jitter
+        pts[i*3+1] = Math.sin(a) * halfR + halfR + jitter
       } else {
-        // Lower arc: semicircle centered at (0, -R/2), going from left to right
-        const a = ((st - 0.5) / 0.5) * Math.PI + Math.PI
-        const jitter = (Math.random() - 0.5) * 0.025
-        pts[i*3] = Math.cos(a) * (R/2 + jitter)
-        pts[i*3+1] = Math.sin(a) * (R/2 + jitter) - R/2
+        const a = ((st - 0.5) / 0.5) * Math.PI + Math.PI  // π to 2π
+        pts[i*3] = Math.cos(a) * halfR + jitter
+        pts[i*3+1] = Math.sin(a) * halfR - halfR + jitter
       }
       pts[i*3+2] = z * 0.3
-    } else if (t < 0.65) {
-      // Yang half — DENSE bright particles (fill the yang region)
-      let px, py, attempts = 0
-      do {
-        const a = Math.random() * TAU
-        const r = Math.random() * R * 0.88
-        px = Math.cos(a) * r; py = Math.sin(a) * r
-        attempts++
-      } while (!isYang(px, py) && attempts < 20)
-      if (!isYang(px, py)) { px = Math.random() * R * 0.5; py = Math.random() * R * 0.5 }
-      pts[i*3] = px; pts[i*3+1] = py; pts[i*3+2] = z
+    } else if (t < 0.62) {
+      // Yang half fill (right/upper region) — moderate density
+      // Simple approach: right semicircle of outer disc
+      const a = (Math.random() - 0.5) * Math.PI  // -π/2 to π/2
+      const r = Math.random() * R * 0.8
+      pts[i*3] = Math.abs(Math.cos(a) * r) * 0.9 + 0.02  // force positive x (right side)
+      pts[i*3+1] = Math.sin(a) * r
+      pts[i*3+2] = z
+    } else if (t < 0.8) {
+      // Yin half fill (left/lower region) — sparser
+      const a = Math.PI / 2 + Math.random() * Math.PI  // π/2 to 3π/2
+      const r = Math.random() * R * 0.8
+      pts[i*3] = -Math.abs(Math.cos(a) * r) * 0.9 - 0.02  // force negative x (left side)
+      pts[i*3+1] = Math.sin(a) * r
+      pts[i*3+2] = z
     } else if (t < 0.88) {
-      // Yin half — SPARSE dim particles (fill the yin region)
-      let px, py, attempts = 0
-      do {
-        const a = Math.random() * TAU
-        const r = Math.random() * R * 0.88
-        px = Math.cos(a) * r; py = Math.sin(a) * r
-        attempts++
-      } while (isYang(px, py) && attempts < 20)
-      if (isYang(px, py)) { px = -Math.random() * R * 0.5; py = -Math.random() * R * 0.5 }
-      pts[i*3] = px; pts[i*3+1] = py; pts[i*3+2] = z
-    } else if (t < 0.94) {
-      // Yang eye (dark dot in light half) at (0, R/2) — dense
-      const a = Math.random() * TAU; const r = Math.random() * R * 0.09
-      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = R/2 + Math.sin(a) * r; pts[i*3+2] = z * 0.2
+      // Yang eye (dot in yang/right half, at 0, +halfR) — dense filled circle
+      const a = Math.random() * TAU
+      const r = Math.random() * R * 0.1
+      pts[i*3] = Math.cos(a) * r
+      pts[i*3+1] = halfR + Math.sin(a) * r
+      pts[i*3+2] = z * 0.2
+    } else if (t < 0.96) {
+      // Yin eye (dot in yin/left half, at 0, -halfR) — dense filled circle
+      const a = Math.random() * TAU
+      const r = Math.random() * R * 0.1
+      pts[i*3] = Math.cos(a) * r
+      pts[i*3+1] = -halfR + Math.sin(a) * r
+      pts[i*3+2] = z * 0.2
     } else {
-      // Yin eye (light dot in dark half) at (0, -R/2) — dense
-      const a = Math.random() * TAU; const r = Math.random() * R * 0.09
-      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = -R/2 + Math.sin(a) * r; pts[i*3+2] = z * 0.2
+      // Extra S-curve thickness (more particles on the line for clarity)
+      const st = Math.random()
+      const jitter = (Math.random() - 0.5) * 0.04
+      if (st < 0.5) {
+        const a = st * 2 * Math.PI
+        pts[i*3] = Math.cos(a) * halfR + jitter
+        pts[i*3+1] = Math.sin(a) * halfR + halfR + jitter
+      } else {
+        const a = (st - 0.5) * 2 * Math.PI + Math.PI
+        pts[i*3] = Math.cos(a) * halfR + jitter
+        pts[i*3+1] = Math.sin(a) * halfR - halfR + jitter
+      }
+      pts[i*3+2] = z * 0.3
     }
   }
   return pts
 }
 
 function omSymbol(count) {
-  // Om/Aum — approximated as connected curves forming ॐ shape
-  // Bottom bowl + upper curve + tail + crescent + dot
+  // Om ॐ — recognizable thick strokes, centered and scaled
+  // Structure: lower-left curl + upper curve + right tail + vertical stem + crescent + dot
   const pts = new Float32Array(count * 3)
+  const j = () => (Math.random() - 0.5) * 0.035
+
   for (let i = 0; i < count; i++) {
     const t = i / count
-    const z = (Math.random() - 0.5) * 0.06
-    if (t < 0.25) {
-      // Bottom bowl (open curve, like a 3)
-      const a = (t / 0.25) * Math.PI * 1.3 + Math.PI * 0.3
-      const r = 0.4
-      pts[i*3] = Math.cos(a) * r - 0.15; pts[i*3+1] = Math.sin(a) * r - 0.3; pts[i*3+2] = z
-    } else if (t < 0.45) {
-      // Upper body curve (larger arc)
-      const st = (t - 0.25) / 0.2
-      const a = st * Math.PI * 1.2 - Math.PI * 0.1
-      const r = 0.5
-      pts[i*3] = Math.cos(a) * r + 0.1; pts[i*3+1] = Math.sin(a) * r + 0.15; pts[i*3+2] = z
+    const z = (Math.random() - 0.5) * 0.04
+
+    if (t < 0.18) {
+      // Lower-left curl (like a backwards "3" or a belly)
+      const a = (t / 0.18) * Math.PI * 1.6 + Math.PI * 0.2
+      pts[i*3] = Math.cos(a) * 0.38 - 0.2 + j()
+      pts[i*3+1] = Math.sin(a) * 0.32 - 0.4 + j()
+      pts[i*3+2] = z
+    } else if (t < 0.35) {
+      // Upper body curve — large arc from left to right
+      const st = (t - 0.18) / 0.17
+      const a = st * Math.PI * 1.1 + Math.PI * 0.05
+      pts[i*3] = Math.cos(a) * 0.55 + j()
+      pts[i*3+1] = Math.sin(a) * 0.4 + 0.05 + j()
+      pts[i*3+2] = z
+    } else if (t < 0.48) {
+      // Right swooping tail (curves from right body upward and right)
+      const st = (t - 0.35) / 0.13
+      pts[i*3] = 0.2 + st * 0.5 + j()
+      pts[i*3+1] = 0.05 + Math.sin(st * Math.PI * 0.8) * 0.35 + j()
+      pts[i*3+2] = z
     } else if (t < 0.6) {
-      // Tail swooping right and up
-      const st = (t - 0.45) / 0.15
-      pts[i*3] = 0.3 + st * 0.4; pts[i*3+1] = 0.15 + Math.sin(st * Math.PI) * 0.3; pts[i*3+2] = z
-    } else if (t < 0.75) {
-      // Vertical stroke (virama/chandrabindu stem)
-      const st = (t - 0.6) / 0.15
-      pts[i*3] = 0.45 + (Math.random() - 0.5) * 0.03; pts[i*3+1] = 0.3 + st * 0.5; pts[i*3+2] = z
-    } else if (t < 0.9) {
-      // Crescent (chandrabindu arc) at top
-      const a = ((t - 0.75) / 0.15) * Math.PI + Math.PI
-      pts[i*3] = 0.45 + Math.cos(a) * 0.18; pts[i*3+1] = 0.85 + Math.sin(a) * 0.08; pts[i*3+2] = z
+      // Connecting hook — small curve linking the two main forms
+      const st = (t - 0.48) / 0.12
+      const a = st * Math.PI * 0.8 + Math.PI * 0.6
+      pts[i*3] = Math.cos(a) * 0.2 - 0.15 + j()
+      pts[i*3+1] = Math.sin(a) * 0.15 - 0.12 + j()
+      pts[i*3+2] = z
+    } else if (t < 0.72) {
+      // Vertical stem rising from right side
+      const st = (t - 0.6) / 0.12
+      pts[i*3] = 0.35 + j()
+      pts[i*3+1] = 0.25 + st * 0.45 + j()
+      pts[i*3+2] = z
+    } else if (t < 0.88) {
+      // Crescent moon — open arc (chandrabindu)
+      const a = ((t - 0.72) / 0.16) * Math.PI + Math.PI * 0.1
+      pts[i*3] = 0.35 + Math.cos(a) * 0.2 + j()
+      pts[i*3+1] = 0.78 + Math.sin(a) * 0.1 + j()
+      pts[i*3+2] = z
     } else {
-      // Bindu (dot above crescent)
-      const a = Math.random() * TAU; const r = Math.random() * 0.06
-      pts[i*3] = 0.45 + Math.cos(a) * r; pts[i*3+1] = 1.0 + Math.sin(a) * r; pts[i*3+2] = z
+      // Bindu (dot above crescent) — filled circle
+      const a = Math.random() * TAU
+      const r = Math.random() * 0.07
+      pts[i*3] = 0.35 + Math.cos(a) * r
+      pts[i*3+1] = 0.95 + Math.sin(a) * r
+      pts[i*3+2] = z * 0.3
     }
-    pts[i*3] += (Math.random() - 0.5) * 0.012
-    pts[i*3+1] += (Math.random() - 0.5) * 0.012
   }
   return pts
 }
