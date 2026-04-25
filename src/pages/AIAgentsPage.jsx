@@ -6,7 +6,7 @@
  * to view their data AND initiate a one-on-one golem dialogue.
  */
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useGolemStore } from '../store/useGolemStore'
 import { useComputedProfile, useComputedPeople } from '../hooks/useActiveProfile'
 import { runGolemExchange } from '../lib/golemConversation'
@@ -106,7 +106,7 @@ function GolemDialogue({ primaryProfile, otherProfile, onClose }) {
   const colorB = getRelColor(otherProfile)
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
-  const [initiated, setInitiated] = useState(false)
+  const [initiated, setInitiated] = useState(true) // Auto-initiated
 
   const startDialogue = useCallback(async () => {
     setLoading(true)
@@ -141,6 +141,9 @@ function GolemDialogue({ primaryProfile, otherProfile, onClose }) {
 
     setLoading(false)
   }, [primaryProfile, otherProfile])
+
+  // Auto-start dialogue on mount — no intermediate step
+  useEffect(() => { startDialogue() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div style={{

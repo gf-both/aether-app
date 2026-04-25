@@ -250,7 +250,7 @@ function ProfileSwitcher() {
             </div>
           )}
           {allProfiles.map((p, i) => {
-            const isActive = p.name === profile.name
+            const isActive = p._isPrimary ? !activeViewProfile : (activeViewProfile && (p.id === activeViewProfile.id || p.name === activeViewProfile.name))
             return (
               <div
                 key={p.id || i}

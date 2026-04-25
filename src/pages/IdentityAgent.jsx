@@ -120,7 +120,28 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
         })
 
         if (Object.keys(sections).length < 3) {
-          sections.raw = response
+          // AI returned content but regex parsing failed — try a simpler split
+          const lines = response.split('\n')
+          let currentKey = null
+          for (const line of lines) {
+            const headerMatch = line.match(/\*\*([A-Z\s']+)\*\*/i)
+            if (headerMatch) {
+              const found = headerMatch[1].trim().toUpperCase()
+              const idx = sectionNames.findIndex(n => found.includes(n.replace(/'/g, '')) || n.replace(/'/g, '').includes(found))
+              if (idx >= 0) { currentKey = keys[idx]; sections[currentKey] = '' }
+            } else if (currentKey && line.trim()) {
+              sections[currentKey] = (sections[currentKey] ? sections[currentKey] + ' ' : '') + line.trim()
+            }
+          }
+          // If still not enough, put full response in mission
+          if (Object.keys(sections).length < 2) {
+            sections.mission = response
+            sections.shadow = ''
+            sections.relationship = ''
+            sections.career = ''
+            sections.energy = ''
+            sections.throughline = ''
+          }
         }
 
         setResult(sections)
@@ -252,23 +273,15 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
             flex:1, padding:'16px 20px', borderRadius:10,
             background:'rgba(201,168,76,.04)', border:'1px solid rgba(201,168,76,.12)', minHeight:200,
           }}>
-            {result.raw ? (
-              <div style={{ fontSize:13, lineHeight:1.8, color:'var(--foreground)', whiteSpace:'pre-wrap' }}>
-                {result.raw}
-              </div>
-            ) : (
-              <>
-                <div style={{
-                  fontFamily:"'Cinzel',serif", fontSize:12, letterSpacing:'.12em',
-                  textTransform:'uppercase', color:'var(--gold)', marginBottom:12,
-                }}>
-                  {SECTIONS.find(s => s.key === section)?.label}
-                </div>
-                <div style={{ fontSize:14, lineHeight:1.85, color:'rgba(255,255,255,.85)' }}>
-                  {result[section] || 'Section not found in response.'}
-                </div>
-              </>
-            )}
+            <div style={{
+              fontFamily:"'Cinzel',serif", fontSize:12, letterSpacing:'.12em',
+              textTransform:'uppercase', color:'var(--gold)', marginBottom:12,
+            }}>
+              {SECTIONS.find(s => s.key === section)?.label}
+            </div>
+            <div style={{ fontSize:14, lineHeight:1.85, color:'rgba(255,255,255,.85)', whiteSpace:'pre-wrap' }}>
+              {result[section] || 'This section is being processed. Try re-running the synthesis.'}
+            </div>
           </div>
         </div>
       )}

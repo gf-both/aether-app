@@ -186,9 +186,18 @@ function FamilyContent({ _a, b, aName, bName, report }) {
     ? { ...fw.getGenerationalSection(isParentRel, aName, bName, b.sign), ...computed.genSectionData }
     : fw.getGenerationalSection(isParentRel, aName, bName, b.sign)
 
-  const hdItems = fw.hdSection.items(isParentRel, aName, bName)
-  const msScores = fw.multiSystemSection.getScores(isParentRel)
-  const msInsight = fw.multiSystemSection.getInsight(isParentRel, aName, bName)
+  // HD items — use computed data when available to make them dynamic
+  const hdItems = computed?.hdItems
+    ? computed.hdItems
+    : fw.hdSection.items(isParentRel, aName, bName)
+
+  // Multi-system scores — use computed when available
+  const msScores = computed?.multiSystemScores
+    ? computed.multiSystemScores
+    : fw.multiSystemSection.getScores(isParentRel)
+  const msInsight = computed?.multiSystemInsight
+    ? computed.multiSystemInsight
+    : fw.multiSystemSection.getInsight(isParentRel, aName, bName)
 
   return (
     <>

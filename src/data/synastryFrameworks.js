@@ -15,6 +15,25 @@ export function computeSynastryFramework(report, romantic = true) {
     return categoryScores[cat] ?? fallback
   }
 
+  // Build dynamic HD items from report charts
+  const hdItems = []
+  if (report.chartA?.hdType || report.chartB?.hdType) {
+    hdItems.push({ label: `${aName}'s Type`, value: report.chartA?.hdType || '?', color: 'var(--gold)' })
+    hdItems.push({ label: `${bName}'s Type`, value: report.chartB?.hdType || '?', color: 'var(--rose2)' })
+    hdItems.push({ label: 'Energy Dynamic', value: report.chartA?.hdType === report.chartB?.hdType ? 'Mirror' : 'Complement', color: '#40ccdd' })
+  }
+
+  // Build dynamic multi-system scores from report
+  const multiSystemScores = [
+    { label: 'Kabbalah Axis', pct: pct('karmic', 65), gradient: 'linear-gradient(90deg,#c9a84c,#e8c97a)' },
+    { label: 'Numerology Harmony', pct: pct('core', 60), gradient: 'linear-gradient(90deg,#40ccdd,#88eeff)' },
+    { label: 'Gene Keys Resonance', pct: pct('depth', 58), gradient: 'linear-gradient(90deg,#9050e0,#bb66ff)' },
+    { label: 'Combined Healing', pct: pct('healing', 62), gradient: 'linear-gradient(90deg,#60b030,#88dd44)' },
+  ]
+  const multiSystemInsight = harmonious.length > 0
+    ? `Strongest cross-system link: ${harmonious[0].label} (${harmonious[0].name}, ${harmonious[0].orb}° orb). ${insight || ''}`
+    : `Overall multi-system score: ${report.overall || '?'}%. ${insight || ''}`
+
   if (romantic) {
     return {
       sections: [
@@ -47,6 +66,9 @@ export function computeSynastryFramework(report, romantic = true) {
       ],
       hdSection: romanticFramework.hdSection,
       multiSystemSection: romanticFramework.multiSystemSection,
+      hdItems: hdItems.length > 0 ? hdItems : null,
+      multiSystemScores,
+      multiSystemInsight,
     }
   } else {
     return {
@@ -76,6 +98,9 @@ export function computeSynastryFramework(report, romantic = true) {
           ? `Growth edge: ${challenging[0].label} (${challenging[0].name}, ${challenging[0].orb}° orb) — the key transformational axis for ${aName} and ${bName}.`
           : insight,
       },
+      hdItems: hdItems.length > 0 ? hdItems : null,
+      multiSystemScores,
+      multiSystemInsight,
     }
   }
 }

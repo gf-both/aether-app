@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { getRecommendedRituals, TRADITIONS, getRitualById } from '../../engines/ritualEngine'
 import { getMoonPhase } from '../../engines/cycleEngine'
+import RitualParticles from '../canvas/RitualParticles'
 
 const ELEMENTS = { fire: '🔥', water: '💧', air: '🌬', earth: '🌍', spirit: '✦' }
 const DIFFICULTY = { beginner: { label: 'Beginner', color: '#60b030' }, intermediate: { label: 'Intermediate', color: '#e8a040' }, advanced: { label: 'Advanced', color: '#d44070' } }
@@ -43,8 +44,13 @@ export default function RitualDetail() {
           <div style={{ height: '100%', width: `${progress}%`, background: trad?.color || '#c9a84c', transition: 'width .4s ease', borderRadius: 1 }} />
         </div>
 
+        {/* Sacred geometry particle visualization */}
+        <div style={{ height: 200, position: 'relative', margin: '0 20px' }}>
+          <RitualParticles tradition={ritual.tradition?.name?.toLowerCase() || ritual.id?.split('-')[0] || 'vedic'} active={true} />
+        </div>
+
         {/* Step content */}
-        <div style={{ padding: '40px 24px', textAlign: 'center', minHeight: 280 }}>
+        <div style={{ padding: '20px 24px', textAlign: 'center', minHeight: 180 }}>
           <div style={{ fontSize: 11, color: trad?.color || '#c9a84c', letterSpacing: '.15em', fontFamily: "'Cinzel',serif", marginBottom: 8 }}>
             Step {ritualStep + 1} of {ritual.instructions.length}
           </div>
@@ -143,8 +149,12 @@ export default function RitualDetail() {
 
       {/* ── Top Recommendation ── */}
       {activeTab === 'recommended' && result.topRecommendation && (
-        <div style={{ margin: '16px 20px', padding: 20, borderRadius: 12, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div style={{ margin: '16px 20px', padding: 20, borderRadius: 12, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)', position: 'relative', overflow: 'hidden' }}>
+          {/* Background particle visualization */}
+          <div style={{ position: 'absolute', inset: 0, opacity: 0.3, pointerEvents: 'none' }}>
+            <RitualParticles tradition={Object.keys(TRADITIONS).find(k => TRADITIONS[k].name === result.topRecommendation.tradition?.name) || 'vedic'} active={false} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
             <div>
               <div style={S.sectionLabel}>Today's Ritual</div>
               <div style={{ fontSize: 18, fontFamily: "'Cinzel',serif", color: '#fff', marginTop: 4 }}>

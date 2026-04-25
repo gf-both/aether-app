@@ -248,12 +248,46 @@ export async function runGolemExchange(profileA, profileB, scenario, history = [
  * Returns structured analysis
  */
 export async function runCompatibilitySimulation(profileA, profileB, relType = 'romantic') {
-  const phases = [
-    { key: 'firstimpression', scenario: `You're meeting ${profileB.name || 'them'} for the first time. How do you show up? What do you notice about them?` },
-    { key: 'connection', scenario: `What would you want to talk about with this person? What genuinely interests you about who they are?` },
-    { key: 'conflict', scenario: `You strongly disagree with ${profileB.name || 'them'} on something important to you. How do you respond?` },
-    { key: 'vulnerability', scenario: `This person asks you about your biggest fear or struggle. How do you respond?` },
-    { key: 'future', scenario: `What would a relationship with this person actually look like in 2 years? What would work? What would be hard?` },
+  // Determine the actual relationship type from profile data if available
+  const actualRel = profileB.rel || relType
+  const isFamily = ['father','mother','sibling','child','grandparent'].includes(actualRel)
+  const isEx = ['ex-spouse','ex-partner','ex-friend','ex-business-partner'].includes(actualRel)
+  const isRomantic = ['partner','spouse'].includes(actualRel) || relType === 'romantic'
+  const isBusiness = ['business-partner','colleague','mentor'].includes(actualRel) || relType === 'cofounder' || relType === 'team'
+  const isFriend = ['friend','close-friend'].includes(actualRel) || relType === 'friendship'
+  const nameB = profileB.name || 'them'
+  const relLabel = actualRel === 'father' ? 'your father' : actualRel === 'mother' ? 'your mother' : actualRel === 'sibling' ? 'your sibling' : actualRel === 'child' ? 'your child' : actualRel === 'ex-spouse' ? 'your ex-spouse' : actualRel === 'ex-partner' ? 'your ex-partner' : actualRel === 'mentor' ? 'your mentor' : actualRel === 'colleague' ? 'your colleague' : actualRel === 'business-partner' ? 'your business partner' : nameB
+
+  const phases = isFamily ? [
+    { key: 'firstimpression', scenario: `Think about your earliest memory of ${relLabel} (${nameB}). What was the emotional tone? What pattern was already present?` },
+    { key: 'connection', scenario: `What did ${nameB} teach you — intentionally or not? What values did they transmit? What did you inherit that you didn't choose?` },
+    { key: 'conflict', scenario: `What is the core wound between you and ${nameB}? The thing that was never fully said or resolved? How does it show up in your body?` },
+    { key: 'vulnerability', scenario: `If you could say the one thing to ${nameB} that you've never said — with zero consequences — what would it be?` },
+    { key: 'future', scenario: `What would healing actually look like between you and ${nameB}? Not forgiveness as performance, but genuine integration. What would have to change?` },
+  ] : isEx ? [
+    { key: 'firstimpression', scenario: `What first drew you to ${nameB}? What did they represent that you didn't have? Be honest about the projection.` },
+    { key: 'connection', scenario: `What was the deepest moment between you and ${nameB}? The moment when the real people showed up, not the versions you performed for each other.` },
+    { key: 'conflict', scenario: `What broke it? Not the surface reason — the structural one. The pattern that was always going to surface eventually.` },
+    { key: 'vulnerability', scenario: `What did ${nameB} see in you that no one else has seen? And what did you learn about yourself from the ending?` },
+    { key: 'future', scenario: `What do you carry from ${nameB} into every relationship after? The gift of the wound. What did this teach you that you couldn't have learned any other way?` },
+  ] : isBusiness ? [
+    { key: 'firstimpression', scenario: `You're meeting ${nameB} as a potential ${relType === 'cofounder' ? 'co-founder' : 'professional collaborator'}. What do you assess first? What signals matter?` },
+    { key: 'connection', scenario: `What would you build with ${nameB}? Where do your capabilities complement? What's the combined superpower?` },
+    { key: 'conflict', scenario: `You fundamentally disagree with ${nameB} on strategy. Your approach is different. How do you navigate this?` },
+    { key: 'vulnerability', scenario: `What's your biggest professional fear? How do you handle failure? What does ${nameB} need to know about how you operate under pressure?` },
+    { key: 'future', scenario: `Two years into working together — what does success look like? What's the most likely failure mode? What would you build?` },
+  ] : isFriend ? [
+    { key: 'firstimpression', scenario: `What drew you to ${nameB} as a friend? Not attraction — recognition. What did you see in them that you value?` },
+    { key: 'connection', scenario: `What do you talk about with ${nameB} that you don't talk about with anyone else? What makes this friendship distinct?` },
+    { key: 'conflict', scenario: `${nameB} does something that genuinely bothers you. Not a deal-breaker, but it reveals a difference. How do you handle it?` },
+    { key: 'vulnerability', scenario: `What do you need from ${nameB} that you'd never ask for directly? What does friendship mean to you at your core?` },
+    { key: 'future', scenario: `What does this friendship look like in 5 years? Does it deepen or drift? What would you need from each other to keep it real?` },
+  ] : [
+    { key: 'firstimpression', scenario: `You're meeting ${nameB} for the first time. How do you show up? What do you notice about them?` },
+    { key: 'connection', scenario: `What would you want to talk about with ${nameB}? What genuinely interests you about who they are?` },
+    { key: 'conflict', scenario: `You strongly disagree with ${nameB} on something important to you. How do you respond?` },
+    { key: 'vulnerability', scenario: `${nameB} asks you about your biggest fear or struggle. How do you respond?` },
+    { key: 'future', scenario: `What would a relationship with ${nameB} actually look like in 2 years? What would work? What would be hard?` },
   ]
 
   const exchanges = []
@@ -275,7 +309,8 @@ export async function runCompatibilitySimulation(profileA, profileB, relType = '
   }
 
   // Analysis agent reads the full exchange
-  const analysisPrompt = `You analyzed a compatibility simulation between two people. Here is their exchange:
+  const relContext = isFamily ? `a family relationship (${actualRel})` : isEx ? `a past relationship (${actualRel})` : isBusiness ? `a professional relationship (${actualRel || relType})` : isFriend ? `a friendship` : `a romantic connection`
+  const analysisPrompt = `You analyzed a ${relContext} simulation between two people. Here is their exchange:
 
 ${exchanges.map(e => `**${e.phase.toUpperCase()}**
 ${profileA.name}: "${e.golemA}"
