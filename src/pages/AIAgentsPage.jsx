@@ -165,9 +165,9 @@ function GolemDialogue({ primaryProfile, otherProfile, onClose }) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {initiated && !loading && (
             <button onClick={startDialogue} style={{
-              padding: '5px 14px', borderRadius: 8, background: 'rgba(201,168,76,.08)',
-              border: '1px solid rgba(201,168,76,.3)', color: '#c9a84c', cursor: 'pointer',
-              fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em',
+              padding: '6px 16px', borderRadius: 8, background: 'rgba(201,168,76,.2)',
+              border: '1px solid rgba(201,168,76,.6)', color: '#c9a84c', cursor: 'pointer',
+              fontFamily: "'Cinzel',serif", fontSize: 10, fontWeight: 600, letterSpacing: '.1em',
             }}>New Dialogue</button>
           )}
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer', fontSize: 20, padding: 0, lineHeight: 1 }}>×</button>
@@ -204,10 +204,12 @@ function GolemDialogue({ primaryProfile, otherProfile, onClose }) {
               Initiate a one-on-one golem dialogue between you and {otherProfile.name}. Both golems speak from their astrological and design profiles.
             </div>
             <button onClick={startDialogue} style={{
-              padding: '10px 28px', borderRadius: 10, cursor: 'pointer',
-              background: 'rgba(144,80,224,.15)', border: '1px solid rgba(144,80,224,.5)',
-              color: '#d4aaff', fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.12em',
+              padding: '12px 32px', borderRadius: 10, cursor: 'pointer',
+              background: 'linear-gradient(135deg, rgba(144,80,224,.35), rgba(120,60,200,.25))',
+              border: '1px solid rgba(144,80,224,.7)',
+              color: '#fff', fontFamily: "'Cinzel',serif", fontSize: 12, letterSpacing: '.12em',
               textTransform: 'uppercase', fontWeight: 600,
+              boxShadow: '0 0 14px rgba(144,80,224,.25)',
             }}>
               Begin Dialogue
             </button>

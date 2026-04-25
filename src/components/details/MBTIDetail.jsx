@@ -407,19 +407,19 @@ function MBTIResults({ typeCode, onRetake }) {
         <span
           onClick={onRetake}
           style={{
-            fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em',
-            textTransform: 'uppercase', color: 'var(--muted-foreground)', cursor: 'pointer',
+            fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.2em',
+            textTransform: 'uppercase', color: '#c9a84c', cursor: 'pointer',
             padding: '8px 20px', borderRadius: 20,
-            border: '1px solid rgba(255,255,255,.08)',
+            background: 'rgba(201,168,76,.2)', border: '1px solid rgba(201,168,76,.5)',
             transition: 'all .2s',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.borderColor = 'rgba(201,168,76,.3)'
-            e.currentTarget.style.color = 'var(--foreground)'
+            e.currentTarget.style.borderColor = 'rgba(201,168,76,.7)'
+            e.currentTarget.style.background = 'rgba(201,168,76,.3)'
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.borderColor = 'rgba(255,255,255,.08)'
-            e.currentTarget.style.color = 'var(--muted-foreground)'
+            e.currentTarget.style.borderColor = 'rgba(201,168,76,.5)'
+            e.currentTarget.style.background = 'rgba(201,168,76,.2)'
           }}
         >
           Retake Quiz

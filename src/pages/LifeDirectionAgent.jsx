@@ -230,12 +230,13 @@ ${question ? `\n## SPECIFIC QUESTION FROM THE PERSON\n"${question}"\nAnswer this
             onClick={runAnalysis}
             disabled={loading}
             style={{
-              padding:'9px 22px', borderRadius:7, cursor: loading ? 'wait' : 'pointer',
-              background: loading ? 'var(--secondary)' : 'rgba(96,176,48,.1)',
-              border:`1px solid ${loading ? 'var(--border)' : 'rgba(96,176,48,.4)'}`,
-              color: loading ? 'var(--muted-foreground)' : 'rgba(96,176,48,.9)',
-              fontSize:12, fontFamily:"'Cinzel',serif", letterSpacing:'.08em', textTransform:'uppercase',
+              padding:'10px 24px', borderRadius:7, cursor: loading ? 'wait' : 'pointer',
+              background: loading ? 'var(--secondary)' : 'linear-gradient(135deg, rgba(96,176,48,.3), rgba(80,150,40,.2))',
+              border:`1px solid ${loading ? 'var(--border)' : 'rgba(96,176,48,.7)'}`,
+              color: loading ? 'var(--muted-foreground)' : '#fff',
+              fontSize:12, fontFamily:"'Cinzel',serif", fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase',
               transition:'all .2s',
+              boxShadow: !loading ? '0 0 12px rgba(96,176,48,.2)' : 'none',
             }}
           >
             {loading ? 'Reading cycles...' : result ? 'Re-read' : 'Get Direction'}

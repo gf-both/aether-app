@@ -127,11 +127,12 @@ export default function GolemSimulation() {
         style={{
           width:'100%', padding:'12px 20px', borderRadius:8, marginBottom:20,
           cursor: loading ? 'wait' : !selectedPerson ? 'not-allowed' : 'pointer',
-          background: !selectedPerson ? 'rgba(144,80,224,.05)' : 'rgba(144,80,224,.2)',
-          border:`1px solid ${!selectedPerson ? 'rgba(144,80,224,.25)' : 'rgba(144,80,224,.7)'}`,
-          color: !selectedPerson ? 'rgba(212,170,255,.35)' : '#d4aaff',
+          background: !selectedPerson ? 'var(--secondary)' : 'linear-gradient(135deg, rgba(144,80,224,.35), rgba(120,60,200,.25))',
+          border:`1px solid ${!selectedPerson ? 'var(--border)' : 'rgba(144,80,224,.7)'}`,
+          color: !selectedPerson ? 'var(--muted-foreground)' : '#fff',
           fontSize:12, fontFamily:"'Cinzel',serif", letterSpacing:'.1em', textTransform:'uppercase',
           fontWeight:600, transition:'all .2s',
+          boxShadow: selectedPerson && !loading ? '0 0 12px rgba(144,80,224,.25)' : 'none',
         }}
       >
         {loading ? (currentPhase || 'Running…') : 'Run Simulation'}

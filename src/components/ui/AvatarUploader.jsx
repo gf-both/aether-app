@@ -80,10 +80,12 @@ export default function AvatarUploader({ profile, onComplete }) {
       {/* Generate button */}
       {photos.length > 0 && !result && (
         <button onClick={handleGenerate} disabled={generating} style={{
-          width: '100%', padding: '8px 16px', borderRadius: 8, cursor: generating ? 'wait' : 'pointer',
-          background: 'rgba(201,168,76,.1)', border: '1px solid rgba(201,168,76,.3)',
-          color: 'var(--gold)', fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
-          opacity: generating ? 0.6 : 1,
+          width: '100%', padding: '10px 18px', borderRadius: 8, cursor: generating ? 'wait' : 'pointer',
+          background: generating ? 'var(--secondary)' : 'linear-gradient(135deg, rgba(201,168,76,.3), rgba(180,140,50,.2))',
+          border: `1px solid ${generating ? 'var(--border)' : 'rgba(201,168,76,.6)'}`,
+          color: generating ? 'var(--muted-foreground)' : '#fff',
+          fontSize: 11, fontWeight: 600, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
+          boxShadow: !generating ? '0 0 10px rgba(201,168,76,.2)' : 'none',
         }}>
           {generating ? 'Processing...' : 'Create Photo Avatar'}
         </button>

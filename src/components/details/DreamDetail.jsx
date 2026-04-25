@@ -48,12 +48,13 @@ const S = {
     boxSizing: 'border-box',
   },
   btn: (active, color = 'rgba(130, 90, 220, 1)') => ({
-    padding: '8px 18px', borderRadius: 8, cursor: 'pointer', fontSize: 11,
-    fontFamily: "'Cinzel', serif", letterSpacing: '.1em', textTransform: 'uppercase',
+    padding: '10px 20px', borderRadius: 8, cursor: 'pointer', fontSize: 12,
+    fontFamily: "'Cinzel', serif", fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase',
     transition: 'all .15s',
-    background: active ? color + '25' : 'transparent',
-    border: `1px solid ${active ? color + '66' : 'var(--border)'}`,
-    color: active ? color : 'var(--muted-foreground)',
+    background: active ? color + '35' : 'var(--secondary)',
+    border: `1px solid ${active ? color + '88' : 'var(--border)'}`,
+    color: active ? '#fff' : 'var(--muted-foreground)',
+    boxShadow: active ? `0 0 10px ${color}30` : 'none',
   }),
 }
 

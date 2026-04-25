@@ -129,11 +129,12 @@ const S = {
   btn: (primary) => ({
     padding: primary ? '11px 28px' : '9px 22px',
     borderRadius: 10, cursor: 'pointer',
-    fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.12em',
-    background: primary ? 'rgba(201,168,76,.14)' : 'var(--secondary)',
-    border: `1px solid ${primary ? 'var(--ring)' : 'rgba(255,255,255,.08)'}`,
-    color: primary ? 'var(--foreground)' : 'var(--muted-foreground)',
+    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.12em',
+    background: primary ? 'linear-gradient(135deg, rgba(201,168,76,.3), rgba(180,140,50,.2))' : 'rgba(255,255,255,.08)',
+    border: `1px solid ${primary ? 'rgba(201,168,76,.6)' : 'rgba(255,255,255,.2)'}`,
+    color: primary ? '#fff' : 'rgba(255,255,255,.7)',
     transition: 'all .18s',
+    boxShadow: primary ? '0 0 10px rgba(201,168,76,.2)' : 'none',
   }),
   resultCode: {
     fontFamily: "'Cinzel', serif", fontSize: 36, letterSpacing: '.2em',

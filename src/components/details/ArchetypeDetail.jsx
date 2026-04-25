@@ -235,9 +235,9 @@ function ArchetypeQuiz() {
           }}>Saved to your profile</div>
         )}
         <div onClick={reset} style={{
-          padding: '6px 18px', borderRadius: 8, background: 'var(--accent)',
-          border: '1px solid rgba(201,168,76,.2)', cursor: 'pointer', alignSelf: 'center',
-          fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--foreground)',
+          padding: '8px 20px', borderRadius: 8, background: 'rgba(201,168,76,.2)',
+          border: '1px solid rgba(201,168,76,.5)', cursor: 'pointer', alignSelf: 'center',
+          fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.1em', color: '#c9a84c',
         }}>Retake Quiz</div>
       </div>
     )

@@ -109,9 +109,9 @@ export default function DatingPage() {
           <button
             onClick={() => setExportOpen(!exportOpen)}
             style={{
-              padding:'5px 12px', borderRadius:6, cursor:'pointer', fontSize:10,
-              background: exportOpen ? 'rgba(201,168,76,.15)' : 'transparent',
-              border:'1px solid rgba(201,168,76,.3)', color:'var(--gold)',
+              padding:'7px 14px', borderRadius:6, cursor:'pointer', fontSize:10, fontWeight:600,
+              background: exportOpen ? 'rgba(201,168,76,.25)' : 'rgba(201,168,76,.12)',
+              border:'1px solid rgba(201,168,76,.5)', color:'#c9a84c',
               fontFamily:"'Cinzel',serif", letterSpacing:'.08em',
             }}
           >

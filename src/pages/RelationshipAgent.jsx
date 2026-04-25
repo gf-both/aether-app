@@ -161,12 +161,15 @@ DO NOT give generic compatibility advice. Identify the SPECIFIC patterns, trigge
           onClick={runAnalysis}
           disabled={loading || !selectedPerson}
           style={{
-            padding:'8px 20px', borderRadius:7,
+            padding:'10px 24px', borderRadius:7,
             cursor: (loading || !selectedPerson) ? 'not-allowed' : 'pointer',
-            background:'rgba(212,48,112,.1)', border:'1px solid rgba(212,48,112,.3)',
-            color:'rgba(212,48,112,.9)', fontSize:12, fontFamily:"'Cinzel',serif",
+            background: (loading || !selectedPerson) ? 'var(--secondary)' : 'linear-gradient(135deg, rgba(212,48,112,.35), rgba(180,40,100,.25))',
+            border: `1px solid ${(loading || !selectedPerson) ? 'var(--border)' : 'rgba(212,48,112,.7)'}`,
+            color: (loading || !selectedPerson) ? 'var(--muted-foreground)' : '#fff',
+            fontSize:12, fontFamily:"'Cinzel',serif", fontWeight:600,
             letterSpacing:'.08em', textTransform:'uppercase',
-            opacity: !selectedPerson ? 0.5 : 1, transition:'all .2s',
+            transition:'all .2s',
+            boxShadow: (!loading && selectedPerson) ? '0 0 12px rgba(212,48,112,.25)' : 'none',
           }}
         >
           {loading ? 'Analyzing...' : 'Analyze Pattern'}
