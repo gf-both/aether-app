@@ -4,6 +4,7 @@
  */
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
+import { computePersonData } from '../../hooks/useActiveProfile'
 import { callAI } from '../../lib/ai'
 
 const DETAIL_LABELS = {
@@ -82,9 +83,8 @@ ${activeDetail ? `Tailor your response to be relevant to ${section}. Reference s
 }
 
 export default function Oracle({ open, onClose }) {
-  const primaryProfile = useGolemStore(s => s.primaryProfile)
-  const activeViewProfile = useGolemStore(s => s.activeViewProfile)
-  const profile = activeViewProfile || primaryProfile
+  const rawProfile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useMemo(() => computePersonData(rawProfile), [rawProfile?.dob, rawProfile?.tob, rawProfile?.birthLat, rawProfile?.birthLon, rawProfile?.birthTimezone, rawProfile?.name])
   const activeDetail = useGolemStore(s => s.activeDetail)
   const people = useGolemStore(s => s.people)
   const oracleContext = useGolemStore(s => s.oracleContext)

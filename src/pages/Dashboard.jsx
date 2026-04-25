@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo, lazy, Suspense } from 'react'
 import { useGolemStore } from '../store/useGolemStore'
-import { useActiveProfile } from '../hooks/useActiveProfile'
+import { useComputedProfile as useActiveProfile } from '../hooks/useActiveProfile'
 import { DEFAULT_PRIMARY_PROFILE } from '../data/primaryProfile'
 import Sidebar from '../components/layout/Sidebar'
 import TopBar from '../components/layout/TopBar'

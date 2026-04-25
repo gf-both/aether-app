@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useGolemStore } from '../store/useGolemStore'
+import { computePersonData } from '../hooks/useActiveProfile'
 import { callAI } from '../lib/ai'
 import { getNatalChart } from '../engines/natalEngine'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
@@ -91,7 +92,8 @@ function buildAntagonistProfile(p) {
 }
 
 export default function GolemPage() {
-  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
+  const rawProfile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
+  const profile = useMemo(() => computePersonData(rawProfile), [rawProfile?.dob, rawProfile?.tob, rawProfile?.birthLat, rawProfile?.birthLon, rawProfile?.birthTimezone, rawProfile?.name])
   const setPrimaryProfile = useGolemStore(s => s.setPrimaryProfile)
   const people = useGolemStore(s => s.people)
   const setOracleContext = useGolemStore(s => s.setOracleContext)

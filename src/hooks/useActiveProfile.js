@@ -64,61 +64,16 @@ export function useActiveProfile() {
 }
 
 /**
- * useComputedProfile — like useActiveProfile but auto-computes missing fields
+ * useComputedProfile — like useActiveProfile but ALWAYS recomputes all fields
  * (sign, moon, asc, hdType, hdProfile, hdAuth, lifePath) from birth data.
+ * Delegates to computePersonData() — the single source of truth for all engines.
  * Use in any component that needs computed cosmic data.
  */
 export function useComputedProfile() {
   const raw = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
-
-  return useMemo(() => {
-    if (!raw?.dob) return raw
-    const p = { ...raw }
-
-    // Compute natal chart fields if missing
-    if (!p.sign || p.sign === '?' || !p.moon || p.moon === '?') {
-      try {
-        const [y, m, d] = p.dob.split('-').map(Number)
-        const [h, min] = (p.tob || '12:00').split(':').map(Number)
-        const { lat, lon, tz } = resolvePob(p)
-        const chart = getNatalChart({ day: d, month: m, year: y, hour: h || 12, minute: min || 0, lat, lon, timezone: tz })
-        if (chart) {
-          p.sign = p.sign && p.sign !== '?' ? p.sign : (chart.planets?.sun?.sign || '?')
-          p.moon = p.moon && p.moon !== '?' ? p.moon : (chart.planets?.moon?.sign || '?')
-          p.asc  = p.asc  && p.asc  !== '?' ? p.asc  : (chart.angles?.asc?.sign || '?')
-        }
-      } catch {}
-    }
-
-    // Compute HD fields if missing
-    if (!p.hdType || p.hdType === '?') {
-      try {
-        const hd = computeHDChart({
-          dateOfBirth: p.dob,
-          timeOfBirth: p.tob || '12:00',
-          utcOffset: p.birthTimezone ?? -3,
-        })
-        if (hd) {
-          p.hdType    = hd.type
-          // Preserve hardcoded profile if set (overrides engine, fixes edge cases)
-          p.hdProfile = (p.hdProfile && p.hdProfile !== '?') ? p.hdProfile : hd.profile
-          p.hdAuth    = (p.hdAuth && p.hdAuth !== '?') ? p.hdAuth : hd.authority
-          p.hdDef     = (p.hdDef && p.hdDef !== '?') ? p.hdDef : hd.definition
-        }
-      } catch {}
-    }
-
-    // Compute Life Path if missing
-    if (!p.lifePath || p.lifePath === '?') {
-      try {
-        const num = getNumerologyProfileFromDob(p.dob, p.name || 'X', {})
-        if (num?.core?.lifePath) p.lifePath = num.core.lifePath.val
-      } catch {}
-    }
-
-    return p
-  }, [raw?.dob, raw?.tob, raw?.birthLat, raw?.birthLon, raw?.birthTimezone,
-      raw?.hdType, raw?.lifePath, raw?.sign, raw?.moon, raw?.asc])
+  return useMemo(() => computePersonData(raw),
+    [raw?.dob, raw?.tob, raw?.birthLat, raw?.birthLon, raw?.birthTimezone,
+     raw?.name, raw?.pob, raw?.birthCity])
 }
 
 /**

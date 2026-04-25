@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useGolemStore } from '../store/useGolemStore'
+import { computePersonData } from '../hooks/useActiveProfile'
 
 /* ── Mock Data ── */
 const MOCK_SESSION_HISTORY = [
@@ -124,7 +125,8 @@ function formatDate(dateStr) {
 
 /* ── Main Component ── */
 export default function ClientPortal() {
-  const profile = useGolemStore((s) => s.primaryProfile)
+  const rawProfile = useGolemStore((s) => s.primaryProfile)
+  const profile = useMemo(() => computePersonData(rawProfile), [rawProfile?.dob, rawProfile?.tob, rawProfile?.birthLat, rawProfile?.birthLon, rawProfile?.birthTimezone, rawProfile?.name])
   const [todos, setTodos] = useState(MOCK_TODOS)
   const [msgInput, setMsgInput] = useState('')
   const [messages, setMessages] = useState(MOCK_MESSAGES)

@@ -1,10 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useGolemStore } from '../store/useGolemStore'
+import { computePersonData } from '../hooks/useActiveProfile'
 import { computeCompatibility } from '../engines/compatibilityEngine'
-import { getNatalChart } from '../engines/natalEngine'
-import { computeHDChart } from '../engines/hdEngine'
-import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
-import { resolvePob } from '../utils/profileUtils'
 import GolemAvatar from '../components/ui/GolemAvatar'
 
 const CONNECTION_TYPES = [
@@ -40,38 +37,11 @@ const NETWORK_STATS = [
 ]
 
 export default function DatingPage() {
-  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
+  const rawProfile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
   const people = useGolemStore(s => s.people)
 
-  const computed = useMemo(() => {
-    if (!profile?.dob) return {}
-    const v = (x) => x && x !== '?' ? x : null
-    let sign = v(profile.sign), moon = v(profile.moon), asc = v(profile.asc)
-    let hdType = v(profile.hdType), hdAuth = v(profile.hdAuth), hdProfile = v(profile.hdProfile)
-    let lifePath = v(profile.lifePath)
-    if (!sign || !moon || !asc) {
-      try {
-        const [y, m, d] = profile.dob.split('-').map(Number)
-        const [h, min] = (profile.tob || '12:00').split(':').map(Number)
-        const { lat, lon, tz } = resolvePob(profile)
-        const chart = getNatalChart({ day: d, month: m, year: y, hour: h || 12, minute: min || 0, lat, lon, timezone: tz })
-        if (chart) { sign = sign || chart.planets?.sun?.sign; moon = moon || chart.planets?.moon?.sign; asc = asc || chart.angles?.asc?.sign }
-      } catch {}
-    }
-    if (!hdType || !hdAuth) {
-      try {
-        const hd = computeHDChart({ dateOfBirth: profile.dob, timeOfBirth: profile.tob || '12:00', utcOffset: profile.birthTimezone ?? -3 })
-        if (hd) { hdType = hdType || hd.type; hdAuth = hdAuth || hd.authority; hdProfile = hdProfile || hd.profile }
-      } catch {}
-    }
-    if (!lifePath) {
-      try {
-        const num = getNumerologyProfileFromDob(profile.dob, profile.name || 'X', {})
-        if (num?.core?.lifePath) lifePath = num.core.lifePath.val
-      } catch {}
-    }
-    return { sign: sign || '?', moon: moon || '?', asc: asc || '?', hdType: hdType || '?', hdAuth: hdAuth || '?', hdProfile: hdProfile || '?', lifePath: lifePath || '?' }
-  }, [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.name, profile?.sign, profile?.moon, profile?.hdType])
+  // Single source of truth — computePersonData always recomputes from engines
+  const profile = useMemo(() => computePersonData(rawProfile), [rawProfile?.dob, rawProfile?.tob, rawProfile?.birthLat, rawProfile?.birthLon, rawProfile?.birthTimezone, rawProfile?.name])
 
   const [activeTab, setActiveTab] = useState('feed')
   const [connectionType, setConnectionType] = useState('romantic')
@@ -79,25 +49,26 @@ export default function DatingPage() {
   const [revealedMatches, setRevealedMatches] = useState(new Set())
   const [exportOpen, setExportOpen] = useState(false)
 
-  const pSign = computed.sign || profile?.sign || '?'
-  const pMoon = computed.moon || profile?.moon || '?'
-  const pHdType = computed.hdType || profile?.hdType || '?'
-  const pLifePath = computed.lifePath || profile?.lifePath || '?'
+  const pSign = profile?.sign || '?'
+  const pMoon = profile?.moon || '?'
+  const pHdType = profile?.hdType || '?'
+  const pLifePath = profile?.lifePath || '?'
 
   // Real matches
   const realMatches = useMemo(() => {
     if (!profile?.dob || !people?.length) return []
     return people.filter(p => p.dob && p.dob !== profile.dob).map(person => {
-      const result = computeCompatibility(profile, person)
+      const cp = computePersonData(person)
+      const result = computeCompatibility(profile, cp)
       if (!result) return null
       return {
-        id: person.id || person.name,
-        name: person.name || 'Unknown',
-        emoji: person.emoji || '✨',
+        id: cp.id || cp.name,
+        name: cp.name || 'Unknown',
+        emoji: cp.emoji || '✨',
         color: '201,168,76',
-        sign: person.sign || '?',
-        hdType: person.hdType || '?',
-        lifePath: person.lifePath || '?',
+        sign: cp.sign || '?',
+        hdType: cp.hdType || '?',
+        lifePath: cp.lifePath || '?',
         score: result.score,
         topReasons: result.topReasons.map(r => r.label),
         story: result.matchStory,
@@ -405,7 +376,7 @@ export default function DatingPage() {
               Active Matching Frameworks
             </div>
             {[
-              { label:'Human Design', detail:`${pHdType} · ${computed.hdAuth || '?'} authority`, weight:'25%' },
+              { label:'Human Design', detail:`${pHdType} · ${profile?.hdAuth || '?'} authority`, weight:'25%' },
               { label:'Western Astrology', detail:`${pSign} Sun · ${pMoon} Moon`, weight:'20%' },
               { label:'Numerology', detail:`Life Path ${pLifePath}`, weight:'15%' },
               { label:'Gene Keys', detail:'Hologenetic profile', weight:'15%' },

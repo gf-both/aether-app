@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
-import { useActiveProfile } from '../../hooks/useActiveProfile'
+import { useComputedProfile } from '../../hooks/useActiveProfile'
 import { getRecommendedRituals, TRADITIONS, getRitualById } from '../../engines/ritualEngine'
 import { getMoonPhase } from '../../engines/cycleEngine'
 
@@ -343,7 +343,7 @@ function InlineParticles({ stepText, active }) {
 }
 
 export default function RitualDetail() {
-  const profile = useActiveProfile()
+  const profile = useComputedProfile()
   const [activeTab, setActiveTab] = useState('recommended') // recommended | traditions | active
   const [activeRitual, setActiveRitual] = useState(null) // ritual id for immersive view
   const [ritualStep, setRitualStep] = useState(0)
