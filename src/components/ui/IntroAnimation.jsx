@@ -233,49 +233,65 @@ function merkaba(count) {
 }
 
 function ankh(count) {
-  // Egyptian Ankh — CLOSED oval loop on top (full circle, no gap, no interior fill)
-  // T-cross below. No dot in the middle.
+  // Egyptian Ankh — full 3D volumetric figure
+  // Torus loop on top, thick cylindrical shaft, thick crossbar
+  // All parts have real 3D depth — looks solid from every angle
   const pts = new Float32Array(count * 3)
-  for (let i = 0; i < count; i++) {
-    const t = i / count
-    let x, y, z = (Math.random() - 0.5) * 0.06
+  const tubeR = 0.12 // tube radius for all parts
 
-    if (t < 0.35) {
-      // Full closed oval loop — complete circle, no skip
-      const angle = (t / 0.35) * TAU
-      const rx = 0.42, ry = 0.55
-      x = Math.cos(angle) * rx + (Math.random() - 0.5) * 0.025
-      y = Math.sin(angle) * ry + 0.7 + (Math.random() - 0.5) * 0.025
-    } else if (t < 0.6) {
-      // Vertical shaft — from bottom of loop down
-      const st = (t - 0.35) / 0.25
-      x = (Math.random() - 0.5) * 0.05
-      y = 0.15 - st * 1.7
-      z = (Math.random() - 0.5) * 0.05
-    } else if (t < 0.75) {
-      // Horizontal crossbar
-      const st = (t - 0.6) / 0.15
-      x = (st - 0.5) * 1.2
-      y = -0.15 + (Math.random() - 0.5) * 0.05
-      z = (Math.random() - 0.5) * 0.05
+  for (let i = 0; i < count; i++) {
+    const t = Math.random()
+    let x, y, z
+
+    if (t < 0.40) {
+      // ─── TORUS LOOP — 3D donut ring on top ───
+      const loopAngle = Math.random() * TAU // angle around the loop
+      const tubeAngle = Math.random() * TAU // angle around the tube cross-section
+      const Rx = 0.42, Ry = 0.55 // loop radii (oval)
+      const cx = Math.cos(loopAngle) * Rx
+      const cy = Math.sin(loopAngle) * Ry + 0.7
+      // Tube cross-section — perpendicular to loop path
+      const nx = -Math.sin(loopAngle) // normal x (tangent perpendicular)
+      const tr = tubeR * (0.7 + Math.random() * 0.3) // slight variation
+      x = cx + nx * Math.cos(tubeAngle) * tr * 0.6
+      y = cy + Math.sin(tubeAngle) * tr * 0.5
+      z = Math.cos(tubeAngle) * tr // depth from tube
+    } else if (t < 0.70) {
+      // ─── VERTICAL SHAFT — thick 3D cylinder ───
+      const st = Math.random()
+      const shaftY = 0.15 - st * 1.7 // top to bottom
+      const angle = Math.random() * TAU
+      const r = tubeR * (0.6 + Math.random() * 0.4)
+      x = Math.cos(angle) * r * 0.5
+      y = shaftY
+      z = Math.sin(angle) * r * 0.5
+    } else if (t < 0.88) {
+      // ─── HORIZONTAL CROSSBAR — thick 3D cylinder ───
+      const st = Math.random()
+      const barX = (st - 0.5) * 1.3
+      const angle = Math.random() * TAU
+      const r = tubeR * (0.55 + Math.random() * 0.45)
+      x = barX
+      y = -0.15 + Math.cos(angle) * r * 0.4
+      z = Math.sin(angle) * r * 0.5
+    } else if (t < 0.94) {
+      // ─── JOINT where crossbar meets shaft — extra density ───
+      const angle = Math.random() * TAU
+      const phi = Math.acos(2 * Math.random() - 1)
+      const r = tubeR * 1.1
+      x = Math.sin(phi) * Math.cos(angle) * r * 0.5
+      y = -0.15 + Math.sin(phi) * Math.sin(angle) * r * 0.4
+      z = Math.cos(phi) * r * 0.5
     } else {
-      // Thicken: extra particles along loop and cross edges only (NO interior fill)
-      const part = Math.random()
-      if (part < 0.45) {
-        // Loop edge thickening
-        const a = Math.random() * TAU
-        x = Math.cos(a) * 0.42 + (Math.random() - 0.5) * 0.04
-        y = Math.sin(a) * 0.55 + 0.7 + (Math.random() - 0.5) * 0.04
-      } else if (part < 0.75) {
-        // Shaft thickening
-        x = (Math.random() - 0.5) * 0.05
-        y = 0.15 - Math.random() * 1.7
-      } else {
-        // Crossbar thickening
-        x = (Math.random() - 0.5) * 1.2
-        y = -0.15 + (Math.random() - 0.5) * 0.05
-      }
+      // ─── JOINT where loop meets shaft — smooth connection ───
+      const angle = Math.random() * TAU
+      const phi = Math.acos(2 * Math.random() - 1)
+      const r = tubeR * 1.2
+      x = Math.sin(phi) * Math.cos(angle) * r * 0.5
+      y = 0.15 + Math.sin(phi) * Math.sin(angle) * r * 0.4
+      z = Math.cos(phi) * r * 0.5
     }
+
     pts[i*3] = x; pts[i*3+1] = y; pts[i*3+2] = z
   }
   return pts
@@ -337,55 +353,52 @@ function chineseDragon(count) {
     let x, y, z = (Math.random() - 0.5) * 0.05
 
     if (t < 0.08) {
-      // ─── UPPER JAW / SNOUT ─── long, tapering, ridged
+      // ─── UPPER JAW / SNOUT ─── starts flush with head front, tapers forward
       const st = Math.random()
       const snoutLen = 0.55
       const taper = 1 - st * 0.45
-      // Surface shell distribution
       const angle = Math.random() * TAU
       const shell = 0.85 + Math.random() * 0.15
-      x = -1.25 - st * snoutLen
+      x = -1.15 - st * snoutLen // starts at head front edge
       y = 0.15 + Math.sin(angle) * 0.12 * taper * shell
       z = Math.cos(angle) * 0.18 * taper * shell
-      // Add jaw ridge bumps
       if (Math.random() < 0.3) y += 0.04 * taper
     } else if (t < 0.13) {
-      // ─── LOWER JAW ─── open, with teeth line
+      // ─── LOWER JAW ─── hangs open
       const st = Math.random()
       const taper = 1 - st * 0.35
-      x = -1.25 - st * 0.42
+      x = -1.15 - st * 0.42
       y = -0.08 - (1 - st) * 0.18
       z = (Math.random() - 0.5) * 0.28 * taper
-      // Teeth: sharp point clusters along jaw edge
       if (Math.random() < 0.25) {
         y -= 0.04 + Math.random() * 0.06
         z = (Math.random() - 0.5) * 0.16 * taper
       }
     } else if (t < 0.17) {
-      // ─── TEETH ─── individual fang clusters along both jaws
+      // ─── TEETH ─── fang clusters along both jaws
       const toothIdx = Math.floor(Math.random() * 8)
       const st = toothIdx / 8
       const side = Math.random() < 0.5 ? 1 : -1
       const isUpper = Math.random() < 0.5
-      x = -1.25 - st * 0.35 + jj()
+      x = -1.15 - st * 0.35 + jj()
       y = isUpper ? (0.08 - Math.random() * 0.08) : (-0.12 - Math.random() * 0.1)
       z = side * (0.06 + st * 0.04) + jj()
     } else if (t < 0.27) {
-      // ─── HEAD MASS ─── large cranium, surface-distributed sphere shell
+      // ─── HEAD MASS ─── large cranium, surface sphere shell
       const a = Math.random() * TAU
       const phi = Math.acos(2 * Math.random() - 1)
       const shell = 0.8 + Math.random() * 0.2
       const r = 0.38 * shell
-      x = -0.85 + Math.sin(phi) * Math.cos(a) * r * 0.85
+      x = -0.80 + Math.sin(phi) * Math.cos(a) * r * 0.9
       y = 0.18 + Math.sin(phi) * Math.sin(a) * r * 0.75
       z = Math.cos(phi) * r * 0.65
     } else if (t < 0.31) {
-      // ─── EYES ─── bright clusters with pupils (dense center, diffuse glow)
+      // ─── EYES ─── bright clusters with pupils
       const side = Math.random() < 0.5 ? 1 : -1
       const isPupil = Math.random() < 0.4
       const a = Math.random() * TAU
       const r = isPupil ? Math.random() * 0.025 : (0.03 + Math.random() * 0.04)
-      x = -1.06 + Math.cos(a) * r
+      x = -0.96 + Math.cos(a) * r
       y = 0.28 + Math.sin(a) * r
       z = side * 0.23 + jj()
     } else if (t < 0.33) {
@@ -393,13 +406,13 @@ function chineseDragon(count) {
       const side = Math.random() < 0.5 ? 1 : -1
       const isSmoke = Math.random() < 0.3
       if (isSmoke) {
-        x = -1.8 - Math.random() * 0.2
+        x = -1.7 - Math.random() * 0.2
         y = 0.12 + (Math.random() - 0.5) * 0.1
         z = side * 0.06 + (Math.random() - 0.5) * 0.08
       } else {
         const a = Math.random() * TAU
         const r = Math.random() * 0.045
-        x = -1.72 + Math.cos(a) * r
+        x = -1.62 + Math.cos(a) * r
         y = 0.12 + Math.sin(a) * r
         z = side * 0.09 + jj()
       }
@@ -408,7 +421,7 @@ function chineseDragon(count) {
       const side = Math.random() < 0.5 ? 1 : -1
       const st = Math.random()
       const branch = Math.random()
-      const hornBase = { x: -0.72, y: 0.5 }
+      const hornBase = { x: -0.65, y: 0.5 }
       if (branch < 0.5) {
         // Main horn shaft
         x = hornBase.x + st * 0.2 + jj()
@@ -434,16 +447,28 @@ function chineseDragon(count) {
       const side = tendrilIdx < 2 ? 1 : -1
       const isOuter = tendrilIdx % 2 === 0
       const spread = isOuter ? 0.35 : 0.2
-      x = -1.45 - st * 0.35 + j()
+      x = -1.35 - st * 0.35 + j()
       y = -0.05 - st * 0.4 - (isOuter ? st * 0.1 : 0)
       z = side * (0.1 + st * spread) + j()
     } else if (t < 0.46) {
       // ─── FLAME BREATH ─── wispy particles trailing from mouth
       const st = Math.random()
-      x = -1.75 - st * 0.45
+      x = -1.65 - st * 0.45
       y = 0.02 + (Math.random() - 0.5) * (0.12 + st * 0.2)
       z = (Math.random() - 0.5) * (0.1 + st * 0.18)
-    } else if (t < 0.52) {
+    } else if (t < 0.49) {
+      // ─── NECK ─── thick tube connecting head mass to body spine
+      const st = Math.random()
+      const neckX = -0.80 + st * 0.35 // -0.80 (head) to -0.45 (body start)
+      const neckY = 0.18 - st * 0.12 + (Math.random() - 0.5) * 0.08
+      const neckZ = (Math.random() - 0.5) * 0.25
+      const angle = Math.random() * TAU
+      const neckR = 0.18 * (1 - st * 0.2)
+      const shell = 0.6 + Math.random() * 0.4
+      x = neckX + Math.cos(angle) * neckR * shell * 0.3
+      y = neckY + Math.sin(angle) * neckR * shell * 0.5
+      z = neckZ + Math.cos(angle + 1) * neckR * shell * 0.3
+    } else if (t < 0.55) {
       // ─── MANE ─── dense flowing hair/flames from neck down upper back
       const st = Math.random()
       const bodyT = st * 0.35
@@ -764,95 +789,85 @@ function yinYang(count) {
 }
 
 function omSymbol(count) {
-  // Om ॐ — from scratch. VERY THICK strokes. NO lines crossing.
-  // Layout: everything separated so strokes never overlap.
-  // 1. Bottom belly curl (large "3" shape) — left side, lower
-  // 2. Top arch — sweeps from left over to right, sits ABOVE the belly
-  // 3. Tail swoosh — extends right from the arch, curves down
-  // 4. Vertical stem — on the right, goes straight up (NO crossing the arch)
-  // 5. Crescent — sits above the stem, open upward
-  // 6. Bindu dot — above the crescent
+  // Om ॐ — full 3D volumetric figure. Every stroke is a thick tube with
+  // real depth, not flat jittered lines. Looks solid from every angle.
   const pts = new Float32Array(count * 3)
-  // Extra thick jitter for all strokes
-  const j = () => (Math.random() - 0.5) * 0.06
+  const R = 0.1 // tube radius
+
+  // Helper: place particle on a tube around a centerline point
+  function tube(cx, cy, cz, radius) {
+    const a = Math.random() * TAU
+    const r = radius * (0.5 + Math.random() * 0.5)
+    return {
+      x: cx + Math.cos(a) * r * 0.6,
+      y: cy + Math.sin(a) * r * 0.5,
+      z: (cz || 0) + Math.cos(a + 1.5) * r * 0.6,
+    }
+  }
 
   for (let i = 0; i < count; i++) {
-    const t = i / count
-    const z = (Math.random() - 0.5) * 0.04
+    const t = Math.random()
+    let p
 
     if (t < 0.22) {
-      // ─── BELLY CURL — the large lower "3" or backwards "ε" ───
-      // Two half-circles stacked: upper bump opens right, lower bump opens right
-      const st = (t / 0.22)
+      // ─── BELLY CURL — 3D tube forming the "3" shape ───
+      const st = Math.random()
+      let cx, cy
       if (st < 0.5) {
-        // Upper bump
-        const a = (st / 0.5) * Math.PI + Math.PI * 0.5 // π/2 → 3π/2
-        const cx = -0.25, cy = -0.15
-        pts[i*3] = cx + Math.cos(a) * 0.32 + j()
-        pts[i*3+1] = cy + Math.sin(a) * 0.25 + j()
+        const a = (st / 0.5) * Math.PI + Math.PI * 0.5
+        cx = -0.25 + Math.cos(a) * 0.34
+        cy = -0.15 + Math.sin(a) * 0.27
       } else {
-        // Lower bump (slightly smaller)
-        const a = ((st - 0.5) / 0.5) * Math.PI - Math.PI * 0.5 // -π/2 → π/2
-        const cx = -0.25, cy = -0.55
-        pts[i*3] = cx + Math.cos(a) * 0.28 + j()
-        pts[i*3+1] = cy + Math.sin(a) * 0.22 + j()
+        const a = ((st - 0.5) / 0.5) * Math.PI - Math.PI * 0.5
+        cx = -0.25 + Math.cos(a) * 0.30
+        cy = -0.55 + Math.sin(a) * 0.24
       }
-      pts[i*3+2] = z
+      p = tube(cx, cy, 0, R)
     } else if (t < 0.40) {
-      // ─── TOP ARCH — big sweeping curve sitting above the belly ───
-      // Arc from left to right, positioned clearly above belly
-      const st = (t - 0.22) / 0.18
-      const a = st * Math.PI * 1.0 + Math.PI * 0.0 // 0 → π
-      const cx = 0, cy = 0.25
-      pts[i*3] = cx + Math.cos(a) * 0.6 + j()
-      pts[i*3+1] = cy + Math.sin(a) * 0.35 + j()
-      pts[i*3+2] = z
+      // ─── TOP ARCH — 3D tube sweeping over the belly ───
+      const st = Math.random()
+      const a = st * Math.PI
+      const cx = Math.cos(a) * 0.62
+      const cy = 0.25 + Math.sin(a) * 0.38
+      p = tube(cx, cy, 0, R)
     } else if (t < 0.52) {
-      // ─── TAIL SWOOSH — extends from right side of arch, curves down ───
-      // Starts where arch ends (right side ~0.6, 0.25), swoops down and right
-      const st = (t - 0.40) / 0.12
-      const startX = 0.55, startY = 0.2
-      const endX = 0.85, endY = -0.2
-      // Quadratic curve swooping
-      const midX = 0.8, midY = 0.3
+      // ─── TAIL SWOOSH — 3D bezier tube curving down-right ───
+      const st = Math.random()
       const u = st
-      pts[i*3] = (1-u)*(1-u)*startX + 2*(1-u)*u*midX + u*u*endX + j()
-      pts[i*3+1] = (1-u)*(1-u)*startY + 2*(1-u)*u*midY + u*u*endY + j()
-      pts[i*3+2] = z
+      const cx = (1-u)*(1-u)*0.55 + 2*(1-u)*u*0.82 + u*u*0.88
+      const cy = (1-u)*(1-u)*0.2 + 2*(1-u)*u*0.32 + u*u*-0.22
+      p = tube(cx, cy, 0, R)
     } else if (t < 0.60) {
-      // ─── CONNECTING HOOK — small curve linking belly top to arch left ───
-      // Goes from top of belly curl up to left end of arch
-      const st = (t - 0.52) / 0.08
-      const startX = -0.55, startY = -0.15
-      const endX = -0.6, endY = 0.25
-      pts[i*3] = startX + (endX - startX) * st + j() * 0.7
-      pts[i*3+1] = startY + (endY - startY) * st + Math.sin(st * Math.PI) * 0.08 + j() * 0.7
-      pts[i*3+2] = z
+      // ─── CONNECTING HOOK — 3D tube linking belly to arch ───
+      const st = Math.random()
+      const cx = -0.55 + (-0.6 - -0.55) * st
+      const cy = -0.15 + (0.25 - -0.15) * st + Math.sin(st * Math.PI) * 0.08
+      p = tube(cx, cy, 0, R * 0.9)
     } else if (t < 0.72) {
-      // ─── VERTICAL STEM — right side, goes straight up from tail area ───
-      // Positioned at x≈0.5, clearly to the right of the arch peak
-      // Starts below the tail and goes up to near crescent — NO crossing
-      const st = (t - 0.60) / 0.12
-      pts[i*3] = 0.50 + j() * 0.6
-      pts[i*3+1] = -0.3 + st * 0.9 + j() * 0.6  // -0.3 to 0.6
-      pts[i*3+2] = z
+      // ─── VERTICAL STEM — 3D cylinder going straight up ───
+      const st = Math.random()
+      const cy = -0.3 + st * 0.9
+      p = tube(0.50, cy, 0, R)
     } else if (t < 0.86) {
-      // ─── CRESCENT MOON — open arc above the stem ───
-      // Positioned at (0.5, 0.72), opening upward like a cup
-      const st = (t - 0.72) / 0.14
-      const a = st * Math.PI + Math.PI  // π → 2π (bottom half = cup shape)
-      const cx = 0.50, cy = 0.72
-      pts[i*3] = cx + Math.cos(a) * 0.2 + j() * 0.7
-      pts[i*3+1] = cy + Math.sin(a) * 0.12 + j() * 0.7
-      pts[i*3+2] = z
+      // ─── CRESCENT MOON — 3D tube arc above stem ───
+      const st = Math.random()
+      const a = st * Math.PI + Math.PI
+      const cx = 0.50 + Math.cos(a) * 0.22
+      const cy = 0.72 + Math.sin(a) * 0.14
+      p = tube(cx, cy, 0, R * 0.8)
     } else {
-      // ─── BINDU (dot) — above crescent, filled circle ───
+      // ─── BINDU — full 3D sphere above crescent ───
       const a = Math.random() * TAU
-      const r = Math.random() * 0.08
-      pts[i*3] = 0.50 + Math.cos(a) * r
-      pts[i*3+1] = 0.92 + Math.sin(a) * r
-      pts[i*3+2] = z * 0.3
+      const phi = Math.acos(2 * Math.random() - 1)
+      const r = 0.1 * (0.5 + Math.random() * 0.5)
+      p = {
+        x: 0.50 + Math.sin(phi) * Math.cos(a) * r,
+        y: 0.92 + Math.sin(phi) * Math.sin(a) * r,
+        z: Math.cos(phi) * r,
+      }
     }
+
+    pts[i*3] = p.x; pts[i*3+1] = p.y; pts[i*3+2] = p.z
   }
   return pts
 }
@@ -860,13 +875,13 @@ function omSymbol(count) {
 const FIGURES = [
   { name: 'Geodesic Sphere', generator: (n) => fibSphere(n, 1.0), label: 'Universal Form' },
   { name: 'Merkaba', generator: merkaba, label: 'Light Vehicle · Hebrew' },
-  { name: 'Ankh', generator: ankh, label: 'Key of Life · Egyptian' },
+  { name: 'Ankh', generator: ankh, label: 'Key of Life · Egyptian', particles: 14000 },
   { name: 'Stepped Pyramid', generator: mayanPyramid, label: 'Temple of Time · Mayan' },
   { name: 'Dragon', generator: chineseDragon, label: 'Celestial Guardian · Chinese', particles: 20000 },
   { name: 'Tree of Life', generator: treeOfLife, label: 'Etz Chaim · Kabbalistic' },
   { name: 'DNA Helix', generator: dnaHelix, label: 'Double Helix · The Code of Life' },
   { name: 'Yin Yang', generator: yinYang, label: 'Twin Fish · Taoist', particles: 12000 },
-  { name: 'Om', generator: omSymbol, label: 'Aum · The Primordial Sound · Sanskrit' },
+  { name: 'Om', generator: omSymbol, label: 'Aum · The Primordial Sound · Sanskrit', particles: 14000 },
 ]
 
 export default function IntroAnimation({ onComplete }) {

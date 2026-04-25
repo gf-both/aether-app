@@ -260,18 +260,17 @@ function EntryForm({ initial, allSyncs, onSave, onCancel }) {
 
       <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
         <button
-          onClick={handleSave}
-          disabled={!description.trim()}
+          onClick={() => { if (description.trim()) handleSave() }}
           style={{
-            padding: '12px 28px', borderRadius: 10, cursor: description.trim() ? 'pointer' : 'not-allowed',
+            padding: '12px 28px', borderRadius: 10, cursor: 'pointer',
             fontSize: 13, fontFamily: "'Cinzel', serif", fontWeight: 700,
             letterSpacing: '.14em', textTransform: 'uppercase',
-            background: description.trim() ? 'linear-gradient(135deg, rgba(201,168,76,.45), rgba(201,168,76,.25))' : 'var(--secondary)',
-            border: `2px solid ${description.trim() ? 'rgba(201,168,76,.8)' : 'var(--border)'}`,
-            color: description.trim() ? '#fff' : 'var(--muted-foreground)',
+            background: 'linear-gradient(135deg, rgba(201,168,76,.45), rgba(201,168,76,.25))',
+            border: '2px solid rgba(201,168,76,.8)',
+            color: '#fff',
             opacity: description.trim() ? 1 : 0.5,
             transition: 'all .2s', position: 'relative', zIndex: 2,
-            boxShadow: description.trim() ? '0 2px 12px rgba(201,168,76,.25)' : 'none',
+            boxShadow: '0 2px 12px rgba(201,168,76,.25)',
           }}
         >
           {initial ? '✦ Update' : '✦ Record Synchronicity'}
