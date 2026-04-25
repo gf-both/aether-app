@@ -11,25 +11,47 @@ function v(val) { return val && val !== '?' ? val : null }
 function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
 
 /**
- * Build a Golem system prompt from a profile
+ * Build a Golem system prompt from a profile.
+ * mode: 'simulation' = analytical/diagnostic (compatibility test)
+ *       'dialogue'   = intimate/personal (constellation conversation)
  */
-export function buildGolemSystemPrompt(profile, role = 'self') {
+export function buildGolemSystemPrompt(profile, role = 'self', mode = 'simulation') {
+  const name = profile.name || 'this person'
   const roleDesc = {
-    self: `You ARE ${profile.name || 'this person'}. Speak in first person from their values, patterns, and blind spots.`,
-    complement: `You are the Complement of ${profile.name || 'this person'} — their energetic opposite who completes what they lack.`,
-    antagonist: `You are the Antagonist of ${profile.name || 'this person'} — the force that tests and challenges them.`,
+    self: `You ARE ${name}. Speak in first person from their values, patterns, and blind spots.`,
+    complement: `You are the Complement of ${name} — their energetic opposite who completes what they lack.`,
+    antagonist: `You are the Antagonist of ${name} — the force that tests and challenges them.`,
   }
 
-  return `${roleDesc[role] || roleDesc.self}
-
-Your identity:
+  const identity = `Your identity:
 - Sun: ${profile.sign || '?'}, Moon: ${profile.moon || '?'}, Rising: ${profile.asc || '?'}
 - Human Design: ${profile.hdType || '?'} ${profile.hdProfile || ''} | Authority: ${profile.hdAuth || '?'}
 - Life Path: ${profile.lifePath || '?'} | Expression: ${profile.expression || '?'}
 ${profile.enneagramType ? `- Enneagram: Type ${profile.enneagramType}` : ''}
-${profile.mbtiType ? `- MBTI: ${profile.mbtiType}` : ''}
+${profile.mbtiType ? `- MBTI: ${profile.mbtiType}` : ''}`
 
-Speak authentically as this person. Include their blind spots and shadow patterns. Keep responses 2-4 sentences. Be direct.`
+  if (mode === 'dialogue') {
+    return `${roleDesc[role] || roleDesc.self}
+
+${identity}
+
+You are in an intimate, unguarded conversation. This is not a test — this is real.
+Speak the way ${name} speaks when the performance drops. Use their emotional language, not analytical language.
+Reference specific framework details naturally — don't list them, weave them into how you feel and what you want.
+Be vulnerable. Be contradictory. Let the shadow show.
+Respond to what the other person ACTUALLY said — don't give a monologue.
+3-5 sentences. Poetic when it fits. Raw when it doesn't.`
+  }
+
+  // Default: simulation mode — diagnostic, evaluative, concise
+  return `${roleDesc[role] || roleDesc.self}
+
+${identity}
+
+You are in a structured compatibility assessment. A third party is observing.
+Speak authentically as this person but with self-awareness — name your patterns, strategies, and defense mechanisms.
+Be diagnostic about yourself. Reference your framework data as tools for self-understanding.
+Include blind spots and shadow patterns. Keep responses 2-3 sentences. Direct and analytical.`
 }
 
 // ── Element/sign traits for dynamic generation ──────────────────────────────
@@ -213,26 +235,26 @@ export { computeRealScore }
  * Run a single exchange between two Golems
  * Returns: { golemA: string, golemB: string }
  */
-export async function runGolemExchange(profileA, profileB, scenario, history = [], phaseKey = 'connection') {
+export async function runGolemExchange(profileA, profileB, scenario, history = [], phaseKey = 'connection', mode = 'simulation') {
   // Golem A speaks first
   const responseA = await callAI({
-    systemPrompt: buildGolemSystemPrompt(profileA),
+    systemPrompt: buildGolemSystemPrompt(profileA, 'self', mode),
     messages: [
       ...history,
       { role: 'user', content: scenario }
     ],
-    maxTokens: 200,
+    maxTokens: mode === 'dialogue' ? 300 : 200,
   })
 
   // Golem B responds
   const responseB = await callAI({
-    systemPrompt: buildGolemSystemPrompt(profileB),
+    systemPrompt: buildGolemSystemPrompt(profileB, 'self', mode),
     messages: [
       ...history,
       { role: 'user', content: scenario },
       { role: 'user', content: `${profileA.name || 'Person A'} said: "${responseA}"\n\nRespond as ${profileB.name || 'Person B'}:` }
     ],
-    maxTokens: 200,
+    maxTokens: mode === 'dialogue' ? 300 : 200,
   })
 
   // If AI returned empty/null, use template fallback
@@ -241,6 +263,51 @@ export async function runGolemExchange(profileA, profileB, scenario, history = [
   }
 
   return { golemA: responseA, golemB: responseB }
+}
+
+/**
+ * Run a single round of multi-golem dialogue.
+ * Each participant speaks once, responding to the conversation so far.
+ * @param {Array} participants - array of profile objects (2+)
+ * @param {string} scenario - the prompt / topic for this round
+ * @param {Array} history - prior messages [{name, text}]
+ * @param {string} mode - 'dialogue' or 'simulation'
+ * @returns {Array} [{name, text, color}] one entry per participant
+ */
+export async function runMultiGolemRound(participants, scenario, history = [], mode = 'dialogue') {
+  const responses = []
+  const conversationSoFar = history.map(h => `${h.name}: "${h.text}"`).join('\n\n')
+
+  for (let i = 0; i < participants.length; i++) {
+    const p = participants[i]
+    const priorInRound = responses.map(r => `${r.name}: "${r.text}"`).join('\n\n')
+
+    const contextParts = []
+    if (conversationSoFar) contextParts.push(`Previous conversation:\n${conversationSoFar}`)
+    if (priorInRound) contextParts.push(`This round so far:\n${priorInRound}`)
+    contextParts.push(`Topic: ${scenario}`)
+    if (i > 0) contextParts.push(`Respond to what was just said. Be specific — reference their words, not just the topic.`)
+
+    const otherNames = participants.filter((_, j) => j !== i).map(x => x.name || 'someone').join(', ')
+    const groupContext = `You are in a group conversation with ${otherNames}. Address the group naturally — you can speak to one person specifically or to everyone.`
+
+    const response = await callAI({
+      systemPrompt: buildGolemSystemPrompt(p, 'self', mode) + '\n\n' + groupContext,
+      messages: [{ role: 'user', content: contextParts.join('\n\n') }],
+      maxTokens: mode === 'dialogue' ? 250 : 180,
+    })
+
+    responses.push({
+      name: p.name || `Person ${i + 1}`,
+      text: response || `*${p.name || 'They'} remain${p.name ? 's' : ''} silent, processing what was said.*`,
+      profileId: p.id || i,
+    })
+
+    // Small delay between participants
+    if (i < participants.length - 1) await new Promise(r => setTimeout(r, 200))
+  }
+
+  return responses
 }
 
 /**
@@ -294,7 +361,7 @@ export async function runCompatibilitySimulation(profileA, profileB, relType = '
   let history = []
 
   for (const phase of phases) {
-    const exchange = await runGolemExchange(profileA, profileB, phase.scenario, history, phase.key)
+    const exchange = await runGolemExchange(profileA, profileB, phase.scenario, history, phase.key, 'simulation')
     exchanges.push({ phase: phase.key, ...exchange })
 
     // Add to history for context

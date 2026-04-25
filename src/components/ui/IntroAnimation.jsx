@@ -1070,17 +1070,6 @@ export default function IntroAnimation({ onComplete }) {
         }}>
           KNOW THYSELF
         </div>
-        {/* Figure name */}
-        <div style={{
-          fontFamily: "'Cormorant Garamond', serif",
-          fontSize: 'clamp(9px, 1.5vw, 12px)',
-          letterSpacing: '0.3em',
-          color: 'rgba(201,168,76,0.5)',
-          marginTop: 16,
-          fontStyle: 'italic',
-        }}>
-          {figure.name} · {figure.label}
-        </div>
       </div>
 
       {/* Skip hint */}

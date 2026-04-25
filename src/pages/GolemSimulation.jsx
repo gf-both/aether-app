@@ -70,7 +70,7 @@ export default function GolemSimulation() {
   return (
     <div style={{ display:'flex', flexDirection:'column', height:'100%', padding:'20px 24px', overflowY:'auto' }}>
       <div style={{ fontFamily:"'Cinzel',serif", fontSize:11, letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold)', marginBottom:4 }}>Golem Simulation</div>
-      <div style={{ fontSize:12, color:'var(--muted-foreground)', marginBottom:20 }}>Run your Golem against another's. Watch how they interact before you meet.</div>
+      <div style={{ fontSize:12, color:'var(--muted-foreground)', marginBottom:20 }}>Structured compatibility test — 5 phases, scored. Your golem is observed under pressure.</div>
 
       {/* Scenario type */}
       <div style={{ display:'flex', gap:8, marginBottom:16, flexWrap:'wrap' }}>
