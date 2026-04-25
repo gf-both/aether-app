@@ -254,29 +254,44 @@ export default function HumanDesign() {
           ctx.fillStyle = 'rgba(28,34,68,0.08)'; ctx.fill()
         }
 
-        // Center name — always visible
-        const fs = Math.max(7, sz * 0.5)
+        // Center name — large, bright, always legible
+        const fs = Math.max(9, sz * 0.75)
         ctx.font = `bold ${fs}px 'Cinzel',serif`
-        ctx.fillStyle = defined ? cB + '0.85)' : 'rgba(75,85,135,0.3)'
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+
+        // Use white/bright for defined, muted for undefined — never the center color for text
+        if (defined) {
+          // Drop shadow for readability
+          ctx.fillStyle = 'rgba(0,0,0,0.5)'
+          ctx.fillText(c.name === 'G/SELF' ? 'G' : c.name.substring(0, 3), x + 0.5, y + 0.5)
+          ctx.fillStyle = 'rgba(255,255,255,0.95)'
+        } else {
+          ctx.fillStyle = 'rgba(140,150,180,0.45)'
+        }
         ctx.fillText(c.name === 'G/SELF' ? 'G' : c.name.substring(0, 3), x, y)
       })
 
-      // ─── 4. Gate numbers ───
+      // ─── 4. Gate numbers — bigger, gold, readable ───
       GATES.forEach(({ x: gx, y: gy, g }) => {
-        const fs = Math.max(6, sz * 0.35)
-        ctx.font = `${fs}px 'Inconsolata',monospace`
-        ctx.fillStyle = `rgba(201,168,76,${0.25 + 0.08 * Math.sin(pulse * 0.5 + g)})`
+        const gfs = Math.max(7, sz * 0.45)
+        ctx.font = `bold ${gfs}px 'Inconsolata',monospace`
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
+        // Drop shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.4)'
+        ctx.fillText(g, gx * W + 0.5, gy * H + 0.5)
+        ctx.fillStyle = `rgba(220,190,100,${0.5 + 0.12 * Math.sin(pulse * 0.5 + g)})`
         ctx.fillText(g, gx * W, gy * H)
       })
 
-      // ─── 5. Profile label ───
-      const lblFs = Math.max(10, W * 0.028)
+      // ─── 5. Profile label — bigger, brighter ───
+      const lblFs = Math.max(12, W * 0.035)
       ctx.font = `bold ${lblFs}px 'Cinzel',serif`
-      ctx.fillStyle = 'rgba(64,204,221,0.6)'
       ctx.textAlign = 'center'
-      ctx.fillText(profileLabel, W * 0.5, H * 0.94)
+      // Drop shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.5)'
+      ctx.fillText(profileLabel, W * 0.5 + 0.5, H * 0.935 + 0.5)
+      ctx.fillStyle = 'rgba(140,220,240,0.85)'
+      ctx.fillText(profileLabel, W * 0.5, H * 0.935)
 
       ctx.restore()
       animRef.current = requestAnimationFrame(draw)
