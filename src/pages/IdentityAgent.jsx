@@ -224,12 +224,12 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
           disabled={loading}
           style={{
             padding:'12px 28px', borderRadius:8, cursor: loading ? 'wait' : 'pointer',
-            background: loading ? 'var(--secondary)' : 'linear-gradient(135deg, rgba(201,168,76,.3), rgba(180,140,50,.2))',
-            border:`1px solid ${loading ? 'var(--border)' : 'rgba(201,168,76,.7)'}`,
-            color: loading ? 'var(--muted-foreground)' : '#fff',
-            fontSize:12, fontFamily:"'Cinzel',serif", fontWeight:600, letterSpacing:'.1em', textTransform:'uppercase',
+            background: loading ? '#1a1a2e' : '#b8860b',
+            border: `2px solid ${loading ? '#333' : '#d4a017'}`,
+            color: loading ? '#555' : '#fff',
+            fontSize:13, fontFamily:"'Cinzel',serif", fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase',
             transition:'all .2s',
-            boxShadow: !loading ? '0 0 12px rgba(201,168,76,.2)' : 'none',
+            boxShadow: !loading ? '0 0 20px rgba(201,168,76,.35), 0 0 40px rgba(201,168,76,.12)' : 'none',
           }}
         >
           {loading ? 'Synthesizing across all frameworks...' : result ? 'Re-synthesize' : 'Run Identity Synthesis'}

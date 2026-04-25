@@ -54,17 +54,17 @@ const S = {
   progressWrap: { display: 'flex', gap: 3, height: 4, borderRadius: 2, overflow: 'hidden' },
   closeBtn: {
     alignSelf: 'flex-end', fontFamily: "'Cinzel', serif", fontSize: 10,
-    fontWeight: 600, letterSpacing: '.2em', textTransform: 'uppercase',
-    color: 'rgba(255,255,255,.7)', cursor: 'pointer',
+    fontWeight: 700, letterSpacing: '.2em', textTransform: 'uppercase',
+    color: '#999', cursor: 'pointer',
     padding: '8px 18px', borderRadius: 20,
-    border: '1px solid rgba(255,255,255,.2)', background: 'rgba(255,255,255,.08)',
+    border: '2px solid #444', background: '#1a1a2e',
   },
   doneBtn: {
-    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.18em',
+    fontFamily: "'Cinzel', serif", fontSize: 12, fontWeight: 700, letterSpacing: '.18em',
     textTransform: 'uppercase', color: '#fff', cursor: 'pointer',
     padding: '10px 28px', borderRadius: 20, alignSelf: 'flex-end',
-    border: '1px solid rgba(238,136,102,.6)', background: 'linear-gradient(135deg, rgba(238,136,102,.35), rgba(220,120,90,.25))',
-    boxShadow: '0 0 10px rgba(238,136,102,.2)',
+    border: '2px solid #ee8866', background: '#c05530',
+    boxShadow: '0 0 16px rgba(238,136,102,.35)',
     transition: 'all .2s',
   },
 }

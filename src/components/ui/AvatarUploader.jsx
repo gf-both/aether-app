@@ -81,11 +81,11 @@ export default function AvatarUploader({ profile, onComplete }) {
       {photos.length > 0 && !result && (
         <button onClick={handleGenerate} disabled={generating} style={{
           width: '100%', padding: '10px 18px', borderRadius: 8, cursor: generating ? 'wait' : 'pointer',
-          background: generating ? 'var(--secondary)' : 'linear-gradient(135deg, rgba(201,168,76,.3), rgba(180,140,50,.2))',
-          border: `1px solid ${generating ? 'var(--border)' : 'rgba(201,168,76,.6)'}`,
-          color: generating ? 'var(--muted-foreground)' : '#fff',
-          fontSize: 11, fontWeight: 600, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
-          boxShadow: !generating ? '0 0 10px rgba(201,168,76,.2)' : 'none',
+          background: generating ? '#1a1a2e' : '#b8860b',
+          border: `2px solid ${generating ? '#333' : '#d4a017'}`,
+          color: generating ? '#555' : '#fff',
+          fontSize: 11, fontWeight: 700, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
+          boxShadow: !generating ? '0 0 16px rgba(201,168,76,.35)' : 'none',
         }}>
           {generating ? 'Processing...' : 'Create Photo Avatar'}
         </button>

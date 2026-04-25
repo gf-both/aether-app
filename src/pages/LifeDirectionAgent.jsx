@@ -230,13 +230,13 @@ ${question ? `\n## SPECIFIC QUESTION FROM THE PERSON\n"${question}"\nAnswer this
             onClick={runAnalysis}
             disabled={loading}
             style={{
-              padding:'10px 24px', borderRadius:7, cursor: loading ? 'wait' : 'pointer',
-              background: loading ? 'var(--secondary)' : 'linear-gradient(135deg, rgba(96,176,48,.3), rgba(80,150,40,.2))',
-              border:`1px solid ${loading ? 'var(--border)' : 'rgba(96,176,48,.7)'}`,
-              color: loading ? 'var(--muted-foreground)' : '#fff',
-              fontSize:12, fontFamily:"'Cinzel',serif", fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase',
+              padding:'12px 28px', borderRadius:8, cursor: loading ? 'wait' : 'pointer',
+              background: loading ? '#1a1a2e' : '#3a8a20',
+              border: `2px solid ${loading ? '#333' : '#50b030'}`,
+              color: loading ? '#555' : '#fff',
+              fontSize:13, fontFamily:"'Cinzel',serif", fontWeight:700, letterSpacing:'.08em', textTransform:'uppercase',
               transition:'all .2s',
-              boxShadow: !loading ? '0 0 12px rgba(96,176,48,.2)' : 'none',
+              boxShadow: !loading ? '0 0 20px rgba(96,176,48,.35), 0 0 40px rgba(96,176,48,.12)' : 'none',
             }}
           >
             {loading ? 'Reading cycles...' : result ? 'Re-read' : 'Get Direction'}

@@ -880,7 +880,7 @@ const FIGURES = [
   { name: 'Dragon', generator: chineseDragon, label: 'Celestial Guardian · Chinese', particles: 20000 },
   { name: 'Tree of Life', generator: treeOfLife, label: 'Etz Chaim · Kabbalistic' },
   { name: 'DNA Helix', generator: dnaHelix, label: 'Double Helix · The Code of Life' },
-  { name: 'Yin Yang', generator: yinYang, label: 'Twin Fish · Taoist', particles: 12000 },
+  // Yin Yang removed
   { name: 'Om', generator: omSymbol, label: 'Aum · The Primordial Sound · Sanskrit', particles: 14000 },
 ]
 

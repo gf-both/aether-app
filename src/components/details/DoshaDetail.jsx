@@ -128,15 +128,14 @@ function DoshaQuiz() {
 
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 8 }}>
           <button onClick={handleSave} style={{
-            padding: '10px 24px', borderRadius: 8, border: '1px solid rgba(201,168,76,0.6)',
-            background: 'linear-gradient(135deg, rgba(201,168,76,.3), rgba(180,140,50,.2))',
-            color: '#fff', fontWeight: 600,
+            padding: '10px 24px', borderRadius: 8, border: '2px solid #d4a017',
+            background: '#b8860b', color: '#fff', fontWeight: 700,
             fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', cursor: 'pointer',
-            textTransform: 'uppercase', boxShadow: '0 0 10px rgba(201,168,76,.2)',
+            textTransform: 'uppercase', boxShadow: '0 0 16px rgba(201,168,76,.35)',
           }}>Save Result</button>
           <button onClick={handleRetake} style={{
-            padding: '10px 24px', borderRadius: 8, border: '1px solid rgba(255,255,255,.2)',
-            background: 'rgba(255,255,255,.08)', color: 'rgba(255,255,255,.7)', fontWeight: 600,
+            padding: '10px 24px', borderRadius: 8, border: '2px solid #444',
+            background: '#1a1a2e', color: '#999', fontWeight: 700,
             fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', cursor: 'pointer',
             textTransform: 'uppercase',
           }}>Retake</button>
@@ -293,8 +292,8 @@ export default function DoshaDetail() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={S.heading}>Dosha</div>
           <button onClick={() => setShowQuiz(!showQuiz)} style={{
-            padding: '7px 16px', borderRadius: 8, border: '1px solid rgba(201,168,76,0.5)',
-            background: 'rgba(201,168,76,0.2)', color: '#c9a84c', fontWeight: 600,
+            padding: '8px 18px', borderRadius: 8, border: '2px solid #d4a017',
+            background: '#b8860b', color: '#fff', fontWeight: 700,
             fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.12em', cursor: 'pointer',
             textTransform: 'uppercase',
           }}>{showQuiz ? 'Close Quiz' : doshaType ? 'Retake Quiz' : 'Take Quiz'}</button>

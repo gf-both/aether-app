@@ -42,12 +42,13 @@ const S = {
     fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase',
     background: color + '20', border: `1px solid ${color}44`, color,
   }),
-  btn: (active, color = '#c9a84c') => ({
+  btn: (active, color = '#b8860b') => ({
     padding: '10px 22px', borderRadius: 10, cursor: 'pointer', fontSize: 12,
     fontFamily: "'Cinzel', serif", fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase',
-    background: active ? color + '40' : 'var(--secondary)',
-    border: `1px solid ${active ? color + 'aa' : 'var(--border)'}`,
-    color: active ? '#fff' : 'var(--muted-foreground)', transition: 'all .15s',
+    background: active ? color : '#1a1a2e',
+    border: `2px solid ${active ? color : '#444'}`,
+    color: active ? '#fff' : '#999', transition: 'all .15s',
+    boxShadow: active ? `0 0 14px ${color}55` : 'none',
   }),
 }
 

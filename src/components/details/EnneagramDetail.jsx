@@ -140,9 +140,9 @@ function EnneagramQuiz() {
           }}>✓ Saved to your profile</div>
         )}
         <div onClick={reset} style={{
-          padding: '8px 20px', borderRadius: 8, background: 'rgba(201,168,76,.2)',
-          border: '1px solid rgba(201,168,76,.5)', cursor: 'pointer', alignSelf: 'center',
-          fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.1em', color: '#c9a84c',
+          padding: '8px 20px', borderRadius: 8, background: '#b8860b',
+          border: '2px solid #d4a017', cursor: 'pointer', alignSelf: 'center',
+          fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 700, letterSpacing: '.1em', color: '#fff',
         }}>Retake Quiz</div>
       </div>
     )

@@ -129,12 +129,12 @@ const S = {
   btn: (primary) => ({
     padding: primary ? '11px 28px' : '9px 22px',
     borderRadius: 10, cursor: 'pointer',
-    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 600, letterSpacing: '.12em',
-    background: primary ? 'linear-gradient(135deg, rgba(201,168,76,.3), rgba(180,140,50,.2))' : 'rgba(255,255,255,.08)',
-    border: `1px solid ${primary ? 'rgba(201,168,76,.6)' : 'rgba(255,255,255,.2)'}`,
-    color: primary ? '#fff' : 'rgba(255,255,255,.7)',
+    fontFamily: "'Cinzel', serif", fontSize: 11, fontWeight: 700, letterSpacing: '.12em',
+    background: primary ? '#b8860b' : '#1a1a2e',
+    border: `2px solid ${primary ? '#d4a017' : '#444'}`,
+    color: primary ? '#fff' : '#999',
     transition: 'all .18s',
-    boxShadow: primary ? '0 0 10px rgba(201,168,76,.2)' : 'none',
+    boxShadow: primary ? '0 0 16px rgba(201,168,76,.35)' : 'none',
   }),
   keyVal: {
     display: 'flex', gap: 12, padding: '5px 0',

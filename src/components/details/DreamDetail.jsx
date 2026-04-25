@@ -47,14 +47,14 @@ const S = {
     resize: 'vertical', minHeight: 140, outline: 'none', lineHeight: 1.7,
     boxSizing: 'border-box',
   },
-  btn: (active, color = 'rgba(130, 90, 220, 1)') => ({
+  btn: (active, color = '#825aDc') => ({
     padding: '10px 20px', borderRadius: 8, cursor: 'pointer', fontSize: 12,
-    fontFamily: "'Cinzel', serif", fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase',
+    fontFamily: "'Cinzel', serif", fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase',
     transition: 'all .15s',
-    background: active ? color + '35' : 'var(--secondary)',
-    border: `1px solid ${active ? color + '88' : 'var(--border)'}`,
-    color: active ? '#fff' : 'var(--muted-foreground)',
-    boxShadow: active ? `0 0 10px ${color}30` : 'none',
+    background: active ? color : '#1a1a2e',
+    border: `2px solid ${active ? color : '#333'}`,
+    color: active ? '#fff' : '#888',
+    boxShadow: active ? `0 0 16px ${color}55` : 'none',
   }),
 }
 

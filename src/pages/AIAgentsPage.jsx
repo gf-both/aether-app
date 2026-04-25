@@ -165,9 +165,9 @@ function GolemDialogue({ primaryProfile, otherProfile, onClose }) {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {initiated && !loading && (
             <button onClick={startDialogue} style={{
-              padding: '6px 16px', borderRadius: 8, background: 'rgba(201,168,76,.2)',
-              border: '1px solid rgba(201,168,76,.6)', color: '#c9a84c', cursor: 'pointer',
-              fontFamily: "'Cinzel',serif", fontSize: 10, fontWeight: 600, letterSpacing: '.1em',
+              padding: '7px 18px', borderRadius: 8, background: '#b8860b',
+              border: '2px solid #d4a017', color: '#fff', cursor: 'pointer',
+              fontFamily: "'Cinzel',serif", fontSize: 10, fontWeight: 700, letterSpacing: '.1em',
             }}>New Dialogue</button>
           )}
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer', fontSize: 20, padding: 0, lineHeight: 1 }}>×</button>
@@ -205,13 +205,13 @@ function GolemDialogue({ primaryProfile, otherProfile, onClose }) {
             </div>
             <button onClick={startDialogue} style={{
               padding: '12px 32px', borderRadius: 10, cursor: 'pointer',
-              background: 'linear-gradient(135deg, rgba(144,80,224,.35), rgba(120,60,200,.25))',
-              border: '1px solid rgba(144,80,224,.7)',
-              color: '#fff', fontFamily: "'Cinzel',serif", fontSize: 12, letterSpacing: '.12em',
-              textTransform: 'uppercase', fontWeight: 600,
-              boxShadow: '0 0 14px rgba(144,80,224,.25)',
+              background: '#7040c0',
+              border: '2px solid #9060e0',
+              color: '#fff', fontFamily: "'Cinzel',serif", fontSize: 13, letterSpacing: '.12em',
+              textTransform: 'uppercase', fontWeight: 700,
+              boxShadow: '0 0 20px rgba(144,80,224,.4), 0 0 40px rgba(144,80,224,.15)',
             }}>
-              Begin Dialogue
+              ▶ Begin Dialogue
             </button>
           </div>
         )}

@@ -514,7 +514,7 @@ export default function RitualDetail() {
           </div>
           <button
             onClick={() => { setActiveRitual(result.topRecommendation.id); setActiveTab('active'); setRitualStep(0) }}
-            style={{ marginTop: 14, padding: '10px 28px', borderRadius: 20, background: 'linear-gradient(135deg, rgba(201,168,76,.3), rgba(180,140,50,.2))', border: '1px solid rgba(201,168,76,.6)', color: '#fff', fontSize: 12, fontWeight: 600, fontFamily: "'Cinzel',serif", letterSpacing: '.08em', cursor: 'pointer', transition: 'all .2s', boxShadow: '0 0 12px rgba(201,168,76,.2)' }}>
+            style={{ marginTop: 14, padding: '10px 28px', borderRadius: 20, background: '#b8860b', border: '2px solid #d4a017', color: '#fff', fontSize: 12, fontWeight: 700, fontFamily: "'Cinzel',serif", letterSpacing: '.08em', cursor: 'pointer', transition: 'all .2s', boxShadow: '0 0 16px rgba(201,168,76,.35)' }}>
             Begin Ritual →
           </button>
         </div>
@@ -629,24 +629,24 @@ const S = {
     textTransform: 'uppercase', color: 'rgba(201,168,76,.5)',
   },
   backBtn: {
-    background: 'var(--secondary)', border: '1px solid rgba(255,255,255,.2)',
-    color: 'rgba(255,255,255,.7)', padding: '7px 16px', borderRadius: 14,
-    fontSize: 11, fontWeight: 600, cursor: 'pointer', fontFamily: "'Cinzel',serif",
+    background: '#1a1a2e', border: '2px solid #444',
+    color: '#999', padding: '7px 16px', borderRadius: 14,
+    fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: "'Cinzel',serif",
   },
   navBtn: {
     padding: '10px 22px', borderRadius: 16,
-    background: 'rgba(255,255,255,.08)', border: '1px solid rgba(255,255,255,.2)',
-    color: 'rgba(255,255,255,.8)', fontSize: 12, fontWeight: 600, fontFamily: "'Cinzel',serif",
+    background: '#252540', border: '2px solid #555',
+    color: '#ccc', fontSize: 12, fontWeight: 700, fontFamily: "'Cinzel',serif",
     letterSpacing: '.06em', cursor: 'pointer', transition: 'all .2s',
   },
   filterPill: {
     padding: '6px 14px', borderRadius: 12, fontSize: 10,
-    background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.15)',
-    color: 'rgba(255,255,255,.6)', cursor: 'pointer', fontFamily: "'Cinzel',serif",
-    fontWeight: 600, letterSpacing: '.05em', transition: 'all .2s',
+    background: '#1a1a2e', border: '2px solid #444',
+    color: '#999', cursor: 'pointer', fontFamily: "'Cinzel',serif",
+    fontWeight: 700, letterSpacing: '.05em', transition: 'all .2s',
   },
   filterActive: {
-    background: 'rgba(201,168,76,.2)', borderColor: 'rgba(201,168,76,.5)',
-    color: '#c9a84c',
+    background: '#b8860b', borderColor: '#d4a017',
+    color: '#fff',
   },
 }

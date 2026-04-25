@@ -161,18 +161,18 @@ DO NOT give generic compatibility advice. Identify the SPECIFIC patterns, trigge
           onClick={runAnalysis}
           disabled={loading || !selectedPerson}
           style={{
-            padding:'10px 24px', borderRadius:7,
+            padding:'12px 28px', borderRadius:8,
             cursor: (loading || !selectedPerson) ? 'not-allowed' : 'pointer',
-            background: (loading || !selectedPerson) ? 'var(--secondary)' : 'linear-gradient(135deg, rgba(212,48,112,.35), rgba(180,40,100,.25))',
-            border: `1px solid ${(loading || !selectedPerson) ? 'var(--border)' : 'rgba(212,48,112,.7)'}`,
-            color: (loading || !selectedPerson) ? 'var(--muted-foreground)' : '#fff',
-            fontSize:12, fontFamily:"'Cinzel',serif", fontWeight:600,
-            letterSpacing:'.08em', textTransform:'uppercase',
+            background: (loading || !selectedPerson) ? '#1a1a2e' : '#d43070',
+            border: `2px solid ${(loading || !selectedPerson) ? '#333' : '#e84890'}`,
+            color: (loading || !selectedPerson) ? '#555' : '#fff',
+            fontSize:13, fontFamily:"'Cinzel',serif", fontWeight:700,
+            letterSpacing:'.1em', textTransform:'uppercase',
             transition:'all .2s',
-            boxShadow: (!loading && selectedPerson) ? '0 0 12px rgba(212,48,112,.25)' : 'none',
+            boxShadow: (!loading && selectedPerson) ? '0 0 20px rgba(212,48,112,.4), 0 0 40px rgba(212,48,112,.15)' : 'none',
           }}
         >
-          {loading ? 'Analyzing...' : 'Analyze Pattern'}
+          {loading ? 'Analyzing...' : '▶ Analyze Pattern'}
         </button>
       </div>
 
