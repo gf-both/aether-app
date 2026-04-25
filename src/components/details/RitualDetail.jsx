@@ -1,11 +1,128 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef, useEffect } from 'react'
 import { useActiveProfile } from '../../hooks/useActiveProfile'
 import { getRecommendedRituals, TRADITIONS, getRitualById } from '../../engines/ritualEngine'
 import { getMoonPhase } from '../../engines/cycleEngine'
-import RitualParticles from '../canvas/RitualParticles'
 
 const ELEMENTS = { fire: '🔥', water: '💧', air: '🌬', earth: '🌍', spirit: '✦' }
 const DIFFICULTY = { beginner: { label: 'Beginner', color: '#60b030' }, intermediate: { label: 'Intermediate', color: '#e8a040' }, advanced: { label: 'Advanced', color: '#d44070' } }
+const TAU = Math.PI * 2
+
+// ─── Inline particle animation (avoids WebGL context limits) ───
+function useParticleCanvas(canvasRef, tradition, active) {
+  const particlesRef = useRef(null)
+
+  useEffect(() => {
+    // Generate tradition-specific particle positions
+    const pts = []
+    const count = 800
+    const key = (tradition || 'vedic').toLowerCase().replace('kabbalistic','kabbalah')
+
+    for (let i = 0; i < count; i++) {
+      const t = i / count
+      let x = 0, y = 0
+      if (key === 'vedic' || key === 'yogic') {
+        const ring = Math.floor(Math.random() * 5), r = 0.15 + ring * 0.14
+        const a = Math.random() * TAU, sector = Math.floor(a / (TAU/3)), edgeT = (a % (TAU/3)) / (TAU/3)
+        const a1 = sector * TAU/3 - Math.PI/2, a2 = (sector+1) * TAU/3 - Math.PI/2
+        x = (Math.cos(a1)*(1-edgeT) + Math.cos(a2)*edgeT) * r
+        y = (Math.sin(a1)*(1-edgeT) + Math.sin(a2)*edgeT) * r * (ring%2===0?1:-1)
+      } else if (key === 'buddhist') {
+        if (t < 0.35) { const a = Math.random()*TAU; x = Math.cos(a)*0.7; y = Math.sin(a)*0.7 }
+        else if (t < 0.5) { const a = Math.random()*TAU; x = Math.cos(a)*0.18; y = Math.sin(a)*0.18 }
+        else { const s = Math.floor(Math.random()*8), a = s*TAU/8, r = 0.18+Math.random()*0.52; x = Math.cos(a)*r; y = Math.sin(a)*r }
+      } else if (key === 'kabbalah' || key === 'hermetic') {
+        const seph = [[0,.8],[-.35,.5],[.35,.5],[-.35,.12],[.35,.12],[0,-.05],[-.35,-.25],[.35,-.25],[0,-.45],[0,-.78]]
+        const paths = [[0,1],[0,2],[1,3],[2,4],[1,5],[2,5],[3,5],[4,5],[3,6],[4,7],[5,6],[5,7],[6,8],[7,8],[8,9]]
+        if (Math.random()<.3) { const si=Math.floor(Math.random()*10); const r=Math.random()*0.07; const a=Math.random()*TAU; x=seph[si][0]+Math.cos(a)*r; y=seph[si][1]+Math.sin(a)*r }
+        else { const pi=Math.floor(Math.random()*paths.length); const [a,b]=paths[pi]; const l=Math.random(); x=seph[a][0]*(1-l)+seph[b][0]*l; y=seph[a][1]*(1-l)+seph[b][1]*l }
+      } else if (key === 'sufi') {
+        const a = t*TAU*5, r = 0.05+t*0.7; x = Math.cos(a)*r; y = Math.sin(a)*r
+      } else if (key === 'egyptian') {
+        if (t<.35) { const a=Math.random()*TAU; x=Math.cos(a)*.28; y=Math.sin(a)*.42+.35 }
+        else if (t<.6) { x=(Math.random()-.5)*.05; y=.35-Math.random()*1.3 }
+        else { x=(Math.random()-.5)*.9; y=(Math.random()-.5)*.05 }
+      } else if (key === 'mayan') {
+        const lev=Math.floor(Math.random()*5), half=.7-lev*.12, yb=-.45+lev*.2
+        const sd=Math.floor(Math.random()*4), et=Math.random()
+        if (sd<2) { x=-half+et*2*half; y=yb+Math.random()*.16 }
+        else { x=sd===2?-half:half; y=yb+et*.16 }
+      } else if (key === 'celtic') {
+        const a=t*TAU, loop=Math.floor(t*3), off=loop*TAU/3, la=a*3+off
+        x=(Math.cos(la)+Math.cos(la*2)*.3)*.4; y=(Math.sin(la)+Math.sin(la*2)*.3)*.4
+      } else if (key === 'tibetan') {
+        const a=t*TAU*4; x=Math.sin(a*2)*.5*Math.cos(a*.5); y=Math.cos(a*3)*.5
+      } else if (key === 'taoist') {
+        if (t<.5) { const a=Math.random()*TAU; x=Math.cos(a)*.7; y=Math.sin(a)*.7 }
+        else if (t<.75) { const a=Math.random()*Math.PI; x=Math.cos(a)*.35; y=Math.sin(a)*.35+.35 }
+        else { const a=Math.random()*Math.PI+Math.PI; x=Math.cos(a)*.35; y=Math.sin(a)*.35-.35 }
+      } else if (key === 'shamanic') {
+        if (t<.4) { const a=Math.random()*TAU; x=Math.cos(a)*.7; y=Math.sin(a)*.7 }
+        else if (t<.7) { const s=Math.floor(Math.random()*4), a=s*TAU/4, r=Math.random()*.65; x=Math.cos(a)*r; y=Math.sin(a)*r }
+        else { const a=Math.random()*TAU, r=.15+Math.random()*.1; x=Math.cos(a)*r; y=Math.sin(a)*r }
+      } else {
+        const a=Math.random()*TAU, r=Math.random()*.7; x=Math.cos(a)*r; y=Math.sin(a)*r
+      }
+      pts.push({ x, y, size: Math.random()*2+.8, phase: Math.random()*TAU, hue: Math.random(), speed: .3+Math.random()*.7 })
+    }
+    particlesRef.current = pts
+  }, [tradition])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    let raf
+
+    function getColor(hue, alpha) {
+      if (hue < .3) return `rgba(224,184,90,${alpha})`
+      if (hue < .55) return `rgba(242,216,140,${alpha})`
+      if (hue < .7) return `rgba(140,166,224,${alpha})`
+      if (hue < .85) return `rgba(216,90,140,${alpha})`
+      return `rgba(64,200,172,${alpha})`
+    }
+
+    function draw(time) {
+      const dpr = window.devicePixelRatio || 1
+      const W = canvas.offsetWidth, H = canvas.offsetHeight
+      if (W < 5 || H < 5) { raf = requestAnimationFrame(draw); return }
+      canvas.width = W * dpr; canvas.height = H * dpr
+      const ctx = canvas.getContext('2d')
+      if (!ctx) { raf = requestAnimationFrame(draw); return }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctx.clearRect(0, 0, W, H)
+
+      const cx = W/2, cy = H/2, scale = Math.min(W, H) * .4
+      const t = time * .001
+      const cosR = Math.cos(t*.12), sinR = Math.sin(t*.12)
+      const particles = particlesRef.current
+      if (!particles) { raf = requestAnimationFrame(draw); return }
+
+      for (const p of particles) {
+        const rx = p.x*cosR - p.y*sinR, ry = p.x*sinR + p.y*cosR
+        const b = 1 + (active?.06:.025) * Math.sin(t*1.5+p.phase)
+        const fy = Math.sin(t*.8+p.phase) * .008
+        const sx = cx + rx*scale*b, sy = cy - (ry+fy)*scale*b
+        const alpha = .25 + .45 * (.5+.5*Math.sin(t*1.2*p.speed+p.phase))
+        const r = p.size * (active?1.1:.85)
+
+        const grd = ctx.createRadialGradient(sx,sy,0,sx,sy,r*3)
+        grd.addColorStop(0, getColor(p.hue, alpha.toFixed(2)))
+        grd.addColorStop(1, 'transparent')
+        ctx.beginPath(); ctx.arc(sx,sy,r*3,0,TAU); ctx.fillStyle = grd; ctx.fill()
+        ctx.beginPath(); ctx.arc(sx,sy,r,0,TAU)
+        ctx.fillStyle = getColor(p.hue, Math.min(1,alpha+.3).toFixed(2)); ctx.fill()
+      }
+      raf = requestAnimationFrame(draw)
+    }
+    raf = requestAnimationFrame(draw)
+    return () => { if (raf) cancelAnimationFrame(raf) }
+  }, [tradition, active])
+}
+
+function InlineParticles({ tradition, active }) {
+  const ref = useRef(null)
+  useParticleCanvas(ref, tradition, active)
+  return <canvas ref={ref} style={{ width: '100%', height: '100%', display: 'block' }} />
+}
 
 export default function RitualDetail() {
   const profile = useActiveProfile()
@@ -46,7 +163,7 @@ export default function RitualDetail() {
 
         {/* Sacred geometry particle visualization */}
         <div style={{ height: 220, position: 'relative', margin: '0 20px', borderRadius: 12, overflow: 'hidden', background: 'rgba(0,0,0,0.3)' }}>
-          <RitualParticles
+          <InlineParticles
             tradition={
               // Map tradition to the key expected by RitualParticles
               typeof ritual.tradition === 'string' ? ritual.tradition :
@@ -172,7 +289,7 @@ export default function RitualDetail() {
         <div style={{ margin: '16px 20px', padding: 20, borderRadius: 12, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)', position: 'relative', overflow: 'hidden' }}>
           {/* Background particle visualization */}
           <div style={{ position: 'absolute', inset: 0, opacity: 0.3, pointerEvents: 'none' }}>
-            <RitualParticles tradition={Object.keys(TRADITIONS).find(k => TRADITIONS[k].name === result.topRecommendation.tradition?.name) || 'vedic'} active={false} />
+            <InlineParticles tradition={Object.keys(TRADITIONS).find(k => TRADITIONS[k].name === result.topRecommendation.tradition?.name) || 'vedic'} active={false} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
             <div>
