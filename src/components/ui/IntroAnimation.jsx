@@ -233,44 +233,56 @@ function merkaba(count) {
 }
 
 function ankh(count) {
-  // Egyptian Ankh — loop on top, cross below
+  // Egyptian Ankh — teardrop/oval loop on top (NO line across), T-cross below
   const pts = new Float32Array(count * 3)
-  const halfCount = count / 2
   for (let i = 0; i < count; i++) {
     const t = i / count
-    let x, y, z
-    if (t < 0.35) {
-      // Oval loop (top)
-      const angle = (t / 0.35) * Math.PI * 2
-      x = Math.cos(angle) * 0.5
-      y = Math.sin(angle) * 0.7 + 0.9
-      z = 0
-    } else if (t < 0.55) {
-      // Vertical shaft
-      const st = (t - 0.35) / 0.2
-      x = 0
-      y = 0.9 - st * 2.2
-      z = 0
-    } else if (t < 0.7) {
+    let x, y, z = (Math.random() - 0.5) * 0.08
+
+    if (t < 0.3) {
+      // Teardrop loop (top) — oval from bottom-center up and around, open at bottom
+      // Use angle from π*0.15 to π*1.85 (skipping the bottom to avoid the cross-line)
+      const angle = 0.15 * Math.PI + (t / 0.3) * Math.PI * 1.7
+      const rx = 0.45, ry = 0.6
+      x = Math.cos(angle) * rx
+      y = Math.sin(angle) * ry + 0.75
+    } else if (t < 0.35) {
+      // Fill the loop interior with sparse particles for volume
+      const a = Math.random() * TAU
+      const r = Math.random() * 0.3
+      x = Math.cos(a) * r * 0.45
+      y = Math.sin(a) * r * 0.5 + 0.75
+      if (y < 0.35) y = 0.35 + Math.random() * 0.1 // keep above shaft
+    } else if (t < 0.6) {
+      // Vertical shaft — thick line of particles
+      const st = (t - 0.35) / 0.25
+      x = (Math.random() - 0.5) * 0.06
+      y = 0.2 - st * 1.8
+      z = (Math.random() - 0.5) * 0.06
+    } else if (t < 0.75) {
       // Horizontal crossbar
-      const st = (t - 0.55) / 0.15
-      x = (st - 0.5) * 1.4
-      y = 0.1
-      z = 0
+      const st = (t - 0.6) / 0.15
+      x = (st - 0.5) * 1.2
+      y = -0.1 + (Math.random() - 0.5) * 0.06
+      z = (Math.random() - 0.5) * 0.06
     } else {
-      // Fill with surface noise around the shape
-      const angle = Math.random() * Math.PI * 2
-      const r = 0.05 + Math.random() * 0.08
-      const baseT = Math.random()
-      if (baseT < 0.4) {
-        const a2 = baseT / 0.4 * Math.PI * 2
-        x = Math.cos(a2) * 0.5 + Math.cos(angle) * r
-        y = Math.sin(a2) * 0.7 + 0.9 + Math.sin(angle) * r
+      // Surface fill — thicken all parts
+      const part = Math.random()
+      const noise = 0.04
+      if (part < 0.4) {
+        // Around the loop
+        const a = 0.15 * Math.PI + Math.random() * Math.PI * 1.7
+        x = Math.cos(a) * 0.45 + (Math.random() - 0.5) * noise * 2
+        y = Math.sin(a) * 0.6 + 0.75 + (Math.random() - 0.5) * noise * 2
+      } else if (part < 0.7) {
+        // Around the shaft
+        x = (Math.random() - 0.5) * noise * 3
+        y = 0.2 - Math.random() * 1.8
       } else {
-        x = Math.cos(angle) * r
-        y = 0.9 - (baseT - 0.4) / 0.6 * 2.2
+        // Around the crossbar
+        x = (Math.random() - 0.5) * 1.2
+        y = -0.1 + (Math.random() - 0.5) * noise * 3
       }
-      z = (Math.random() - 0.5) * 0.15
     }
     pts[i*3] = x; pts[i*3+1] = y; pts[i*3+2] = z
   }
@@ -464,31 +476,65 @@ function dnaHelix(count) {
 }
 
 function yinYang(count) {
-  // Yin-Yang: outer circle + S-curve + two inner dots
+  // Proper Yin-Yang: filled halves with S-curve divider + two eyes
+  // Light half (right/top) and dark half (left/bottom) with dots
   const pts = new Float32Array(count * 3)
+  const R = 0.9 // outer radius
+
   for (let i = 0; i < count; i++) {
     const t = i / count
-    const depth = (Math.random() - 0.5) * 0.08
-    if (t < 0.35) {
-      // Outer circle
-      const a = (t / 0.35) * TAU
-      pts[i*3] = Math.cos(a) * 0.9; pts[i*3+1] = Math.sin(a) * 0.9; pts[i*3+2] = depth
-    } else if (t < 0.55) {
-      // Upper S-curve (semicircle radius 0.45, centered at (0, 0.45))
-      const a = ((t - 0.35) / 0.2) * Math.PI
-      pts[i*3] = Math.cos(a) * 0.45; pts[i*3+1] = Math.sin(a) * 0.45 + 0.45; pts[i*3+2] = depth
-    } else if (t < 0.75) {
-      // Lower S-curve (semicircle radius 0.45, centered at (0, -0.45))
-      const a = ((t - 0.55) / 0.2) * Math.PI + Math.PI
-      pts[i*3] = Math.cos(a) * 0.45; pts[i*3+1] = Math.sin(a) * 0.45 - 0.45; pts[i*3+2] = depth
-    } else if (t < 0.875) {
-      // Yang dot (small circle at 0, 0.45)
-      const a = Math.random() * TAU; const r = Math.random() * 0.1
-      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = 0.45 + Math.sin(a) * r; pts[i*3+2] = depth
+    const z = (Math.random() - 0.5) * 0.06
+
+    if (t < 0.2) {
+      // Outer circle edge — thick ring
+      const a = (t / 0.2) * TAU
+      const rr = R + (Math.random() - 0.5) * 0.04
+      pts[i*3] = Math.cos(a) * rr; pts[i*3+1] = Math.sin(a) * rr; pts[i*3+2] = z
+    } else if (t < 0.5) {
+      // Yang (light) half — right side, fill with particles
+      // Yang occupies: right semicircle + upper small bulge - lower small indent
+      const st = (t - 0.2) / 0.3
+      const a = (st - 0.5) * Math.PI // -π/2 to π/2 (right half)
+      const r = Math.random() * R * 0.85
+      let px = Math.cos(a) * r
+      let py = Math.sin(a) * r
+      // Adjust for S-curve: if in upper half, extend left via small semicircle
+      if (py > 0 && px < 0) {
+        // Upper-left quadrant: only include if within the upper bulge
+        const distFromUpperCenter = Math.sqrt(px * px + (py - R/2) * (py - R/2))
+        if (distFromUpperCenter > R/2) { px = Math.abs(px) * 0.3; } // push back to right
+      }
+      pts[i*3] = px; pts[i*3+1] = py; pts[i*3+2] = z
+    } else if (t < 0.8) {
+      // Yin (dark) half — left side, sparser particles (it's the "dark" side)
+      const st = (t - 0.5) / 0.3
+      const a = Math.PI/2 + st * Math.PI // π/2 to 3π/2 (left half)
+      const r = Math.random() * R * 0.85
+      let px = Math.cos(a) * r
+      let py = Math.sin(a) * r
+      if (py < 0 && px > 0) {
+        const distFromLowerCenter = Math.sqrt(px * px + (py + R/2) * (py + R/2))
+        if (distFromLowerCenter > R/2) { px = -Math.abs(px) * 0.3; }
+      }
+      pts[i*3] = px; pts[i*3+1] = py; pts[i*3+2] = z
+    } else if (t < 0.86) {
+      // S-curve dividing line — upper arc (semicircle r=R/2 centered at 0, R/2)
+      const a = ((t - 0.8) / 0.06) * Math.PI // 0 to π
+      const sr = R / 2
+      pts[i*3] = Math.cos(a) * sr; pts[i*3+1] = Math.sin(a) * sr + R/2; pts[i*3+2] = z * 0.3
+    } else if (t < 0.92) {
+      // S-curve dividing line — lower arc (semicircle r=R/2 centered at 0, -R/2)
+      const a = ((t - 0.86) / 0.06) * Math.PI + Math.PI // π to 2π
+      const sr = R / 2
+      pts[i*3] = Math.cos(a) * sr; pts[i*3+1] = Math.sin(a) * sr - R/2; pts[i*3+2] = z * 0.3
+    } else if (t < 0.96) {
+      // Yang eye (dark dot in light half) — filled small circle at (0, R/2)
+      const a = Math.random() * TAU; const r = Math.random() * R * 0.1
+      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = R/2 + Math.sin(a) * r; pts[i*3+2] = z * 0.3
     } else {
-      // Yin dot (small circle at 0, -0.45)
-      const a = Math.random() * TAU; const r = Math.random() * 0.1
-      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = -0.45 + Math.sin(a) * r; pts[i*3+2] = depth
+      // Yin eye (light dot in dark half) — filled small circle at (0, -R/2)
+      const a = Math.random() * TAU; const r = Math.random() * R * 0.1
+      pts[i*3] = Math.cos(a) * r; pts[i*3+1] = -R/2 + Math.sin(a) * r; pts[i*3+2] = z * 0.3
     }
   }
   return pts
@@ -542,7 +588,6 @@ const FIGURES = [
   { name: 'Stepped Pyramid', generator: mayanPyramid, label: 'Temple of Time · Mayan' },
   { name: 'Dragon', generator: chineseDragon, label: 'Celestial Guardian · Chinese' },
   { name: 'Tree of Life', generator: treeOfLife, label: 'Etz Chaim · Kabbalistic' },
-  { name: 'Hexagram', generator: hexagram, label: 'Star of David · Sacred Geometry' },
   { name: 'DNA Helix', generator: dnaHelix, label: 'Double Helix · The Code of Life' },
   { name: 'Yin Yang', generator: yinYang, label: 'Supreme Ultimate · Taoist' },
   { name: 'Om', generator: omSymbol, label: 'Aum · The Primordial Sound · Sanskrit' },
