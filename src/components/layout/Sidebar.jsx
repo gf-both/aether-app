@@ -43,6 +43,10 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '∞', label: 'Numerology', id: 'num', widget: 'num' },
   { type: 'item', icon: '🔠', label: 'Gematria', id: 'gem', widget: 'gem' },
 
+  { type: 'section', label: 'EASTERN WISDOM' },
+  { type: 'item', icon: '🪷', label: 'Vedic', id: 'vedic', widget: 'vedic' },
+  { type: 'item', icon: '🏔', label: 'Tibetan', id: 'tibetan', widget: 'tibetan' },
+
   { type: 'section', label: 'SELF KNOWLEDGE' },
   { type: 'item', icon: '☯', label: 'Enneagram', id: 'enn', widget: 'enn' },
   { type: 'item', icon: '🧠', label: 'Myers-Briggs', id: 'mbti', widget: 'mbti' },
@@ -52,10 +56,6 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '🌙', label: 'Cycle', id: 'cycle', widget: 'cycle' },
   { type: 'item', icon: '✦', label: 'Dreams', id: 'dream', widget: 'dream' },
   { type: 'item', icon: '⟡', label: 'Synchronicities', id: 'sync', widget: 'sync' },
-
-  { type: 'section', label: 'EASTERN WISDOM' },
-  { type: 'item', icon: '🪷', label: 'Vedic', id: 'vedic', widget: 'vedic' },
-  { type: 'item', icon: '🏔', label: 'Tibetan', id: 'tibetan', widget: 'tibetan' },
 
   { type: 'section', label: 'TOOLS' },
   { type: 'item', icon: '◈', label: 'Oracle', id: 'oracle', action: 'toggleOracle' },
