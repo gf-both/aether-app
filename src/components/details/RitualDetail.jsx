@@ -7,78 +7,258 @@ const ELEMENTS = { fire: '🔥', water: '💧', air: '🌬', earth: '🌍', spir
 const DIFFICULTY = { beginner: { label: 'Beginner', color: '#60b030' }, intermediate: { label: 'Intermediate', color: '#e8a040' }, advanced: { label: 'Advanced', color: '#d44070' } }
 const TAU = Math.PI * 2
 
-// ─── Inline particle animation (avoids WebGL context limits) ───
-function useParticleCanvas(canvasRef, tradition, active) {
-  const particlesRef = useRef(null)
+// ─── Step-aware particle animation ───
+// Parses the ritual step text to determine what shape to render
+// fire/candle → flame, breath → expanding circle, eyes → eye shape,
+// heart → heart, water → waves, earth/sit → mountain, spin/turn → spiral, etc.
 
-  useEffect(() => {
-    // Generate tradition-specific particle positions
-    const pts = []
-    const count = 800
-    const key = (tradition || 'vedic').toLowerCase().replace('kabbalistic','kabbalah')
+function detectShape(text) {
+  if (!text) return 'sphere'
+  const t = text.toLowerCase()
+  if (t.includes('fire') || t.includes('flame') || t.includes('candle') || t.includes('light') || t.includes('burn') || t.includes('ignite')) return 'flame'
+  if (t.includes('breath') || t.includes('inhale') || t.includes('exhale') || t.includes('pranayama')) return 'breath'
+  if (t.includes('heart') || t.includes('love') || t.includes('compassion') || t.includes('kindness')) return 'heart'
+  if (t.includes('eye') || t.includes('gaze') || t.includes('see') || t.includes('vision') || t.includes('third eye') || t.includes('perceive')) return 'eye'
+  if (t.includes('water') || t.includes('ocean') || t.includes('river') || t.includes('wave') || t.includes('flow') || t.includes('lake')) return 'water'
+  if (t.includes('earth') || t.includes('ground') || t.includes('mountain') || t.includes('root') || t.includes('floor') || t.includes('sit')) return 'mountain'
+  if (t.includes('spin') || t.includes('turn') || t.includes('whirl') || t.includes('orbit') || t.includes('spiral') || t.includes('circl')) return 'spiral'
+  if (t.includes('tree') || t.includes('spine') || t.includes('channel') || t.includes('pillar') || t.includes('vertical')) return 'tree'
+  if (t.includes('star') || t.includes('crown') || t.includes('above') || t.includes('heaven') || t.includes('sky') || t.includes('divine')) return 'star'
+  if (t.includes('hand') || t.includes('palm') || t.includes('touch') || t.includes('finger')) return 'hands'
+  if (t.includes('silence') || t.includes('still') || t.includes('quiet') || t.includes('listen') || t.includes('rest')) return 'stillness'
+  if (t.includes('sun') || t.includes('sunrise') || t.includes('dawn') || t.includes('east')) return 'sun'
+  if (t.includes('moon') || t.includes('lunar') || t.includes('night')) return 'moon'
+  if (t.includes('speak') || t.includes('chant') || t.includes('mantra') || t.includes('vibrat') || t.includes('voice') || t.includes('repeat') || t.includes('say')) return 'sound'
+  return 'sphere'
+}
 
-    for (let i = 0; i < count; i++) {
-      const t = i / count
-      let x = 0, y = 0
-      if (key === 'vedic' || key === 'yogic') {
-        const ring = Math.floor(Math.random() * 5), r = 0.15 + ring * 0.14
-        const a = Math.random() * TAU, sector = Math.floor(a / (TAU/3)), edgeT = (a % (TAU/3)) / (TAU/3)
-        const a1 = sector * TAU/3 - Math.PI/2, a2 = (sector+1) * TAU/3 - Math.PI/2
-        x = (Math.cos(a1)*(1-edgeT) + Math.cos(a2)*edgeT) * r
-        y = (Math.sin(a1)*(1-edgeT) + Math.sin(a2)*edgeT) * r * (ring%2===0?1:-1)
-      } else if (key === 'buddhist') {
-        if (t < 0.35) { const a = Math.random()*TAU; x = Math.cos(a)*0.7; y = Math.sin(a)*0.7 }
-        else if (t < 0.5) { const a = Math.random()*TAU; x = Math.cos(a)*0.18; y = Math.sin(a)*0.18 }
-        else { const s = Math.floor(Math.random()*8), a = s*TAU/8, r = 0.18+Math.random()*0.52; x = Math.cos(a)*r; y = Math.sin(a)*r }
-      } else if (key === 'kabbalah' || key === 'hermetic') {
-        const seph = [[0,.8],[-.35,.5],[.35,.5],[-.35,.12],[.35,.12],[0,-.05],[-.35,-.25],[.35,-.25],[0,-.45],[0,-.78]]
-        const paths = [[0,1],[0,2],[1,3],[2,4],[1,5],[2,5],[3,5],[4,5],[3,6],[4,7],[5,6],[5,7],[6,8],[7,8],[8,9]]
-        if (Math.random()<.3) { const si=Math.floor(Math.random()*10); const r=Math.random()*0.07; const a=Math.random()*TAU; x=seph[si][0]+Math.cos(a)*r; y=seph[si][1]+Math.sin(a)*r }
-        else { const pi=Math.floor(Math.random()*paths.length); const [a,b]=paths[pi]; const l=Math.random(); x=seph[a][0]*(1-l)+seph[b][0]*l; y=seph[a][1]*(1-l)+seph[b][1]*l }
-      } else if (key === 'sufi') {
-        const a = t*TAU*5, r = 0.05+t*0.7; x = Math.cos(a)*r; y = Math.sin(a)*r
-      } else if (key === 'egyptian') {
-        if (t<.35) { const a=Math.random()*TAU; x=Math.cos(a)*.28; y=Math.sin(a)*.42+.35 }
-        else if (t<.6) { x=(Math.random()-.5)*.05; y=.35-Math.random()*1.3 }
-        else { x=(Math.random()-.5)*.9; y=(Math.random()-.5)*.05 }
-      } else if (key === 'mayan') {
-        const lev=Math.floor(Math.random()*5), half=.7-lev*.12, yb=-.45+lev*.2
-        const sd=Math.floor(Math.random()*4), et=Math.random()
-        if (sd<2) { x=-half+et*2*half; y=yb+Math.random()*.16 }
-        else { x=sd===2?-half:half; y=yb+et*.16 }
-      } else if (key === 'celtic') {
-        const a=t*TAU, loop=Math.floor(t*3), off=loop*TAU/3, la=a*3+off
-        x=(Math.cos(la)+Math.cos(la*2)*.3)*.4; y=(Math.sin(la)+Math.sin(la*2)*.3)*.4
-      } else if (key === 'tibetan') {
-        const a=t*TAU*4; x=Math.sin(a*2)*.5*Math.cos(a*.5); y=Math.cos(a*3)*.5
-      } else if (key === 'taoist') {
-        if (t<.5) { const a=Math.random()*TAU; x=Math.cos(a)*.7; y=Math.sin(a)*.7 }
-        else if (t<.75) { const a=Math.random()*Math.PI; x=Math.cos(a)*.35; y=Math.sin(a)*.35+.35 }
-        else { const a=Math.random()*Math.PI+Math.PI; x=Math.cos(a)*.35; y=Math.sin(a)*.35-.35 }
-      } else if (key === 'shamanic') {
-        if (t<.4) { const a=Math.random()*TAU; x=Math.cos(a)*.7; y=Math.sin(a)*.7 }
-        else if (t<.7) { const s=Math.floor(Math.random()*4), a=s*TAU/4, r=Math.random()*.65; x=Math.cos(a)*r; y=Math.sin(a)*r }
-        else { const a=Math.random()*TAU, r=.15+Math.random()*.1; x=Math.cos(a)*r; y=Math.sin(a)*r }
-      } else {
-        const a=Math.random()*TAU, r=Math.random()*.7; x=Math.cos(a)*r; y=Math.sin(a)*r
+function generateShapePoints(shape, count) {
+  const pts = []
+  for (let i = 0; i < count; i++) {
+    const t = i / count
+    let x = 0, y = 0, hueBase = Math.random()
+    switch (shape) {
+      case 'flame': {
+        // Teardrop flame shape, particles rise
+        const w = (1 - t) * 0.4 * (0.5 + 0.5 * Math.sin(t * 8))
+        x = (Math.random() - 0.5) * w
+        y = -0.6 + t * 1.4 // bottom to top
+        hueBase = t < 0.4 ? Math.random() * 0.15 : t < 0.7 ? 0.15 + Math.random() * 0.15 : 0.3 + Math.random() * 0.25
+        break
       }
-      pts.push({ x, y, size: Math.random()*2+.8, phase: Math.random()*TAU, hue: Math.random(), speed: .3+Math.random()*.7 })
+      case 'breath': {
+        // Concentric expanding/contracting rings
+        const ring = Math.floor(t * 5)
+        const a = Math.random() * TAU
+        const r = 0.12 + ring * 0.15
+        x = Math.cos(a) * r; y = Math.sin(a) * r
+        hueBase = 0.55 + Math.random() * 0.15
+        break
+      }
+      case 'heart': {
+        // Heart curve (parametric)
+        const a = t * TAU
+        x = 0.5 * 16 * Math.pow(Math.sin(a), 3) / 16
+        y = 0.5 * (13 * Math.cos(a) - 5 * Math.cos(2*a) - 2 * Math.cos(3*a) - Math.cos(4*a)) / 16
+        hueBase = 0.7 + Math.random() * 0.15
+        break
+      }
+      case 'eye': {
+        // Almond eye shape with iris
+        if (t < 0.6) {
+          // Eye outline (two arcs)
+          const a = (t / 0.6) * Math.PI
+          const upper = t < 0.3
+          x = Math.cos(a) * 0.7
+          y = Math.sin(a) * (upper ? 0.35 : 0.35) * (upper ? 1 : -1)
+          if (t >= 0.3) y = -Math.sin((t-0.3)/0.3 * Math.PI) * 0.35
+        } else {
+          // Iris circle
+          const a = Math.random() * TAU
+          const r = Math.random() * 0.2
+          x = Math.cos(a) * r; y = Math.sin(a) * r
+        }
+        hueBase = 0.55 + Math.random() * 0.2
+        break
+      }
+      case 'water': {
+        // Sine waves layered
+        const row = Math.floor(t * 5)
+        const wt = (t * 5) % 1
+        x = -0.8 + wt * 1.6
+        y = -0.4 + row * 0.2 + Math.sin(wt * TAU * 2 + row) * 0.08
+        hueBase = 0.55 + Math.random() * 0.15
+        break
+      }
+      case 'mountain': {
+        // Triangle mountain with base
+        if (t < 0.6) {
+          // Mountain triangle
+          const mt = t / 0.6
+          const side = mt < 0.5 ? 0 : 1
+          const st = (mt * 2) % 1
+          if (side === 0) { x = -0.6 * (1 - st); y = -0.5 + st * 1.0 }
+          else { x = 0.6 * (1 - st); y = 0.5 - st * 1.0 }
+          x += (Math.random() - 0.5) * 0.06
+        } else {
+          // Ground line
+          x = (Math.random() - 0.5) * 1.4; y = -0.5 + (Math.random() - 0.5) * 0.06
+        }
+        hueBase = 0.85 + Math.random() * 0.15
+        break
+      }
+      case 'spiral': {
+        const a = t * TAU * 4
+        const r = 0.05 + t * 0.75
+        x = Math.cos(a) * r; y = Math.sin(a) * r
+        hueBase = t
+        break
+      }
+      case 'tree': {
+        // Trunk + branches
+        if (t < 0.3) {
+          // Trunk
+          x = (Math.random() - 0.5) * 0.08; y = -0.7 + t / 0.3 * 1.0
+        } else {
+          // Branches radiating from top
+          const branch = Math.floor((t - 0.3) / 0.7 * 7)
+          const bt = ((t - 0.3) / 0.7 * 7) % 1
+          const a = -Math.PI/2 + (branch / 7 - 0.5) * Math.PI * 0.8
+          const r = bt * 0.5
+          x = Math.cos(a) * r; y = 0.3 + Math.sin(a) * r
+        }
+        hueBase = 0.85 + Math.random() * 0.15
+        break
+      }
+      case 'star': {
+        // 5-pointed star
+        const points = 5
+        const a = t * TAU
+        const spiky = Math.floor(a / (TAU / points / 2)) % 2 === 0
+        const r = spiky ? 0.7 : 0.3
+        x = Math.cos(a - Math.PI/2) * r; y = Math.sin(a - Math.PI/2) * r
+        hueBase = Math.random() * 0.3
+        break
+      }
+      case 'hands': {
+        // Two palm shapes (circles with finger lines)
+        const hand = t < 0.5 ? -1 : 1
+        const ht = (t * 2) % 1
+        if (ht < 0.6) {
+          // Palm circle
+          const a = Math.random() * TAU; const r = Math.random() * 0.25
+          x = hand * 0.3 + Math.cos(a) * r; y = Math.sin(a) * r
+        } else {
+          // Fingers
+          const finger = Math.floor((ht - 0.6) / 0.4 * 5)
+          const ft = ((ht - 0.6) / 0.4 * 5) % 1
+          const fa = (-0.4 + finger * 0.2)
+          x = hand * 0.3 + Math.sin(fa) * ft * 0.35; y = 0.25 + ft * 0.35
+        }
+        hueBase = 0.0 + Math.random() * 0.3
+        break
+      }
+      case 'stillness': {
+        // Single point expanding/contracting — sparse, centered
+        const a = Math.random() * TAU
+        const r = Math.random() * 0.15 + Math.random() * Math.random() * 0.4
+        x = Math.cos(a) * r; y = Math.sin(a) * r
+        hueBase = 0.0 + Math.random() * 0.25
+        break
+      }
+      case 'sun': {
+        // Circle with rays
+        if (t < 0.5) {
+          const a = Math.random() * TAU; const r = Math.random() * 0.25
+          x = Math.cos(a) * r; y = Math.sin(a) * r
+        } else {
+          const ray = Math.floor((t - 0.5) * 2 * 12)
+          const rt = ((t - 0.5) * 24) % 1
+          const a = ray * TAU / 12
+          const r = 0.3 + rt * 0.45
+          x = Math.cos(a) * r; y = Math.sin(a) * r
+        }
+        hueBase = Math.random() * 0.3
+        break
+      }
+      case 'moon': {
+        // Crescent
+        const a = Math.random() * TAU
+        const r1 = 0.5, r2 = 0.4, offset = 0.2
+        const px = Math.cos(a) * r1, py = Math.sin(a) * r1
+        const dist = Math.sqrt((px - offset) ** 2 + py ** 2)
+        if (dist > r2) { x = px; y = py } else { x = px + 0.15; y = py }
+        hueBase = 0.55 + Math.random() * 0.15
+        break
+      }
+      case 'sound': {
+        // Sound waves — concentric arcs emanating from center-left
+        const wave = Math.floor(t * 5)
+        const wt = (t * 5) % 1
+        const a = (wt - 0.5) * Math.PI * 0.8
+        const r = 0.15 + wave * 0.14
+        x = -0.3 + Math.cos(a) * r; y = Math.sin(a) * r
+        hueBase = 0.0 + Math.random() * 0.3
+        break
+      }
+      default: {
+        const a = Math.random() * TAU; const r = Math.random() * 0.6
+        x = Math.cos(a) * r; y = Math.sin(a) * r
+      }
     }
-    particlesRef.current = pts
-  }, [tradition])
+    pts.push({ x, y, size: Math.random() * 2.2 + 0.8, phase: Math.random() * TAU, hue: hueBase, speed: 0.3 + Math.random() * 0.7 })
+  }
+  return pts
+}
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    let raf
-
-    function getColor(hue, alpha) {
+// Color palettes per shape type
+function getShapeColor(shape, hue, alpha) {
+  switch (shape) {
+    case 'flame': return hue < 0.15 ? `rgba(255,200,60,${alpha})` : hue < 0.3 ? `rgba(255,140,30,${alpha})` : `rgba(255,80,20,${alpha})`
+    case 'water': return hue < 0.6 ? `rgba(80,160,240,${alpha})` : `rgba(120,200,255,${alpha})`
+    case 'heart': return hue < 0.75 ? `rgba(230,60,120,${alpha})` : `rgba(255,120,160,${alpha})`
+    case 'breath': return `rgba(160,200,255,${alpha})`
+    case 'mountain': case 'tree': return hue < 0.9 ? `rgba(100,180,80,${alpha})` : `rgba(160,140,100,${alpha})`
+    case 'sun': return hue < 0.15 ? `rgba(255,220,80,${alpha})` : `rgba(255,180,40,${alpha})`
+    case 'moon': return `rgba(200,210,240,${alpha})`
+    case 'sound': return hue < 0.15 ? `rgba(224,184,90,${alpha})` : `rgba(200,170,255,${alpha})`
+    case 'stillness': return `rgba(200,200,220,${alpha})`
+    default: {
       if (hue < .3) return `rgba(224,184,90,${alpha})`
       if (hue < .55) return `rgba(242,216,140,${alpha})`
       if (hue < .7) return `rgba(140,166,224,${alpha})`
       if (hue < .85) return `rgba(216,90,140,${alpha})`
       return `rgba(64,200,172,${alpha})`
     }
+  }
+}
+
+function InlineParticles({ stepText, active }) {
+  const canvasRef = useRef(null)
+  const particlesRef = useRef(null)
+  const shapeRef = useRef('sphere')
+  const targetRef = useRef(null)
+  const transitionRef = useRef(0) // 0=at current, 1=at target
+
+  // When step text changes, generate new target positions
+  useEffect(() => {
+    const shape = detectShape(stepText)
+    shapeRef.current = shape
+    const newPts = generateShapePoints(shape, 600)
+    if (!particlesRef.current) {
+      // First render — set directly
+      particlesRef.current = newPts
+    } else {
+      // Animate transition: store target, let draw loop interpolate
+      targetRef.current = newPts
+      transitionRef.current = 0
+    }
+  }, [stepText])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    let raf
 
     function draw(time) {
       const dpr = window.devicePixelRatio || 1
@@ -90,38 +270,83 @@ function useParticleCanvas(canvasRef, tradition, active) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
 
-      const cx = W/2, cy = H/2, scale = Math.min(W, H) * .4
-      const t = time * .001
-      const cosR = Math.cos(t*.12), sinR = Math.sin(t*.12)
       const particles = particlesRef.current
-      if (!particles) { raf = requestAnimationFrame(draw); return }
+      if (!particles || particles.length === 0) { raf = requestAnimationFrame(draw); return }
+
+      // Transition interpolation
+      if (targetRef.current && transitionRef.current < 1) {
+        transitionRef.current = Math.min(1, transitionRef.current + 0.025)
+        const lerp = transitionRef.current
+        const target = targetRef.current
+        for (let i = 0; i < particles.length && i < target.length; i++) {
+          particles[i].x = particles[i].x * (1-lerp) + target[i].x * lerp
+          particles[i].y = particles[i].y * (1-lerp) + target[i].y * lerp
+          particles[i].hue = particles[i].hue * (1-lerp) + target[i].hue * lerp
+        }
+        if (lerp >= 1) {
+          particlesRef.current = target
+          targetRef.current = null
+        }
+      }
+
+      const cx = W/2, cy = H/2, scale = Math.min(W, H) * 0.38
+      const t = time * 0.001
+      const shape = shapeRef.current
+
+      // Shape-specific animation modifiers
+      const isFlame = shape === 'flame'
+      const isBreath = shape === 'breath'
+      const isSpiral = shape === 'spiral'
 
       for (const p of particles) {
-        const rx = p.x*cosR - p.y*sinR, ry = p.x*sinR + p.y*cosR
-        const b = 1 + (active?.06:.025) * Math.sin(t*1.5+p.phase)
-        const fy = Math.sin(t*.8+p.phase) * .008
-        const sx = cx + rx*scale*b, sy = cy - (ry+fy)*scale*b
-        const alpha = .25 + .45 * (.5+.5*Math.sin(t*1.2*p.speed+p.phase))
-        const r = p.size * (active?1.1:.85)
+        let px = p.x, py = p.y
 
-        const grd = ctx.createRadialGradient(sx,sy,0,sx,sy,r*3)
-        grd.addColorStop(0, getColor(p.hue, alpha.toFixed(2)))
+        // Shape-specific motion
+        if (isFlame) {
+          // Flames flicker and rise
+          px += Math.sin(t * 3 + p.phase * 5) * 0.04
+          py += Math.sin(t * 2 + p.phase) * 0.02 + t * 0.01 % 0.05
+        } else if (isBreath) {
+          // Breathing expansion/contraction
+          const breathScale = 1 + 0.2 * Math.sin(t * 0.8)
+          px *= breathScale; py *= breathScale
+        } else if (isSpiral) {
+          // Slow rotation
+          const a = t * 0.3
+          const rx = px * Math.cos(a) - py * Math.sin(a)
+          const ry = px * Math.sin(a) + py * Math.cos(a)
+          px = rx; py = ry
+        } else {
+          // Default gentle breathing
+          const b = 1 + 0.04 * Math.sin(t * 1.5 + p.phase)
+          px *= b; py *= b
+        }
+
+        // Gentle float for all
+        py += Math.sin(t * 0.6 + p.phase) * 0.008
+
+        const sx = cx + px * scale
+        const sy = cy - py * scale
+        const alpha = 0.3 + 0.5 * (0.5 + 0.5 * Math.sin(t * 1.2 * p.speed + p.phase))
+        const r = p.size * (active ? 1.2 : 0.9)
+
+        // Glow
+        const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, r * 3.5)
+        grd.addColorStop(0, getShapeColor(shape, p.hue, alpha.toFixed(2)))
         grd.addColorStop(1, 'transparent')
-        ctx.beginPath(); ctx.arc(sx,sy,r*3,0,TAU); ctx.fillStyle = grd; ctx.fill()
-        ctx.beginPath(); ctx.arc(sx,sy,r,0,TAU)
-        ctx.fillStyle = getColor(p.hue, Math.min(1,alpha+.3).toFixed(2)); ctx.fill()
+        ctx.beginPath(); ctx.arc(sx, sy, r * 3.5, 0, TAU); ctx.fillStyle = grd; ctx.fill()
+
+        // Core
+        ctx.beginPath(); ctx.arc(sx, sy, r, 0, TAU)
+        ctx.fillStyle = getShapeColor(shape, p.hue, Math.min(1, alpha + 0.3).toFixed(2)); ctx.fill()
       }
       raf = requestAnimationFrame(draw)
     }
     raf = requestAnimationFrame(draw)
     return () => { if (raf) cancelAnimationFrame(raf) }
-  }, [tradition, active])
-}
+  }, [active])
 
-function InlineParticles({ tradition, active }) {
-  const ref = useRef(null)
-  useParticleCanvas(ref, tradition, active)
-  return <canvas ref={ref} style={{ width: '100%', height: '100%', display: 'block' }} />
+  return <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
 }
 
 export default function RitualDetail() {
@@ -161,29 +386,9 @@ export default function RitualDetail() {
           <div style={{ height: '100%', width: `${progress}%`, background: trad?.color || '#c9a84c', transition: 'width .4s ease', borderRadius: 1 }} />
         </div>
 
-        {/* Sacred geometry particle visualization */}
+        {/* Step-aware particle visualization — shape adapts to instruction content */}
         <div style={{ height: 220, position: 'relative', margin: '0 20px', borderRadius: 12, overflow: 'hidden', background: 'rgba(0,0,0,0.3)' }}>
-          <InlineParticles
-            tradition={
-              // Map tradition to the key expected by RitualParticles
-              typeof ritual.tradition === 'string' ? ritual.tradition :
-              ritual.tradition?.name ? ritual.tradition.name.toLowerCase().replace('kabbalistic','kabbalah') :
-              ritual.id?.includes('agni') || ritual.id?.includes('sandhya') ? 'vedic' :
-              ritual.id?.includes('tonglen') || ritual.id?.includes('metta') ? 'buddhist' :
-              ritual.id?.includes('tikkun') || ritual.id?.includes('hitbod') ? 'kabbalah' :
-              ritual.id?.includes('dhikr') || ritual.id?.includes('sama') ? 'sufi' :
-              ritual.id?.includes('opening') ? 'egyptian' :
-              ritual.id?.includes('xukulem') ? 'mayan' :
-              ritual.id?.includes('middle') ? 'hermetic' :
-              ritual.id?.includes('caim') ? 'celtic' :
-              ritual.id?.includes('tummo') ? 'tibetan' :
-              ritual.id?.includes('micro') ? 'taoist' :
-              ritual.id?.includes('journey') ? 'shamanic' :
-              ritual.id?.includes('nidra') || ritual.id?.includes('trataka') ? 'yogic' :
-              'vedic'
-            }
-            active={true}
-          />
+          <InlineParticles stepText={step} active={true} />
         </div>
 
         {/* Step content */}
@@ -289,7 +494,7 @@ export default function RitualDetail() {
         <div style={{ margin: '16px 20px', padding: 20, borderRadius: 12, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)', position: 'relative', overflow: 'hidden' }}>
           {/* Background particle visualization */}
           <div style={{ position: 'absolute', inset: 0, opacity: 0.3, pointerEvents: 'none' }}>
-            <InlineParticles tradition={Object.keys(TRADITIONS).find(k => TRADITIONS[k].name === result.topRecommendation.tradition?.name) || 'vedic'} active={false} />
+            <InlineParticles stepText={result.topRecommendation.description} active={false} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
             <div>
