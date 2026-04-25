@@ -150,7 +150,8 @@ function formatDOB(dob) {
 }
 
 function ProfileSwitcher() {
-  const profile = useGolemStore((s) => s.primaryProfile)
+  const rawProfile = useGolemStore((s) => s.primaryProfile)
+  const profile = computePersonData(rawProfile)
   const people = useGolemStore((s) => s.people)
   const activeViewProfile = useGolemStore((s) => s.activeViewProfile)
   const setActiveViewProfile = useGolemStore((s) => s.setActiveViewProfile)

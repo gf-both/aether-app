@@ -13,33 +13,37 @@ export function computePersonData(raw) {
   if (!raw?.dob) return raw
   const p = { ...raw }
 
-  if (!p.sign || p.sign === '?' || !p.moon || p.moon === '?') {
+  // Always recompute sign/moon/asc from natal engine — never trust cached values
+  // (cached values may be stale from a previous session or wrong computation)
+  {
     try {
       const [y, m, d] = p.dob.split('-').map(Number)
       const [h, min] = (p.tob || '12:00').split(':').map(Number)
       const { lat, lon, tz } = resolvePob(p)
       const chart = getNatalChart({ day: d, month: m, year: y, hour: h || 12, minute: min || 0, lat, lon, timezone: tz })
       if (chart) {
-        p.sign = p.sign && p.sign !== '?' ? p.sign : (chart.planets?.sun?.sign || '?')
-        p.moon = p.moon && p.moon !== '?' ? p.moon : (chart.planets?.moon?.sign || '?')
-        p.asc  = p.asc  && p.asc  !== '?' ? p.asc  : (chart.angles?.asc?.sign || '?')
+        p.sign = chart.planets?.sun?.sign || '?'
+        p.moon = chart.planets?.moon?.sign || '?'
+        p.asc  = chart.angles?.asc?.sign || '?'
       }
     } catch {}
   }
 
-  if (!p.hdType || p.hdType === '?') {
+  // Always recompute HD from engine
+  {
     try {
       const hd = computeHDChart({ dateOfBirth: p.dob, timeOfBirth: p.tob || '12:00', utcOffset: p.birthTimezone ?? -3 })
       if (hd) {
         p.hdType    = hd.type
-        p.hdProfile = (p.hdProfile && p.hdProfile !== '?') ? p.hdProfile : hd.profile
-        p.hdAuth    = (p.hdAuth && p.hdAuth !== '?') ? p.hdAuth : hd.authority
-        p.hdDef     = (p.hdDef && p.hdDef !== '?') ? p.hdDef : hd.definition
+        p.hdProfile = hd.profile
+        p.hdAuth    = hd.authority
+        p.hdDef     = hd.definition
       }
     } catch {}
   }
 
-  if (!p.lifePath || p.lifePath === '?') {
+  // Always recompute lifePath from engine
+  {
     try {
       const num = getNumerologyProfileFromDob(p.dob, p.name || 'X', {})
       if (num?.core?.lifePath) p.lifePath = num.core.lifePath.val
