@@ -132,7 +132,27 @@ export default function HumanDesign() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
       pulse += 0.018
-      const sz = Math.min(W, H) * 0.068
+
+      // ─── Coordinate system: fit body graph to canvas with padding ───
+      // Body graph data spans ~x:0.15-0.85, y:0.01-0.97 in normalized coords.
+      // We want it centered, filling available space with some padding.
+      const pad = 0.04 // 4% padding
+      const aspect = 0.6 // body graph is taller than wide (roughly 0.7:1)
+      const availW = W * (1 - pad * 2)
+      const availH = H * (1 - pad * 2)
+      // Scale to fit: use the dimension that constrains
+      const fitByWidth = availW
+      const fitByHeight = availH * aspect
+      const graphW = Math.min(fitByWidth, fitByHeight)
+      const graphH = graphW / aspect
+      const offsetX = (W - graphW) / 2
+      const offsetY = (H - graphH) / 2
+
+      // Transform normalized (0-1) coords to screen coords
+      function tx(xf) { return offsetX + xf * graphW }
+      function ty(yf) { return offsetY + yf * graphH }
+
+      const sz = Math.min(graphW, graphH) * 0.068
       const particles = particlesRef.current
 
       // ─── 1. Silhouette as flowing particle stream ───
@@ -142,8 +162,8 @@ export default function HumanDesign() {
           const idx = p.t * (SILHOUETTE.length - 1)
           const i0 = Math.floor(idx), i1 = Math.min(i0 + 1, SILHOUETTE.length - 1)
           const frac = idx - i0
-          const sx = (SILHOUETTE[i0][0] * (1 - frac) + SILHOUETTE[i1][0] * frac) * W
-          const sy = (SILHOUETTE[i0][1] * (1 - frac) + SILHOUETTE[i1][1] * frac) * H
+          const sx = tx(SILHOUETTE[i0][0] * (1 - frac) + SILHOUETTE[i1][0] * frac)
+          const sy = ty(SILHOUETTE[i0][1] * (1 - frac) + SILHOUETTE[i1][1] * frac)
 
           const alpha = 0.08 + 0.06 * Math.sin(pulse + p.phase)
           const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, p.size * 2)
@@ -156,8 +176,8 @@ export default function HumanDesign() {
       // ─── 2. Channels as energy streams ───
       CANVAS_CHANNELS.forEach(([ai, bi], i) => {
         const cA = CENTERS[ai], cB = CENTERS[bi]
-        const x1 = cA.xf * W, y1 = cA.yf * H
-        const x2 = cB.xf * W, y2 = cB.yf * H
+        const x1 = tx(cA.xf), y1 = ty(cA.yf)
+        const x2 = tx(cB.xf), y2 = ty(cB.yf)
         const def = channelsDefined[i]
 
         if (def) {
@@ -205,7 +225,7 @@ export default function HumanDesign() {
 
       // ─── 3. Centers as particle clusters ───
       CENTERS.forEach((c, i) => {
-        const x = c.xf * W, y = c.yf * H, r = sz
+        const x = tx(c.xf), y = ty(c.yf), r = sz
         const defined = centersDefined[i]
         const cB = c.col // color base like 'rgba(r,g,b,'
 
@@ -278,20 +298,20 @@ export default function HumanDesign() {
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
         // Drop shadow
         ctx.fillStyle = 'rgba(0,0,0,0.4)'
-        ctx.fillText(g, gx * W + 0.5, gy * H + 0.5)
+        ctx.fillText(g, tx(gx) + 0.5, ty(gy) + 0.5)
         ctx.fillStyle = `rgba(220,190,100,${0.5 + 0.12 * Math.sin(pulse * 0.5 + g)})`
-        ctx.fillText(g, gx * W, gy * H)
+        ctx.fillText(g, tx(gx), ty(gy))
       })
 
-      // ─── 5. Profile label — bigger, brighter ───
-      const lblFs = Math.max(12, W * 0.035)
+      // ─── 5. Profile label — below body graph ───
+      const lblFs = Math.max(12, graphW * 0.045)
       ctx.font = `bold ${lblFs}px 'Cinzel',serif`
       ctx.textAlign = 'center'
-      // Drop shadow
+      const lblY = ty(0.88)
       ctx.fillStyle = 'rgba(0,0,0,0.5)'
-      ctx.fillText(profileLabel, W * 0.5 + 0.5, H * 0.935 + 0.5)
+      ctx.fillText(profileLabel, tx(0.5) + 0.5, lblY + 0.5)
       ctx.fillStyle = 'rgba(140,220,240,0.85)'
-      ctx.fillText(profileLabel, W * 0.5, H * 0.935)
+      ctx.fillText(profileLabel, tx(0.5), lblY)
 
       ctx.restore()
       animRef.current = requestAnimationFrame(draw)
