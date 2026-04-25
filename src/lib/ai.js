@@ -11,6 +11,25 @@
  */
 import { supabase } from './supabase'
 
+// ── Language support ──
+const LANG_INSTRUCTIONS = {
+  en: '', // default, no extra instruction
+  es: '\n\nIMPORTANT: Respond ENTIRELY in Spanish (Español). All output, section headers, and content must be in Spanish.',
+  he: '\n\nIMPORTANT: Respond ENTIRELY in Hebrew (עברית). All output, section headers, and content must be in Hebrew. Use right-to-left text.',
+}
+
+/** Get current language from the Zustand store (safe for non-React context) */
+function getCurrentLanguage() {
+  try {
+    const raw = localStorage.getItem('golem-store')
+    if (raw) {
+      const store = JSON.parse(raw)
+      return store?.state?.language || 'en'
+    }
+  } catch {}
+  return 'en'
+}
+
 const OLLAMA_URL = 'http://localhost:11434'
 const OLLAMA_MODEL = 'qwen2.5:14b'
 
@@ -72,17 +91,20 @@ async function callViaEdgeFunction({ systemPrompt, messages, maxTokens }) {
 }
 
 // ── Direct Anthropic ──
+// Uses anthropic-dangerous-direct-browser-access header to bypass CORS.
+// This is required for client-side calls. In production, prefer edge function.
 async function callDirectAnthropic({ systemPrompt, messages, maxTokens }) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    signal: AbortSignal.timeout(12000),
+    signal: AbortSignal.timeout(30000),
     headers: {
       'x-api-key': ANTHROPIC_KEY,
       'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
       'content-type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'claude-haiku-4-5',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: maxTokens,
       messages,
       ...(systemPrompt ? { system: systemPrompt } : {}),
@@ -105,38 +127,60 @@ async function callDirectAnthropic({ systemPrompt, messages, maxTokens }) {
  *   'anthropic' → Force Claude (Supabase in prod, direct key in dev)
  */
 export async function callAI({ systemPrompt, messages, maxTokens = 400, provider = 'auto' }) {
+  // Inject language instruction into system prompt
+  const lang = getCurrentLanguage()
+  const langSuffix = LANG_INSTRUCTIONS[lang] || ''
+  if (langSuffix && systemPrompt) {
+    systemPrompt = systemPrompt + langSuffix
+  }
+
+  // Aggressive fallback chain — always try every available backend
+  const errors = []
+
   try {
     if (provider === 'ollama') {
       return await callOllama({ systemPrompt, messages, maxTokens })
     }
 
     if (provider === 'anthropic') {
-      if (HAS_SUPABASE) return await callViaEdgeFunction({ systemPrompt, messages, maxTokens })
-      if (ANTHROPIC_KEY) return await callDirectAnthropic({ systemPrompt, messages, maxTokens })
+      // Try direct Anthropic first (fastest, no edge function overhead)
+      if (ANTHROPIC_KEY) {
+        try { return await callDirectAnthropic({ systemPrompt, messages, maxTokens }) }
+        catch (e) { errors.push('direct: ' + e.message) }
+      }
+      if (HAS_SUPABASE) {
+        try { return await callViaEdgeFunction({ systemPrompt, messages, maxTokens }) }
+        catch (e) { errors.push('edge: ' + e.message) }
+      }
       throw new Error('No Anthropic backend configured')
     }
 
-    // auto: Ollama (local dev only) → Supabase → direct Anthropic
-    if (IS_LOCAL_DEV && await ollamaAvailable()) {
-      const result = await callOllama({ systemPrompt, messages, maxTokens })
-      if (result) return result
-      console.warn('[ai] Ollama returned empty, falling back')
+    // auto: Ollama (local dev) → Direct Anthropic → Supabase edge
+    if (IS_LOCAL_DEV) {
+      try {
+        if (await ollamaAvailable()) {
+          const result = await callOllama({ systemPrompt, messages, maxTokens })
+          if (result) return result
+        }
+      } catch (e) { errors.push('ollama: ' + e.message) }
     }
 
-    if (HAS_SUPABASE) return await callViaEdgeFunction({ systemPrompt, messages, maxTokens })
-    if (ANTHROPIC_KEY) return await callDirectAnthropic({ systemPrompt, messages, maxTokens })
+    // Direct Anthropic — preferred in production (no edge function dependency)
+    if (ANTHROPIC_KEY) {
+      try { return await callDirectAnthropic({ systemPrompt, messages, maxTokens }) }
+      catch (e) { errors.push('direct: ' + e.message) }
+    }
 
-    console.error('[ai] No AI backend available')
+    // Supabase edge function — last resort
+    if (HAS_SUPABASE) {
+      try { return await callViaEdgeFunction({ systemPrompt, messages, maxTokens }) }
+      catch (e) { errors.push('edge: ' + e.message) }
+    }
+
+    console.error('[ai] All backends failed:', errors)
     return null
   } catch (e) {
-    console.error('[ai] callAI failed:', e)
-    // If Ollama failed (local dev), try Anthropic as fallback
-    if (IS_LOCAL_DEV && provider === 'auto' && e.message?.includes('Ollama')) {
-      try {
-        if (HAS_SUPABASE) return await callViaEdgeFunction({ systemPrompt, messages, maxTokens })
-        if (ANTHROPIC_KEY) return await callDirectAnthropic({ systemPrompt, messages, maxTokens })
-      } catch {}
-    }
+    console.error('[ai] callAI failed:', e, errors)
     return null
   }
 }

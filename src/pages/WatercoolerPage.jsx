@@ -330,18 +330,27 @@ const ENNEA = {
 function buildYearNarrative(profiles, edges, year) {
   if (!year || !profiles.length) return null
 
-  const primary = profiles.find(p => p._isPrimary) || profiles[0]
-  const focal =
-    profiles.find(p => !p._isPrimary && ['partner', 'spouse'].includes(p.rel)) ||
-    profiles.find(p => !p._isPrimary && ['ex-spouse', 'ex-partner'].includes(p.rel)) ||
-    profiles.find(p => !p._isPrimary && ['close-friend', 'friend'].includes(p.rel)) ||
-    profiles.find(p => !p._isPrimary)
+  // Build ALL possible pairs and select dynamically based on year + session
+  const allPairs = []
+  for (let i = 0; i < profiles.length; i++) {
+    for (let j = i + 1; j < profiles.length; j++) {
+      allPairs.push([profiles[i], profiles[j]])
+    }
+  }
+  if (allPairs.length === 0) return null
 
-  if (!focal) return null
+  // Rotate pair based on year + a time-based seed so it's different each session
+  const seed = Math.floor(Date.now() / 60000) // changes every minute
+  const pairIdx = (year + seed) % allPairs.length
+  const [personA, personB] = allPairs[pairIdx]
 
-  const An = primary.name?.split(' ')[0] || 'You'
-  const Bn = focal.name?.split(' ')[0] || 'them'
-  const isEx = ['ex-spouse', 'ex-partner'].includes(focal.rel)
+  const An = personA.name?.split(' ')[0] || 'Person A'
+  const Bn = personB.name?.split(' ')[0] || 'Person B'
+  const isEx = ['ex-spouse', 'ex-partner'].includes(personA.rel) || ['ex-spouse', 'ex-partner'].includes(personB.rel)
+
+  // Use whichever has data as primary/focal
+  const primary = personA
+  const focal = personB
 
   const Ae = ENNEA[primary.enneagramType]
   const Be = ENNEA[focal.enneagramType]

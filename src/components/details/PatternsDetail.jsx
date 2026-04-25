@@ -167,26 +167,85 @@ export default function PatternsDetail() {
       </div>
 
       {/* ═══ PATTERN SYNTHESIS SUMMARY ═══ */}
-      <div style={{ padding: '16px 20px', borderRadius: 10, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.12)' }}>
-        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(201,168,76,.6)', marginBottom: 8 }}>
-          Pattern Synthesis
-        </div>
-        <div style={{ fontSize: 13, lineHeight: 1.8, color: 'rgba(255,255,255,.7)', fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-          Your frameworks reveal{' '}
-          <span style={{ color: 'var(--gold)' }}>{CROSS_FRAMEWORK_ALIGNMENTS.length} active alignments</span>
-          {' '}across {new Set(CROSS_FRAMEWORK_ALIGNMENTS.flatMap(a => a.frameworks)).size} systems.{' '}
-          {TIMING_PATTERNS.filter(t => t.activation === 'active').length > 0 && (
-            <><span style={{ color: '#60b030' }}>{TIMING_PATTERNS.filter(t => t.activation === 'active').length} pattern{TIMING_PATTERNS.filter(t => t.activation === 'active').length > 1 ? 's' : ''} {TIMING_PATTERNS.filter(t => t.activation === 'active').length === 1 ? 'is' : 'are'} currently active</span> — these are live windows where your frameworks intersect in real time.{' '}</>
-          )}
-          The strongest connections emerge between{' '}
-          <span style={{ color: 'var(--gold)' }}>
-            {CROSS_FRAMEWORK_ALIGNMENTS.sort((a, b) => b.strength - a.strength).slice(0, 2).map(a => a.title).join(' and ')}
-          </span>.{' '}
-          {PROFILE_PATTERN_MATCHES.length > 0 && (
-            <>Among your constellation, <span style={{ color: '#40ccdd' }}>{PROFILE_PATTERN_MATCHES.length} people</span> share resonant patterns with you.</>
-          )}
-        </div>
-      </div>
+      {(() => {
+        const activeCount = TIMING_PATTERNS.filter(t => t.activation === 'active').length
+        const totalFw = new Set(CROSS_FRAMEWORK_ALIGNMENTS.flatMap(a => a.frameworks)).size
+        const sorted = [...CROSS_FRAMEWORK_ALIGNMENTS].sort((a, b) => b.strength - a.strength)
+        const top3 = sorted.slice(0, 3)
+        const resonances = sorted.filter(a => a.type === 'resonance')
+        const tensions = sorted.filter(a => a.type === 'tension')
+        const gateways = sorted.filter(a => a.type === 'gateway')
+        const mirrors = sorted.filter(a => a.type === 'mirror')
+        const avgStrength = sorted.length > 0 ? (sorted.reduce((s, a) => s + a.strength, 0) / sorted.length).toFixed(1) : 0
+        const strongCount = sorted.filter(a => a.strength >= 7).length
+        const fwFreq = {}
+        sorted.forEach(a => (a.frameworks || []).forEach(f => { fwFreq[f] = (fwFreq[f] || 0) + 1 }))
+        const topFw = Object.entries(fwFreq).sort((a, b) => b[1] - a[1]).slice(0, 3)
+        const dominantType = [['resonance', resonances.length], ['tension', tensions.length], ['gateway', gateways.length], ['mirror', mirrors.length]].sort((a,b) => b[1]-a[1])[0]
+
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* Core Synthesis */}
+            <div style={{ padding: '18px 20px', borderRadius: 10, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.12)' }}>
+              <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(201,168,76,.6)', marginBottom: 10 }}>
+                Core Pattern Reading
+              </div>
+              <div style={{ fontSize: 13, lineHeight: 1.9, color: 'rgba(255,255,255,.7)', fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                Your {totalFw} frameworks produce{' '}
+                <span style={{ color: 'var(--gold)' }}>{CROSS_FRAMEWORK_ALIGNMENTS.length} cross-system alignments</span>
+                {' '}with an average strength of {avgStrength}/10.{' '}
+                {strongCount > 0 && <><span style={{ color: '#60b030' }}>{strongCount} are high-intensity</span> (7+), meaning your frameworks don't just agree — they amplify each other.{' '}</>}
+                {activeCount > 0 && <><span style={{ color: '#60b030' }}>{activeCount} pattern{activeCount > 1 ? 's are' : ' is'} currently active</span> — live windows where your cosmic architecture aligns in real time.{' '}</>}
+                The dominant pattern type is <span style={{ color: dominantType[0] === 'resonance' ? '#60b030' : dominantType[0] === 'tension' ? '#d44070' : dominantType[0] === 'gateway' ? '#c9a84c' : '#40ccdd' }}>{dominantType[0]}</span> ({dominantType[1]} of {sorted.length}){dominantType[0] === 'resonance' ? ' — your systems reinforce each other, creating natural momentum' : dominantType[0] === 'tension' ? ' — your systems challenge each other, creating growth pressure' : dominantType[0] === 'gateway' ? ' — your systems open portals between different types of knowing' : ' — your systems mirror each other, revealing the same truth from different angles'}.
+                {PROFILE_PATTERN_MATCHES.length > 0 && <>{' '}Among your constellation, <span style={{ color: '#40ccdd' }}>{PROFILE_PATTERN_MATCHES.length} people</span> share resonant patterns with you.</>}
+              </div>
+            </div>
+
+            {/* Strongest Connections */}
+            <div style={{ padding: '14px 20px', borderRadius: 10, background: 'rgba(144,80,224,.04)', border: '1px solid rgba(144,80,224,.1)' }}>
+              <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(144,80,224,.5)', marginBottom: 8 }}>
+                Strongest Cross-System Connections
+              </div>
+              {top3.map((a, i) => (
+                <div key={i} style={{ marginBottom: i < 2 ? 10 : 0, paddingBottom: i < 2 ? 10 : 0, borderBottom: i < 2 ? '1px solid rgba(255,255,255,.04)' : 'none' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,.8)', fontFamily: "'Cinzel',serif" }}>{a.title}</span>
+                    <span style={{ fontSize: 11, fontFamily: "'Inconsolata',monospace", color: a.strength >= 8 ? '#60b030' : a.strength >= 6 ? '#c9a84c' : 'rgba(255,255,255,.4)' }}>{a.strength}/10</span>
+                  </div>
+                  <div style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,.5)', fontFamily: "'Cormorant Garamond',serif" }}>{a.description}</div>
+                  <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
+                    {(a.frameworks || []).map(f => (
+                      <span key={f} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 6, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.06)', color: 'rgba(255,255,255,.35)' }}>{f}</span>
+                    ))}
+                    <span style={{ fontSize: 8, padding: '1px 6px', borderRadius: 6, background: `${a.type === 'resonance' ? 'rgba(96,176,48,' : a.type === 'tension' ? 'rgba(212,48,112,' : a.type === 'gateway' ? 'rgba(201,168,76,' : 'rgba(64,204,221,'}0.08)`, color: a.type === 'resonance' ? '#60b030' : a.type === 'tension' ? '#d44070' : a.type === 'gateway' ? '#c9a84c' : '#40ccdd' }}>{a.type}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Framework Hub Analysis */}
+            <div style={{ padding: '14px 20px', borderRadius: 10, background: 'rgba(64,204,221,.04)', border: '1px solid rgba(64,204,221,.1)' }}>
+              <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(64,204,221,.5)', marginBottom: 8 }}>
+                Framework Hubs — Where Your Systems Converge
+              </div>
+              <div style={{ fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,.6)', fontFamily: "'Cormorant Garamond',serif" }}>
+                {topFw.map(([fw, count], i) => (
+                  <span key={fw}>
+                    <span style={{ color: '#40ccdd' }}>{fw.toUpperCase()}</span> appears in {count} alignment{count > 1 ? 's' : ''}
+                    {i < topFw.length - 1 ? (i === topFw.length - 2 ? ', and ' : ', ') : ''}
+                  </span>
+                ))}
+                {topFw.length > 0 && <> — {topFw[0][0].toUpperCase()} is your most interconnected framework, acting as the hub that ties your other systems together. Changes in this area ripple across your entire pattern map.</>}
+              </div>
+              {tensions.length > 0 && (
+                <div style={{ marginTop: 10, fontSize: 12, lineHeight: 1.7, color: 'rgba(212,48,112,.6)', fontFamily: "'Cormorant Garamond',serif" }}>
+                  <span style={{ color: '#d44070' }}>{tensions.length} tension{tensions.length > 1 ? 's' : ''}</span> detected: {tensions.slice(0, 2).map(t => t.title).join(' and ')}. These are not problems — they are the growth edges where your systems push against each other, creating the pressure needed for transformation.
+                </div>
+              )}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ═══ ACTIVE TIMING PATTERNS ═══ */}
       <div>

@@ -265,7 +265,25 @@ Keep responses 2-4 sentences. Be direct.`
     ]
 
     const response = await callAI({ systemPrompt, messages, maxTokens: 300 })
-    if (!response) return `I'm having trouble connecting right now. Try again in a moment.`
+    if (!response) {
+      // Generate local response from profile data when AI is unavailable
+      const p = profile || {}
+      const sign = p.sign && p.sign !== '?' ? p.sign : null
+      const hd = p.hdType && p.hdType !== '?' ? p.hdType : null
+      const enn = p.enneagramType
+      const moon = p.moon && p.moon !== '?' ? p.moon : null
+      const lp = p.lifePath && p.lifePath !== '?' ? p.lifePath : null
+      const msg = userMessage.toLowerCase()
+
+      if (msg.includes('who am i') || msg.includes('tell me about') || msg.includes('identity'))
+        return `${sign ? `Your ${sign} Sun defines your conscious direction — ` : ''}${hd ? `as a ${hd}, your strategy is to ${hd === 'Projector' ? 'wait for recognition' : hd === 'Generator' ? 'respond to what lights you up' : hd === 'Manifestor' ? 'inform then act' : hd === 'Manifesting Generator' ? 'respond, then inform' : 'wait a lunar cycle'}. ` : ''}${enn ? `Your Enneagram ${enn} drives you toward ${enn == 1 ? 'perfection' : enn == 4 ? 'authenticity' : enn == 5 ? 'knowledge' : enn == 7 ? 'freedom' : enn == 8 ? 'strength' : 'your core motivation'}. ` : ''}${lp ? `Life Path ${lp} is your life's arc.` : 'Your frameworks together reveal a coherent pattern.'}`
+      if (msg.includes('love') || msg.includes('relationship') || msg.includes('partner'))
+        return `${moon ? `Your ${moon} Moon shapes your emotional needs — ` : ''}${sign ? `${sign} in love seeks ${sign === 'Aries' || sign === 'Leo' || sign === 'Sagittarius' ? 'passion and freedom' : sign === 'Taurus' || sign === 'Virgo' || sign === 'Capricorn' ? 'loyalty and stability' : sign === 'Cancer' || sign === 'Scorpio' || sign === 'Pisces' ? 'deep emotional merging' : 'intellectual connection and space'}. ` : ''}${hd ? `As a ${hd}, you need partners who understand your ${hd === 'Projector' ? 'need for recognition' : hd === 'Generator' ? 'response-based decision-making' : 'way of operating'}.` : ''}`
+      if (msg.includes('career') || msg.includes('work') || msg.includes('purpose'))
+        return `${lp ? `Life Path ${lp} points you toward ${lp == 1 ? 'leadership and independence' : lp == 7 ? 'research and deep understanding' : lp == 8 ? 'business and material mastery' : lp == 4 ? 'systems and structure' : 'your unique professional expression'}. ` : ''}${hd ? `Your ${hd} design thrives when you ${hd === 'Projector' ? 'guide rather than grind' : hd === 'Generator' ? 'follow your sacral response' : 'work on your own terms'}.` : ''}`
+
+      return `${sign ? `Speaking as your ${sign} ` : 'From your '}Golem — I'm processing your question through ${sign ? 'your natal chart, ' : ''}${hd ? 'your Human Design, ' : ''}${enn ? 'your Enneagram, ' : ''}and the patterns that emerge when these frameworks intersect. ${hd ? `As a ${hd}, remember: ${hd === 'Projector' ? 'the answer you seek will come when you stop pushing and start receiving' : hd === 'Generator' ? 'check your gut — your body knows the answer before your mind does' : 'trust your initiating impulse'}.` : 'Sit with the question — sometimes the asking changes the answer.'}`
+    }
     return response
   }
 

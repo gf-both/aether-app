@@ -429,25 +429,58 @@ export default function DatingPage() {
 
 function getDemoMatches(profile) {
   const sign = profile.sign || 'Aquarius'
-  return [
-    {
-      id: 'sofia', name: 'Sofia R.', emoji: '✨', color: '144,80,224', sign: 'Libra', hdType: 'Projector', lifePath: 11, score: 89,
-      topReasons: ['HD channels complete', 'LP 7+11 Seeker+Illuminator', 'Synastry trine'],
-      story: `Your ${sign} Sun finds natural resonance with her Libra — air signs sharing a love of ideas. HD channels complete undefined centers, creating electromagnetic pull. Life Path 11 (Illuminator) meets your analytical depth. Gene Keys show shared axis in Ring of Light.`,
-      tension: 'Both carry Mercurial shadow — watch for over-analysis.',
-      golemConversations: 14, lastConversation: '1h ago',
-    },
-    {
-      id: 'elena', name: 'Elena M.', emoji: '🌙', color: '64,204,221', sign: 'Gemini', hdType: 'Generator', lifePath: 3, score: 82,
-      topReasons: ['Mayan oracle match', 'Numerology Life Arc sync', 'HD electromagnetic'],
-      story: `Gemini Sun activates your intellectual energy in ways rarely scoring this high. Generator sacral responds to Projector guidance — classic energy pairing. Mayan Kin is your Occult position — hidden power.`,
-      tension: null, golemConversations: 9, lastConversation: '4h ago',
-    },
-    {
-      id: 'valentina', name: 'Valentina C.', emoji: '💛', color: '240,160,60', sign: 'Scorpio', hdType: 'Manifesting Generator', lifePath: 8, score: 74,
-      topReasons: ['Gene Keys resonance', 'Personal Year alignment', 'Venus synastry'],
-      story: `Scorpio depth meets Aquarius detachment — friction and fascination. MG speed challenges Projector pace but Gene Keys show Gate 48+41 in same circuit. LP 8 executive power meets LP 7 research.`,
-      tension: 'Different rhythms — she moves fast, you process deep.', golemConversations: 6, lastConversation: '1d ago',
-    },
+  const hd = profile.hdType || 'Projector'
+  const lp = profile.lifePath || 7
+
+  // Demo profiles with full data for real scoring
+  const demoProfiles = [
+    { id: 'sofia', name: 'Sofia R.', emoji: '✨', color: '144,80,224', sign: 'Libra', hdType: 'Projector', lifePath: '11', moon: 'Pisces', enneagramType: '4', mbtiType: 'INFP', asc: 'Sagittarius' },
+    { id: 'elena', name: 'Elena M.', emoji: '🌙', color: '64,204,221', sign: 'Gemini', hdType: 'Generator', lifePath: '3', moon: 'Aquarius', enneagramType: '7', mbtiType: 'ENTP', asc: 'Leo' },
+    { id: 'valentina', name: 'Valentina C.', emoji: '💛', color: '240,160,60', sign: 'Scorpio', hdType: 'Manifesting Generator', lifePath: '8', moon: 'Capricorn', enneagramType: '8', mbtiType: 'ENTJ', asc: 'Aries' },
   ]
+
+  // Import scoring dynamically
+  const SIGN_EL = { Aries:'fire', Taurus:'earth', Gemini:'air', Cancer:'water', Leo:'fire', Virgo:'earth', Libra:'air', Scorpio:'water', Sagittarius:'fire', Capricorn:'earth', Aquarius:'air', Pisces:'water' }
+  function quickScore(a, b) {
+    let s = 50
+    const elA = SIGN_EL[a.sign], elB = SIGN_EL[b.sign]
+    if (elA && elB) {
+      if (elA === elB) s += 8
+      else if ((elA==='fire'&&elB==='air')||(elA==='air'&&elB==='fire')) s += 10
+      else if ((elA==='earth'&&elB==='water')||(elA==='water'&&elB==='earth')) s += 10
+      else if ((elA==='fire'&&elB==='water')||(elA==='water'&&elB==='fire')) s -= 4
+    }
+    if (a.moon && b.moon) { const mA=SIGN_EL[a.moon],mB=SIGN_EL[b.moon]; if(mA===mB) s+=7; else if((mA==='water'&&mB==='earth')||(mA==='earth'&&mB==='water')) s+=8 }
+    if (a.hdType && b.hdType) {
+      if ((a.hdType==='Generator'&&b.hdType==='Projector')||(a.hdType==='Projector'&&b.hdType==='Generator')) s+=12
+      else if (a.hdType===b.hdType) s+=3
+      else s+=5
+    }
+    if (a.enneagramType && b.enneagramType) { const ea=Number(a.enneagramType),eb=Number(b.enneagramType); if(ea===eb) s+=4; else if(Math.abs(ea-eb)===1) s+=6; else s+=2 }
+    if (a.lifePath && b.lifePath) { const la=parseInt(a.lifePath),lb=parseInt(b.lifePath); if(la===lb) s+=5; else if((la+lb)===9||(la+lb)===10) s+=8; else s+=3 }
+    if (a.mbtiType && b.mbtiType && a.mbtiType.length===4 && b.mbtiType.length===4) { if(a.mbtiType[0]!==b.mbtiType[0]) s+=3; if(a.mbtiType[1]===b.mbtiType[1]) s+=4 }
+    return Math.max(15, Math.min(95, s))
+  }
+
+  return demoProfiles.map(dp => {
+    const score = quickScore(profile, dp)
+    const elP = SIGN_EL[sign], elD = SIGN_EL[dp.sign]
+    const sameEl = elP === elD
+    const hdNote = dp.hdType === hd ? `Both ${hd}s — same strategy creates instant understanding` :
+      (hd === 'Projector' && dp.hdType === 'Generator') ? `${hd} guides ${dp.hdType} energy — classic complementary pairing` :
+      `${hd} meets ${dp.hdType} — ${dp.hdType === 'Manifesting Generator' ? 'speed meets depth' : 'different operating systems create growth'}`
+
+    return {
+      ...dp,
+      score,
+      topReasons: [
+        sameEl ? `Same ${elP} element (${sign}+${dp.sign})` : `${elP}/${elD} element dynamic`,
+        hdNote.split('—')[0].trim(),
+        `LP ${lp}+${dp.lifePath} ${score > 70 ? 'harmonic' : 'complementary'}`,
+      ],
+      story: `Your ${sign} Sun ${sameEl ? `shares ${elP} energy with` : `meets`} ${dp.sign} — ${sameEl ? 'instant recognition and shared language' : `${elP} and ${elD} ${(elP==='fire'&&elD==='air')||(elP==='air'&&elD==='fire') ? 'feed each other — ideas ignite into action' : (elP==='earth'&&elD==='water')||(elP==='water'&&elD==='earth') ? 'nourish each other — emotion grounds into form' : 'challenge each other — growth through productive tension'}`}. ${hdNote}. ${dp.enneagramType ? `Enneagram ${dp.enneagramType} brings ${dp.enneagramType==4?'depth and authenticity':dp.enneagramType==7?'joy and possibility':dp.enneagramType==8?'power and directness':'its unique energy'} to the dynamic.` : ''}`,
+      tension: score > 75 ? null : `${dp.hdType === 'Manifesting Generator' ? 'Different speeds — ' + dp.name.split(' ')[0] + ' moves fast, you process deep' : dp.moon ? dp.moon + ' Moon may need different emotional nourishment' : 'Worth exploring whether complementary differences sustain or exhaust'}`,
+      golemConversations: Math.floor(score / 6), lastConversation: ['1h ago', '3h ago', '1d ago'][demoProfiles.indexOf(dp)],
+    }
+  })
 }

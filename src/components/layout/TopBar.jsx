@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { signOut } from '../../lib/auth'
 import { useGolemStore } from '../../store/useGolemStore'
 import { useClock } from '../../hooks/useClock'
+import { computePersonData } from '../../hooks/useActiveProfile'
 
 const NAV_SECTIONS = [
   { icon: '\u2609', label: 'Natal Chart', widget: 'natal' },
@@ -174,24 +175,25 @@ function ProfileSwitcher() {
     if (p._isPrimary) {
       setActiveViewProfile(null)
     } else {
+      const computed = computePersonData(p)
       setActiveViewProfile({
-        id: p.id,
-        name: p.name,
-        dob: p.dob || '',
-        tob: p.tob || '',
-        pob: p.pob || '',
-        birthLat: p.birthLat || 0,
-        birthLon: p.birthLon || 0,
-        birthTimezone: p.birthTimezone || 0,
-        emoji: p.emoji || '\u2726',
-        sign: p.sign || '?',
-        asc: p.asc || '?',
-        moon: p.moon || '?',
-        hdType: p.hdType || '?',
-        hdProfile: p.hdProfile || '?',
-        hdAuth: p.hdAuth || '?',
-        hdDef: p.hdDef || '?',
-        lifePath: p.lifePath || '?',
+        id: computed.id,
+        name: computed.name,
+        dob: computed.dob || '',
+        tob: computed.tob || '',
+        pob: computed.pob || '',
+        birthLat: computed.birthLat || 0,
+        birthLon: computed.birthLon || 0,
+        birthTimezone: computed.birthTimezone || 0,
+        emoji: computed.emoji || '\u2726',
+        sign: computed.sign || '?',
+        asc: computed.asc || '?',
+        moon: computed.moon || '?',
+        hdType: computed.hdType || '?',
+        hdProfile: computed.hdProfile || '?',
+        hdAuth: computed.hdAuth || '?',
+        hdDef: computed.hdDef || '?',
+        lifePath: computed.lifePath || '?',
         crossGK: p.crossGK || '?',
         enneagramType: p.enneagramType || null,
         enneagramWing: p.enneagramWing || null,
@@ -528,6 +530,72 @@ function SignInButton() {
   )
 }
 
+const LANGS = [
+  { code: 'en', label: 'EN', flag: '🌐' },
+  { code: 'es', label: 'ES', flag: '🇪🇸' },
+  { code: 'he', label: 'HE', flag: '🇮🇱' },
+]
+
+function LanguagePicker() {
+  const language = useGolemStore((s) => s.language) || 'en'
+  const setLanguage = useGolemStore((s) => s.setLanguage)
+  const [open, setOpen] = useState(false)
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  const current = LANGS.find(l => l.code === language) || LANGS[0]
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 3,
+          padding: '3px 8px', borderRadius: 6,
+          background: 'var(--secondary)', border: '1px solid rgba(255,255,255,.08)',
+          color: 'var(--muted-foreground)', fontSize: 9, cursor: 'pointer',
+          fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
+        }}
+        title="Language"
+      >
+        {current.flag} {current.label}
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', right: 0, marginTop: 4,
+          background: 'var(--card)', border: '1px solid var(--border)',
+          borderRadius: 8, padding: 4, zIndex: 999,
+          boxShadow: '0 8px 24px rgba(0,0,0,.5)',
+          minWidth: 90,
+        }}>
+          {LANGS.map(l => (
+            <div
+              key={l.code}
+              onClick={() => { setLanguage(l.code); setOpen(false) }}
+              style={{
+                padding: '6px 10px', cursor: 'pointer', borderRadius: 4,
+                fontSize: 10, display: 'flex', alignItems: 'center', gap: 6,
+                color: l.code === language ? 'var(--foreground)' : 'var(--muted-foreground)',
+                background: l.code === language ? 'var(--accent)' : 'transparent',
+              }}
+              onMouseEnter={e => { if (l.code !== language) e.currentTarget.style.background = 'rgba(255,255,255,.04)' }}
+              onMouseLeave={e => { if (l.code !== language) e.currentTarget.style.background = 'transparent' }}
+            >
+              {l.flag} {l.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function TopBar() {
   const setActiveDetail = useGolemStore((s) => s.setActiveDetail)
   const setActiveNav = useGolemStore((s) => s.setActiveNav)
@@ -550,6 +618,7 @@ export default function TopBar() {
         >
           {'\u25C8'}
         </button>
+        <LanguagePicker />
         <ControlCenter />
         <SignInButton />
         <span className="ttime">{time}</span>

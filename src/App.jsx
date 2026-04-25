@@ -100,9 +100,7 @@ function ThemeSync() {
 }
 
 export default function App() {
-  const [showIntro, setShowIntro] = useState(
-    () => !localStorage.getItem('golem_intro_seen_v4')
-  )
+  const [showIntro, setShowIntro] = useState(true) // Always replay intro on refresh
 
   return (
     <ErrorBoundary>

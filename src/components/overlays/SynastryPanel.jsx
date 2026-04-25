@@ -77,12 +77,41 @@ function CompositeGrid({ items }) {
   )
 }
 
+function SynSummary({ a, b, aName, bName, report }) {
+  if (!report) return null
+  const overall = report.overall || 50
+  const SIGN_EL = { Aries:'fire', Taurus:'earth', Gemini:'air', Cancer:'water', Leo:'fire', Virgo:'earth', Libra:'air', Scorpio:'water', Sagittarius:'fire', Capricorn:'earth', Aquarius:'air', Pisces:'water' }
+  const elA = a.sign && SIGN_EL[a.sign], elB = b.sign && SIGN_EL[b.sign]
+  const hdA = a.hdType && a.hdType !== '?' ? a.hdType : null
+  const hdB = b.hdType && b.hdType !== '?' ? b.hdType : null
+  const level = overall >= 80 ? 'Exceptional' : overall >= 65 ? 'Strong' : overall >= 50 ? 'Moderate' : 'Challenging'
+  const levelColor = overall >= 80 ? '#60b030' : overall >= 65 ? '#c9a84c' : overall >= 50 ? '#e8a040' : '#d44070'
+
+  return (
+    <div style={{ gridColumn: '1/4', padding: '14px 16px', borderRadius: 8, background: 'rgba(201,168,76,.04)', border: '1px solid rgba(201,168,76,.1)', marginBottom: 8 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+        <span style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(201,168,76,.5)' }}>Synthesis</span>
+        <span style={{ fontSize: 18, fontWeight: 300, fontFamily: "'Inconsolata',monospace", color: levelColor }}>{overall}%</span>
+      </div>
+      <div style={{ fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,.65)', fontFamily: "'Cormorant Garamond',serif" }}>
+        <strong style={{ color: levelColor }}>{level} compatibility</strong> between {aName} and {bName}.
+        {a.sign && b.sign ? ` ${a.sign} and ${b.sign} ${elA === elB ? `share ${elA} energy — instant recognition and shared language` : (elA==='fire'&&elB==='air')||(elA==='air'&&elB==='fire') ? 'create a dynamic of ideas and action — air feeds fire' : (elA==='earth'&&elB==='water')||(elA==='water'&&elB==='earth') ? 'nourish each other — emotion meets form' : `bring ${elA} and ${elB} into contact — productive tension that drives growth`}.` : ''}
+        {hdA && hdB ? ` ${hdA}/${hdB} ${hdA===hdB ? 'mirror — same operating system, different expression' : 'complement — different strategies create a complete circuit'}.` : ''}
+        {report.categories ? ` Strongest area: ${Object.entries(report.categories).sort((x,y) => y[1]-x[1])[0]?.[0] || 'overall harmony'}.` : ''}
+        {` ${overall >= 65 ? 'The foundational compatibility is strong — the work is in navigating the growth edges.' : 'The challenge is real but so is the potential for transformation — this dynamic won\'t let either person stay comfortable.'}`}
+      </div>
+    </div>
+  )
+}
+
 function RomanticContent({ a, b, aName, bName, report }) {
   // Use computed framework if report available, fall back to static
   const computed = report ? computeSynastryFramework(report, true) : null
   const fw = computed || romanticFramework
   return (
     <>
+      {/* Synthesis Summary */}
+      <SynSummary a={a} b={b} aName={aName} bName={bName} report={report} />
       {/* Composite Wheel - spans 2 rows */}
       <div className="syn-card" style={{ gridColumn: 1, gridRow: '1/3' }}>
         <div className="syn-ch"><span className="syn-ct">Composite Chart · Midpoint Wheel</span><span>💕</span></div>
@@ -163,6 +192,7 @@ function FamilyContent({ _a, b, aName, bName, report }) {
 
   return (
     <>
+      <SynSummary a={_a || {}} b={b} aName={aName} bName={bName} report={report} />
       <div className="syn-card" style={{ gridColumn: 1, gridRow: '1/3' }}>
         <div className="syn-ch"><span className="syn-ct">Family Composite Chart · Karmic Axis</span><span>🧬</span></div>
         <div className="syn-cb"><SynastryWheel mode="family" nameA={aName} nameB={bName} chartA={report?.chartA} chartB={report?.chartB} aspects={report?.aspects} /></div>

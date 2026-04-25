@@ -146,6 +146,10 @@ export const useGolemStore = create(
         })),
       setHiddenWidgets: (list) => set({ hiddenWidgets: list }),
 
+      // Language: 'en' | 'es' | 'he'
+      language: 'en',
+      setLanguage: (lang) => set({ language: lang }),
+
       // Layout mode: 'grid' | 'bento' | 'focus' | 'magazine'
       layoutMode: 'grid',
       setLayoutMode: (mode) => set({ layoutMode: mode }),
