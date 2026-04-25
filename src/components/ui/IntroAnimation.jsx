@@ -316,53 +316,123 @@ function mayanPyramid(count) {
 }
 
 function chineseDragon(count) {
-  // Dragon: cloud-like body along S-curve, no visible spine line
-  // All particles placed at random positions along the body with minimum radial offset
+  // Dragon from scratch — enormous detailed head, serpentine body, flowing mane, tail flourish
+  // Head is ~45% of all particles for maximum visual impact
   const pts = new Float32Array(count * 3)
+  const j = () => (Math.random() - 0.5) * 0.025
+
   for (let i = 0; i < count; i++) {
-    // Pick a random position along the body (not sequential — avoids line artifacts)
     const t = Math.random()
+    let x, y, z = (Math.random() - 0.5) * 0.06
 
-    // Spine: S-curve
-    const spineT = t * 4 - 2
-    const sx = spineT * 0.6
-    const sy = Math.sin(spineT * Math.PI * 0.8) * 0.6
-    const sz = Math.cos(spineT * Math.PI * 0.5) * 0.4
-
-    // Body radius — minimum 0.08 so there's no thin spine visible
-    const bodyR = Math.max(0.08, 0.15 + 0.25 * Math.sin(t * Math.PI))
-
-    // Head cloud (first 22%) — BIGGER
-    let hx = 0, hy = 0, hz = 0
-    if (t < 0.22) {
-      const ht = t / 0.22
-      hx = (Math.random() - 0.5) * (0.7 - ht * 0.3)
-      hy = (Math.random() - 0.5) * (0.7 - ht * 0.35) + 0.3
-      hz = (Math.random() - 0.5) * 0.45
-    }
-
-    // Whiskers/horns — extend further
     if (t < 0.12) {
-      const wt = t / 0.12
-      hy += (1 - wt) * 0.55
-      hx += Math.sin(wt * 5) * 0.3
+      // ─── UPPER JAW / SNOUT ─── wide, forward-facing, defined edge
+      const st = Math.random()
+      const snoutLen = 0.5
+      const snoutW = 0.35 * (1 - st * 0.4) // tapers toward tip
+      const snoutH = 0.2 * (1 - st * 0.3)
+      x = -1.2 - st * snoutLen
+      y = 0.15 + (Math.random() - 0.5) * snoutH
+      z = (Math.random() - 0.5) * snoutW
+    } else if (t < 0.18) {
+      // ─── LOWER JAW ─── hangs open slightly
+      const st = Math.random()
+      x = -1.2 - st * 0.4
+      y = -0.1 - (1 - st) * 0.15 + j()
+      z = (Math.random() - 0.5) * 0.3 * (1 - st * 0.3)
+    } else if (t < 0.30) {
+      // ─── HEAD MASS ─── large rounded cranium behind snout
+      const a = Math.random() * TAU
+      const phi = Math.acos(2 * Math.random() - 1)
+      const r = 0.35 + Math.random() * 0.1
+      x = -0.85 + Math.sin(phi) * Math.cos(a) * r * 0.8
+      y = 0.15 + Math.sin(phi) * Math.sin(a) * r * 0.7
+      z = Math.cos(phi) * r * 0.6
+    } else if (t < 0.34) {
+      // ─── EYES ─── two bright clusters on sides of head
+      const side = Math.random() < 0.5 ? 1 : -1
+      const a = Math.random() * TAU
+      const r = Math.random() * 0.06
+      x = -1.05 + Math.cos(a) * r
+      y = 0.25 + Math.sin(a) * r
+      z = side * 0.22 + j()
+    } else if (t < 0.37) {
+      // ─── NOSTRILS ─── two small clusters at tip of snout
+      const side = Math.random() < 0.5 ? 1 : -1
+      const a = Math.random() * TAU
+      const r = Math.random() * 0.04
+      x = -1.65 + Math.cos(a) * r
+      y = 0.12 + Math.sin(a) * r
+      z = side * 0.08 + j()
+    } else if (t < 0.45) {
+      // ─── HORNS + CREST ─── two antler-like horns rising from top of head
+      const st = Math.random()
+      const side = Math.random() < 0.5 ? 1 : -1
+      const hornLen = st
+      x = -0.75 + st * 0.15 + j()
+      y = 0.45 + hornLen * 0.55 + j()
+      z = side * (0.15 + hornLen * 0.2) + j()
+    } else if (t < 0.50) {
+      // ─── WHISKERS / TENDRILS ─── flow from snout, long and curving
+      const st = Math.random()
+      const side = Math.random() < 0.5 ? 1 : -1
+      x = -1.4 - st * 0.3 + j()
+      y = -0.05 - st * 0.35 + j()
+      z = side * (0.15 + st * 0.3) + j()
+    } else if (t < 0.55) {
+      // ─── MANE ─── flowing hair/flames along top of neck
+      const st = Math.random()
+      const bodyT = st * 0.3 // first part of body
+      const spineX = -0.6 + bodyT * 3.5
+      x = spineX + j()
+      y = 0.3 + Math.random() * 0.35 + Math.sin(st * 4) * 0.1
+      z = (Math.random() - 0.5) * 0.25
+    } else if (t < 0.85) {
+      // ─── BODY ─── serpentine S-curve, thick cloud, NO spine line
+      const st = (t - 0.55) / 0.30
+      // Spine path: smooth S going from head to tail
+      const spX = -0.5 + st * 2.5
+      const spY = Math.sin(st * Math.PI * 1.5) * 0.4
+      const spZ = Math.cos(st * Math.PI * 0.8) * 0.3
+
+      // Body gets thinner toward tail
+      const bodyR = 0.22 * (1 - st * 0.55)
+      // Random position in a disc around spine — minimum offset prevents spine line
+      const angle = Math.random() * TAU
+      const minOff = bodyR * 0.35
+      const r = minOff + Math.random() * (bodyR - minOff)
+      x = spX + Math.cos(angle) * r * 0.5
+      y = spY + Math.sin(angle) * r
+      z = spZ + Math.cos(angle + 1.5) * r * 0.5
+    } else if (t < 0.92) {
+      // ─── LEGS / CLAWS ─── four short legs with clawed feet
+      const legIdx = Math.floor(Math.random() * 4)
+      const st = Math.random()
+      const legPositions = [
+        { bx: -0.3, bz: 0.2 },  // front left
+        { bx: -0.3, bz: -0.2 }, // front right
+        { bx: 1.0, bz: 0.2 },   // rear left
+        { bx: 1.0, bz: -0.2 },  // rear right
+      ]
+      const leg = legPositions[legIdx]
+      const spY = Math.sin((leg.bx + 0.5) / 2.5 * Math.PI * 1.5) * 0.4
+      x = leg.bx + j()
+      y = spY - st * 0.35 + j()
+      z = leg.bz + (st > 0.8 ? (Math.random() - 0.5) * 0.12 : 0) + j()
+    } else {
+      // ─── TAIL ─── tapers and curls upward with a flourish
+      const st = (t - 0.92) / 0.08
+      const tailX = 2.0 + st * 0.6
+      const tailY = Math.sin((0.85 + st * 0.15) * Math.PI * 1.5) * 0.4 + st * 0.35
+      const tailZ = Math.cos(st * Math.PI * 2) * 0.2
+      const tailR = 0.08 * (1 - st * 0.6)
+      const angle = Math.random() * TAU
+      x = tailX + Math.cos(angle) * tailR * 0.4
+      y = tailY + Math.sin(angle) * tailR
+      z = tailZ + Math.cos(angle) * tailR * 0.3
     }
 
-    // Tail flourish
-    if (t > 0.88) {
-      const tt = (t - 0.88) / 0.12
-      hz += Math.sin(tt * Math.PI * 3) * 0.35 * tt
-      hy += Math.cos(tt * Math.PI * 2) * 0.25 * tt
-    }
-
-    // Radial offset — always at least 30% of bodyR from spine (prevents line)
-    const angle = Math.random() * TAU
-    const minR = bodyR * 0.3
-    const r = minR + Math.random() * (bodyR - minR)
-
-    pts[i*3]   = sx + Math.cos(angle) * r * 0.6 + hx
-    pts[i*3+1] = sy + Math.sin(angle) * r + hy
-    pts[i*3+2] = sz + Math.cos(angle + 1) * r * 0.5 + hz
+    pts[i*3] = x; pts[i*3+1] = y; pts[i*3+2] = z
   }
   return pts
 }
@@ -473,141 +543,191 @@ function dnaHelix(count) {
 }
 
 function yinYang(count) {
-  // Yin-Yang: clear thick S-curve dividing line is the PRIMARY visual element.
-  // Outer ring + very thick S-line + two filled halves + two eyes.
+  // Yin-Yang as TWO FISH swimming in a circle — the classic pisces interpretation
+  // Each fish is a teardrop/comma shape: fat head tapering to a thin tail
+  // Fish 1 (yang): head at top, tail curves right and down
+  // Fish 2 (yin):  head at bottom, tail curves left and up
+  // The two tails trace the S-curve naturally
   const pts = new Float32Array(count * 3)
-  const R = 0.85
-  const halfR = R / 2
+  const R = 0.9
+
+  // Fish shape: parametric teardrop — head is a filled circle, body tapers
+  // t goes 0→1 from head center to tail tip
+  function fishPoint(t, headX, headY, tailEndX, tailEndY, bodyDir, fatness) {
+    // Bezier-ish path from head to tail with curve
+    const midX = headX + bodyDir * R * 0.3
+    const midY = (headY + tailEndY) * 0.5
+    // Quadratic bezier: head → mid → tail
+    const u = t
+    const px = (1-u)*(1-u)*headX + 2*(1-u)*u*midX + u*u*tailEndX
+    const py = (1-u)*(1-u)*headY + 2*(1-u)*u*midY + u*u*tailEndY
+    // Width tapers: fat at head (t=0), thin at tail (t=1)
+    const width = fatness * (1 - t * 0.85) * (0.7 + 0.3 * Math.cos(t * Math.PI * 0.5))
+    return { px, py, width }
+  }
 
   for (let i = 0; i < count; i++) {
     const t = i / count
-    const z = (Math.random() - 0.5) * 0.04
+    const z = (Math.random() - 0.5) * 0.05
 
-    if (t < 0.18) {
-      // Outer circle ring — thick
-      const a = (t / 0.18) * TAU
-      pts[i*3] = Math.cos(a) * R + (Math.random() - 0.5) * 0.03
-      pts[i*3+1] = Math.sin(a) * R + (Math.random() - 0.5) * 0.03
+    if (t < 0.12) {
+      // ─── Outer circle ring ───
+      const a = (t / 0.12) * TAU
+      const thick = (Math.random() - 0.5) * 0.03
+      pts[i*3] = Math.cos(a) * R + thick
+      pts[i*3+1] = Math.sin(a) * R + thick
       pts[i*3+2] = z
     } else if (t < 0.42) {
-      // S-CURVE — very thick (24% of all particles = unmissable)
-      // Two semicircles forming the S:
-      // Upper: semicircle r=halfR centered at (0, +halfR), from angle 0→π (right to left)
-      // Lower: semicircle r=halfR centered at (0, -halfR), from angle π→2π (left to right)
-      const st = (t - 0.18) / 0.24
-      const jitter = (Math.random() - 0.5) * 0.035  // thick line
-      if (st < 0.5) {
-        const a = (st / 0.5) * Math.PI  // 0 to π
-        pts[i*3] = Math.cos(a) * halfR + jitter
-        pts[i*3+1] = Math.sin(a) * halfR + halfR + jitter
-      } else {
-        const a = ((st - 0.5) / 0.5) * Math.PI + Math.PI  // π to 2π
-        pts[i*3] = Math.cos(a) * halfR + jitter
-        pts[i*3+1] = Math.sin(a) * halfR - halfR + jitter
-      }
+      // ─── FISH 1 (Yang fish) — head at top, curving right ───
+      const st = (t - 0.12) / 0.30
+      const bodyT = Math.random() // random along fish body
+      const { px, py, width } = fishPoint(bodyT, 0, R * 0.5, 0, -R * 0.5, 1, R * 0.42)
+      // Random point within the fish width
+      const angle = Math.random() * TAU
+      const r = Math.random() * width
+      pts[i*3] = px + Math.cos(angle) * r
+      pts[i*3+1] = py + Math.sin(angle) * r * 0.6
+      pts[i*3+2] = z
+    } else if (t < 0.72) {
+      // ─── FISH 2 (Yin fish) — head at bottom, curving left ───
+      const st = (t - 0.42) / 0.30
+      const bodyT = Math.random()
+      const { px, py, width } = fishPoint(bodyT, 0, -R * 0.5, 0, R * 0.5, -1, R * 0.42)
+      const angle = Math.random() * TAU
+      const r = Math.random() * width
+      pts[i*3] = px + Math.cos(angle) * r
+      pts[i*3+1] = py + Math.sin(angle) * r * 0.6
+      pts[i*3+2] = z
+    } else if (t < 0.78) {
+      // ─── Fish 1 EYE (dark dot in yang fish head) ───
+      const a = Math.random() * TAU
+      const r = Math.random() * R * 0.09
+      pts[i*3] = Math.cos(a) * r
+      pts[i*3+1] = R * 0.5 + Math.sin(a) * r
       pts[i*3+2] = z * 0.3
-    } else if (t < 0.62) {
-      // Yang half fill (right/upper region) — moderate density
-      // Simple approach: right semicircle of outer disc
-      const a = (Math.random() - 0.5) * Math.PI  // -π/2 to π/2
-      const r = Math.random() * R * 0.8
-      pts[i*3] = Math.abs(Math.cos(a) * r) * 0.9 + 0.02  // force positive x (right side)
-      pts[i*3+1] = Math.sin(a) * r
-      pts[i*3+2] = z
-    } else if (t < 0.8) {
-      // Yin half fill (left/lower region) — sparser
-      const a = Math.PI / 2 + Math.random() * Math.PI  // π/2 to 3π/2
-      const r = Math.random() * R * 0.8
-      pts[i*3] = -Math.abs(Math.cos(a) * r) * 0.9 - 0.02  // force negative x (left side)
-      pts[i*3+1] = Math.sin(a) * r
-      pts[i*3+2] = z
-    } else if (t < 0.88) {
-      // Yang eye (dot in yang/right half, at 0, +halfR) — dense filled circle
+    } else if (t < 0.84) {
+      // ─── Fish 2 EYE (light dot in yin fish head) ───
       const a = Math.random() * TAU
-      const r = Math.random() * R * 0.1
+      const r = Math.random() * R * 0.09
       pts[i*3] = Math.cos(a) * r
-      pts[i*3+1] = halfR + Math.sin(a) * r
-      pts[i*3+2] = z * 0.2
-    } else if (t < 0.96) {
-      // Yin eye (dot in yin/left half, at 0, -halfR) — dense filled circle
-      const a = Math.random() * TAU
-      const r = Math.random() * R * 0.1
-      pts[i*3] = Math.cos(a) * r
-      pts[i*3+1] = -halfR + Math.sin(a) * r
-      pts[i*3+2] = z * 0.2
-    } else {
-      // Extra S-curve thickness (more particles on the line for clarity)
+      pts[i*3+1] = -R * 0.5 + Math.sin(a) * r
+      pts[i*3+2] = z * 0.3
+    } else if (t < 0.90) {
+      // ─── Fish 1 TAIL FIN — fan out at the tip ───
       const st = Math.random()
-      const jitter = (Math.random() - 0.5) * 0.04
-      if (st < 0.5) {
-        const a = st * 2 * Math.PI
-        pts[i*3] = Math.cos(a) * halfR + jitter
-        pts[i*3+1] = Math.sin(a) * halfR + halfR + jitter
-      } else {
-        const a = (st - 0.5) * 2 * Math.PI + Math.PI
-        pts[i*3] = Math.cos(a) * halfR + jitter
-        pts[i*3+1] = Math.sin(a) * halfR - halfR + jitter
-      }
-      pts[i*3+2] = z * 0.3
+      const spread = st * 0.2
+      const side = (Math.random() - 0.5) * 2
+      pts[i*3] = side * spread + (Math.random() - 0.5) * 0.03
+      pts[i*3+1] = -R * 0.5 - st * 0.15 + (Math.random() - 0.5) * 0.04
+      pts[i*3+2] = z
+    } else if (t < 0.96) {
+      // ─── Fish 2 TAIL FIN ───
+      const st = Math.random()
+      const spread = st * 0.2
+      const side = (Math.random() - 0.5) * 2
+      pts[i*3] = side * spread + (Math.random() - 0.5) * 0.03
+      pts[i*3+1] = R * 0.5 + st * 0.15 + (Math.random() - 0.5) * 0.04
+      pts[i*3+2] = z
+    } else {
+      // ─── Extra outer ring thickness ───
+      const a = Math.random() * TAU
+      const thick = (Math.random() - 0.5) * 0.035
+      pts[i*3] = Math.cos(a) * R + thick
+      pts[i*3+1] = Math.sin(a) * R + thick
+      pts[i*3+2] = z
     }
   }
   return pts
 }
 
 function omSymbol(count) {
-  // Om ॐ — recognizable thick strokes, centered and scaled
-  // Structure: lower-left curl + upper curve + right tail + vertical stem + crescent + dot
+  // Om ॐ — from scratch. VERY THICK strokes. NO lines crossing.
+  // Layout: everything separated so strokes never overlap.
+  // 1. Bottom belly curl (large "3" shape) — left side, lower
+  // 2. Top arch — sweeps from left over to right, sits ABOVE the belly
+  // 3. Tail swoosh — extends right from the arch, curves down
+  // 4. Vertical stem — on the right, goes straight up (NO crossing the arch)
+  // 5. Crescent — sits above the stem, open upward
+  // 6. Bindu dot — above the crescent
   const pts = new Float32Array(count * 3)
-  const j = () => (Math.random() - 0.5) * 0.035
+  // Extra thick jitter for all strokes
+  const j = () => (Math.random() - 0.5) * 0.06
 
   for (let i = 0; i < count; i++) {
     const t = i / count
     const z = (Math.random() - 0.5) * 0.04
 
-    if (t < 0.18) {
-      // Lower-left curl (like a backwards "3" or a belly)
-      const a = (t / 0.18) * Math.PI * 1.6 + Math.PI * 0.2
-      pts[i*3] = Math.cos(a) * 0.38 - 0.2 + j()
-      pts[i*3+1] = Math.sin(a) * 0.32 - 0.4 + j()
+    if (t < 0.22) {
+      // ─── BELLY CURL — the large lower "3" or backwards "ε" ───
+      // Two half-circles stacked: upper bump opens right, lower bump opens right
+      const st = (t / 0.22)
+      if (st < 0.5) {
+        // Upper bump
+        const a = (st / 0.5) * Math.PI + Math.PI * 0.5 // π/2 → 3π/2
+        const cx = -0.25, cy = -0.15
+        pts[i*3] = cx + Math.cos(a) * 0.32 + j()
+        pts[i*3+1] = cy + Math.sin(a) * 0.25 + j()
+      } else {
+        // Lower bump (slightly smaller)
+        const a = ((st - 0.5) / 0.5) * Math.PI - Math.PI * 0.5 // -π/2 → π/2
+        const cx = -0.25, cy = -0.55
+        pts[i*3] = cx + Math.cos(a) * 0.28 + j()
+        pts[i*3+1] = cy + Math.sin(a) * 0.22 + j()
+      }
       pts[i*3+2] = z
-    } else if (t < 0.35) {
-      // Upper body curve — large arc from left to right
-      const st = (t - 0.18) / 0.17
-      const a = st * Math.PI * 1.1 + Math.PI * 0.05
-      pts[i*3] = Math.cos(a) * 0.55 + j()
-      pts[i*3+1] = Math.sin(a) * 0.4 + 0.05 + j()
+    } else if (t < 0.40) {
+      // ─── TOP ARCH — big sweeping curve sitting above the belly ───
+      // Arc from left to right, positioned clearly above belly
+      const st = (t - 0.22) / 0.18
+      const a = st * Math.PI * 1.0 + Math.PI * 0.0 // 0 → π
+      const cx = 0, cy = 0.25
+      pts[i*3] = cx + Math.cos(a) * 0.6 + j()
+      pts[i*3+1] = cy + Math.sin(a) * 0.35 + j()
       pts[i*3+2] = z
-    } else if (t < 0.48) {
-      // Right swooping tail (curves from right body upward and right)
-      const st = (t - 0.35) / 0.13
-      pts[i*3] = 0.2 + st * 0.5 + j()
-      pts[i*3+1] = 0.05 + Math.sin(st * Math.PI * 0.8) * 0.35 + j()
+    } else if (t < 0.52) {
+      // ─── TAIL SWOOSH — extends from right side of arch, curves down ───
+      // Starts where arch ends (right side ~0.6, 0.25), swoops down and right
+      const st = (t - 0.40) / 0.12
+      const startX = 0.55, startY = 0.2
+      const endX = 0.85, endY = -0.2
+      // Quadratic curve swooping
+      const midX = 0.8, midY = 0.3
+      const u = st
+      pts[i*3] = (1-u)*(1-u)*startX + 2*(1-u)*u*midX + u*u*endX + j()
+      pts[i*3+1] = (1-u)*(1-u)*startY + 2*(1-u)*u*midY + u*u*endY + j()
       pts[i*3+2] = z
-    } else if (t < 0.6) {
-      // Connecting hook — small curve linking the two main forms
-      const st = (t - 0.48) / 0.12
-      const a = st * Math.PI * 0.8 + Math.PI * 0.6
-      pts[i*3] = Math.cos(a) * 0.2 - 0.15 + j()
-      pts[i*3+1] = Math.sin(a) * 0.15 - 0.12 + j()
+    } else if (t < 0.60) {
+      // ─── CONNECTING HOOK — small curve linking belly top to arch left ───
+      // Goes from top of belly curl up to left end of arch
+      const st = (t - 0.52) / 0.08
+      const startX = -0.55, startY = -0.15
+      const endX = -0.6, endY = 0.25
+      pts[i*3] = startX + (endX - startX) * st + j() * 0.7
+      pts[i*3+1] = startY + (endY - startY) * st + Math.sin(st * Math.PI) * 0.08 + j() * 0.7
       pts[i*3+2] = z
     } else if (t < 0.72) {
-      // Vertical stem rising from right side
-      const st = (t - 0.6) / 0.12
-      pts[i*3] = 0.35 + j()
-      pts[i*3+1] = 0.25 + st * 0.45 + j()
+      // ─── VERTICAL STEM — right side, goes straight up from tail area ───
+      // Positioned at x≈0.5, clearly to the right of the arch peak
+      // Starts below the tail and goes up to near crescent — NO crossing
+      const st = (t - 0.60) / 0.12
+      pts[i*3] = 0.50 + j() * 0.6
+      pts[i*3+1] = -0.3 + st * 0.9 + j() * 0.6  // -0.3 to 0.6
       pts[i*3+2] = z
-    } else if (t < 0.88) {
-      // Crescent moon — open arc (chandrabindu)
-      const a = ((t - 0.72) / 0.16) * Math.PI + Math.PI * 0.1
-      pts[i*3] = 0.35 + Math.cos(a) * 0.2 + j()
-      pts[i*3+1] = 0.78 + Math.sin(a) * 0.1 + j()
+    } else if (t < 0.86) {
+      // ─── CRESCENT MOON — open arc above the stem ───
+      // Positioned at (0.5, 0.72), opening upward like a cup
+      const st = (t - 0.72) / 0.14
+      const a = st * Math.PI + Math.PI  // π → 2π (bottom half = cup shape)
+      const cx = 0.50, cy = 0.72
+      pts[i*3] = cx + Math.cos(a) * 0.2 + j() * 0.7
+      pts[i*3+1] = cy + Math.sin(a) * 0.12 + j() * 0.7
       pts[i*3+2] = z
     } else {
-      // Bindu (dot above crescent) — filled circle
+      // ─── BINDU (dot) — above crescent, filled circle ───
       const a = Math.random() * TAU
-      const r = Math.random() * 0.07
-      pts[i*3] = 0.35 + Math.cos(a) * r
-      pts[i*3+1] = 0.95 + Math.sin(a) * r
+      const r = Math.random() * 0.08
+      pts[i*3] = 0.50 + Math.cos(a) * r
+      pts[i*3+1] = 0.92 + Math.sin(a) * r
       pts[i*3+2] = z * 0.3
     }
   }
@@ -622,7 +742,7 @@ const FIGURES = [
   { name: 'Dragon', generator: chineseDragon, label: 'Celestial Guardian · Chinese' },
   { name: 'Tree of Life', generator: treeOfLife, label: 'Etz Chaim · Kabbalistic' },
   { name: 'DNA Helix', generator: dnaHelix, label: 'Double Helix · The Code of Life' },
-  { name: 'Yin Yang', generator: yinYang, label: 'Supreme Ultimate · Taoist' },
+  { name: 'Yin Yang', generator: yinYang, label: 'Twin Fish · Taoist' },
   { name: 'Om', generator: omSymbol, label: 'Aum · The Primordial Sound · Sanskrit' },
 ]
 
