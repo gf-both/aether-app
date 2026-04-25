@@ -511,12 +511,25 @@ export default function SyncDetail() {
   const [tab, setTab] = useState('log')
   const [view, setView] = useState('list')
   const [selected, setSelected] = useState(null)
+  const [formKey, setFormKey] = useState(0) // forces EntryForm remount on each "new"
 
   const sorted = useMemo(() => [...syncs].sort((a, b) => b.date.localeCompare(a.date)), [syncs])
 
   function handleSave(entry) {
-    if (selected && view === 'edit') updateSync(entry.id, entry)
-    else addSync(entry)
+    if (selected && view === 'edit') {
+      updateSync(entry.id, entry)
+    } else {
+      addSync(entry)
+    }
+    // Bidirectional linking — when this entry links to others, add back-links
+    if (entry.linked?.length > 0) {
+      for (const linkedId of entry.linked) {
+        const target = syncs.find(s => s.id === linkedId)
+        if (target && !(target.linked || []).includes(entry.id)) {
+          updateSync(linkedId, { linked: [...(target.linked || []), entry.id] })
+        }
+      }
+    }
     setView('list'); setSelected(null)
   }
 
@@ -564,19 +577,19 @@ export default function SyncDetail() {
         <>
           {view === 'list' && (
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setView('new')} style={S.btn(true)}>+ Record Synchronicity</button>
+              <button onClick={() => { setFormKey(k => k + 1); setView('new') }} style={S.btn(true)}>+ Record Synchronicity</button>
             </div>
           )}
           {view === 'new' && (
             <div>
               <div style={S.sectionTitle}>NEW SYNCHRONICITY</div>
-              <EntryForm allSyncs={syncs} onSave={handleSave} onCancel={() => setView('list')} />
+              <EntryForm key={formKey} allSyncs={syncs} onSave={handleSave} onCancel={() => setView('list')} />
             </div>
           )}
           {view === 'edit' && selected && (
             <div>
               <div style={S.sectionTitle}>EDIT</div>
-              <EntryForm initial={selected} allSyncs={syncs} onSave={handleSave} onCancel={() => setView('view')} />
+              <EntryForm key={selected?.id} initial={selected} allSyncs={syncs} onSave={handleSave} onCancel={() => setView('view')} />
             </div>
           )}
           {view === 'view' && selected && (
