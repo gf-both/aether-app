@@ -176,8 +176,8 @@ ${question ? `\n## SPECIFIC QUESTION FROM THE PERSON\n"${question}"\nAnswer this
       <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100%', gap:20, padding:40, textAlign:'center' }}>
         <div style={{ fontSize:48 }}>🧭</div>
         <div style={{ fontFamily:"'Cinzel',serif", fontSize:14, letterSpacing:'.2em', textTransform:'uppercase', color:'var(--gold)' }}>Life Direction</div>
-        <div style={{ fontSize:12, color:'var(--muted-foreground)', maxWidth:360, lineHeight:1.8 }}>
-          Add your name and birth date to activate Life Direction guidance. This agent reads your timing cycles and life purpose to show where you are and where to go next.
+        <div style={{ fontSize:13, color:'var(--muted-foreground)', maxWidth:400, lineHeight:1.85 }}>
+          Your timing cycles, personal year, and life purpose — synthesized into what to do next. Add your name and birth date to begin.
         </div>
       </div>
     )

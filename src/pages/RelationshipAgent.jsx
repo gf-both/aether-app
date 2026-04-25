@@ -99,8 +99,8 @@ DO NOT give generic compatibility advice. Identify the SPECIFIC patterns, trigge
       <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100%', gap:16, padding:40, textAlign:'center' }}>
         <div style={{ fontSize:48 }}>💫</div>
         <div style={{ fontFamily:"'Cinzel',serif", fontSize:14, letterSpacing:'.2em', textTransform:'uppercase', color:'var(--gold)' }}>Relationship Patterns</div>
-        <div style={{ fontSize:12, color:'var(--muted-foreground)', maxWidth:360, lineHeight:1.8 }}>
-          Add your birth data and at least one person to your constellation to analyze relationship dynamics.
+        <div style={{ fontSize:13, color:'var(--muted-foreground)', maxWidth:400, lineHeight:1.85 }}>
+          Pick any person in your constellation. AI analyzes the dynamic — attraction, shadow triggers, power, communication. Add your birth date and at least one person to begin.
         </div>
       </div>
     )

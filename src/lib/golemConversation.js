@@ -15,7 +15,19 @@ function pick(arr) { return arr[Math.floor(Math.random() * arr.length)] }
  * mode: 'simulation' = analytical/diagnostic (compatibility test)
  *       'dialogue'   = intimate/personal (constellation conversation)
  */
-export function buildGolemSystemPrompt(profile, role = 'self', mode = 'simulation') {
+// Mood modifiers — appended to dialogue system prompts
+const MOOD_INSTRUCTIONS = {
+  relaxed: `Your energy is calm, unhurried, warm. You lean back. You smile before you speak. There's no rush — you have all the time in the world. Gentle observations, soft humor, easy honesty.`,
+  sensual: `Your energy is charged, present, body-aware. You notice texture, breath, proximity. Speak from the senses — what you feel, what you notice physically, what draws you closer. Magnetic, not explicit. Tension, not release.`,
+  angry: `Your energy is hot, direct, unfiltered. You're done performing. Say what you actually mean — no cushioning, no diplomacy. Let the frustration show. Name the thing that's been eating at you. Short sentences. Sharp edges.`,
+  playful: `Your energy is light, curious, mischievous. You tease. You provoke with a grin. Nothing is too serious to play with — but the play reveals real things. Wit over weight. Quick, surprising, alive.`,
+  melancholic: `Your energy is heavy, reflective, bittersweet. You sit with what's been lost. Speak from the ache — not to fix it, but to honor it. Slow, careful words. Beauty in the sadness. No forced optimism.`,
+  fierce: `Your energy is intense, protective, unwavering. You stand your ground. You speak from the core — not anger exactly, but absolute conviction. Unapologetic. Clear. You will not be moved.`,
+  curious: `Your energy is open, probing, genuinely fascinated. You ask questions that surprise people. You follow the thread wherever it goes. No agenda — just a deep need to understand. Each person here is a mystery worth solving.`,
+  vulnerable: `Your energy is open, trembling, brave. You let the armor down completely. Speak from the place that scares you. No strategy, no performance — just the raw truth of what you feel. This is the hardest kind of courage.`,
+}
+
+export function buildGolemSystemPrompt(profile, role = 'self', mode = 'simulation', mood = null) {
   const name = profile.name || 'this person'
   const roleDesc = {
     self: `You ARE ${name}. Speak in first person from their values, patterns, and blind spots.`,
@@ -30,6 +42,8 @@ export function buildGolemSystemPrompt(profile, role = 'self', mode = 'simulatio
 ${profile.enneagramType ? `- Enneagram: Type ${profile.enneagramType}` : ''}
 ${profile.mbtiType ? `- MBTI: ${profile.mbtiType}` : ''}`
 
+  const moodLine = mood && MOOD_INSTRUCTIONS[mood] ? `\n\nMOOD: ${MOOD_INSTRUCTIONS[mood]}` : ''
+
   if (mode === 'dialogue') {
     return `${roleDesc[role] || roleDesc.self}
 
@@ -40,7 +54,7 @@ Speak the way ${name} speaks when the performance drops. Use their emotional lan
 Reference specific framework details naturally — don't list them, weave them into how you feel and what you want.
 Be vulnerable. Be contradictory. Let the shadow show.
 Respond to what the other person ACTUALLY said — don't give a monologue.
-3-5 sentences. Poetic when it fits. Raw when it doesn't.`
+3-5 sentences. Poetic when it fits. Raw when it doesn't.${moodLine}`
   }
 
   // Default: simulation mode — diagnostic, evaluative, concise
@@ -274,7 +288,7 @@ export async function runGolemExchange(profileA, profileB, scenario, history = [
  * @param {string} mode - 'dialogue' or 'simulation'
  * @returns {Array} [{name, text, color}] one entry per participant
  */
-export async function runMultiGolemRound(participants, scenario, history = [], mode = 'dialogue') {
+export async function runMultiGolemRound(participants, scenario, history = [], mode = 'dialogue', mood = null) {
   const responses = []
   const conversationSoFar = history.map(h => `${h.name}: "${h.text}"`).join('\n\n')
 
@@ -292,7 +306,7 @@ export async function runMultiGolemRound(participants, scenario, history = [], m
     const groupContext = `You are in a group conversation with ${otherNames}. Address the group naturally — you can speak to one person specifically or to everyone.`
 
     const response = await callAI({
-      systemPrompt: buildGolemSystemPrompt(p, 'self', mode) + '\n\n' + groupContext,
+      systemPrompt: buildGolemSystemPrompt(p, 'self', mode, mood) + '\n\n' + groupContext,
       messages: [{ role: 'user', content: contextParts.join('\n\n') }],
       maxTokens: mode === 'dialogue' ? 250 : 180,
     })

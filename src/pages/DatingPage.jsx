@@ -92,9 +92,9 @@ export default function DatingPage() {
     return (
       <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100%', flexDirection:'column', gap:16, padding:40, textAlign:'center' }}>
         <div style={{ fontSize:48 }}>💫</div>
-        <div style={{ fontFamily:"'Cinzel',serif", fontSize:14, letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold)' }}>Activate Your Golem First</div>
-        <div style={{ fontSize:12, color:'var(--muted-foreground)', maxWidth:320, lineHeight:1.7 }}>
-          Add your birth date to create your Golem. Your clone will match with others while you rest — you only meet people when the frameworks say yes.
+        <div style={{ fontFamily:"'Cinzel',serif", fontSize:14, letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold)' }}>Golem Dating</div>
+        <div style={{ fontSize:13, color:'var(--muted-foreground)', maxWidth:400, lineHeight:1.85 }}>
+          Your golem matches with others while you rest. You only meet people when the frameworks say yes. Add your birth date to activate.
         </div>
       </div>
     )

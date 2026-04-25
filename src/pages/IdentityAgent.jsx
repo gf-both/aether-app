@@ -193,8 +193,8 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
       <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100%', gap:20, padding:40, textAlign:'center' }}>
         <div style={{ fontSize:48 }}>🜁</div>
         <div style={{ fontFamily:"'Cinzel',serif", fontSize:14, letterSpacing:'.2em', textTransform:'uppercase', color:'var(--gold)' }}>Identity Synthesis</div>
-        <div style={{ fontSize:12, color:'var(--muted-foreground)', maxWidth:360, lineHeight:1.8 }}>
-          Add your name and birth date to activate your Identity Synthesis. This agent reads all 21 frameworks simultaneously to produce one coherent identity map.
+        <div style={{ fontSize:13, color:'var(--muted-foreground)', maxWidth:400, lineHeight:1.85 }}>
+          All 22 frameworks computed at once, synthesized into a single identity map. Add your name and birth date to begin.
         </div>
       </div>
     )

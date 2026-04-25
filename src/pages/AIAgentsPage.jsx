@@ -1,8 +1,8 @@
 /**
  * AIAgentsPage.jsx — Constellation
  *
- * Multi-golem dialogue system. Users pick participants, choose a topic,
- * and watch their golems converse in a group chat.
+ * Multi-golem dialogue system. Users pick participants, choose a topic
+ * and mood, and watch their golems converse in a group chat.
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react'
@@ -131,6 +131,19 @@ const TOPICS = [
   },
 ]
 
+// ── Mood definitions ──────────────��───────────────────────────────────────────
+
+const MOODS = [
+  { id: 'relaxed',     label: 'Relaxed',     icon: '🍃', color: '#60b030' },
+  { id: 'sensual',     label: 'Sensual',     icon: '🌹', color: '#d43070' },
+  { id: 'angry',       label: 'Angry',       icon: '🔥', color: '#cc3300' },
+  { id: 'playful',     label: 'Playful',     icon: '✨', color: '#f0a03c' },
+  { id: 'melancholic', label: 'Melancholic', icon: '🌧', color: '#6480c8' },
+  { id: 'fierce',      label: 'Fierce',      icon: '⚔',  color: '#cc6600' },
+  { id: 'curious',     label: 'Curious',     icon: '🔍', color: '#40ccdd' },
+  { id: 'vulnerable',  label: 'Vulnerable',  icon: '💧', color: '#9050e0' },
+]
+
 // ── Participant chip (toggleable) ──────────────────────────────────────────
 
 function ParticipantChip({ p, active, onToggle, isPrimary }) {
@@ -161,7 +174,6 @@ function ParticipantChip({ p, active, onToggle, isPrimary }) {
           {isPrimary ? 'You' : (p.rel || 'other')}
         </div>
       </div>
-      {/* Toggle indicator */}
       <div style={{
         width: 14, height: 14, borderRadius: '50%', flexShrink: 0, marginLeft: 2,
         background: active ? color : 'transparent',
@@ -175,33 +187,34 @@ function ParticipantChip({ p, active, onToggle, isPrimary }) {
   )
 }
 
-// ── Topic pill ──────────────────────────────────────────────────────────────
+// ── Pill selector (reused for topic + mood) ────────────────────────────────
 
-function TopicPill({ topic, active, onClick }) {
+function Pill({ icon, label, color, active, onClick }) {
   return (
     <div
       onClick={onClick}
       style={{
-        display: 'flex', alignItems: 'center', gap: 6, padding: '6px 16px',
+        display: 'flex', alignItems: 'center', gap: 5, padding: '5px 14px',
         borderRadius: 20, cursor: 'pointer', transition: 'all .15s', userSelect: 'none',
-        background: active ? topic.color : 'transparent',
-        border: `1.5px solid ${active ? topic.color : '#333'}`,
+        background: active ? color : 'transparent',
+        border: `1.5px solid ${active ? color : '#333'}`,
         color: active ? '#fff' : '#888',
         fontSize: 11, fontWeight: active ? 700 : 500,
         fontFamily: "'Cinzel', serif", letterSpacing: '.06em',
       }}
     >
-      <span style={{ fontSize: 13 }}>{topic.icon}</span>
-      {topic.label}
+      <span style={{ fontSize: 12 }}>{icon}</span>
+      {label}
     </div>
   )
 }
 
 // ── Multi-Golem Dialogue ──────────────────────────────────────────────────
 
-function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initialTopic, onClose }) {
+function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, onClose }) {
   const [activeIds, setActiveIds] = useState(initialParticipantIds || [])
-  const [topicId, setTopicId] = useState(initialTopic || 'intimate')
+  const [topicId, setTopicId] = useState('intimate')
+  const [moodId, setMoodId] = useState('relaxed')
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
   const [roundNum, setRoundNum] = useState(0)
@@ -209,36 +222,26 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
   const scrollRef = useRef(null)
 
   const topic = TOPICS.find(t => t.id === topicId) || TOPICS[0]
+  const mood = MOODS.find(m => m.id === moodId) || MOODS[0]
 
-  // Build all toggleable profiles: primary always included in list
   const allProfiles = [
     { ...primaryProfile, _isPrimary: true },
     ...allPeople,
   ].filter(p => p.name)
 
-  // Active participants
   const participants = allProfiles.filter(p =>
     p._isPrimary ? activeIds.includes('primary') : activeIds.includes(String(p.id))
   )
 
   const toggleParticipant = (id) => {
-    setActiveIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    )
+    setActiveIds(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
   }
 
-  // Color map for messages
   const colorMap = {}
-  allProfiles.forEach(p => {
-    const key = p._isPrimary ? 'primary' : String(p.id)
-    colorMap[p.name] = getRelColor(p)
-  })
+  allProfiles.forEach(p => { colorMap[p.name] = getRelColor(p) })
 
-  // Auto-scroll on new messages
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-    }
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
   }, [messages, loading])
 
   const runRound = useCallback(async (roundIdx) => {
@@ -250,21 +253,15 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
     const promptIdx = Math.min(roundIdx, roundPrompts.length - 1)
     const names = participants.map(p => p.name).join(', ')
     const scenario = roundPrompts[promptIdx](names)
-
-    // Build history from existing messages
-    const history = messages.map(m => ({ name: m.name, text: m.text }))
+    const history = messages.filter(m => m.type === 'message').map(m => ({ name: m.name, text: m.text }))
 
     try {
-      const responses = await runMultiGolemRound(participants, scenario, history, 'dialogue')
+      const responses = await runMultiGolemRound(participants, scenario, history, 'dialogue', moodId)
 
-      // Add round divider
       const newMessages = [
         { type: 'divider', label: `Round ${roundIdx + 1}`, topic: topic.label },
         ...responses.map(r => ({
-          type: 'message',
-          name: r.name,
-          text: r.text,
-          color: colorMap[r.name] || '#888',
+          type: 'message', name: r.name, text: r.text, color: colorMap[r.name] || '#888',
         })),
       ]
 
@@ -274,9 +271,8 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
       console.error('Multi-golem error:', e)
       setMessages(prev => [...prev, { type: 'error', text: e.message }])
     }
-
     setLoading(false)
-  }, [participants, messages, topic, colorMap])
+  }, [participants, messages, topic, moodId, colorMap])
 
   const startDialogue = useCallback(() => {
     setMessages([])
@@ -284,9 +280,7 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
     runRound(0)
   }, [runRound])
 
-  const continueDialogue = useCallback(() => {
-    runRound(roundNum)
-  }, [runRound, roundNum])
+  const continueDialogue = useCallback(() => { runRound(roundNum) }, [runRound, roundNum])
 
   const canStart = participants.length >= 2
   const maxRounds = topic.rounds.length
@@ -306,6 +300,7 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
           </div>
           <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 2 }}>
             {participants.length} participant{participants.length !== 1 ? 's' : ''} · <span style={{ color: topic.color }}>{topic.icon} {topic.label}</span>
+            {' · '}<span style={{ color: mood.color }}>{mood.icon} {mood.label}</span>
             {roundNum > 0 && <span> · round {roundNum}/{maxRounds}</span>}
           </div>
         </div>
@@ -315,48 +310,52 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
               padding: '6px 14px', borderRadius: 8, background: 'rgba(255,255,255,.05)',
               border: '1px solid #333', color: '#999', cursor: 'pointer',
               fontFamily: "'Cinzel',serif", fontSize: 9, fontWeight: 600, letterSpacing: '.08em',
-            }}>⚙ Setup</button>
+            }}>Setup</button>
           )}
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer', fontSize: 20, padding: 0, lineHeight: 1 }}>×</button>
         </div>
       </div>
 
-      {/* Setup panel — topic + participant toggles */}
+      {/* Setup panel */}
       {showSetup && (
         <div style={{
           padding: '16px 20px', borderBottom: '1px solid var(--border, #222)',
-          background: 'rgba(255,255,255,.01)', flexShrink: 0,
+          background: 'rgba(255,255,255,.01)', flexShrink: 0, overflowY: 'auto', maxHeight: '55vh',
         }}>
-          {/* Topic selector */}
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#666', marginBottom: 10 }}>
+          {/* Topic */}
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#666', marginBottom: 8 }}>
             Topic
           </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
             {TOPICS.map(t => (
-              <TopicPill key={t.id} topic={t} active={topicId === t.id} onClick={() => setTopicId(t.id)} />
+              <Pill key={t.id} icon={t.icon} label={t.label} color={t.color} active={topicId === t.id} onClick={() => setTopicId(t.id)} />
             ))}
           </div>
 
-          {/* Participant toggles */}
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#666', marginBottom: 10 }}>
+          {/* Mood */}
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#666', marginBottom: 8 }}>
+            Mood
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
+            {MOODS.map(m => (
+              <Pill key={m.id} icon={m.icon} label={m.label} color={m.color} active={moodId === m.id} onClick={() => setMoodId(m.id)} />
+            ))}
+          </div>
+
+          {/* Participants */}
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#666', marginBottom: 8 }}>
             Participants — {participants.length} active
           </div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
             {allProfiles.map(p => {
               const id = p._isPrimary ? 'primary' : String(p.id)
               return (
-                <ParticipantChip
-                  key={id}
-                  p={p}
-                  isPrimary={p._isPrimary}
-                  active={activeIds.includes(id)}
-                  onToggle={() => toggleParticipant(id)}
-                />
+                <ParticipantChip key={id} p={p} isPrimary={p._isPrimary} active={activeIds.includes(id)} onToggle={() => toggleParticipant(id)} />
               )
             })}
           </div>
 
-          {/* Start / restart button */}
+          {/* Start button */}
           <button
             onClick={startDialogue}
             disabled={!canStart || loading}
@@ -381,10 +380,9 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
         </div>
       )}
 
-      {/* Messages area */}
+      {/* Messages */}
       <div ref={scrollRef} style={{ flex: 1, overflowY: 'auto', padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
 
-        {/* Empty state */}
         {messages.length === 0 && !loading && !showSetup && (
           <div style={{ textAlign: 'center', padding: '40px 20px', color: 'var(--muted-foreground)' }}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>🪬</div>
@@ -395,13 +393,9 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
         {messages.map((m, i) => {
           if (m.type === 'divider') {
             return (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0 6px',
-              }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0 6px' }}>
                 <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.06)' }} />
-                <span style={{ fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#555', whiteSpace: 'nowrap' }}>
-                  {m.label}
-                </span>
+                <span style={{ fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#555', whiteSpace: 'nowrap' }}>{m.label}</span>
                 <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.06)' }} />
               </div>
             )
@@ -413,16 +407,13 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
               </div>
             )
           }
-          // Regular message
           const isFromPrimary = m.name === primaryProfile.name
           return (
             <div key={i} style={{ maxWidth: '82%', alignSelf: isFromPrimary ? 'flex-start' : 'flex-end' }}>
               <div style={{
                 fontSize: 9, letterSpacing: '.08em', textTransform: 'uppercase', color: m.color,
-                marginBottom: 4,
-                textAlign: isFromPrimary ? 'left' : 'right',
-                paddingLeft: isFromPrimary ? 2 : 0,
-                paddingRight: !isFromPrimary ? 2 : 0,
+                marginBottom: 4, textAlign: isFromPrimary ? 'left' : 'right',
+                paddingLeft: isFromPrimary ? 2 : 0, paddingRight: !isFromPrimary ? 2 : 0,
               }}>
                 {m.name}
               </div>
@@ -439,14 +430,12 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
           )
         })}
 
-        {/* Loading indicator */}
         {loading && (
           <div style={{ display: 'flex', gap: 4, padding: 16, alignItems: 'center' }}>
             {[0, 1, 2].map(i => (
               <div key={i} style={{
                 width: 6, height: 6, borderRadius: '50%', background: topic.color,
-                animation: 'pulse 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s`,
-                opacity: 0.6,
+                animation: 'pulse 1.2s ease-in-out infinite', animationDelay: `${i * 0.2}s`, opacity: 0.6,
               }} />
             ))}
             <span style={{ fontSize: 11, color: 'var(--muted-foreground)', marginLeft: 8 }}>
@@ -456,25 +445,20 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
         )}
       </div>
 
-      {/* Bottom bar — continue / new round */}
+      {/* Bottom bar */}
       {roundNum > 0 && !showSetup && (
         <div style={{
           padding: '12px 20px', borderTop: '1px solid var(--border, #222)',
           display: 'flex', gap: 10, flexShrink: 0, alignItems: 'center',
         }}>
           {canContinue ? (
-            <button
-              onClick={continueDialogue}
-              style={{
-                flex: 1, padding: '10px 20px', borderRadius: 8,
-                cursor: 'pointer',
-                background: topic.color,
-                border: `2px solid ${topic.color}`,
-                color: '#fff', fontSize: 12, fontFamily: "'Cinzel',serif",
-                fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
-                boxShadow: `0 0 16px ${topic.color}55`,
-              }}
-            >
+            <button onClick={continueDialogue} style={{
+              flex: 1, padding: '10px 20px', borderRadius: 8, cursor: 'pointer',
+              background: topic.color, border: `2px solid ${topic.color}`,
+              color: '#fff', fontSize: 12, fontFamily: "'Cinzel',serif",
+              fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase',
+              boxShadow: `0 0 16px ${topic.color}55`,
+            }}>
               Continue — Round {roundNum + 1}/{maxRounds}
             </button>
           ) : !loading ? (
@@ -500,7 +484,7 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, initi
   )
 }
 
-// ── Profile card ──────────────────────────────────────────────────────────
+// ── Profile card ───────────────────────────��──────────────────────────────
 
 function ProfileCard({ p, index, selected, onSelect }) {
   const color = getRelColor(p)
@@ -544,7 +528,7 @@ function ProfileCard({ p, index, selected, onSelect }) {
   )
 }
 
-// ── Profile detail panel ──────────────────────────────────────────────────
+// ── Profile detail panel ───��──────────────────────────────────────────────
 
 function ProfileDetail({ p, primaryProfile, onClose, onStartDialogue }) {
   const color = getRelColor(p)
@@ -616,14 +600,12 @@ function ProfileDetail({ p, primaryProfile, onClose, onStartDialogue }) {
         </div>
       )}
 
-      {/* Dialogue button — only for non-primary profiles */}
       {!p._isPrimary && (
         <button
           onClick={() => onStartDialogue(p)}
           style={{
             width: '100%', padding: '10px 0', borderRadius: 10, cursor: 'pointer',
-            background: '#7040c0',
-            border: '2px solid #9060e0',
+            background: '#7040c0', border: '2px solid #9060e0',
             color: '#fff', fontFamily: "'Cinzel',serif", fontSize: 10,
             letterSpacing: '.12em', textTransform: 'uppercase', fontWeight: 700, marginTop: 4,
             boxShadow: '0 0 12px rgba(144,80,224,.3)',
@@ -636,7 +618,7 @@ function ProfileDetail({ p, primaryProfile, onClose, onStartDialogue }) {
   )
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────
+// ── Main page ───────────────────────────────────────��─────────────────────
 
 export default function AIAgentsPage() {
   const primaryProfile = useComputedProfile()
@@ -651,6 +633,7 @@ export default function AIAgentsPage() {
     ...people,
   ].filter(p => p.name)
 
+  // Empty state — no profile
   if (all.length === 0) {
     return (
       <div style={{
@@ -661,8 +644,8 @@ export default function AIAgentsPage() {
         <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--gold, #c9a84c)' }}>
           Constellation
         </div>
-        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', maxWidth: 360, lineHeight: 1.85 }}>
-          Complete your profile and add people to build your personal constellation.
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', maxWidth: 400, lineHeight: 1.85 }}>
+          Your people, mapped. Add profiles to your constellation, then start a group dialogue — pick a topic, set the mood, and let their golems talk.
         </div>
         <button
           onClick={() => setActiveDetail('profile')}
@@ -681,7 +664,6 @@ export default function AIAgentsPage() {
 
   const selectedProfile = selected !== null ? all[selected] : null
 
-  // Dialogue mode — full screen multi-golem dialogue
   if (dialogueMode) {
     return (
       <div style={{ height: '100%', overflow: 'hidden' }}>
@@ -697,17 +679,14 @@ export default function AIAgentsPage() {
 
   return (
     <div style={{ display: 'flex', height: '100%', overflow: 'hidden' }}>
-      {/* Grid */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
           <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--gold, #c9a84c)' }}>
             Constellation
           </div>
-          {/* Open group dialogue button */}
           {all.length >= 2 && (
             <button
               onClick={() => {
-                // Pre-select primary + all people
                 const ids = ['primary', ...people.map(p => String(p.id))]
                 setInitialParticipants(ids)
                 setDialogueMode(true)
@@ -725,7 +704,7 @@ export default function AIAgentsPage() {
           )}
         </div>
         <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginBottom: 20 }}>
-          {all.length} {all.length === 1 ? 'profile' : 'profiles'} · click to view details
+          Click a profile to view details. Start a group dialogue to hear your golems speak.
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
@@ -735,7 +714,6 @@ export default function AIAgentsPage() {
         </div>
       </div>
 
-      {/* Detail panel */}
       {selectedProfile && (
         <ProfileDetail
           p={selectedProfile}
@@ -743,7 +721,6 @@ export default function AIAgentsPage() {
           onClose={() => setSelected(null)}
           onStartDialogue={(target) => {
             setSelected(null)
-            // Pre-select primary + this person for 1-on-1
             setInitialParticipants(['primary', String(target.id)])
             setDialogueMode(true)
           }}

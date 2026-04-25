@@ -62,7 +62,7 @@ export default function GolemSimulation() {
       <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', height:'100%', gap:16, padding:40, textAlign:'center' }}>
         <div style={{ fontSize:48 }}>🔮</div>
         <div style={{ fontFamily:"'Cinzel',serif", fontSize:14, letterSpacing:'.2em', textTransform:'uppercase', color:'var(--gold)' }}>Golem Simulation</div>
-        <div style={{ fontSize:12, color:'var(--muted-foreground)', maxWidth:360, lineHeight:1.8 }}>Add your birth data and constellation to run Golem compatibility simulations.</div>
+        <div style={{ fontSize:13, color:'var(--muted-foreground)', maxWidth:400, lineHeight:1.85 }}>5-phase compatibility test. Your golem meets theirs under controlled conditions — first impression through future projection, scored. Add your birth date and people to begin.</div>
       </div>
     )
   }
@@ -70,7 +70,7 @@ export default function GolemSimulation() {
   return (
     <div style={{ display:'flex', flexDirection:'column', height:'100%', padding:'20px 24px', overflowY:'auto' }}>
       <div style={{ fontFamily:"'Cinzel',serif", fontSize:11, letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold)', marginBottom:4 }}>Golem Simulation</div>
-      <div style={{ fontSize:12, color:'var(--muted-foreground)', marginBottom:20 }}>Structured compatibility test — 5 phases, scored. Your golem is observed under pressure.</div>
+      <div style={{ fontSize:12, color:'var(--muted-foreground)', marginBottom:20 }}>Pick a person. Choose the relationship type. Your golems run 5 phases and get scored.</div>
 
       {/* Scenario type */}
       <div style={{ display:'flex', gap:8, marginBottom:16, flexWrap:'wrap' }}>
