@@ -639,98 +639,125 @@ function dnaHelix(count) {
 }
 
 function yinYang(count) {
-  // Yin-Yang as TWO FISH swimming in a circle — the classic pisces interpretation
-  // Each fish is a teardrop/comma shape: fat head tapering to a thin tail
-  // Fish 1 (yang): head at top, tail curves right and down
-  // Fish 2 (yin):  head at bottom, tail curves left and up
-  // The two tails trace the S-curve naturally
+  // Yin-Yang as a full 3D SPHERE made of TWO FISH
+  // The classic yin-yang S-curve is mapped onto the sphere surface:
+  // Fish 1 (Yang) owns one half, Fish 2 (Yin) owns the other.
+  // Each fish head bulges into the other's hemisphere.
+  // The dividing S-curve creates the iconic shape when viewed from any angle.
+  // Eyes are small spherical clusters inside each fish's head territory.
+  // Tail fins fan out where each fish tapers to nothing.
   const pts = new Float32Array(count * 3)
-  const R = 0.9
+  const R = 1.0
 
-  // Fish shape: parametric teardrop — head is a filled circle, body tapers
-  // t goes 0→1 from head center to tail tip
-  function fishPoint(t, headX, headY, tailEndX, tailEndY, bodyDir, fatness) {
-    // Bezier-ish path from head to tail with curve
-    const midX = headX + bodyDir * R * 0.3
-    const midY = (headY + tailEndY) * 0.5
-    // Quadratic bezier: head → mid → tail
-    const u = t
-    const px = (1-u)*(1-u)*headX + 2*(1-u)*u*midX + u*u*tailEndX
-    const py = (1-u)*(1-u)*headY + 2*(1-u)*u*midY + u*u*tailEndY
-    // Width tapers: fat at head (t=0), thin at tail (t=1)
-    const width = fatness * (1 - t * 0.85) * (0.7 + 0.3 * Math.cos(t * Math.PI * 0.5))
-    return { px, py, width }
-  }
+  // The S-curve boundary on the sphere: at latitude phi (0=top, PI=bottom),
+  // the boundary longitude shifts sinusoidally. Points on one side = fish 1,
+  // other side = fish 2. The sine creates the classic S.
+  // Fish heads are the bulging lobes at top and bottom.
 
   for (let i = 0; i < count; i++) {
-    const t = i / count
-    const z = (Math.random() - 0.5) * 0.05
+    const t = Math.random()
 
-    if (t < 0.12) {
-      // ─── Outer circle ring ───
-      const a = (t / 0.12) * TAU
-      const thick = (Math.random() - 0.5) * 0.03
-      pts[i*3] = Math.cos(a) * R + thick
-      pts[i*3+1] = Math.sin(a) * R + thick
-      pts[i*3+2] = z
-    } else if (t < 0.42) {
-      // ─── FISH 1 (Yang fish) — head at top, curving right ───
-      const st = (t - 0.12) / 0.30
-      const bodyT = Math.random() // random along fish body
-      const { px, py, width } = fishPoint(bodyT, 0, R * 0.5, 0, -R * 0.5, 1, R * 0.42)
-      // Random point within the fish width
-      const angle = Math.random() * TAU
-      const r = Math.random() * width
-      pts[i*3] = px + Math.cos(angle) * r
-      pts[i*3+1] = py + Math.sin(angle) * r * 0.6
-      pts[i*3+2] = z
-    } else if (t < 0.72) {
-      // ─── FISH 2 (Yin fish) — head at bottom, curving left ───
-      const st = (t - 0.42) / 0.30
-      const bodyT = Math.random()
-      const { px, py, width } = fishPoint(bodyT, 0, -R * 0.5, 0, R * 0.5, -1, R * 0.42)
-      const angle = Math.random() * TAU
-      const r = Math.random() * width
-      pts[i*3] = px + Math.cos(angle) * r
-      pts[i*3+1] = py + Math.sin(angle) * r * 0.6
-      pts[i*3+2] = z
-    } else if (t < 0.78) {
-      // ─── Fish 1 EYE (dark dot in yang fish head) ───
+    if (t < 0.38) {
+      // ─── FISH 1 (Yang) — sphere surface, one side of S-curve ───
+      // Generate random point on sphere, keep if in Fish 1 territory
+      // Fish 1 head at top (phi near 0), tail tapers toward bottom
+      let x, y, z2
+      for (let attempt = 0; attempt < 8; attempt++) {
+        const phi = Math.acos(2 * Math.random() - 1) // 0 to PI
+        const theta = Math.random() * TAU
+        // S-curve boundary: shifts by sin(phi) — head bulges at poles
+        const sCurve = Math.sin(phi) * R * 0.5
+        const boundary = sCurve
+        const px = R * Math.sin(phi) * Math.cos(theta)
+        const py = R * Math.cos(phi) // top = +1, bottom = -1
+        const pz = R * Math.sin(phi) * Math.sin(theta)
+        // Fish 1 owns: theta side where cos(theta) > boundary/R adjusted
+        // Simplified: Fish 1 = points where x > sin(phi)*cos(phi)*0.5
+        const sDiv = Math.sin(phi * 2) * 0.3
+        if (px > sDiv * R || attempt === 7) {
+          // Shell bias — 75% near surface for definition
+          const shell = Math.random() < 0.75 ? (0.88 + Math.random() * 0.12) : (0.5 + Math.random() * 0.5)
+          x = px * shell; y = py * shell; z2 = pz * shell
+          break
+        }
+        x = px; y = py; z2 = pz
+      }
+      pts[i*3] = x; pts[i*3+1] = y; pts[i*3+2] = z2
+
+    } else if (t < 0.76) {
+      // ─── FISH 2 (Yin) — opposite side of S-curve ───
+      let x, y, z2
+      for (let attempt = 0; attempt < 8; attempt++) {
+        const phi = Math.acos(2 * Math.random() - 1)
+        const theta = Math.random() * TAU
+        const px = R * Math.sin(phi) * Math.cos(theta)
+        const py = R * Math.cos(phi)
+        const pz = R * Math.sin(phi) * Math.sin(theta)
+        const sDiv = Math.sin(phi * 2) * 0.3
+        if (px <= sDiv * R || attempt === 7) {
+          const shell = Math.random() < 0.75 ? (0.88 + Math.random() * 0.12) : (0.5 + Math.random() * 0.5)
+          x = px * shell; y = py * shell; z2 = pz * shell
+          break
+        }
+        x = px; y = py; z2 = pz
+      }
+      pts[i*3] = x; pts[i*3+1] = y; pts[i*3+2] = z2
+
+    } else if (t < 0.82) {
+      // ─── S-CURVE DIVIDING LINE — dense particles tracing the boundary ───
+      const phi = Math.random() * Math.PI
+      const sDiv = Math.sin(phi * 2) * 0.3
+      const theta = Math.atan2(0, sDiv) // on the dividing plane
+      const px = sDiv * R
+      const py = R * Math.cos(phi)
+      const pz = (Math.random() - 0.5) * 0.06 // thin line
+      // Project onto sphere surface
+      const len = Math.sqrt(px*px + py*py + pz*pz) || 1
+      const shell = R / len * (0.95 + Math.random() * 0.05)
+      pts[i*3] = px * shell
+      pts[i*3+1] = py * shell
+      pts[i*3+2] = pz * shell
+
+    } else if (t < 0.86) {
+      // ─── FISH 1 EYE — small sphere in upper hemisphere, offset into fish 1 territory ───
+      // Eye sits where fish 1 head is (top, slightly to the right)
       const a = Math.random() * TAU
-      const r = Math.random() * R * 0.09
-      pts[i*3] = Math.cos(a) * r
-      pts[i*3+1] = R * 0.5 + Math.sin(a) * r
-      pts[i*3+2] = z * 0.3
-    } else if (t < 0.84) {
-      // ─── Fish 2 EYE (light dot in yin fish head) ───
-      const a = Math.random() * TAU
-      const r = Math.random() * R * 0.09
-      pts[i*3] = Math.cos(a) * r
-      pts[i*3+1] = -R * 0.5 + Math.sin(a) * r
-      pts[i*3+2] = z * 0.3
+      const phi2 = Math.acos(2 * Math.random() - 1)
+      const eyeR = 0.09
+      const cx = 0.15, cy = 0.45, cz = 0
+      pts[i*3] = cx + Math.sin(phi2) * Math.cos(a) * eyeR
+      pts[i*3+1] = cy + Math.sin(phi2) * Math.sin(a) * eyeR
+      pts[i*3+2] = cz + Math.cos(phi2) * eyeR
+
     } else if (t < 0.90) {
-      // ─── Fish 1 TAIL FIN — fan out at the tip ───
-      const st = Math.random()
-      const spread = st * 0.2
-      const side = (Math.random() - 0.5) * 2
-      pts[i*3] = side * spread + (Math.random() - 0.5) * 0.03
-      pts[i*3+1] = -R * 0.5 - st * 0.15 + (Math.random() - 0.5) * 0.04
-      pts[i*3+2] = z
-    } else if (t < 0.96) {
-      // ─── Fish 2 TAIL FIN ───
-      const st = Math.random()
-      const spread = st * 0.2
-      const side = (Math.random() - 0.5) * 2
-      pts[i*3] = side * spread + (Math.random() - 0.5) * 0.03
-      pts[i*3+1] = R * 0.5 + st * 0.15 + (Math.random() - 0.5) * 0.04
-      pts[i*3+2] = z
-    } else {
-      // ─── Extra outer ring thickness ───
+      // ─── FISH 2 EYE — small sphere in lower hemisphere, offset into fish 2 territory ───
       const a = Math.random() * TAU
-      const thick = (Math.random() - 0.5) * 0.035
-      pts[i*3] = Math.cos(a) * R + thick
-      pts[i*3+1] = Math.sin(a) * R + thick
-      pts[i*3+2] = z
+      const phi2 = Math.acos(2 * Math.random() - 1)
+      const eyeR = 0.09
+      const cx = -0.15, cy = -0.45, cz = 0
+      pts[i*3] = cx + Math.sin(phi2) * Math.cos(a) * eyeR
+      pts[i*3+1] = cy + Math.sin(phi2) * Math.sin(a) * eyeR
+      pts[i*3+2] = cz + Math.cos(phi2) * eyeR
+
+    } else if (t < 0.95) {
+      // ─── FISH 1 TAIL FINS — fan out at bottom where fish 1 tapers ───
+      const st = Math.random()
+      const fanAngle = (Math.random() - 0.5) * 1.2
+      const finR = R * (0.85 + st * 0.15)
+      const finTheta = fanAngle * 0.4
+      pts[i*3] = Math.sin(finTheta) * finR * 0.4 + 0.15
+      pts[i*3+1] = -R * 0.75 - st * 0.25
+      pts[i*3+2] = Math.cos(fanAngle) * st * 0.2
+
+    } else {
+      // ─── FISH 2 TAIL FINS — fan out at top where fish 2 tapers ───
+      const st = Math.random()
+      const fanAngle = (Math.random() - 0.5) * 1.2
+      const finR = R * (0.85 + st * 0.15)
+      const finTheta = fanAngle * 0.4
+      pts[i*3] = Math.sin(finTheta) * finR * 0.4 - 0.15
+      pts[i*3+1] = R * 0.75 + st * 0.25
+      pts[i*3+2] = Math.cos(fanAngle) * st * 0.2
     }
   }
   return pts
@@ -838,7 +865,7 @@ const FIGURES = [
   { name: 'Dragon', generator: chineseDragon, label: 'Celestial Guardian · Chinese', particles: 20000 },
   { name: 'Tree of Life', generator: treeOfLife, label: 'Etz Chaim · Kabbalistic' },
   { name: 'DNA Helix', generator: dnaHelix, label: 'Double Helix · The Code of Life' },
-  { name: 'Yin Yang', generator: yinYang, label: 'Twin Fish · Taoist' },
+  { name: 'Yin Yang', generator: yinYang, label: 'Twin Fish · Taoist', particles: 12000 },
   { name: 'Om', generator: omSymbol, label: 'Aum · The Primordial Sound · Sanskrit' },
 ]
 
