@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
+import { computePersonData } from '../../hooks/useActiveProfile'
 import { REL_CONFIG } from '../../data/primaryProfile'
 import { isRomantic, romanticFramework, familyFramework, computeSynastryFramework } from '../../data/synastryFrameworks'
 import { getSynastryReport, getBirthParams } from '../../engines/synastryEngine'
@@ -108,6 +109,26 @@ function RomanticContent({ a, b, aName, bName, report }) {
   // Use computed framework if report available, fall back to static
   const computed = report ? computeSynastryFramework(report, true) : null
   const fw = computed || romanticFramework
+
+  // Build dynamic HD items from actual computed profiles (computePersonData fills hdType/hdProfile/hdAuth)
+  const hdA = a?.hdType && a.hdType !== '?' ? a.hdType : null
+  const hdB = b?.hdType && b.hdType !== '?' ? b.hdType : null
+  const profA = a?.hdProfile && a.hdProfile !== '?' ? a.hdProfile : null
+  const profB = b?.hdProfile && b.hdProfile !== '?' ? b.hdProfile : null
+  const authA = a?.hdAuth && a.hdAuth !== '?' ? a.hdAuth : null
+  const authB = b?.hdAuth && b.hdAuth !== '?' ? b.hdAuth : null
+  const defA = a?.hdDef || null
+  const defB = b?.hdDef || null
+
+  const hdItems = (hdA || hdB) ? [
+    { icon: '⚡', title: 'Type Chemistry', val: `${hdA || '?'} + ${hdB || '?'}`, sub: hdA === hdB ? 'Same type — deep mutual recognition' : 'Different strategies create complementary flow' },
+    { icon: '🔮', title: 'Profile Harmony', val: profA && profB ? `${profA} meets ${profB}` : '—', sub: profA && profB ? 'Profile lines create unique relational karma' : 'Add birth times for profile data' },
+    { icon: '💫', title: 'Authority Dance', val: `${authA || '?'} × ${authB || '?'}`, sub: authA === authB ? 'Same authority — natural timing alignment' : 'Different decision-making rhythms — must honor both' },
+    { icon: '✨', title: 'Definition Bridge', val: defA && defB ? `${defA} + ${defB}` : '—', sub: 'How your energy bodies connect and complete each other' },
+    { icon: '🌊', title: `${aName}'s Design`, val: hdA || '?', sub: profA ? `${profA} · ${authA || '?'} authority` : 'Profile pending' },
+    { icon: '🎯', title: `${bName}'s Design`, val: hdB || '?', sub: profB ? `${profB} · ${authB || '?'} authority` : 'Profile pending' },
+  ] : fw.hdSection.items(a, b, aName, bName)
+
   return (
     <>
       {/* Synthesis Summary */}
@@ -150,7 +171,7 @@ function RomanticContent({ a, b, aName, bName, report }) {
       <div className="syn-card" style={{ gridColumn: 3, gridRow: 1 }}>
         <div className="syn-ch"><span className="syn-ct">◈ Human Design Compatibility</span><span>◈</span></div>
         <div className="syn-cb">
-          <CompositeGrid items={fw.hdSection.items(a, b, aName, bName)} />
+          <CompositeGrid items={hdItems} />
         </div>
       </div>
 
@@ -171,7 +192,7 @@ function RomanticContent({ a, b, aName, bName, report }) {
   )
 }
 
-function FamilyContent({ _a, b, aName, bName, report }) {
+function FamilyContent({ a, b, aName, bName, report }) {
   const fw = familyFramework
   const rel = b.rel || 'other'
   const isParentRel = rel === 'father' || rel === 'mother'
@@ -186,10 +207,23 @@ function FamilyContent({ _a, b, aName, bName, report }) {
     ? { ...fw.getGenerationalSection(isParentRel, aName, bName, b.sign), ...computed.genSectionData }
     : fw.getGenerationalSection(isParentRel, aName, bName, b.sign)
 
-  // HD items — use computed data when available to make them dynamic
-  const hdItems = computed?.hdItems
-    ? computed.hdItems
-    : fw.hdSection.items(isParentRel, aName, bName)
+  // HD items — build dynamic items from computed profiles (computePersonData fills hdType)
+  // The synastry report's chartA/B don't have HD data, so build from the computed profiles directly
+  const hdA = a?.hdType && a.hdType !== '?' ? a.hdType : null
+  const hdB = b?.hdType && b.hdType !== '?' ? b.hdType : null
+  const profA = a?.hdProfile && a.hdProfile !== '?' ? a.hdProfile : null
+  const profB = b?.hdProfile && b.hdProfile !== '?' ? b.hdProfile : null
+  const authA = a?.hdAuth && a.hdAuth !== '?' ? a.hdAuth : null
+  const authB = b?.hdAuth && b.hdAuth !== '?' ? b.hdAuth : null
+
+  const hdItems = (hdA || hdB) ? [
+    { icon: '⚡', title: `${aName}'s Type`, val: hdA || '?', sub: profA ? `Profile ${profA}` : 'Unknown profile' },
+    { icon: '⚡', title: `${bName}'s Type`, val: hdB || '?', sub: profB ? `Profile ${profB}` : 'Unknown profile' },
+    { icon: '🔗', title: 'Energy Dynamic', val: hdA === hdB ? 'Mirror — same operating system' : `${hdA || '?'} + ${hdB || '?'}`, sub: hdA === hdB ? 'Same type creates deep mutual understanding' : 'Different strategies create a complete circuit' },
+    { icon: '🌀', title: 'Authority Dance', val: `${authA || '?'} × ${authB || '?'}`, sub: authA === authB ? 'Shared decision rhythm — natural alignment' : 'Different timing creates productive tension' },
+    { icon: '🏛️', title: isParentRel ? 'Conditioning Pattern' : 'Sibling Resonance', val: isParentRel ? `${bName} defines ${aName}'s open centers` : 'Mutual definition exchange', sub: isParentRel ? 'Deep imprint during formative years' : 'You complete each other\'s energy circuit' },
+    { icon: '🎯', title: 'Profile Karma', val: profA && profB ? `${profA} meets ${profB}` : 'Profiles pending', sub: 'Life themes interact through shared lineage' },
+  ] : fw.hdSection.items(isParentRel, aName, bName)
 
   // Multi-system scores — use computed when available
   const msScores = computed?.multiSystemScores
@@ -201,7 +235,7 @@ function FamilyContent({ _a, b, aName, bName, report }) {
 
   return (
     <>
-      <SynSummary a={_a || {}} b={b} aName={aName} bName={bName} report={report} />
+      <SynSummary a={a || {}} b={b} aName={aName} bName={bName} report={report} />
       <div className="syn-card" style={{ gridColumn: 1, gridRow: '1/3' }}>
         <div className="syn-ch"><span className="syn-ct">Family Composite Chart · Karmic Axis</span><span>🧬</span></div>
         <div className="syn-cb"><SynastryWheel mode="family" nameA={aName} nameB={bName} chartA={report?.chartA} chartB={report?.chartB} aspects={report?.aspects} /></div>
@@ -275,20 +309,26 @@ export function SynastryInner({ onClose }) {
   const synSelB = useGolemStore((s) => s.synSelB)
   const setSynSel = useGolemStore((s) => s.setSynSel)
 
-  const a = getProfile(synSelA, primaryProfile, people)
-  const b = synSelB !== null ? getProfile(synSelB, primaryProfile, people) : null
-  const aName = a.name.split(' ')[0]
-  const bName = b ? b.name.split(' ')[0] : 'Select Person'
+  const rawA = getProfile(synSelA, primaryProfile, people)
+  const rawB = synSelB !== null ? getProfile(synSelB, primaryProfile, people) : null
 
-  const cfgA = a === primaryProfile ? null : (REL_CONFIG[a.rel] || REL_CONFIG.other)
-  const cfgB = b ? (REL_CONFIG[b.rel] || REL_CONFIG.other) : null
+  // Always compute through single source of truth so HD/sign/lifePath are filled
+  const a = useMemo(() => computePersonData(rawA), [rawA?.dob, rawA?.tob, rawA?.birthLat, rawA?.birthLon, rawA?.birthTimezone, rawA?.name, synSelA])
+  const b = useMemo(() => rawB ? computePersonData(rawB) : null, [rawB?.dob, rawB?.tob, rawB?.birthLat, rawB?.birthLon, rawB?.birthTimezone, rawB?.name, synSelB])
+
+  const aName = a.name?.split(' ')[0] || 'You'
+  const bName = b ? b.name?.split(' ')[0] || 'Person' : 'Select Person'
+
+  const cfgA = rawA === primaryProfile ? null : (REL_CONFIG[rawA.rel] || REL_CONFIG.other)
+  const cfgB = rawB ? (REL_CONFIG[rawB.rel] || REL_CONFIG.other) : null
 
   const hasSelection = b && synSelA !== synSelB
   const romantic = hasSelection && (isRomantic(b.rel) || isRomantic(a.rel || ''))
 
   // Compute real synastry report when two people are selected
+  // Use synSelA/synSelB as deps to guarantee recompute on person switch
   const synastryReport = useMemo(() => {
-    if (!hasSelection) return null
+    if (!hasSelection || !a || !b) return null
     try {
       const paramsA = getBirthParams(a)
       const paramsB = getBirthParams(b)
@@ -298,7 +338,7 @@ export function SynastryInner({ onClose }) {
       console.warn('[SynastryPanel] Engine error:', err)
       return null
     }
-  }, [hasSelection, a, b])
+  }, [hasSelection, synSelA, synSelB, a?.dob, b?.dob, a?.tob, b?.tob])
 
   return (
     <div className="synastry-panel">
@@ -308,7 +348,7 @@ export function SynastryInner({ onClose }) {
         {/* Person A */}
         <div className="syn-select">
           <div className="syn-avatar" style={{ borderColor: 'var(--foreground)', background: 'var(--accent)' }}>
-            {a.emoji || cfgA?.emoji || '\u2726'}
+            {rawA.emoji || cfgA?.emoji || '\u2726'}
           </div>
           <div>
             <div style={{ fontFamily: 'inherit', fontSize: '10px', color: 'var(--foreground)' }}>{aName}</div>
@@ -321,7 +361,7 @@ export function SynastryInner({ onClose }) {
         {/* Person B */}
         <div className="syn-select">
           <div className="syn-avatar" style={{ borderColor: 'var(--rose2)', background: 'rgba(212,48,112,.1)' }}>
-            {b ? (b.emoji || cfgB?.emoji || '?') : '?'}
+            {rawB ? (rawB.emoji || cfgB?.emoji || '?') : '?'}
           </div>
           <div>
             <div style={{ fontFamily: 'inherit', fontSize: '10px', color: 'var(--rose2)' }}>{bName}</div>
