@@ -42,12 +42,12 @@ const S = {
     fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase',
     background: color + '20', border: `1px solid ${color}44`, color,
   }),
-  btn: (active, color = '#8060cc') => ({
-    padding: '7px 16px', borderRadius: 8, cursor: 'pointer', fontSize: 10,
-    fontFamily: "'Cinzel', serif", letterSpacing: '.12em', textTransform: 'uppercase',
-    background: active ? color + '25' : 'transparent',
-    border: `1px solid ${active ? color + '66' : 'var(--border)'}`,
-    color: active ? color : 'var(--muted-foreground)', transition: 'all .15s',
+  btn: (active, color = '#c9a84c') => ({
+    padding: '10px 22px', borderRadius: 10, cursor: 'pointer', fontSize: 12,
+    fontFamily: "'Cinzel', serif", fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase',
+    background: active ? color + '40' : 'var(--secondary)',
+    border: `1px solid ${active ? color + 'aa' : 'var(--border)'}`,
+    color: active ? '#fff' : 'var(--muted-foreground)', transition: 'all .15s',
   }),
 }
 
@@ -258,11 +258,36 @@ function EntryForm({ initial, allSyncs, onSave, onCancel }) {
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: 10 }}>
-        <button onClick={handleSave} disabled={!description.trim()} style={{ ...S.btn(true), opacity: description.trim() ? 1 : 0.4 }}>
-          {initial ? 'Update' : 'Record Synchronicity'}
+      <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+        <button
+          onClick={handleSave}
+          disabled={!description.trim()}
+          style={{
+            padding: '12px 28px', borderRadius: 10, cursor: description.trim() ? 'pointer' : 'not-allowed',
+            fontSize: 13, fontFamily: "'Cinzel', serif", fontWeight: 700,
+            letterSpacing: '.14em', textTransform: 'uppercase',
+            background: description.trim() ? 'linear-gradient(135deg, rgba(201,168,76,.45), rgba(201,168,76,.25))' : 'var(--secondary)',
+            border: `2px solid ${description.trim() ? 'rgba(201,168,76,.8)' : 'var(--border)'}`,
+            color: description.trim() ? '#fff' : 'var(--muted-foreground)',
+            opacity: description.trim() ? 1 : 0.5,
+            transition: 'all .2s', position: 'relative', zIndex: 2,
+            boxShadow: description.trim() ? '0 2px 12px rgba(201,168,76,.25)' : 'none',
+          }}
+        >
+          {initial ? '✦ Update' : '✦ Record Synchronicity'}
         </button>
-        {onCancel && <button onClick={onCancel} style={S.btn(false)}>Cancel</button>}
+        {onCancel && (
+          <button
+            onClick={onCancel}
+            style={{
+              padding: '12px 22px', borderRadius: 10, cursor: 'pointer',
+              fontSize: 12, fontFamily: "'Cinzel', serif", fontWeight: 600,
+              letterSpacing: '.12em', textTransform: 'uppercase',
+              background: 'var(--secondary)', border: '1px solid var(--border)',
+              color: 'var(--muted-foreground)', transition: 'all .15s',
+            }}
+          >Cancel</button>
+        )}
       </div>
     </div>
   )
@@ -289,10 +314,10 @@ function EntryView({ entry, allSyncs, onEdit, onDelete }) {
           </div>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button onClick={onEdit} style={{ ...S.btn(false), padding: '5px 12px', fontSize: 10 }}>Edit</button>
+          <button onClick={onEdit} style={{ ...S.btn(false), padding: '8px 18px' }}>Edit</button>
           {!confirm
-            ? <button onClick={() => setConfirm(true)} style={{ ...S.btn(false), padding: '5px 12px', fontSize: 10, color: '#cc4455', borderColor: '#cc445544' }}>Delete</button>
-            : <button onClick={onDelete} style={{ ...S.btn(true, '#cc4455'), padding: '5px 12px', fontSize: 10 }}>Confirm?</button>
+            ? <button onClick={() => setConfirm(true)} style={{ ...S.btn(false), padding: '8px 18px', color: '#cc4455', borderColor: '#cc445566' }}>Delete</button>
+            : <button onClick={onDelete} style={{ ...S.btn(true, '#cc4455'), padding: '8px 18px' }}>Confirm?</button>
           }
         </div>
       </div>
@@ -577,7 +602,18 @@ export default function SyncDetail() {
         <>
           {view === 'list' && (
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => { setFormKey(k => k + 1); setView('new') }} style={S.btn(true)}>+ Record Synchronicity</button>
+              <button
+                onClick={() => { setFormKey(k => k + 1); setView('new') }}
+                style={{
+                  padding: '11px 24px', borderRadius: 10, cursor: 'pointer',
+                  fontSize: 12, fontFamily: "'Cinzel', serif", fontWeight: 700,
+                  letterSpacing: '.14em', textTransform: 'uppercase',
+                  background: 'linear-gradient(135deg, rgba(201,168,76,.4), rgba(201,168,76,.2))',
+                  border: '2px solid rgba(201,168,76,.7)',
+                  color: '#fff', transition: 'all .2s',
+                  boxShadow: '0 2px 12px rgba(201,168,76,.2)',
+                }}
+              >+ Record Synchronicity</button>
             </div>
           )}
           {view === 'new' && (
@@ -594,7 +630,7 @@ export default function SyncDetail() {
           )}
           {view === 'view' && selected && (
             <div>
-              <button onClick={() => { setView('list'); setSelected(null) }} style={{ ...S.btn(false), padding: '5px 12px', fontSize: 10, marginBottom: 14 }}>
+              <button onClick={() => { setView('list'); setSelected(null) }} style={{ ...S.btn(false), padding: '8px 18px', marginBottom: 14 }}>
                 ← All Signs
               </button>
               <EntryView entry={selected} allSyncs={syncs} onEdit={() => setView('edit')} onDelete={handleDelete} />
