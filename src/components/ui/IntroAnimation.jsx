@@ -32,16 +32,22 @@ const VERT = `
     vec3 spherePos = aPos;
     vec3 scatterPos = aScatter * 4.0;
 
-    // Coalesce: scattered → figure (progress 0→0.4)
-    float coalesce = smoothstep(0.0, 0.4, uProgress);
+    // Extended timing: shape stays formed longer
+    // 0.0→0.3:  coalesce (scatter → form)
+    // 0.3→0.7:  FORMED — shape holds, rotates, breathes (40% of duration = ~4.8s)
+    // 0.7→0.82: compress
+    // 0.82→1.0: explosion + dissolve
+
+    float coalesce = smoothstep(0.0, 0.3, uProgress);
     vec3 pos = mix(scatterPos, spherePos, coalesce);
 
-    // Compress (progress 0.5→0.7)
-    float compress = smoothstep(0.5, 0.7, uProgress);
+    // Compress (progress 0.7→0.82)
+    float compress = smoothstep(0.7, 0.82, uProgress);
     pos *= mix(1.0, 0.3, compress);
 
-    // Slow rotation
-    float angle = t * 0.3 + id * 0.1;
+    // Slow rotation — slightly faster during formed phase for visual interest
+    float rotSpeed = uProgress > 0.3 && uProgress < 0.7 ? 0.5 : 0.3;
+    float angle = t * rotSpeed + id * 0.1;
     float cosA = cos(angle), sinA = sin(angle);
     vec3 rotated = vec3(
       pos.x * cosA - pos.z * sinA,
@@ -49,7 +55,14 @@ const VERT = `
       pos.x * sinA + pos.z * cosA
     );
 
-    // Explosion (progress 0.75→1.0)
+    // Gentle Y-axis tilt during formed phase for 3D depth
+    if (uProgress > 0.3 && uProgress < 0.7) {
+      float tiltAngle = sin(t * 0.2) * 0.15;
+      float cT = cos(tiltAngle), sT = sin(tiltAngle);
+      rotated = vec3(rotated.x, rotated.y * cT - rotated.z * sT, rotated.y * sT + rotated.z * cT);
+    }
+
+    // Explosion (progress 0.82→1.0)
     float explode = uExplosion;
     vec3 explodeDir = normalize(spherePos + vec3(sin(id*6.28), cos(id*4.5), sin(id*3.14+1.0)));
     rotated += explodeDir * explode * 5.0;
@@ -57,18 +70,16 @@ const VERT = `
     vec4 mvPos = uView * vec4(rotated, 1.0);
     gl_Position = uProj * mvPos;
 
-    // Depth for fade
     vDepth = clamp(-mvPos.z * 0.15, 0.0, 1.0);
 
-    // Alpha: fade in during coalesce, bright when formed, fade in explosion
-    float formed = smoothstep(0.35, 0.5, uProgress);
-    float explodeFade = 1.0 - smoothstep(0.8, 1.0, uProgress);
+    // Alpha: bright during formed phase, breathes gently
+    float formed = smoothstep(0.25, 0.35, uProgress);
+    float explodeFade = 1.0 - smoothstep(0.85, 1.0, uProgress);
     float breathe = 0.85 + 0.15 * sin(t * 2.0 + id * 6.28);
-    vAlpha = mix(0.15, 0.9 * breathe, coalesce) * explodeFade * (0.6 + formed * 0.4);
+    vAlpha = mix(0.15, 0.95 * breathe, coalesce) * explodeFade * (0.6 + formed * 0.4);
 
     vColorId = aColorId;
 
-    // Size: larger when scattered, smaller when formed
     float baseSize = aSize * uDpr;
     gl_PointSize = mix(baseSize * 1.5, baseSize * 0.8, formed) * (1.0 + explode * 2.0);
   }
@@ -154,26 +165,69 @@ function fibSphere(count, radius) {
 }
 
 function merkaba(count) {
-  // Two interlocking tetrahedra — Star of David in 3D
+  // Proper Merkaba: two interlocking tetrahedra with particles on FACES, not just edges
+  // Creates a recognizable 3D Star of David / star tetrahedron
   const pts = new Float32Array(count * 3)
-  const s = 1.2
-  // Tetrahedron vertices (up)
-  const tetUp = [[0,s,0], [-s,-s*0.5,s*0.866], [s,-s*0.5,s*0.866], [0,-s*0.5,-s*0.866]]
-  // Tetrahedron vertices (down — inverted)
-  const tetDn = [[0,-s,0], [-s,s*0.5,-s*0.866], [s,s*0.5,-s*0.866], [0,s*0.5,s*0.866]]
-  const edges = [[0,1],[0,2],[0,3],[1,2],[2,3],[3,1]]
+  const s = 1.1
+
+  // Regular tetrahedron pointing UP (apex at top)
+  const tetUp = [
+    [0, s, 0],                                    // apex
+    [-s * 0.943, -s * 0.333, 0],                   // base front
+    [s * 0.471, -s * 0.333, s * 0.816],            // base right
+    [s * 0.471, -s * 0.333, -s * 0.816],           // base left
+  ]
+  // Regular tetrahedron pointing DOWN (apex at bottom) — rotated 60° around Y
+  const tetDn = [
+    [0, -s, 0],                                    // apex
+    [s * 0.943, s * 0.333, 0],                     // base front
+    [-s * 0.471, s * 0.333, -s * 0.816],           // base right
+    [-s * 0.471, s * 0.333, s * 0.816],            // base left
+  ]
+
+  // Faces (triangles) for each tetrahedron
+  const facesUp = [[0,1,2], [0,2,3], [0,3,1], [1,2,3]]
+  const facesDn = [[0,1,2], [0,2,3], [0,3,1], [1,2,3]]
+
+  // Helper: random point on a triangle surface using barycentric coordinates
+  function randOnTriangle(v0, v1, v2) {
+    let u = Math.random(), w = Math.random()
+    if (u + w > 1) { u = 1 - u; w = 1 - w }
+    const t = 1 - u - w
+    return [
+      v0[0]*t + v1[0]*u + v2[0]*w,
+      v0[1]*t + v1[1]*u + v2[1]*w,
+      v0[2]*t + v1[2]*u + v2[2]*w,
+    ]
+  }
+
+  const edgeDensity = 0.3 // 30% on edges for definition, 70% on faces for volume
 
   for (let i = 0; i < count; i++) {
     const t = i / count
     const tet = t < 0.5 ? tetUp : tetDn
-    const edgeIdx = Math.floor((t % 0.5) * 2 * edges.length) % edges.length
-    const [a, b] = edges[edgeIdx]
-    const lerp = Math.random()
-    // Add slight noise to fill the edges
-    const jitter = 0.03
-    pts[i*3]   = tet[a][0] * (1-lerp) + tet[b][0] * lerp + (Math.random()-0.5) * jitter
-    pts[i*3+1] = tet[a][1] * (1-lerp) + tet[b][1] * lerp + (Math.random()-0.5) * jitter
-    pts[i*3+2] = tet[a][2] * (1-lerp) + tet[b][2] * lerp + (Math.random()-0.5) * jitter
+    const faces = t < 0.5 ? facesUp : facesDn
+
+    if (Math.random() > edgeDensity) {
+      // Point on face surface
+      const faceIdx = Math.floor(Math.random() * 4)
+      const [a, b, c] = faces[faceIdx]
+      const p = randOnTriangle(tet[a], tet[b], tet[c])
+      pts[i*3] = p[0]; pts[i*3+1] = p[1]; pts[i*3+2] = p[2]
+    } else {
+      // Point on edge for crisp definition
+      const edges = [[0,1],[0,2],[0,3],[1,2],[2,3],[3,1]]
+      const [a, b] = edges[Math.floor(Math.random() * 6)]
+      const lerp = Math.random()
+      pts[i*3]   = tet[a][0]*(1-lerp) + tet[b][0]*lerp
+      pts[i*3+1] = tet[a][1]*(1-lerp) + tet[b][1]*lerp
+      pts[i*3+2] = tet[a][2]*(1-lerp) + tet[b][2]*lerp
+    }
+
+    // Minimal jitter for particle feel without losing shape
+    pts[i*3]   += (Math.random()-0.5) * 0.015
+    pts[i*3+1] += (Math.random()-0.5) * 0.015
+    pts[i*3+2] += (Math.random()-0.5) * 0.015
   }
   return pts
 }
@@ -452,7 +506,7 @@ export default function IntroAnimation({ onComplete }) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE)
     gl.disable(gl.DEPTH_TEST)
 
-    const DURATION = 7000
+    const DURATION = 12000 // 12 seconds — shape holds for ~5s
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio, 2)
@@ -485,7 +539,7 @@ export default function IntroAnimation({ onComplete }) {
       const proj = mat4Perspective(Math.PI / 4, aspect, 0.1, 50)
       const view = mat4LookAt(eye, [0, 0, 0], [0, 1, 0])
 
-      const explosionFactor = progress > 0.75 ? (progress - 0.75) / 0.25 : 0
+      const explosionFactor = progress > 0.82 ? (progress - 0.82) / 0.18 : 0
 
       gl.uniform1f(uTime, time)
       gl.uniform1f(uProgress, progress)
@@ -496,7 +550,7 @@ export default function IntroAnimation({ onComplete }) {
 
       gl.drawArrays(gl.POINTS, 0, COUNT)
 
-      if (progress > 0.65 && phase === 0) setPhase(1)
+      if (progress > 0.55 && phase === 0) setPhase(1) // Show wordmark while shape is still formed
       if (progress >= 1) {
         setPhase(2)
         setTimeout(() => setOpacity(0), 200)

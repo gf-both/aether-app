@@ -45,8 +45,28 @@ export default function RitualDetail() {
         </div>
 
         {/* Sacred geometry particle visualization */}
-        <div style={{ height: 200, position: 'relative', margin: '0 20px' }}>
-          <RitualParticles tradition={ritual.tradition?.name?.toLowerCase() || ritual.id?.split('-')[0] || 'vedic'} active={true} />
+        <div style={{ height: 220, position: 'relative', margin: '0 20px', borderRadius: 12, overflow: 'hidden', background: 'rgba(0,0,0,0.3)' }}>
+          <RitualParticles
+            tradition={
+              // Map tradition to the key expected by RitualParticles
+              typeof ritual.tradition === 'string' ? ritual.tradition :
+              ritual.tradition?.name ? ritual.tradition.name.toLowerCase().replace('kabbalistic','kabbalah') :
+              ritual.id?.includes('agni') || ritual.id?.includes('sandhya') ? 'vedic' :
+              ritual.id?.includes('tonglen') || ritual.id?.includes('metta') ? 'buddhist' :
+              ritual.id?.includes('tikkun') || ritual.id?.includes('hitbod') ? 'kabbalah' :
+              ritual.id?.includes('dhikr') || ritual.id?.includes('sama') ? 'sufi' :
+              ritual.id?.includes('opening') ? 'egyptian' :
+              ritual.id?.includes('xukulem') ? 'mayan' :
+              ritual.id?.includes('middle') ? 'hermetic' :
+              ritual.id?.includes('caim') ? 'celtic' :
+              ritual.id?.includes('tummo') ? 'tibetan' :
+              ritual.id?.includes('micro') ? 'taoist' :
+              ritual.id?.includes('journey') ? 'shamanic' :
+              ritual.id?.includes('nidra') || ritual.id?.includes('trataka') ? 'yogic' :
+              'vedic'
+            }
+            active={true}
+          />
         </div>
 
         {/* Step content */}
