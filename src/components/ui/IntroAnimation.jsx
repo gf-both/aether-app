@@ -316,120 +316,216 @@ function mayanPyramid(count) {
 }
 
 function chineseDragon(count) {
-  // Dragon from scratch — enormous detailed head, serpentine body, flowing mane, tail flourish
-  // Head is ~45% of all particles for maximum visual impact
+  // Dragon — hyper-detailed, particles distributed densely across entire body
+  // Head ~35%, body ~35%, details (mane, scales, legs, tail, breath) ~30%
+  // Every section uses surface-based distribution for sharp definition
   const pts = new Float32Array(count * 3)
-  const j = () => (Math.random() - 0.5) * 0.025
+  const j = () => (Math.random() - 0.5) * 0.02
+  const jj = () => (Math.random() - 0.5) * 0.012 // fine jitter for details
+
+  // Spine path helper — smooth S-curve from neck to tail
+  function spine(st) {
+    return {
+      x: -0.5 + st * 2.8,
+      y: Math.sin(st * Math.PI * 1.6) * 0.42,
+      z: Math.cos(st * Math.PI * 0.9) * 0.3,
+    }
+  }
 
   for (let i = 0; i < count; i++) {
     const t = Math.random()
-    let x, y, z = (Math.random() - 0.5) * 0.06
+    let x, y, z = (Math.random() - 0.5) * 0.05
 
-    if (t < 0.12) {
-      // ─── UPPER JAW / SNOUT ─── wide, forward-facing, defined edge
+    if (t < 0.08) {
+      // ─── UPPER JAW / SNOUT ─── long, tapering, ridged
       const st = Math.random()
-      const snoutLen = 0.5
-      const snoutW = 0.35 * (1 - st * 0.4) // tapers toward tip
-      const snoutH = 0.2 * (1 - st * 0.3)
-      x = -1.2 - st * snoutLen
-      y = 0.15 + (Math.random() - 0.5) * snoutH
-      z = (Math.random() - 0.5) * snoutW
-    } else if (t < 0.18) {
-      // ─── LOWER JAW ─── hangs open slightly
+      const snoutLen = 0.55
+      const taper = 1 - st * 0.45
+      // Surface shell distribution
+      const angle = Math.random() * TAU
+      const shell = 0.85 + Math.random() * 0.15
+      x = -1.25 - st * snoutLen
+      y = 0.15 + Math.sin(angle) * 0.12 * taper * shell
+      z = Math.cos(angle) * 0.18 * taper * shell
+      // Add jaw ridge bumps
+      if (Math.random() < 0.3) y += 0.04 * taper
+    } else if (t < 0.13) {
+      // ─── LOWER JAW ─── open, with teeth line
       const st = Math.random()
-      x = -1.2 - st * 0.4
-      y = -0.1 - (1 - st) * 0.15 + j()
-      z = (Math.random() - 0.5) * 0.3 * (1 - st * 0.3)
-    } else if (t < 0.30) {
-      // ─── HEAD MASS ─── large rounded cranium behind snout
+      const taper = 1 - st * 0.35
+      x = -1.25 - st * 0.42
+      y = -0.08 - (1 - st) * 0.18
+      z = (Math.random() - 0.5) * 0.28 * taper
+      // Teeth: sharp point clusters along jaw edge
+      if (Math.random() < 0.25) {
+        y -= 0.04 + Math.random() * 0.06
+        z = (Math.random() - 0.5) * 0.16 * taper
+      }
+    } else if (t < 0.17) {
+      // ─── TEETH ─── individual fang clusters along both jaws
+      const toothIdx = Math.floor(Math.random() * 8)
+      const st = toothIdx / 8
+      const side = Math.random() < 0.5 ? 1 : -1
+      const isUpper = Math.random() < 0.5
+      x = -1.25 - st * 0.35 + jj()
+      y = isUpper ? (0.08 - Math.random() * 0.08) : (-0.12 - Math.random() * 0.1)
+      z = side * (0.06 + st * 0.04) + jj()
+    } else if (t < 0.27) {
+      // ─── HEAD MASS ─── large cranium, surface-distributed sphere shell
       const a = Math.random() * TAU
       const phi = Math.acos(2 * Math.random() - 1)
-      const r = 0.35 + Math.random() * 0.1
-      x = -0.85 + Math.sin(phi) * Math.cos(a) * r * 0.8
-      y = 0.15 + Math.sin(phi) * Math.sin(a) * r * 0.7
-      z = Math.cos(phi) * r * 0.6
-    } else if (t < 0.34) {
-      // ─── EYES ─── two bright clusters on sides of head
+      const shell = 0.8 + Math.random() * 0.2
+      const r = 0.38 * shell
+      x = -0.85 + Math.sin(phi) * Math.cos(a) * r * 0.85
+      y = 0.18 + Math.sin(phi) * Math.sin(a) * r * 0.75
+      z = Math.cos(phi) * r * 0.65
+    } else if (t < 0.31) {
+      // ─── EYES ─── bright clusters with pupils (dense center, diffuse glow)
       const side = Math.random() < 0.5 ? 1 : -1
+      const isPupil = Math.random() < 0.4
       const a = Math.random() * TAU
-      const r = Math.random() * 0.06
-      x = -1.05 + Math.cos(a) * r
-      y = 0.25 + Math.sin(a) * r
-      z = side * 0.22 + j()
-    } else if (t < 0.37) {
-      // ─── NOSTRILS ─── two small clusters at tip of snout
+      const r = isPupil ? Math.random() * 0.025 : (0.03 + Math.random() * 0.04)
+      x = -1.06 + Math.cos(a) * r
+      y = 0.28 + Math.sin(a) * r
+      z = side * 0.23 + jj()
+    } else if (t < 0.33) {
+      // ─── NOSTRILS ─── two flared openings with smoke wisps
       const side = Math.random() < 0.5 ? 1 : -1
-      const a = Math.random() * TAU
-      const r = Math.random() * 0.04
-      x = -1.65 + Math.cos(a) * r
-      y = 0.12 + Math.sin(a) * r
-      z = side * 0.08 + j()
-    } else if (t < 0.45) {
-      // ─── HORNS + CREST ─── two antler-like horns rising from top of head
-      const st = Math.random()
+      const isSmoke = Math.random() < 0.3
+      if (isSmoke) {
+        x = -1.8 - Math.random() * 0.2
+        y = 0.12 + (Math.random() - 0.5) * 0.1
+        z = side * 0.06 + (Math.random() - 0.5) * 0.08
+      } else {
+        const a = Math.random() * TAU
+        const r = Math.random() * 0.045
+        x = -1.72 + Math.cos(a) * r
+        y = 0.12 + Math.sin(a) * r
+        z = side * 0.09 + jj()
+      }
+    } else if (t < 0.39) {
+      // ─── HORNS ─── two branching antler-like horns, each with 2-3 tines
       const side = Math.random() < 0.5 ? 1 : -1
-      const hornLen = st
-      x = -0.75 + st * 0.15 + j()
-      y = 0.45 + hornLen * 0.55 + j()
-      z = side * (0.15 + hornLen * 0.2) + j()
-    } else if (t < 0.50) {
-      // ─── WHISKERS / TENDRILS ─── flow from snout, long and curving
       const st = Math.random()
-      const side = Math.random() < 0.5 ? 1 : -1
-      x = -1.4 - st * 0.3 + j()
-      y = -0.05 - st * 0.35 + j()
-      z = side * (0.15 + st * 0.3) + j()
-    } else if (t < 0.55) {
-      // ─── MANE ─── flowing hair/flames along top of neck
+      const branch = Math.random()
+      const hornBase = { x: -0.72, y: 0.5 }
+      if (branch < 0.5) {
+        // Main horn shaft
+        x = hornBase.x + st * 0.2 + jj()
+        y = hornBase.y + st * 0.6 + jj()
+        z = side * (0.15 + st * 0.18) + jj()
+      } else if (branch < 0.8) {
+        // Forward tine
+        const bt = Math.random()
+        x = hornBase.x + 0.1 - bt * 0.15 + jj()
+        y = hornBase.y + 0.3 + bt * 0.25 + jj()
+        z = side * (0.2 + bt * 0.1) + jj()
+      } else {
+        // Rear tine
+        const bt = Math.random()
+        x = hornBase.x + 0.15 + bt * 0.12 + jj()
+        y = hornBase.y + 0.25 + bt * 0.2 + jj()
+        z = side * (0.22 + bt * 0.15) + jj()
+      }
+    } else if (t < 0.42) {
+      // ─── WHISKERS / TENDRILS ─── four long flowing tendrils from chin
+      const tendrilIdx = Math.floor(Math.random() * 4)
       const st = Math.random()
-      const bodyT = st * 0.3 // first part of body
-      const spineX = -0.6 + bodyT * 3.5
-      x = spineX + j()
-      y = 0.3 + Math.random() * 0.35 + Math.sin(st * 4) * 0.1
-      z = (Math.random() - 0.5) * 0.25
-    } else if (t < 0.85) {
-      // ─── BODY ─── serpentine S-curve, thick cloud, NO spine line
-      const st = (t - 0.55) / 0.30
-      // Spine path: smooth S going from head to tail
-      const spX = -0.5 + st * 2.5
-      const spY = Math.sin(st * Math.PI * 1.5) * 0.4
-      const spZ = Math.cos(st * Math.PI * 0.8) * 0.3
-
+      const side = tendrilIdx < 2 ? 1 : -1
+      const isOuter = tendrilIdx % 2 === 0
+      const spread = isOuter ? 0.35 : 0.2
+      x = -1.45 - st * 0.35 + j()
+      y = -0.05 - st * 0.4 - (isOuter ? st * 0.1 : 0)
+      z = side * (0.1 + st * spread) + j()
+    } else if (t < 0.46) {
+      // ─── FLAME BREATH ─── wispy particles trailing from mouth
+      const st = Math.random()
+      x = -1.75 - st * 0.45
+      y = 0.02 + (Math.random() - 0.5) * (0.12 + st * 0.2)
+      z = (Math.random() - 0.5) * (0.1 + st * 0.18)
+    } else if (t < 0.52) {
+      // ─── MANE ─── dense flowing hair/flames from neck down upper back
+      const st = Math.random()
+      const bodyT = st * 0.35
+      const sp = spine(bodyT)
+      const flameH = 0.3 + Math.random() * 0.3 + Math.sin(st * 5) * 0.08
+      x = sp.x + j()
+      y = sp.y + flameH
+      z = sp.z + (Math.random() - 0.5) * 0.22
+    } else if (t < 0.56) {
+      // ─── SPINE RIDGES ─── bony dorsal plates along entire back
+      const st = Math.random()
+      const sp = spine(st)
+      const ridgeH = 0.12 * (1 - st * 0.4) * (0.5 + 0.5 * Math.abs(Math.sin(st * 25)))
+      x = sp.x + jj()
+      y = sp.y + 0.15 + ridgeH
+      z = sp.z + jj()
+    } else if (t < 0.59) {
+      // ─── BELLY SCALES ─── lighter underside texture
+      const st = Math.random()
+      const sp = spine(st)
+      const bellyW = 0.18 * (1 - st * 0.5)
+      x = sp.x + (Math.random() - 0.5) * bellyW * 0.5
+      y = sp.y - 0.15 - Math.random() * 0.08
+      z = sp.z + (Math.random() - 0.5) * bellyW
+    } else if (t < 0.82) {
+      // ─── BODY ─── serpentine S-curve, DENSE tube of particles
+      const st = (t - 0.59) / 0.23
+      const sp = spine(st)
       // Body gets thinner toward tail
-      const bodyR = 0.22 * (1 - st * 0.55)
-      // Random position in a disc around spine — minimum offset prevents spine line
+      const bodyR = 0.24 * (1 - st * 0.5)
+      // Surface-biased distribution (80% near surface for definition)
       const angle = Math.random() * TAU
-      const minOff = bodyR * 0.35
+      const surfaceBias = Math.random() < 0.8
+      const minOff = surfaceBias ? bodyR * 0.65 : bodyR * 0.2
       const r = minOff + Math.random() * (bodyR - minOff)
-      x = spX + Math.cos(angle) * r * 0.5
-      y = spY + Math.sin(angle) * r
-      z = spZ + Math.cos(angle + 1.5) * r * 0.5
-    } else if (t < 0.92) {
-      // ─── LEGS / CLAWS ─── four short legs with clawed feet
+      x = sp.x + Math.cos(angle) * r * 0.55
+      y = sp.y + Math.sin(angle) * r
+      z = sp.z + Math.cos(angle + 1.5) * r * 0.55
+    } else if (t < 0.90) {
+      // ─── LEGS / CLAWS ─── four muscular legs with 3-toed claws
       const legIdx = Math.floor(Math.random() * 4)
       const st = Math.random()
       const legPositions = [
-        { bx: -0.3, bz: 0.2 },  // front left
-        { bx: -0.3, bz: -0.2 }, // front right
-        { bx: 1.0, bz: 0.2 },   // rear left
-        { bx: 1.0, bz: -0.2 },  // rear right
+        { bx: -0.25, bz: 0.22, bodyT: 0.08 },
+        { bx: -0.25, bz: -0.22, bodyT: 0.08 },
+        { bx: 1.15, bz: 0.22, bodyT: 0.58 },
+        { bx: 1.15, bz: -0.22, bodyT: 0.58 },
       ]
       const leg = legPositions[legIdx]
-      const spY = Math.sin((leg.bx + 0.5) / 2.5 * Math.PI * 1.5) * 0.4
-      x = leg.bx + j()
-      y = spY - st * 0.35 + j()
-      z = leg.bz + (st > 0.8 ? (Math.random() - 0.5) * 0.12 : 0) + j()
+      const sp = spine(leg.bodyT)
+      const legThick = 0.06 * (1 - st * 0.4)
+      const angle = Math.random() * TAU
+      x = leg.bx + Math.cos(angle) * legThick * 0.3
+      y = sp.y - st * 0.38 + Math.sin(angle) * legThick * 0.3
+      z = leg.bz + jj()
+      // Claws at bottom — three toes spread
+      if (st > 0.82) {
+        const toe = Math.floor(Math.random() * 3) - 1
+        x += toe * 0.04 + jj()
+        y -= 0.04
+        z += toe * 0.03 * (leg.bz > 0 ? 1 : -1)
+      }
     } else {
-      // ─── TAIL ─── tapers and curls upward with a flourish
-      const st = (t - 0.92) / 0.08
-      const tailX = 2.0 + st * 0.6
-      const tailY = Math.sin((0.85 + st * 0.15) * Math.PI * 1.5) * 0.4 + st * 0.35
-      const tailZ = Math.cos(st * Math.PI * 2) * 0.2
-      const tailR = 0.08 * (1 - st * 0.6)
+      // ─── TAIL ─── long, tapering, spiraling upward with tuft at end
+      const st = (t - 0.90) / 0.10
+      const sp = spine(0.85 + st * 0.15)
+      const tailExt = st * 0.7
+      const tailX = sp.x + tailExt
+      const tailY = sp.y + st * 0.4 + Math.sin(st * TAU) * 0.12
+      const tailZ = sp.z + Math.cos(st * TAU * 1.5) * 0.18
+      const tailR = 0.09 * (1 - st * 0.55)
       const angle = Math.random() * TAU
       x = tailX + Math.cos(angle) * tailR * 0.4
       y = tailY + Math.sin(angle) * tailR
-      z = tailZ + Math.cos(angle) * tailR * 0.3
+      z = tailZ + Math.cos(angle) * tailR * 0.35
+      // Tail tuft — bushy flame at tip
+      if (st > 0.85) {
+        const tuftR = 0.08 + Math.random() * 0.06
+        x += (Math.random() - 0.5) * tuftR
+        y += (Math.random() - 0.5) * tuftR
+        z += (Math.random() - 0.5) * tuftR
+      }
     }
 
     pts[i*3] = x; pts[i*3+1] = y; pts[i*3+2] = z
