@@ -106,7 +106,25 @@ export function computeGeneKeysData(birthData = DEFAULT_BIRTH) {
     },
   ]
 
-  return { SPHERES, GK_LIST, profile }
+  // Venus Sequence spheres
+  const venus = profile.venusSequence || {}
+  const VENUS_SPHERES = venus.attraction ? [
+    { key: venus.attraction.gate, role: 'Attraction', line: venus.attraction.line, col: 'rgba(212,48,112,', sphere: 'attraction', ...venus.attraction },
+    { key: venus.iq.gate, role: 'IQ', line: venus.iq.line, col: 'rgba(80,180,220,', sphere: 'iq', ...venus.iq },
+    { key: venus.eq.gate, role: 'EQ', line: venus.eq.line, col: 'rgba(144,80,224,', sphere: 'eq', ...venus.eq },
+    { key: venus.sq.gate, role: 'SQ', line: venus.sq.line, col: 'rgba(201,168,76,', sphere: 'sq', ...venus.sq },
+  ] : []
+
+  // Pearl Sequence spheres
+  const pearl = profile.pearlSequence || {}
+  const PEARL_SPHERES = pearl.vocation ? [
+    { key: pearl.vocation.gate, role: 'Vocation', line: pearl.vocation.line, col: 'rgba(240,192,64,', sphere: 'vocation', ...pearl.vocation },
+    { key: pearl.culture.gate, role: 'Culture', line: pearl.culture.line, col: 'rgba(100,180,80,', sphere: 'culture', ...pearl.culture },
+    { key: pearl.brand.gate, role: 'Brand', line: pearl.brand.line, col: 'rgba(80,180,220,', sphere: 'brand', ...pearl.brand },
+    { key: pearl.pearl.gate, role: 'Pearl', line: pearl.pearl.line, col: 'rgba(201,168,76,', sphere: 'pearl', ...pearl.pearl },
+  ] : []
+
+  return { SPHERES, GK_LIST, VENUS_SPHERES, PEARL_SPHERES, profile }
 }
 
 // Default exports for backward compatibility (computed for Gaston's birth data)

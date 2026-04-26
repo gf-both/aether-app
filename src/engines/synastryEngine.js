@@ -43,11 +43,24 @@ const SYNASTRY_PAIRS = [
   { p1: 'pluto',     p2: 'venus',   weight: 7,  category: 'depth',      label: 'Pluto–Venus Intensity' },
   { p1: 'saturn',    p2: 'moon',    weight: 6,  category: 'karmic',     label: 'Saturn–Moon Karma' },
   { p1: 'chiron',    p2: 'sun',     weight: 6,  category: 'healing',    label: 'Chiron–Sun Healing' },
+  { p1: 'chiron',    p2: 'moon',    weight: 7,  category: 'healing',    label: 'Chiron–Moon Wound' },
+  { p1: 'chiron',    p2: 'venus',   weight: 6,  category: 'healing',    label: 'Chiron–Venus Heart Healing' },
+  { p1: 'chiron',    p2: 'chiron',  weight: 5,  category: 'healing',    label: 'Chiron–Chiron Mirror' },
+  { p1: 'neptune',   p2: 'moon',    weight: 5,  category: 'healing',    label: 'Neptune–Moon Transcendence' },
+  { p1: 'neptune',   p2: 'venus',   weight: 5,  category: 'healing',    label: 'Neptune–Venus Devotion' },
   // Mental/Communication
   { p1: 'mercury',   p2: 'mercury', weight: 7,  category: 'mental',     label: 'Mercury–Mercury Mind' },
   { p1: 'mercury',   p2: 'moon',    weight: 6,  category: 'mental',     label: 'Mercury–Moon Feeling' },
   { p1: 'jupiter',   p2: 'sun',     weight: 6,  category: 'growth',     label: 'Jupiter–Sun Growth' },
   { p1: 'jupiter',   p2: 'moon',    weight: 6,  category: 'growth',     label: 'Jupiter–Moon Expansion' },
+  { p1: 'jupiter',   p2: 'venus',   weight: 5,  category: 'growth',     label: 'Jupiter–Venus Abundance' },
+  // Stability
+  { p1: 'saturn',    p2: 'sun',     weight: 6,  category: 'karmic',     label: 'Saturn–Sun Structure' },
+  { p1: 'saturn',    p2: 'venus',   weight: 5,  category: 'karmic',     label: 'Saturn–Venus Commitment' },
+  { p1: 'uranus',    p2: 'sun',     weight: 4,  category: 'growth',     label: 'Uranus–Sun Awakening' },
+  { p1: 'uranus',    p2: 'moon',    weight: 4,  category: 'growth',     label: 'Uranus–Moon Liberation' },
+  { p1: 'pluto',     p2: 'sun',     weight: 7,  category: 'depth',      label: 'Pluto–Sun Transformation' },
+  { p1: 'neptune',   p2: 'sun',     weight: 5,  category: 'depth',      label: 'Neptune–Sun Dissolution' },
 ]
 
 const PLANET_SYMBOLS = {

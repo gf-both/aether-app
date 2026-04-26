@@ -17,6 +17,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
   { type: 'item', icon: '⊛', label: 'Patterns', id: 'pat', widget: 'pat' },
   { type: 'item', icon: '◬', label: 'Rituals', id: 'ritual', widget: 'ritual' },
+  { type: 'item', icon: '♫', label: 'Frequency', id: 'frequency', widget: 'frequency' },
   { type: 'item', icon: '⏣', label: 'Golem', id: 'golem', widget: 'golem' },
 
   { type: 'section', label: 'OTHERS' },

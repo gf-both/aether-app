@@ -146,6 +146,64 @@ function sunLongitude(jd) {
 }
 
 /**
+ * Low-precision Venus longitude (ecliptic, degrees).
+ * Uses simplified orbital elements. Accurate to ~1° — sufficient for gate calculation.
+ */
+function venusLongitude(jd) {
+  const T = jdToJulianCenturies(jd)
+  const L = (181.97973 + 58517.81539 * T) % 360
+  const M = (210.33617 + 58517.49353 * T) % 360
+  const Mr = M * Math.PI / 180
+  const C = (0.72727 - 0.00003 * T) * Math.sin(Mr) +
+            0.00536 * Math.sin(2 * Mr)
+  // Heliocentric → geocentric approximation
+  const sunL = sunLongitude(jd)
+  const helioLon = ((L + C) % 360 + 360) % 360
+  // Simplified geocentric conversion using elongation
+  const elong = helioLon - sunL
+  const elongR = elong * Math.PI / 180
+  const geoOffset = Math.atan2(0.7233 * Math.sin(elongR), 1 + 0.7233 * Math.cos(elongR)) * 180 / Math.PI
+  return ((sunL + geoOffset) % 360 + 360) % 360
+}
+
+/**
+ * Low-precision Mars longitude (ecliptic, degrees).
+ */
+function marsLongitude(jd) {
+  const T = jdToJulianCenturies(jd)
+  const L = (355.43327 + 19140.29934 * T) % 360
+  const M = (319.51913 + 19139.85475 * T) % 360
+  const Mr = M * Math.PI / 180
+  const C = (10.69091 - 0.00046 * T) * Math.sin(Mr) +
+            0.57061 * Math.sin(2 * Mr) +
+            0.04850 * Math.sin(3 * Mr)
+  const helioLon = ((L + C) % 360 + 360) % 360
+  const sunL = sunLongitude(jd)
+  const elong = helioLon - sunL
+  const elongR = elong * Math.PI / 180
+  const geoOffset = Math.atan2(1.5237 * Math.sin(elongR), 1 + 1.5237 * Math.cos(elongR)) * 180 / Math.PI
+  return ((sunL + geoOffset) % 360 + 360) % 360
+}
+
+/**
+ * Low-precision Jupiter longitude (ecliptic, degrees).
+ */
+function jupiterLongitude(jd) {
+  const T = jdToJulianCenturies(jd)
+  const L = (34.35148 + 3034.90567 * T) % 360
+  const M = (225.32833 + 3034.69202 * T) % 360
+  const Mr = M * Math.PI / 180
+  const C = (5.55274 - 0.00062 * T) * Math.sin(Mr) +
+            0.16676 * Math.sin(2 * Mr)
+  const helioLon = ((L + C) % 360 + 360) % 360
+  const sunL = sunLongitude(jd)
+  const elong = helioLon - sunL
+  const elongR = elong * Math.PI / 180
+  const geoOffset = Math.atan2(5.2026 * Math.sin(elongR), 1 + 5.2026 * Math.cos(elongR)) * 180 / Math.PI
+  return ((sunL + geoOffset) % 360 + 360) % 360
+}
+
+/**
  * Map an ecliptic longitude to a Gene Keys gate + line.
  *
  * The Mandala places Gate 41 at the Capricorn ingress (270°).
@@ -224,22 +282,47 @@ export function getGeneKeysProfile({ day, month, year, hour, minute, timezone = 
   const personalitySunLon = sunLongitude(jdBirth)
 
   // 2. Design Sun = Personality Sun longitude minus 88° of ecliptic arc.
-  //    In Human Design / Gene Keys, the Design is calculated by going back 88°
-  //    of solar arc (approximately 88 days, but the arc is what matters).
-  //    Subtracting 88° directly from the ecliptic longitude is the standard
-  //    approach used by HD software and produces the correct gate/line.
   const designSunLon = ((personalitySunLon - 88) % 360 + 360) % 360
 
-  // 3. Map to gates + lines
+  // 3. Planetary longitudes for Venus/Pearl sequences (low-precision)
+  const venusLon = venusLongitude(jdBirth)
+  const marsLon = marsLongitude(jdBirth)
+  const jupiterLon = jupiterLongitude(jdBirth)
+
+  // Design planetary positions (88° back in solar arc)
+  const jdDesign = jdBirth - 88  // ~88 days back (approximate)
+  const designVenusLon = venusLongitude(jdDesign)
+  const designMarsLon = marsLongitude(jdDesign)
+  const designJupiterLon = jupiterLongitude(jdDesign)
+
+  // 4. Map to gates + lines — ACTIVATION SEQUENCE
   const lifesWork = longitudeToGateLine(personalitySunLon)   // Personality Sun
   const evolutionLon = opposite(personalitySunLon)
   const evolution = longitudeToGateLine(evolutionLon)        // Personality Earth
-
   const radiance = longitudeToGateLine(designSunLon)         // Design Sun
   const purposeLon = opposite(designSunLon)
   const purpose = longitudeToGateLine(purposeLon)            // Design Earth
 
-  // 4. Enrich with Gene Keys data
+  // 5. VENUS SEQUENCE (Relationship/Love)
+  // Attraction = Personality Venus, IQ = Design Venus
+  // EQ = Personality Mars, SQ = Design Mars
+  const attraction = longitudeToGateLine(venusLon)
+  const iq = longitudeToGateLine(designVenusLon)
+  const eq = longitudeToGateLine(marsLon)
+  const sq = longitudeToGateLine(designMarsLon)
+
+  // 6. PEARL SEQUENCE (Prosperity)
+  // Vocation = Personality Jupiter, Culture = Design Jupiter
+  // Brand = midpoint of Personality Sun + Venus
+  // Pearl = midpoint of Personality Mars + Jupiter
+  const brandLon = ((personalitySunLon + venusLon) / 2 + (Math.abs(personalitySunLon - venusLon) > 180 ? 180 : 0)) % 360
+  const pearlLon = ((marsLon + jupiterLon) / 2 + (Math.abs(marsLon - jupiterLon) > 180 ? 180 : 0)) % 360
+  const vocation = longitudeToGateLine(jupiterLon)
+  const culture = longitudeToGateLine(designJupiterLon)
+  const brand = longitudeToGateLine(brandLon)
+  const pearl = longitudeToGateLine(pearlLon)
+
+  // Enrich with Gene Keys data
   function enrich({ gate, line }) {
     const gk = GENE_KEYS_DATA[gate] || {}
     return {
@@ -259,15 +342,30 @@ export function getGeneKeysProfile({ day, month, year, hour, minute, timezone = 
       radiance:  enrich(radiance),
       purpose:   enrich(purpose),
     },
+    venusSequence: {
+      attraction: enrich(attraction),
+      iq: enrich(iq),
+      eq: enrich(eq),
+      sq: enrich(sq),
+    },
+    pearlSequence: {
+      vocation: enrich(vocation),
+      culture: enrich(culture),
+      brand: enrich(brand),
+      pearl: enrich(pearl),
+    },
     activationSequence: [lifesWork.gate, evolution.gate, radiance.gate, purpose.gate],
+    venusSequenceGates: [attraction.gate, iq.gate, eq.gate, sq.gate],
+    pearlSequenceGates: [vocation.gate, culture.gate, brand.gate, pearl.gate],
+    allGates: [
+      lifesWork.gate, evolution.gate, radiance.gate, purpose.gate,
+      attraction.gate, iq.gate, eq.gate, sq.gate,
+      vocation.gate, culture.gate, brand.gate, pearl.gate,
+    ],
     codonRing: null,
-    // Debug: raw longitudes (useful for validation)
     _debug: {
-      personalitySunLon,
-      evolutionLon,
-      designSunLon,
-      purposeLon,
-      jdBirth,
+      personalitySunLon, evolutionLon, designSunLon, purposeLon,
+      venusLon, marsLon, jupiterLon, jdBirth,
     },
   }
 }

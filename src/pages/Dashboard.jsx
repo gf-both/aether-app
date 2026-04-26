@@ -57,6 +57,7 @@ import SyncCanvas from '../components/canvas/SyncCanvas'
 import SyncDetail from '../components/details/SyncDetail'
 import RitualWheel from '../components/canvas/RitualWheel'
 import RitualDetail from '../components/details/RitualDetail'
+import FrequencyDetail from '../components/details/FrequencyDetail'
 import { getRecommendedRituals } from '../engines/ritualEngine'
 const PricingPage = lazy(() => import('./PricingPage'))
 const PractitionerPortal = lazy(() => import('./PractitionerPortal'))
@@ -335,6 +336,7 @@ const DETAIL_COMPONENTS = {
   lovelang: LoveLangDetail,
   cycle: CycleDetail,
   ritual: RitualDetail,
+  frequency: FrequencyDetail,
   dream: DreamDetail,
   sync: SyncDetail,
   timeline: TimelineDetail,
@@ -383,6 +385,7 @@ const DETAIL_TITLES = {
   lovelang: 'Love Languages \u2014 How You Give & Receive Love',
   cycle: 'Cycle \u00B7 Moon Phases \u2014 Your Lunar Rhythm',
   ritual: 'Rituals \u2014 Ancient Practices \u00B7 12 Traditions \u00B7 Moon-Aligned',
+  frequency: 'Frequency \u2014 Therapeutic Sound \u00B7 Solfeggio \u00B7 Binaural \u00B7 Planetary',
   dream: 'Dream Journal \u2014 Symbols \u00B7 Patterns \u00B7 The Unconscious',
   sync: 'Synchronicities \u2014 The Acausal Field \u00B7 Meaningful Coincidences',
   timeline: 'Life Timeline \u2014 Life Arc of Your Journey',
@@ -850,6 +853,20 @@ function WidgetContent({ widgetId }) {
           </div>
           <div className="cb">
             <RitualWheel topRitual={topR} score={topR?.score} />
+          </div>
+        </>
+      )
+    }
+    case 'frequency': {
+      return (
+        <>
+          <div className="ch">
+            <span className="ct">Frequency {'\u00B7'} Therapeutic Sound</span>
+            <span className="ci">{'\u266B'}</span>
+          </div>
+          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, opacity: .5 }}>
+            <div style={{ fontSize: 28 }}>{'\u266B'}</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--gold)' }}>Solfeggio {'\u00B7'} Binaural {'\u00B7'} Planetary</div>
           </div>
         </>
       )
