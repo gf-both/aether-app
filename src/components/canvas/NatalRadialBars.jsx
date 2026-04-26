@@ -10,56 +10,62 @@ const PLANET_GLYPHS = {
   jupiter: '♃', saturn: '♄', uranus: '♅', neptune: '♆', pluto: '♇',
   northNode: '☊', chiron: '⚷',
 }
+const PLANET_NAMES = {
+  sun: 'Sun', moon: 'Moon', mercury: 'Mercury', venus: 'Venus', mars: 'Mars',
+  jupiter: 'Jupiter', saturn: 'Saturn', uranus: 'Uranus', neptune: 'Neptune', pluto: 'Pluto',
+  northNode: 'N.Node', chiron: 'Chiron',
+}
+const PLANET_COLORS = {
+  sun: '#c9a84c', moon: '#aab8cc', mercury: '#e8c840', venus: '#cc88aa',
+  mars: '#cc5544', jupiter: '#8866cc', saturn: '#888899', uranus: '#44aacc',
+  neptune: '#4466cc', pluto: '#776688', northNode: '#886633', chiron: '#885544',
+}
 
 const ELEMENT_COLORS = {
-  fire:  { fill: 'rgba(204,68,68,',  stroke: '#cc4444' },
-  earth: { fill: 'rgba(201,168,76,', stroke: '#c9a84c' },
-  air:   { fill: 'rgba(68,136,204,', stroke: '#4488cc' },
-  water: { fill: 'rgba(68,170,170,', stroke: '#44aaaa' },
+  fire:  { r: 204, g: 68,  b: 68  },
+  earth: { r: 139, g: 120, b: 50  },
+  air:   { r: 68,  g: 136, b: 204 },
+  water: { r: 64,  g: 160, b: 160 },
 }
+const ELEMENT_HEX = { fire: '#cc4444', earth: '#8b7832', air: '#4488cc', water: '#40a0a0' }
+const ELEMENT_NAMES = { fire: 'Fire', earth: 'Earth', air: 'Air', water: 'Water' }
 const ELEMS = ['fire','earth','air','water','fire','earth','air','water','fire','earth','air','water']
 
-// Planet importance weights (for bar height)
-const PLANET_WEIGHT = {
-  sun: 1.0, moon: 0.9, mercury: 0.65, venus: 0.7, mars: 0.7,
-  jupiter: 0.8, saturn: 0.75, uranus: 0.55, neptune: 0.5, pluto: 0.45,
-  northNode: 0.35, chiron: 0.4,
-}
-
-const ASPECT_COLORS = {
-  conjunction: '#f0c040', opposition: '#cc4444', trine: '#4488cc',
-  square: '#cc8844', sextile: '#44aa66',
-}
-
-function parseDOB(dob) {
-  if (!dob) return null
-  const [y, m, d] = dob.split('-').map(Number)
-  return { year: y, month: m, day: d }
-}
-function parseTOB(tob) {
-  if (!tob) return { hour: 12, minute: 0 }
-  const [h, m] = tob.split(':').map(Number)
-  return { hour: h || 0, minute: m || 0 }
-}
+function parseDOB(dob) { if (!dob) return null; const [y,m,d] = dob.split('-').map(Number); return {year:y,month:m,day:d} }
+function parseTOB(tob) { if (!tob) return {hour:12,minute:0}; const [h,m] = tob.split(':').map(Number); return {hour:h||0,minute:m||0} }
 function computeChart(profile) {
   if (!profile?.dob) return null
-  const dob = parseDOB(profile.dob)
-  const tob = parseTOB(profile.tob)
+  const dob = parseDOB(profile.dob), tob = parseTOB(profile.tob)
   if (!dob) return null
-  let lat = profile.birthLat || 0, lon = profile.birthLon || 0, tz = profile.birthTimezone ?? 0
+  let lat = profile.birthLat||0, lon = profile.birthLon||0, tz = profile.birthTimezone??0
   if (!lat && !lon && profile.pob) {
-    const pob = (profile.pob || '').toLowerCase()
-    if (pob.includes('buenos aires')) { lat=-34.6037; lon=-58.3816; tz=-3 }
-    else if (pob.includes('montevideo')) { lat=-34.9011; lon=-56.1645; tz=-3 }
+    const p = (profile.pob||'').toLowerCase()
+    if (p.includes('buenos aires')) { lat=-34.6037; lon=-58.3816; tz=-3 }
+    else if (p.includes('montevideo')) { lat=-34.9011; lon=-56.1645; tz=-3 }
+    else if (p.includes('new york')) { lat=40.7128; lon=-74.006; tz=-5 }
+    else if (p.includes('london')) { lat=51.5074; lon=-0.1278; tz=0 }
   }
-  try { return getNatalChart({ day: dob.day, month: dob.month, year: dob.year, hour: tob.hour, minute: tob.minute, lat, lon, timezone: tz }) }
+  try { return getNatalChart({ day:dob.day, month:dob.month, year:dob.year, hour:tob.hour, minute:tob.minute, lat, lon, timezone:tz }) }
   catch { return null }
+}
+
+/** Determine house for a planet longitude */
+function getHouseFor(pLon, houses) {
+  for (let i = 0; i < 12; i++) {
+    const start = houses[i].lon
+    const end = houses[(i + 1) % 12].lon
+    if (start <= end) { if (pLon >= start && pLon < end) return i + 1 }
+    else { if (pLon >= start || pLon < end) return i + 1 }
+  }
+  return 1
 }
 
 export default function NatalRadialBars() {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
   const chartRef = useRef(null)
+  const hovRef = useRef(null) // hovered planet key
+  const mouseRef = useRef({ x: 0, y: 0 })
   const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
   const chart = useMemo(() => { try { return computeChart(profile) } catch { return null } },
     [profile?.dob, profile?.tob, profile?.birthLat, profile?.birthLon, profile?.birthTimezone, profile?.pob])
@@ -72,10 +78,18 @@ export default function NatalRadialBars() {
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     let pulse = 0
+
+    // Ambient particles
     const particles = []
-    for (let i = 0; i < 60; i++) {
-      particles.push({ angle: Math.random() * Math.PI * 2, r: 0.35 + Math.random() * 0.6, speed: 0.0003 + Math.random() * 0.0006, phase: Math.random() * Math.PI * 2, brightness: 0.3 + Math.random() * 0.5 })
+    for (let i = 0; i < 50; i++) {
+      particles.push({ angle: Math.random() * Math.PI * 2, r: 0.3 + Math.random() * 0.65, speed: 0.0003 + Math.random() * 0.0005, phase: Math.random() * Math.PI * 2, brightness: 0.2 + Math.random() * 0.4 })
     }
+
+    const handleMouseMove = (e) => {
+      const r = canvas.getBoundingClientRect()
+      mouseRef.current = { x: e.clientX - r.left, y: e.clientY - r.top }
+    }
+    canvas.addEventListener('mousemove', handleMouseMove)
 
     function draw() {
       const dpr = window.devicePixelRatio || 1
@@ -83,239 +97,312 @@ export default function NatalRadialBars() {
       const H = canvas.height / dpr
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
-      pulse += 0.012
+      pulse += 0.01
 
       const cx = W / 2, cy = H / 2
-      const R = Math.min(W, H) * 0.42
-      const innerR = R * 0.32
+      const R = Math.min(W, H) * 0.40
+      const innerR = R * 0.28
+      const outerR = R * 1.12
       const ch = chartRef.current
+      const mx = mouseRef.current.x, my = mouseRef.current.y
 
-      // Background: dark with subtle radial gradient
-      const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.3)
-      bg.addColorStop(0, 'rgba(20,20,36,0.95)')
-      bg.addColorStop(1, 'rgba(10,10,20,0.98)')
+      // Dark background
+      const bg = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.4)
+      bg.addColorStop(0, 'rgba(18,18,32,0.96)')
+      bg.addColorStop(1, 'rgba(8,8,16,0.98)')
       ctx.fillStyle = bg
       ctx.fillRect(0, 0, W, H)
 
-      // Zodiac circle and sign segments
+      // 12 zodiac segments
       for (let i = 0; i < 12; i++) {
         const a1 = (i * 30 - 90) * Math.PI / 180
         const a2 = ((i + 1) * 30 - 90) * Math.PI / 180
         const elem = ELEMS[i]
         const ec = ELEMENT_COLORS[elem]
 
-        // Segment background
+        // Faint segment fill
         ctx.beginPath()
         ctx.moveTo(cx, cy)
-        ctx.arc(cx, cy, R * 1.08, a1, a2)
+        ctx.arc(cx, cy, outerR, a1, a2)
         ctx.closePath()
-        ctx.fillStyle = ec.fill + '0.03)'
+        ctx.fillStyle = `rgba(${ec.r},${ec.g},${ec.b},0.03)`
         ctx.fill()
 
-        // Division lines
-        const lx = cx + Math.cos(a1) * R * 1.08
-        const ly = cy + Math.sin(a1) * R * 1.08
+        // Segment divider
         ctx.beginPath()
         ctx.moveTo(cx + Math.cos(a1) * innerR, cy + Math.sin(a1) * innerR)
-        ctx.lineTo(lx, ly)
+        ctx.lineTo(cx + Math.cos(a1) * outerR, cy + Math.sin(a1) * outerR)
         ctx.strokeStyle = 'rgba(201,168,76,0.06)'
         ctx.lineWidth = 0.5
         ctx.stroke()
 
-        // Sign glyph
+        // Sign glyph on outer ring
         const midA = (a1 + a2) / 2
-        const glyphR = R * 1.02
-        ctx.font = '13px serif'
+        ctx.font = '12px serif'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.fillStyle = ec.fill + '0.35)'
-        ctx.fillText(SIGN_GLYPHS[i], cx + Math.cos(midA) * glyphR, cy + Math.sin(midA) * glyphR)
+        ctx.fillStyle = `rgba(${ec.r},${ec.g},${ec.b},0.4)`
+        ctx.fillText(SIGN_GLYPHS[i], cx + Math.cos(midA) * (outerR + 14), cy + Math.sin(midA) * (outerR + 14))
       }
 
-      // Base rings
-      ctx.beginPath()
-      ctx.arc(cx, cy, R * 1.08, 0, Math.PI * 2)
-      ctx.strokeStyle = 'rgba(201,168,76,0.1)'
-      ctx.lineWidth = 0.3
-      ctx.stroke()
-
-      ctx.beginPath()
-      ctx.arc(cx, cy, innerR, 0, Math.PI * 2)
-      ctx.strokeStyle = 'rgba(201,168,76,0.08)'
-      ctx.lineWidth = 0.3
-      ctx.stroke()
+      // Base circles
+      ctx.beginPath(); ctx.arc(cx, cy, outerR, 0, Math.PI * 2)
+      ctx.strokeStyle = 'rgba(201,168,76,0.08)'; ctx.lineWidth = 0.3; ctx.stroke()
+      ctx.beginPath(); ctx.arc(cx, cy, innerR, 0, Math.PI * 2)
+      ctx.strokeStyle = 'rgba(201,168,76,0.06)'; ctx.lineWidth = 0.3; ctx.stroke()
+      // Mid ring (15° reference)
+      ctx.beginPath(); ctx.arc(cx, cy, innerR + (outerR - innerR) * 0.5, 0, Math.PI * 2)
+      ctx.strokeStyle = 'rgba(201,168,76,0.03)'; ctx.lineWidth = 0.3; ctx.stroke()
 
       if (!ch) {
-        ctx.font = '12px Cinzel, serif'
-        ctx.fillStyle = 'rgba(201,168,76,0.4)'
+        ctx.font = '11px Cinzel, serif'
+        ctx.fillStyle = 'rgba(201,168,76,0.35)'
         ctx.textAlign = 'center'
-        ctx.fillText('Add birth data to generate chart', cx, cy)
+        ctx.fillText('Add birth data to see your chart', cx, cy)
         animRef.current = requestAnimationFrame(draw)
         return
       }
 
-      // Planet bars
       const planets = ch.planets || {}
+      const houses = ch.houses || []
+      const aspects = (ch.aspects || []).slice(0, 15)
       const planetKeys = Object.keys(planets).filter(k => PLANET_GLYPHS[k])
-      const aspects = (ch.aspects || []).slice(0, 12)
 
-      // Aspect arcs (draw first, behind bars)
+      // Precompute planet screen positions for aspects + hover
+      const planetScreen = {}
+      let newHov = null
+
+      planetKeys.forEach(key => {
+        const p = planets[key]
+        if (!p) return
+        const lon = p.lon ?? p.longitude ?? 0
+        const signIdx = p.signIndex ?? Math.floor(lon / 30) % 12
+        const degInSign = p.degree ?? (lon % 30)
+        const house = houses.length ? getHouseFor(lon, houses) : '?'
+        const elem = ELEMS[signIdx]
+        const ec = ELEMENT_COLORS[elem]
+
+        // Angle: sign segment start + offset within sign
+        const angle = ((signIdx * 30 + degInSign) - 90) * Math.PI / 180
+
+        // Distance from center: further from center = further into the sign (0°=inner, 30°=outer)
+        const t = degInSign / 30 // 0..1
+        const dist = innerR + (outerR - innerR) * (0.1 + t * 0.8)
+
+        const px = cx + Math.cos(angle) * dist
+        const py = cy + Math.sin(angle) * dist
+
+        planetScreen[key] = { x: px, y: py, angle, dist, signIdx, degInSign, house, elem, lon }
+
+        // Hover detection
+        const dx = mx - px, dy = my - py
+        if (dx * dx + dy * dy < 225) newHov = key
+      })
+      hovRef.current = newHov
+
+      // Aspect arcs (behind planets)
       aspects.forEach(asp => {
-        const p1 = planets[asp.planet1]
-        const p2 = planets[asp.planet2]
-        if (!p1 || !p2) return
-        const a1 = (p1.longitude - 90) * Math.PI / 180
-        const a2 = (p2.longitude - 90) * Math.PI / 180
-        const r1 = innerR + (R - innerR) * (PLANET_WEIGHT[asp.planet1] || 0.5) * 0.5
-        const r2 = innerR + (R - innerR) * (PLANET_WEIGHT[asp.planet2] || 0.5) * 0.5
-        const x1 = cx + Math.cos(a1) * r1
-        const y1 = cy + Math.sin(a1) * r1
-        const x2 = cx + Math.cos(a2) * r2
-        const y2 = cy + Math.sin(a2) * r2
+        const s1 = planetScreen[asp.planet1]
+        const s2 = planetScreen[asp.planet2]
+        if (!s1 || !s2) return
+        const cpDist = innerR * 0.4
+        const midAngle = (s1.angle + s2.angle) / 2
+        const cpx = cx + Math.cos(midAngle) * cpDist
+        const cpy = cy + Math.sin(midAngle) * cpDist
+        const col = asp.type === 'trine' ? '#4488cc' : asp.type === 'opposition' ? '#cc4444' : asp.type === 'square' ? '#cc8844' : asp.type === 'sextile' ? '#44aa66' : '#c9a84c'
         ctx.beginPath()
-        ctx.moveTo(x1, y1)
-        ctx.quadraticCurveTo(cx + Math.cos((a1 + a2) / 2) * innerR * 0.5, cy + Math.sin((a1 + a2) / 2) * innerR * 0.5, x2, y2)
-        ctx.strokeStyle = (ASPECT_COLORS[asp.type] || '#888') + '44'
+        ctx.moveTo(s1.x, s1.y)
+        ctx.quadraticCurveTo(cpx, cpy, s2.x, s2.y)
+        ctx.strokeStyle = col + '20'
         ctx.lineWidth = 0.8
         ctx.stroke()
       })
 
-      // Draw bars for each planet
+      // Draw each planet
       planetKeys.forEach(key => {
+        const s = planetScreen[key]
+        if (!s) return
         const p = planets[key]
-        if (!p) return
-        const lon = p.longitude || 0
-        const angle = (lon - 90) * Math.PI / 180
-        const weight = PLANET_WEIGHT[key] || 0.5
-        const barH = (R - innerR) * weight * (0.85 + Math.sin(pulse + lon * 0.1) * 0.08)
-        const barW = 8 + weight * 4
-        const signIdx = Math.floor(lon / 30) % 12
-        const elem = ELEMS[signIdx]
-        const ec = ELEMENT_COLORS[elem]
+        const pc = PLANET_COLORS[key]
+        const ec = ELEMENT_COLORS[s.elem]
+        const isHov = hovRef.current === key
+        const isLum = key === 'sun' || key === 'moon'
 
-        // Bar (radial)
-        ctx.save()
-        ctx.translate(cx, cy)
-        ctx.rotate(angle)
-
-        // Bar glow
-        const glow = ctx.createLinearGradient(0, -innerR - barH, 0, -innerR)
-        glow.addColorStop(0, ec.fill + '0.7)')
-        glow.addColorStop(1, ec.fill + '0.15)')
-
-        // Rounded rect bar
-        const hw = barW / 2
-        const barTop = -innerR - barH
-        const barBot = -innerR
+        // Radial bar from center to planet position
         ctx.beginPath()
-        ctx.moveTo(-hw, barBot)
-        ctx.lineTo(-hw, barTop + 3)
-        ctx.quadraticCurveTo(-hw, barTop, -hw + 3, barTop)
-        ctx.lineTo(hw - 3, barTop)
-        ctx.quadraticCurveTo(hw, barTop, hw, barTop + 3)
-        ctx.lineTo(hw, barBot)
-        ctx.closePath()
+        ctx.moveTo(cx + Math.cos(s.angle) * innerR, cy + Math.sin(s.angle) * innerR)
+        ctx.lineTo(s.x, s.y)
+        const barGrad = ctx.createLinearGradient(
+          cx + Math.cos(s.angle) * innerR, cy + Math.sin(s.angle) * innerR,
+          s.x, s.y
+        )
+        barGrad.addColorStop(0, `rgba(${ec.r},${ec.g},${ec.b},0.05)`)
+        barGrad.addColorStop(1, `rgba(${ec.r},${ec.g},${ec.b},${isHov ? 0.6 : 0.35})`)
+        ctx.strokeStyle = barGrad
+        ctx.lineWidth = isHov ? 5 : isLum ? 4 : 3
+        ctx.lineCap = 'round'
+        ctx.stroke()
+
+        // Planet dot glow
+        const glowR = isHov ? 18 : isLum ? 12 : 9
+        const glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowR)
+        glow.addColorStop(0, pc + '44')
+        glow.addColorStop(1, pc + '00')
+        ctx.beginPath()
+        ctx.arc(s.x, s.y, glowR, 0, Math.PI * 2)
         ctx.fillStyle = glow
         ctx.fill()
 
-        // Bar border
-        ctx.strokeStyle = ec.fill + '0.3)'
-        ctx.lineWidth = 0.5
-        ctx.stroke()
+        // Planet dot
+        const dotR = isHov ? 7 : isLum ? 5 : 4
+        ctx.beginPath()
+        ctx.arc(s.x, s.y, dotR, 0, Math.PI * 2)
+        ctx.fillStyle = pc
+        ctx.fill()
 
-        ctx.restore()
-
-        // Planet glyph at bar top
-        const glyphDist = innerR + barH + 14
-        const gx = cx + Math.cos(angle) * glyphDist
-        const gy = cy + Math.sin(angle) * glyphDist
-        ctx.font = '13px serif'
+        // Planet glyph
+        ctx.font = `${isHov ? 13 : isLum ? 12 : 10}px serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        // Drop shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.5)'
-        ctx.fillText(PLANET_GLYPHS[key], gx + 0.5, gy + 0.5)
-        ctx.fillStyle = ec.stroke
-        ctx.fillText(PLANET_GLYPHS[key], gx, gy)
+        ctx.fillStyle = 'rgba(0,0,0,0.6)'
+        ctx.fillText(PLANET_GLYPHS[key], s.x + 0.5, s.y + 0.5)
+        ctx.fillStyle = '#fff'
+        ctx.fillText(PLANET_GLYPHS[key], s.x, s.y)
 
-        // Degree label
-        const degDist = innerR + barH + 26
-        const dx = cx + Math.cos(angle) * degDist
-        const dy = cy + Math.sin(angle) * degDist
-        const degInSign = lon % 30
-        const deg = Math.floor(degInSign)
-        const min = Math.round((degInSign - deg) * 60)
-        ctx.font = '7px Inconsolata, monospace'
-        ctx.fillStyle = ec.fill + '0.5)'
-        ctx.fillText(`${deg}°${SIGN_GLYPHS[signIdx]}`, dx, dy)
+        // House label next to planet
+        const labelAngle = s.angle + (isHov ? 0.15 : 0.1)
+        const labelDist = s.dist + (isHov ? 16 : 12)
+        const lx = cx + Math.cos(labelAngle) * labelDist
+        const ly = cy + Math.sin(labelAngle) * labelDist
+        ctx.font = '8px Inconsolata, monospace'
+        ctx.textAlign = 'center'
+        ctx.fillStyle = 'rgba(201,168,76,0.5)'
+        ctx.fillText(`H${s.house}`, lx, ly)
+
+        // Retrograde indicator
+        if (p.retrograde) {
+          const rx = cx + Math.cos(s.angle - 0.1) * (s.dist + 12)
+          const ry = cy + Math.sin(s.angle - 0.1) * (s.dist + 12)
+          ctx.font = '7px serif'
+          ctx.fillStyle = 'rgba(204,68,68,0.5)'
+          ctx.fillText('℞', rx, ry)
+        }
       })
 
-      // Center info: element balance
+      // Tooltip for hovered planet
+      if (hovRef.current) {
+        const key = hovRef.current
+        const s = planetScreen[key]
+        const p = planets[key]
+        if (s && p) {
+          const deg = Math.floor(s.degInSign)
+          const min = Math.round((s.degInSign - deg) * 60)
+          const signName = SIGN_NAMES[s.signIdx]
+          const elemName = ELEMENT_NAMES[s.elem]
+          const lines = [
+            `${PLANET_NAMES[key]} ${PLANET_GLYPHS[key]}`,
+            `${deg}°${String(min).padStart(2,'0')}' ${signName}`,
+            `House ${s.house}  ·  ${elemName}`,
+            p.retrograde ? 'Retrograde ℞' : '',
+          ].filter(Boolean)
+
+          const tw = 150, th = lines.length * 16 + 14
+          let tx = s.x + 18, ty = s.y - th / 2
+          if (tx + tw > W - 10) tx = s.x - tw - 18
+          if (ty < 10) ty = 10
+          if (ty + th > H - 10) ty = H - th - 10
+
+          ctx.fillStyle = 'rgba(12,12,22,0.92)'
+          ctx.strokeStyle = 'rgba(201,168,76,0.25)'
+          ctx.lineWidth = 1
+          ctx.beginPath()
+          ctx.roundRect(tx, ty, tw, th, 6)
+          ctx.fill()
+          ctx.stroke()
+
+          lines.forEach((line, li) => {
+            ctx.font = li === 0 ? '11px Cinzel, serif' : '9px Inconsolata, monospace'
+            ctx.fillStyle = li === 0 ? '#c9a84c' : 'rgba(255,255,255,0.6)'
+            ctx.textAlign = 'left'
+            ctx.textBaseline = 'top'
+            ctx.fillText(line, tx + 10, ty + 8 + li * 16)
+          })
+        }
+      }
+
+      // Center: element balance
       const elemCounts = { fire: 0, earth: 0, air: 0, water: 0 }
       planetKeys.forEach(key => {
-        const p = planets[key]
-        if (!p) return
-        const signIdx = Math.floor((p.longitude || 0) / 30) % 12
-        elemCounts[ELEMS[signIdx]]++
+        const s = planetScreen[key]
+        if (s) elemCounts[s.elem]++
       })
 
-      // Center circle
-      const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, innerR * 0.85)
-      cg.addColorStop(0, 'rgba(201,168,76,0.04)')
-      cg.addColorStop(1, 'rgba(201,168,76,0)')
-      ctx.beginPath()
-      ctx.arc(cx, cy, innerR * 0.85, 0, Math.PI * 2)
-      ctx.fillStyle = cg
-      ctx.fill()
+      const cGlow = ctx.createRadialGradient(cx, cy, 0, cx, cy, innerR * 0.9)
+      cGlow.addColorStop(0, 'rgba(201,168,76,0.04)')
+      cGlow.addColorStop(1, 'rgba(201,168,76,0)')
+      ctx.beginPath(); ctx.arc(cx, cy, innerR * 0.9, 0, Math.PI * 2)
+      ctx.fillStyle = cGlow; ctx.fill()
 
-      ctx.font = '9px Cinzel, serif'
-      ctx.fillStyle = 'rgba(201,168,76,0.45)'
+      ctx.font = '8px Cinzel, serif'
+      ctx.fillStyle = 'rgba(201,168,76,0.4)'
       ctx.textAlign = 'center'
-      ctx.fillText('ELEMENT', cx, cy - 18)
-      ctx.fillText('BALANCE', cx, cy - 6)
-
-      // Mini element bars in center
-      const elemOrder = ['fire', 'earth', 'air', 'water']
-      const elemLabels = ['Fire', 'Earth', 'Air', 'Water']
-      elemOrder.forEach((el, i) => {
-        const y = cy + 8 + i * 12
+      ctx.fillText('ELEMENT BALANCE', cx, cy - 20)
+      ;['fire','earth','air','water'].forEach((el, i) => {
+        const y = cy - 6 + i * 13
         const count = elemCounts[el] || 0
-        const barLen = count * 6
         const ec = ELEMENT_COLORS[el]
-        ctx.fillStyle = ec.fill + '0.6)'
-        ctx.fillRect(cx - 20, y - 3, barLen, 5)
+        ctx.fillStyle = `rgba(${ec.r},${ec.g},${ec.b},0.6)`
+        ctx.fillRect(cx - 18, y, count * 5, 5)
         ctx.font = '7px Inconsolata, monospace'
         ctx.fillStyle = 'rgba(255,255,255,0.35)'
         ctx.textAlign = 'left'
-        ctx.fillText(`${count} ${elemLabels[i]}`, cx - 20 + barLen + 4, y + 2)
+        ctx.fillText(`${count} ${ELEMENT_NAMES[el]}`, cx - 18 + count * 5 + 4, y + 5)
+      })
+
+      // Element color key (bottom-left corner)
+      const keyX = 12, keyY = H - 52
+      ctx.fillStyle = 'rgba(12,12,22,0.7)'
+      ctx.beginPath(); ctx.roundRect(keyX, keyY, 80, 46, 4); ctx.fill()
+      ctx.font = '7px Cinzel, serif'
+      ctx.fillStyle = 'rgba(201,168,76,0.4)'
+      ctx.textAlign = 'left'
+      ctx.fillText('ELEMENTS', keyX + 6, keyY + 9)
+      ;['fire','earth','air','water'].forEach((el, i) => {
+        const y = keyY + 16 + i * 7
+        const ec = ELEMENT_COLORS[el]
+        ctx.fillStyle = `rgba(${ec.r},${ec.g},${ec.b},0.8)`
+        ctx.fillRect(keyX + 6, y, 8, 4)
+        ctx.font = '6px Inconsolata, monospace'
+        ctx.fillStyle = 'rgba(255,255,255,0.45)'
+        ctx.fillText(ELEMENT_NAMES[el], keyX + 18, y + 4)
       })
 
       // Ambient particles
       particles.forEach(pt => {
         pt.angle += pt.speed
-        const pr = innerR + (R * 1.1 - innerR) * pt.r + Math.sin(pulse * 2 + pt.phase) * 4
+        const pr = innerR + (outerR - innerR) * pt.r + Math.sin(pulse * 2 + pt.phase) * 3
         const px = cx + Math.cos(pt.angle) * pr
         const py = cy + Math.sin(pt.angle) * pr
-        const alpha = pt.brightness * (0.15 + Math.sin(pulse * 3 + pt.phase) * 0.1)
-        ctx.beginPath()
-        ctx.arc(px, py, 1.2, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(201,168,76,${alpha})`
-        ctx.fill()
+        const alpha = pt.brightness * (0.12 + Math.sin(pulse * 3 + pt.phase) * 0.08)
+        ctx.beginPath(); ctx.arc(px, py, 1, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(201,168,76,${alpha})`; ctx.fill()
       })
 
       // Title
-      ctx.font = '9px Cinzel, serif'
-      ctx.fillStyle = 'rgba(201,168,76,0.3)'
+      ctx.font = '8px Cinzel, serif'
+      ctx.fillStyle = 'rgba(201,168,76,0.25)'
       ctx.textAlign = 'center'
-      ctx.letterSpacing = '2px'
-      ctx.fillText('RADIAL DATA ARCHITECTURE', cx, H - 10)
+      ctx.fillText('RADIAL DATA ARCHITECTURE', cx, H - 8)
 
       animRef.current = requestAnimationFrame(draw)
     }
 
     animRef.current = requestAnimationFrame(draw)
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current)
+      canvas.removeEventListener('mousemove', handleMouseMove)
+    }
   }, [])
 
-  return <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block' }} />
+  return <canvas ref={canvasRef} style={{ width: '100%', height: '100%', display: 'block', cursor: 'crosshair' }} />
 }
