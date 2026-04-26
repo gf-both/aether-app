@@ -198,13 +198,29 @@ export default function EnneagramDetail() {
   const useStaticInstinct = !storeInstinct
   const [showQuizOverlay, setShowQuizOverlay] = useState(false)
 
-  // No enneagram type — show empty state
+  // No enneagram type — show empty state with quiz button
   if (!storeType) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 8, opacity: 0.5, padding: 32 }}>
-        <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--gold)' }}>Take the Enneagram Quiz to activate</div>
-        <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Complete the quiz to see your type</div>
-      </div>
+      <>
+        {showQuizOverlay && <EnneagramQuizOverlay onClose={() => setShowQuizOverlay(false)} />}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 14, padding: 32 }}>
+          <div style={{ fontSize: 28 }}>◉</div>
+          <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.15em', color: 'var(--gold)' }}>Enneagram</div>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', maxWidth: 320, textAlign: 'center', lineHeight: 1.7 }}>
+            Nine core patterns of perception — your type reveals the lens through which your psyche filters reality.
+          </div>
+          <button
+            onClick={() => setShowQuizOverlay(true)}
+            style={{
+              fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.15em', textTransform: 'uppercase',
+              color: '#c9a84c', cursor: 'pointer', padding: '10px 28px', borderRadius: 20, marginTop: 4,
+              border: '1px solid rgba(201,168,76,.3)', background: 'rgba(201,168,76,.06)', transition: 'all .2s',
+            }}
+          >
+            Take the Quiz
+          </button>
+        </div>
+      </>
     )
   }
 

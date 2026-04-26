@@ -207,37 +207,40 @@ export const useGolemStore = create(
       showWidgetManager: false,
       setShowWidgetManager: (v) => set({ showWidgetManager: v }),
 
-      // Dosha type — writes to the active profile, not a global field
+      // Dosha type — writes to active profile AND always to primaryProfile
       doshaType: null, // legacy field kept for migration compatibility
       setDoshaType: (type) => set((s) => {
+        const result = { primaryProfile: { ...s.primaryProfile, doshaType: type } }
         if (s.activeViewProfile) {
           const updated = { ...s.activeViewProfile, doshaType: type }
-          const people = s.people.map(p => p.id === updated.id ? updated : p)
-          return { activeViewProfile: updated, people }
+          result.activeViewProfile = updated
+          result.people = s.people.map(p => p.id === updated.id ? updated : p)
         }
-        return { primaryProfile: { ...s.primaryProfile, doshaType: type } }
+        return result
       }),
 
-      // Archetype type — writes to the active profile
+      // Archetype type — writes to active profile AND always to primaryProfile
       archetypeType: null, // legacy field kept for migration compatibility
       setArchetypeType: (type) => set((s) => {
+        const result = { primaryProfile: { ...s.primaryProfile, archetypeType: type } }
         if (s.activeViewProfile) {
           const updated = { ...s.activeViewProfile, archetypeType: type }
-          const people = s.people.map(p => p.id === updated.id ? updated : p)
-          return { activeViewProfile: updated, people }
+          result.activeViewProfile = updated
+          result.people = s.people.map(p => p.id === updated.id ? updated : p)
         }
-        return { primaryProfile: { ...s.primaryProfile, archetypeType: type } }
+        return result
       }),
 
-      // Love Language — writes to the active profile
+      // Love Language — writes to active profile AND always to primaryProfile
       loveLanguage: null, // legacy field kept for migration compatibility
       setLoveLanguage: (lang) => set((s) => {
+        const result = { primaryProfile: { ...s.primaryProfile, loveLanguage: lang } }
         if (s.activeViewProfile) {
           const updated = { ...s.activeViewProfile, loveLanguage: lang }
-          const people = s.people.map(p => p.id === updated.id ? updated : p)
-          return { activeViewProfile: updated, people }
+          result.activeViewProfile = updated
+          result.people = s.people.map(p => p.id === updated.id ? updated : p)
         }
-        return { primaryProfile: { ...s.primaryProfile, loveLanguage: lang } }
+        return result
       }),
 
       // Subscription

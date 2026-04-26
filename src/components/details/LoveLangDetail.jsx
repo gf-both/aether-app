@@ -217,17 +217,31 @@ function hexToRgba(hex, alpha) {
 
 export default function LoveLangDetail() {
   const loveLanguage = useGolemStore((s) => (s.activeViewProfile || s.primaryProfile)?.loveLanguage)
+  const setActiveQuiz = useGolemStore((s) => s.setActiveQuiz)
 
   const primary = loveLanguage
     ? LOVE_LANGUAGES.find(l => l.name === loveLanguage)
     : null
 
-  // If no love language is set, show empty state
+  // If no love language is set, show empty state with quiz button
   if (!primary) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 8, opacity: 0.5, padding: 32 }}>
-        <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em', color: 'var(--gold)' }}>Take the Love Language Quiz to activate</div>
-        <div style={{ fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>Complete the quiz to see your profile</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 14, padding: 32 }}>
+        <div style={{ fontSize: 28 }}>💝</div>
+        <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.15em', color: 'var(--gold)' }}>Love Language</div>
+        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', maxWidth: 320, textAlign: 'center', lineHeight: 1.7 }}>
+          How you give and receive love — Words, Touch, Time, Acts, or Gifts. Take the quiz to discover your pattern.
+        </div>
+        <button
+          onClick={() => setActiveQuiz('lovelang')}
+          style={{
+            fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.15em', textTransform: 'uppercase',
+            color: '#c9a84c', cursor: 'pointer', padding: '10px 28px', borderRadius: 20, marginTop: 4,
+            border: '1px solid rgba(201,168,76,.3)', background: 'rgba(201,168,76,.06)', transition: 'all .2s',
+          }}
+        >
+          Take the Quiz
+        </button>
       </div>
     )
   }
