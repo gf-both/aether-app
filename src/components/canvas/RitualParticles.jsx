@@ -88,16 +88,20 @@ function generatePoints(tradition, count) {
       break
     }
     case 'egyptian': {
-      // Ankh
+      // Ankh — ring sits directly on crossbar, no rod between
+      const crossY = 0.0
       for (let i = 0; i < count; i++) {
         const t = Math.random()
         if (t < 0.35) {
+          // Ring — centered above crossbar, bottom touches it
           const a = Math.random() * TAU
-          pts.push({ x: Math.cos(a) * 0.3, y: Math.sin(a) * 0.45 + 0.4 })
+          pts.push({ x: Math.cos(a) * 0.3, y: Math.sin(a) * 0.45 + crossY + 0.45 })
         } else if (t < 0.65) {
-          pts.push({ x: (Math.random() - 0.5) * 0.06, y: 0.4 - Math.random() * 1.5 })
+          // Shaft — extends down from crossbar
+          pts.push({ x: (Math.random() - 0.5) * 0.06, y: crossY - Math.random() * 1.5 })
         } else {
-          pts.push({ x: (Math.random() - 0.5) * 1.0, y: 0.0 + (Math.random() - 0.5) * 0.06 })
+          // Crossbar — at ring base
+          pts.push({ x: (Math.random() - 0.5) * 1.0, y: crossY + (Math.random() - 0.5) * 0.06 })
         }
       }
       break

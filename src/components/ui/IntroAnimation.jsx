@@ -233,62 +233,53 @@ function merkaba(count) {
 }
 
 function ankh(count) {
-  // Egyptian Ankh — full 3D volumetric figure
-  // Torus loop on top, thick cylindrical shaft, thick crossbar
-  // All parts have real 3D depth — looks solid from every angle
+  // Egyptian Ankh — ring sits directly on crossbar, no rod between them
+  // Torus loop on top, crossbar at loop base, shaft extends down from crossbar
   const pts = new Float32Array(count * 3)
-  const tubeR = 0.12 // tube radius for all parts
+  const tubeR = 0.12
+  const crossY = 0.15 // crossbar Y = loop bottom — no gap
 
   for (let i = 0; i < count; i++) {
     const t = Math.random()
     let x, y, z
 
     if (t < 0.40) {
-      // ─── TORUS LOOP — 3D donut ring on top ───
-      const loopAngle = Math.random() * TAU // angle around the loop
-      const tubeAngle = Math.random() * TAU // angle around the tube cross-section
-      const Rx = 0.42, Ry = 0.55 // loop radii (oval)
+      // ─── TORUS LOOP — sits on top of crossbar ───
+      const loopAngle = Math.random() * TAU
+      const tubeAngle = Math.random() * TAU
+      const Rx = 0.42, Ry = 0.55
       const cx = Math.cos(loopAngle) * Rx
-      const cy = Math.sin(loopAngle) * Ry + 0.7
-      // Tube cross-section — perpendicular to loop path
-      const nx = -Math.sin(loopAngle) // normal x (tangent perpendicular)
-      const tr = tubeR * (0.7 + Math.random() * 0.3) // slight variation
+      const cy = Math.sin(loopAngle) * Ry + crossY + Ry // center above crossbar
+      const nx = -Math.sin(loopAngle)
+      const tr = tubeR * (0.7 + Math.random() * 0.3)
       x = cx + nx * Math.cos(tubeAngle) * tr * 0.6
       y = cy + Math.sin(tubeAngle) * tr * 0.5
-      z = Math.cos(tubeAngle) * tr // depth from tube
+      z = Math.cos(tubeAngle) * tr
     } else if (t < 0.70) {
-      // ─── VERTICAL SHAFT — thick 3D cylinder ───
+      // ─── VERTICAL SHAFT — extends down from crossbar ───
       const st = Math.random()
-      const shaftY = 0.15 - st * 1.7 // top to bottom
+      const shaftY = crossY - st * 1.7
       const angle = Math.random() * TAU
       const r = tubeR * (0.6 + Math.random() * 0.4)
       x = Math.cos(angle) * r * 0.5
       y = shaftY
       z = Math.sin(angle) * r * 0.5
     } else if (t < 0.88) {
-      // ─── HORIZONTAL CROSSBAR — thick 3D cylinder ───
+      // ─── HORIZONTAL CROSSBAR — at loop base ───
       const st = Math.random()
       const barX = (st - 0.5) * 1.3
       const angle = Math.random() * TAU
       const r = tubeR * (0.55 + Math.random() * 0.45)
       x = barX
-      y = -0.15 + Math.cos(angle) * r * 0.4
+      y = crossY + Math.cos(angle) * r * 0.4
       z = Math.sin(angle) * r * 0.5
-    } else if (t < 0.94) {
-      // ─── JOINT where crossbar meets shaft — extra density ───
-      const angle = Math.random() * TAU
-      const phi = Math.acos(2 * Math.random() - 1)
-      const r = tubeR * 1.1
-      x = Math.sin(phi) * Math.cos(angle) * r * 0.5
-      y = -0.15 + Math.sin(phi) * Math.sin(angle) * r * 0.4
-      z = Math.cos(phi) * r * 0.5
     } else {
-      // ─── JOINT where loop meets shaft — smooth connection ───
+      // ─── JOINT where crossbar meets shaft + loop base ───
       const angle = Math.random() * TAU
       const phi = Math.acos(2 * Math.random() - 1)
       const r = tubeR * 1.2
       x = Math.sin(phi) * Math.cos(angle) * r * 0.5
-      y = 0.15 + Math.sin(phi) * Math.sin(angle) * r * 0.4
+      y = crossY + Math.sin(phi) * Math.sin(angle) * r * 0.4
       z = Math.cos(phi) * r * 0.5
     }
 
@@ -1072,14 +1063,22 @@ export default function IntroAnimation({ onComplete }) {
         </div>
       </div>
 
-      {/* Skip hint */}
-      <div style={{
-        position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)',
-        fontSize: 10, letterSpacing: '.2em', color: 'rgba(201,168,76,0.45)',
-        fontFamily: "'Cinzel',serif", textTransform: 'uppercase',
-      }}>
-        tap to skip
-      </div>
+      {/* Skip button */}
+      <button
+        onClick={(e) => { e.stopPropagation(); setOpacity(0); setTimeout(() => onComplete?.(), 500) }}
+        style={{
+          position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)',
+          fontSize: 10, letterSpacing: '.2em', color: 'rgba(201,168,76,0.6)',
+          fontFamily: "'Cinzel',serif", textTransform: 'uppercase',
+          background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.25)',
+          borderRadius: 20, padding: '8px 28px', cursor: 'pointer',
+          transition: 'all 0.2s',
+        }}
+        onMouseEnter={e => { e.target.style.background = 'rgba(201,168,76,0.15)'; e.target.style.color = 'rgba(201,168,76,0.9)' }}
+        onMouseLeave={e => { e.target.style.background = 'rgba(201,168,76,0.08)'; e.target.style.color = 'rgba(201,168,76,0.6)' }}
+      >
+        Skip
+      </button>
     </div>
   )
 }
