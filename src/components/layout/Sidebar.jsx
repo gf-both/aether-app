@@ -13,11 +13,11 @@ const NAV_SECTIONS = [
   { type: 'section', label: 'YOU' },
   { type: 'item', icon: '⬡', label: 'Identity', id: 'identity-agent', widget: 'identity-agent' },
   { type: 'item', icon: '⟐', label: 'Life Direction', id: 'life-direction', widget: 'life-direction' },
+  { type: 'item', icon: '⎈', label: 'Career', id: 'career', widget: 'career' },
+  { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
   { type: 'item', icon: '⊛', label: 'Patterns', id: 'pat', widget: 'pat' },
   { type: 'item', icon: '◬', label: 'Rituals', id: 'ritual', widget: 'ritual' },
   { type: 'item', icon: '⏣', label: 'Golem', id: 'golem', widget: 'golem' },
-  { type: 'item', icon: '⟳', label: 'Timeline', id: 'timeline', widget: 'timeline' },
-  { type: 'item', icon: '⎈', label: 'Career', id: 'career', widget: 'career' },
 
   { type: 'section', label: 'OTHERS' },
   { type: 'item', icon: '⊹', label: 'Relationship', id: 'relationship-agent', widget: 'relationship-agent' },
