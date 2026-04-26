@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useComputedProfile } from '../hooks/useActiveProfile'
+import { useComputedProfile, useComputedPeople } from '../hooks/useActiveProfile'
 import { useGolemStore } from '../store/useGolemStore'
 import { runCompatibilitySimulation } from '../lib/golemConversation'
 
@@ -12,7 +12,7 @@ const SCENARIOS = [
 
 export default function GolemSimulation() {
   const profile = useComputedProfile()
-  const people = useGolemStore(s => s.people) || []
+  const people = useComputedPeople()
   const setActiveDetail = useGolemStore(s => s.setActiveDetail)
   const [selectedId, setSelectedId] = useState(null)
   const [relType, setRelType] = useState('romantic')

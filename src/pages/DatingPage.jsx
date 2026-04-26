@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useGolemStore } from '../store/useGolemStore'
-import { computePersonData } from '../hooks/useActiveProfile'
+import { computePersonData, useComputedPeople } from '../hooks/useActiveProfile'
 import { computeCompatibility } from '../engines/compatibilityEngine'
 import GolemAvatar from '../components/ui/GolemAvatar'
 
@@ -38,7 +38,7 @@ const NETWORK_STATS = [
 
 export default function DatingPage() {
   const rawProfile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
-  const people = useGolemStore(s => s.people)
+  const people = useComputedPeople()
 
   // Single source of truth — computePersonData always recomputes from engines
   const profile = useMemo(() => computePersonData(rawProfile), [rawProfile?.dob, rawProfile?.tob, rawProfile?.birthLat, rawProfile?.birthLon, rawProfile?.birthTimezone, rawProfile?.name])

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useGolemStore } from '../store/useGolemStore'
-import { computePersonData } from '../hooks/useActiveProfile'
+import { computePersonData, useComputedPeople } from '../hooks/useActiveProfile'
 import { callAI } from '../lib/ai'
 import { getNatalChart } from '../engines/natalEngine'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
@@ -95,7 +95,7 @@ export default function GolemPage() {
   const rawProfile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
   const profile = useMemo(() => computePersonData(rawProfile), [rawProfile?.dob, rawProfile?.tob, rawProfile?.birthLat, rawProfile?.birthLon, rawProfile?.birthTimezone, rawProfile?.name])
   const setPrimaryProfile = useGolemStore(s => s.setPrimaryProfile)
-  const people = useGolemStore(s => s.people)
+  const people = useComputedPeople()
   const setOracleContext = useGolemStore(s => s.setOracleContext)
 
   // Custom golems
