@@ -31,6 +31,8 @@ export const DEFAULT_PRIMARY_PROFILE = {
   doshaType: 'Tridoshic',
   archetypeType: null,
   loveLanguage: 'Words of Affirmation',
+  lastPeriodDate: '',
+  cycleLength: 28,
 }
 
 export const DEFAULT_PEOPLE = [

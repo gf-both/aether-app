@@ -268,14 +268,11 @@ export default function DoshaDetail() {
     const parts = doshaType.split('-')
     primary = parts[0] ? parts[0].toLowerCase() : null
     secondary = parts[1] ? parts[1].toLowerCase() : null
-    // Derive the third dosha
     const allDoshas = ['vata', 'pitta', 'kapha']
     tertiary = allDoshas.find(d => d !== primary && d !== secondary) || null
-    // Validate keys exist in DOSHA_DATA — fall back to null if not
     if (primary && !DOSHA_DATA[primary]) { primary = null }
     if (secondary && !DOSHA_DATA[secondary]) { secondary = null }
     if (tertiary && !DOSHA_DATA[tertiary]) { tertiary = null }
-    // Estimate scores from ordering
     scores = {}
     if (primary) scores[primary] = 45
     if (secondary) scores[secondary] = 35
@@ -285,25 +282,46 @@ export default function DoshaDetail() {
     scores = { vata: 33, pitta: 33, kapha: 34 }
   }
 
+  // If no dosha type, show quiz inline (like MBTI)
+  if (!doshaType && !showQuiz) {
+    return (
+      <div style={S.panel}>
+        <div>
+          <div style={S.heading}>Dosha</div>
+          <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
+            Discover your Ayurvedic mind-body constitution through this assessment
+          </div>
+        </div>
+        <div>
+          <div style={S.sectionTitle}>Ayurvedic Constitution Quiz</div>
+          <DoshaQuiz />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={S.panel}>
-      {/* Header */}
+      {/* Header with retake option */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={S.heading}>Dosha</div>
-          <button onClick={() => setShowQuiz(!showQuiz)} style={{
-            padding: '8px 18px', borderRadius: 8, border: '2px solid #d4a017',
-            background: '#b8860b', color: '#fff', fontWeight: 700,
-            fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.12em', cursor: 'pointer',
-            textTransform: 'uppercase',
-          }}>{showQuiz ? 'Close Quiz' : doshaType ? 'Retake Quiz' : 'Take Quiz'}</button>
+          {doshaType && (
+            <button onClick={() => setShowQuiz(!showQuiz)} style={{
+              padding: '8px 18px', borderRadius: 8, border: '2px solid #d4a017',
+              background: '#b8860b', color: '#fff', fontWeight: 700,
+              fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.12em', cursor: 'pointer',
+              textTransform: 'uppercase',
+            }}>{showQuiz ? 'Close Quiz' : 'Retake Quiz'}</button>
+          )}
         </div>
         <div style={S.monoSm}>Ayurvedic Constitution Analysis</div>
       </div>
 
-      {/* Quiz overlay */}
+      {/* Inline retake quiz */}
       {showQuiz && (
-        <div style={S.glass}>
+        <div>
+          <div style={S.sectionTitle}>Retake Quiz</div>
           <DoshaQuiz />
         </div>
       )}
@@ -312,12 +330,6 @@ export default function DoshaDetail() {
       <div style={{ ...S.glass, padding: 0, height: 280, overflow: 'hidden' }}>
         <DoshaSymbol doshaType={doshaType} scores={scores} />
       </div>
-
-      {!doshaType && !showQuiz && (
-        <div style={S.interpretation}>
-          Take the Dosha Quiz above to discover your Ayurvedic mind-body constitution. In Ayurveda, every person has a unique combination of three fundamental energies -- Vata (air + space), Pitta (fire + water), and Kapha (earth + water) -- that shape your physical, mental, and emotional characteristics.
-        </div>
-      )}
 
       {doshaType && (
         <>

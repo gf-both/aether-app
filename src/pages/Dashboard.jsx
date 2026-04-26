@@ -49,6 +49,7 @@ import CareerAlignmentDetail from '../components/details/CareerAlignmentDetail'
 import CareerWheel from '../components/canvas/CareerWheel'
 import TimelineWidget from '../components/canvas/TimelineWidget'
 import CycleWheel from '../components/canvas/CycleWheel'
+import MoonSyncCanvas from '../components/canvas/MoonSyncCanvas'
 import CycleDetail from '../components/details/CycleDetail'
 import DreamSymbol from '../components/canvas/DreamSymbol'
 import DreamDetail from '../components/details/DreamDetail'
@@ -828,12 +829,11 @@ function WidgetContent({ widgetId }) {
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8 }}>
-                <div style={{ fontSize: 32 }}>{currentMoon.phaseEmoji}</div>
-                <div style={{ fontSize: 11, color: '#c9a84c', fontFamily: "'Cinzel',serif" }}>{currentMoon.phaseName}</div>
-                <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>{currentMoon.illumination}% illuminated</div>
-                <div style={{ fontSize: 9, color: 'rgba(196,77,122,.7)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em', marginTop: 8 }}>Log cycle to unlock</div>
-              </div>
+              <MoonSyncCanvas
+                moonPhase={currentMoon.phaseName}
+                illumination={currentMoon.illumination}
+                natalMoon={profile?.moon}
+              />
             )}
           </div>
         </>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
 import { computeCycleProfile, getMoonPhase } from '../../engines/cycleEngine'
 import CycleWheel from '../canvas/CycleWheel'
@@ -22,13 +22,44 @@ export default function CycleDetail() {
   const setPrimaryProfile = useGolemStore(s => s.setPrimaryProfile)
   const [lastPeriod, setLastPeriod] = useState(profile?.lastPeriodDate || '')
   const [cycleLen, setCycleLen] = useState(profile?.cycleLength || 28)
+  const [gender, setGender] = useState(profile?.gender || '')
+  const [saved, setSaved] = useState(false)
 
+  // Auto-save cycle data whenever inputs change
+  const autoSave = useCallback((lp, cl, g) => {
+    const updates = { cycleLength: cl, gender: g }
+    if (lp) updates.lastPeriodDate = lp
+    setPrimaryProfile(updates)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 1500)
+  }, [setPrimaryProfile])
+
+  // Re-sync local state if profile changes (e.g. switching active profile)
+  useEffect(() => {
+    setLastPeriod(profile?.lastPeriodDate || '')
+    setCycleLen(profile?.cycleLength || 28)
+    setGender(profile?.gender || '')
+  }, [profile?.lastPeriodDate, profile?.cycleLength, profile?.gender])
+
+  function handleLastPeriodChange(val) {
+    setLastPeriod(val)
+    if (val) autoSave(val, cycleLen, gender)
+  }
+
+  function handleCycleLenChange(val) {
+    const n = Number(val)
+    setCycleLen(n)
+    autoSave(lastPeriod, n, gender)
+  }
+
+  function handleGenderChange(val) {
+    setGender(val)
+    setPrimaryProfile({ gender: val })
+  }
+
+  const isFemale = gender === 'female'
   const cycle = lastPeriod ? computeCycleProfile(lastPeriod, cycleLen) : null
   const moon = getMoonPhase()
-
-  function saveCycleData() {
-    setPrimaryProfile({ lastPeriodDate: lastPeriod, cycleLength: cycleLen })
-  }
 
   return (
     <div style={S.panel}>
@@ -42,43 +73,80 @@ export default function CycleDetail() {
         </div>
       </div>
 
-      {/* Input Section */}
+      {/* Gender Selection */}
       <div>
-        <div style={S.sectionTitle}>CYCLE DATA</div>
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-          <div>
-            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginBottom: 5 }}>Last period start</div>
-            <input
-              type="date"
-              value={lastPeriod}
-              onChange={e => setLastPeriod(e.target.value)}
-              style={{ padding: '8px 12px', borderRadius: 7, background: 'var(--secondary)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: 12, fontFamily: 'inherit' }}
-            />
-          </div>
-          <div>
-            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginBottom: 5 }}>Cycle length (days)</div>
-            <input
-              type="number"
-              min={21}
-              max={40}
-              value={cycleLen}
-              onChange={e => setCycleLen(Number(e.target.value))}
-              style={{ width: 70, padding: '8px 12px', borderRadius: 7, background: 'var(--secondary)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: 12, fontFamily: 'inherit' }}
-            />
-          </div>
-          <button
-            onClick={saveCycleData}
-            style={{
-              padding: '8px 18px', borderRadius: 7, cursor: 'pointer',
-              background: 'rgba(196,77,122,.12)', border: '1px solid rgba(196,77,122,.3)',
-              color: '#c44d7a', fontSize: 11, fontFamily: "'Cinzel',serif",
-              letterSpacing: '.1em', textTransform: 'uppercase',
-            }}
-          >
-            Save
-          </button>
+        <div style={S.sectionTitle}>PROFILE</div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          {['female', 'male', 'non-binary'].map(g => (
+            <div
+              key={g}
+              onClick={() => handleGenderChange(g)}
+              style={{
+                padding: '8px 18px', borderRadius: 8, cursor: 'pointer', transition: 'all .15s',
+                fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase',
+                background: gender === g ? (g === 'female' ? 'rgba(196,77,122,.15)' : 'rgba(201,168,76,.1)') : 'var(--secondary)',
+                border: `1px solid ${gender === g ? (g === 'female' ? 'rgba(196,77,122,.4)' : 'rgba(201,168,76,.3)') : 'var(--border)'}`,
+                color: gender === g ? (g === 'female' ? '#c44d7a' : '#c9a84c') : 'var(--muted-foreground)',
+              }}
+            >{g}</div>
+          ))}
         </div>
       </div>
+
+      {/* Cycle Input — shown for female or if data already exists */}
+      {(isFemale || lastPeriod) && (
+        <div>
+          <div style={S.sectionTitle}>CYCLE DATA</div>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+            <div>
+              <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginBottom: 5 }}>Last period start</div>
+              <input
+                type="date"
+                value={lastPeriod}
+                onChange={e => handleLastPeriodChange(e.target.value)}
+                style={{ padding: '8px 12px', borderRadius: 7, background: 'var(--secondary)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: 12, fontFamily: 'inherit' }}
+              />
+            </div>
+            <div>
+              <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginBottom: 5 }}>Cycle length (days)</div>
+              <input
+                type="number"
+                min={21}
+                max={40}
+                value={cycleLen}
+                onChange={e => handleCycleLenChange(e.target.value)}
+                style={{ width: 70, padding: '8px 12px', borderRadius: 7, background: 'var(--secondary)', border: '1px solid var(--border)', color: 'var(--foreground)', fontSize: 12, fontFamily: 'inherit' }}
+              />
+            </div>
+            {saved && (
+              <div style={{ fontSize: 10, color: '#60b030', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', padding: '8px 0' }}>
+                ✓ SAVED
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Non-female: just show moon data */}
+      {!isFemale && !lastPeriod && (
+        <div>
+          <div style={S.sectionTitle}>CURRENT MOON</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ padding: 16, borderRadius: 10, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)', textAlign: 'center' }}>
+              <div style={{ fontSize: 36, marginBottom: 4 }}>{moon.phaseEmoji}</div>
+              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, color: '#c9a84c', marginBottom: 4 }}>{moon.phaseName}</div>
+              <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', lineHeight: 1.6 }}>{moon.illumination}% illuminated</div>
+            </div>
+            <div style={{ padding: 16, borderRadius: 10, background: 'rgba(130,90,220,.06)', border: '1px solid rgba(130,90,220,.15)' }}>
+              <div style={{ fontSize: 11, color: 'rgba(160,130,220,.7)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', marginBottom: 8 }}>MOON ENERGY</div>
+              <div style={{ fontSize: 13, lineHeight: 1.7, color: 'rgba(255,255,255,.65)' }}>{moon.phaseEnergy}</div>
+            </div>
+          </div>
+          <div style={{ fontSize: 12, color: 'rgba(196,77,122,.6)', fontStyle: 'italic', marginTop: 12, textAlign: 'center' }}>
+            Select "female" above to unlock full cycle tracking
+          </div>
+        </div>
+      )}
 
       {cycle && (
         <>

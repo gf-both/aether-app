@@ -242,11 +242,11 @@ export default function ChineseDetail() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
           {[
             { label: 'Year Animal (Outer)', animal: P.animal, branch: P.branch, element: P.element, stem: P.stem,
-              desc: 'How others perceive you. The public persona \u2014 clever, curious, and versatile.' },
+              desc: `How others perceive you. The public persona — the ${P.animal}'s ${(CHINESE_ANIMALS.find(a => a.name === P.animal)?.traits || []).slice(0, 2).join(' and ').toLowerCase() || 'essential'} nature shapes your first impression on the world.` },
             { label: 'Month Animal (Inner)', animal: P.innerAnimal, branch: P.innerBranch, element: P.innerElement, stem: P.innerStem,
-              desc: 'Your inner self, revealed in close relationships. The Ox within brings patience, determination, and quiet perseverance that grounds the Monkey\'s restless brilliance.' },
+              desc: `Your inner self, revealed in close relationships. The ${P.innerAnimal} within brings ${(CHINESE_ANIMALS.find(a => a.name === P.innerAnimal)?.traits || []).slice(0, 2).join(' and ').toLowerCase() || 'depth'} that shapes how you connect with those closest to you.` },
             { label: 'Hour Animal (Secret)', animal: P.secretAnimal, branch: P.secretBranch, element: P.secretElement, stem: P.secretStem,
-              desc: 'Your truest, most hidden self. The Pig reveals warmth, generosity, and an honest sincerity that operates beneath the Monkey\'s clever exterior.' },
+              desc: `Your truest, most hidden self. The ${P.secretAnimal} reveals ${(CHINESE_ANIMALS.find(a => a.name === P.secretAnimal)?.traits || []).slice(0, 2).join(' and ').toLowerCase() || 'hidden qualities'} that operate beneath the ${P.animal}'s outward expression.` },
           ].map((item, i) => {
             const animalData = CHINESE_ANIMALS.find(a => a.name === item.animal)
             const elemCol = ELEM_COLORS[item.element] || '#ccc'
@@ -469,7 +469,7 @@ export default function ChineseDetail() {
             </div>
           </div>
           <div style={S.interpretation}>
-            <span style={{ color: 'var(--foreground)' }}>Metal Monkey in the Year of the Fire Horse:</span>{' '}
+            <span style={{ color: 'var(--foreground)' }}>{P.polarity} {P.animal} in the Year of the {P.currentYear.label}:</span>{' '}
             {P.currentYear.influence}
           </div>
         </div>
@@ -511,21 +511,34 @@ export default function ChineseDetail() {
       <div>
         <div style={S.sectionTitle}>Holistic Interpretation</div>
         <div style={S.interpretation}>
-          As a <span style={{ color: 'var(--foreground)' }}>Yang Metal Monkey</span> with a{' '}
-          <span style={{ color: '#1e88e5' }}>Ren Water day master</span>, your chart reveals a
-          fascinating interplay between the surface and the depths. The Monkey's sharp intellect and
-          versatile nature (Metal) serves as the outer vessel for a far more fluid, adaptable inner
-          reality (Water). Your <span style={{ color: '#4caf50' }}>inner Ox</span> (month pillar)
-          adds unexpected steadiness and patient determination to this quick-witted exterior, while the{' '}
-          <span style={{ color: '#e53935' }}>secret Pig</span> (hour pillar) reveals a generous warmth
-          and honest sincerity operating beneath conscious awareness. The Metal element in your year
-          pillar grants exceptional clarity and discrimination, but the day master's Water nature
-          ensures this sharpness is tempered by{' '}
-          <span style={{ color: '#1e88e5' }}>wisdom and flow</span> rather than rigidity.
-          In relationships, the Monkey-Rat-Dragon triangle forms your natural alliance --
-          clever, dynamic partners who appreciate your ingenuity. The current{' '}
-          <span style={{ color: P.currentYear.ratingColor }}>Fire Horse year</span> challenges
-          you to harness your mental agility and channel it into bold, decisive action.
+          As a <span style={{ color: 'var(--foreground)' }}>{P.polarity} {P.animal}</span> with a{' '}
+          <span style={{ color: '#1e88e5' }}>{P.dayMaster}</span> day master, your chart reveals a
+          fascinating interplay between the surface and the depths. The {P.animal}'s{' '}
+          {(animalData?.traits || []).slice(0, 2).join(' and ').toLowerCase()} nature ({P.element})
+          serves as the outer vessel, shaping how you engage with the world.
+          {P.innerAnimal && P.innerAnimal !== P.animal && (
+            <> Your <span style={{ color: ELEM_COLORS[P.innerElement] || '#4caf50' }}>inner {P.innerAnimal}</span> (month pillar)
+            adds {(CHINESE_ANIMALS.find(a => a.name === P.innerAnimal)?.traits || []).slice(0, 2).join(' and ').toLowerCase()} to your character,
+            revealed in close relationships and private moments.</>
+          )}
+          {P.secretAnimal && P.secretAnimal !== P.animal && (
+            <> The <span style={{ color: ELEM_COLORS[P.secretElement] || '#e53935' }}>secret {P.secretAnimal}</span> (hour pillar)
+            reveals {(CHINESE_ANIMALS.find(a => a.name === P.secretAnimal)?.traits || []).slice(0, 2).join(' and ').toLowerCase()}{' '}
+            operating beneath conscious awareness.</>
+          )}
+          {' '}The {P.element} element in your year pillar shapes your fundamental approach to life,
+          while the day master's nature ensures this energy is expressed through{' '}
+          <span style={{ color: '#1e88e5' }}>wisdom and depth</span>.
+          {P.compatible?.length > 0 && (
+            <> In relationships, your natural allies are the{' '}
+            {P.compatible.map((name, i) => (
+              <span key={name}>{i > 0 && (i === P.compatible.length - 1 ? ' and ' : ', ')}{name}</span>
+            ))} — partners who complement and energize your nature.</>
+          )}
+          {' '}The current{' '}
+          <span style={{ color: P.currentYear.ratingColor }}>{P.currentYear.label} year</span> brings
+          {P.currentYear.element} energy into your {P.element} chart, creating a dynamic interplay
+          that shapes your growth and opportunities through the year.
         </div>
       </div>
     </div>

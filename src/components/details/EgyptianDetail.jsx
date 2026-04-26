@@ -88,29 +88,31 @@ export default function EgyptianDetail() {
     )
   }
 
-  // Use computed sign's name to look up full sign data
+  // Use computed sign's name to look up full sign data (now each sign has all fields)
   const activeSignName = computedSign?.name || 'Mut'
   const activeSignData = EGYPTIAN_SIGNS.find(s => s.name === activeSignName) || EGYPTIAN_SIGNS.find(s => s.name === 'Mut')
 
-  // Merge: use static EGYPTIAN_PROFILE for rich data (description, compatibility etc.)
-  // but override sign/element/planet if computed sign differs
-  const P = activeSignName === EGYPTIAN_PROFILE.sign
-    ? EGYPTIAN_PROFILE
-    : {
-        ...EGYPTIAN_PROFILE,
-        sign: activeSignName,
-        element: activeSignData?.element || EGYPTIAN_PROFILE.element,
-        planet: activeSignData?.planet || EGYPTIAN_PROFILE.planet,
-        symbol: activeSignData?.symbol || EGYPTIAN_PROFILE.symbol,
-        traits: activeSignData?.traits || EGYPTIAN_PROFILE.traits,
-        dates: activeSignData?.dates || EGYPTIAN_PROFILE.dates,
-      }
+  // Build profile from the sign data directly — no more hardcoded fallback
+  const P = {
+    sign: activeSignData.name,
+    element: activeSignData.element,
+    planet: activeSignData.planet,
+    symbol: activeSignData.symbol,
+    traits: activeSignData.traits,
+    dates: activeSignData.dates,
+    color: activeSignData.color,
+    deityTitle: activeSignData.deityTitle,
+    description: activeSignData.description,
+    strengths: activeSignData.strengths,
+    weaknesses: activeSignData.weaknesses,
+    compatibility: activeSignData.compatibility,
+  }
 
   return (
     <div style={S.panel}>
       {/* HEADER */}
       <div>
-        <div style={S.heading}>{SIGN_GLYPHS['Mut']} Egyptian Astrology</div>
+        <div style={S.heading}>{SIGN_GLYPHS[P.sign] || '\u2726'} Egyptian Astrology</div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Ancient Egyptian zodiac signs, deity archetypes, elemental alignments, and divine compatibility
         </div>
@@ -145,8 +147,12 @@ export default function EgyptianDetail() {
               <span style={S.badge('rgba(184,160,112,.1)', 'rgba(184,160,112,.25)', '#b8a070')}>
                 {P.planet}
               </span>
-              <span style={S.badge('rgba(201,168,76,.06)', 'var(--accent)', 'var(--muted-foreground)')}>
-                {P.color}
+              <span style={{
+                ...S.badge('rgba(201,168,76,.06)', 'var(--accent)', 'var(--muted-foreground)'),
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+              }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: P.color, border: '1px solid rgba(255,255,255,.1)' }} />
+                Sign Color
               </span>
               <span style={S.badge('rgba(201,168,76,.06)', 'var(--accent)', 'var(--muted-foreground)')}>
                 {P.symbol}
@@ -161,7 +167,7 @@ export default function EgyptianDetail() {
 
       {/* DESCRIPTION */}
       <div>
-        <div style={S.sectionTitle}>The Mother Goddess</div>
+        <div style={S.sectionTitle}>{P.deityTitle}</div>
         <div style={S.interpretation}>
           {P.description}
         </div>
@@ -284,7 +290,7 @@ export default function EgyptianDetail() {
               letterSpacing: '.15em', lineHeight: 1,
             }}>{P.element}</div>
             <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 8, fontStyle: 'italic' }}>
-              Grounding, stability, endurance, and practical manifestation
+              {{ Fire: 'Passion, transformation, willpower, and creative force', Earth: 'Grounding, stability, endurance, and practical manifestation', Water: 'Emotion, intuition, depth, and flowing adaptability', Air: 'Intellect, communication, freedom, and swift perception' }[P.element] || P.element}
             </div>
           </div>
 
@@ -302,7 +308,7 @@ export default function EgyptianDetail() {
               letterSpacing: '.15em', lineHeight: 1,
             }}>{P.planet}</div>
             <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 8, fontStyle: 'italic' }}>
-              Intuition, cycles, reflection, emotional depth, and hidden knowledge
+              {{ Sun: 'Vitality, leadership, creative power, and radiant self-expression', Moon: 'Intuition, cycles, reflection, emotional depth, and hidden knowledge', Venus: 'Love, beauty, harmony, pleasure, and artistic sensibility', Mercury: 'Communication, intellect, adaptability, and swift understanding', Mars: 'Action, courage, drive, and transformative force', Pluto: 'Transformation, rebirth, hidden power, and deep regeneration', Earth: 'Stability, nurturing, groundedness, and material manifestation' }[P.planet] || P.planet}
             </div>
           </div>
         </div>
@@ -362,20 +368,30 @@ export default function EgyptianDetail() {
       <div>
         <div style={S.sectionTitle}>Holistic Interpretation</div>
         <div style={S.interpretation}>
-          As a child of <span style={{ color: 'var(--foreground)' }}>Mut, the Mother Goddess</span>, your
-          Egyptian astrological blueprint speaks of deep, abiding power rooted in the earth itself.
-          Governed by the <span style={{ color: '#b8a070' }}>Moon</span>, you move through life with
-          a cyclical awareness -- understanding that growth requires patience, that strength is not
-          always loud, and that the greatest empires are built one careful stone at a time. Your{' '}
-          <span style={{ color: '#d4a017' }}>Earth element</span> grounds your ambitions in reality,
-          ensuring your visions always find form. The vulture that symbolizes Mut soars highest of all
-          birds -- and yet it is the most patient, circling above the Nile until the perfect moment
-          arrives. This is your gift: panoramic vision paired with unwavering patience. Your divine
-          compatibility with <span style={{ color: '#60b030' }}>Amun-Ra</span> and{' '}
-          <span style={{ color: '#60b030' }}>Thoth</span> connects you to both the sovereign creative
-          fire of the sun god and the cerebral wisdom of the ibis-headed scribe. Together, they
-          illuminate the full spectrum of your nature -- the fierce protector who also thinks deeply
-          before acting.
+          As a child of <span style={{ color: 'var(--foreground)' }}>{P.sign}, {P.deityTitle}</span>, your
+          Egyptian astrological blueprint is shaped by the archetype of the {P.symbol.toLowerCase()} and the
+          deep currents of {P.element} energy.
+          Governed by <span style={{ color: '#b8a070' }}>{P.planet}</span>, you move through life
+          with {P.traits[0]?.toLowerCase()} nature and {P.traits[1]?.toLowerCase()} instinct at your core.
+          Your <span style={{ color: ELEM_COLORS[P.element] || '#d4a017' }}>{P.element} element</span>{' '}
+          {P.element === 'Fire' ? 'ignites your ambitions with creative force and drives you to act boldly' :
+           P.element === 'Earth' ? 'grounds your ambitions in reality, ensuring your visions always find form' :
+           P.element === 'Water' ? 'gives you emotional depth and intuitive flow, adapting to life\'s currents' :
+           'lifts your mind into realms of insight and communication, connecting ideas across boundaries'}.
+          {' '}Your strengths — {P.strengths.toLowerCase()} — form the foundation of your character,
+          while your shadows — {P.weaknesses.toLowerCase()} — mark the edges where growth awaits.
+          {P.compatibility.length > 0 && (
+            <> Your divine compatibility with{' '}
+              {P.compatibility.map((name, i) => (
+                <span key={name}>
+                  {i > 0 && ' and '}
+                  <span style={{ color: '#60b030' }}>{name}</span>
+                </span>
+              ))}{' '}
+              reveals the relationships that most deeply mirror and complement your nature,
+              illuminating the full spectrum of who you are becoming.
+            </>
+          )}
         </div>
       </div>
     </div>

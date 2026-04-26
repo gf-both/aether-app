@@ -541,19 +541,24 @@ export default function SyncDetail() {
   const sorted = useMemo(() => [...syncs].sort((a, b) => b.date.localeCompare(a.date)), [syncs])
 
   function handleSave(entry) {
-    if (selected && view === 'edit') {
+    const isEdit = selected && view === 'edit'
+    if (isEdit) {
       updateSync(entry.id, entry)
     } else {
       addSync(entry)
     }
-    // Bidirectional linking — when this entry links to others, add back-links
+    // Bidirectional linking — use fresh state from store for back-links
     if (entry.linked?.length > 0) {
-      for (const linkedId of entry.linked) {
-        const target = syncs.find(s => s.id === linkedId)
-        if (target && !(target.linked || []).includes(entry.id)) {
-          updateSync(linkedId, { linked: [...(target.linked || []), entry.id] })
+      // Use setTimeout to ensure addSync has committed before reading state
+      setTimeout(() => {
+        const freshSyncs = useGolemStore.getState().syncs || []
+        for (const linkedId of entry.linked) {
+          const target = freshSyncs.find(s => s.id === linkedId)
+          if (target && !(target.linked || []).includes(entry.id)) {
+            updateSync(linkedId, { linked: [...(target.linked || []), entry.id] })
+          }
         }
-      }
+      }, 0)
     }
     setView('list'); setSelected(null)
   }

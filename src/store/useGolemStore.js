@@ -387,11 +387,11 @@ export const useGolemStore = create(
       // ─── Synchronicity Log ────────────────────────────────────────────────
       syncs: [],
       addSync: (sync) =>
-        set((s) => ({ syncs: [sync, ...s.syncs] })),
+        set((s) => ({ syncs: [sync, ...(Array.isArray(s.syncs) ? s.syncs : [])] })),
       updateSync: (id, updates) =>
-        set((s) => ({ syncs: s.syncs.map(e => e.id === id ? { ...e, ...updates } : e) })),
+        set((s) => ({ syncs: (Array.isArray(s.syncs) ? s.syncs : []).map(e => e.id === id ? { ...e, ...updates } : e) })),
       deleteSync: (id) =>
-        set((s) => ({ syncs: s.syncs.filter(e => e.id !== id) })),
+        set((s) => ({ syncs: (Array.isArray(s.syncs) ? s.syncs : []).filter(e => e.id !== id) })),
     }),
     {
       name: 'golem-store',

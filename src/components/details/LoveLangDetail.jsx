@@ -264,9 +264,25 @@ export default function LoveLangDetail() {
 
   return (
     <div style={S.panel}>
-      {/* HEADER */}
+      {/* HEADER + RETAKE */}
       <div>
-        <div style={S.heading}>{primary.emoji} Love Languages</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={S.heading}>{primary.emoji} Love Languages</div>
+          <span
+            onClick={() => setActiveQuiz('lovelang')}
+            style={{
+              fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
+              textTransform: 'uppercase', color: 'var(--muted-foreground)', cursor: 'pointer',
+              padding: '5px 14px', borderRadius: 14,
+              border: '1px solid var(--border)', background: 'var(--secondary)',
+              transition: 'all .2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.4)'; e.currentTarget.style.color = 'var(--foreground)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted-foreground)' }}
+          >
+            Retake Quiz
+          </span>
+        </div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           How you give and receive love -- understanding your emotional connection style
         </div>

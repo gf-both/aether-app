@@ -195,9 +195,27 @@ function MBTIResults({ typeCode, onRetake }) {
 
   return (
     <>
-      {/* HEADER */}
+      {/* HEADER + RETAKE */}
       <div>
-        <div style={S.heading}>{'\u29C9'} MBTI</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={S.heading}>{'\u29C9'} MBTI</div>
+          {onRetake && (
+            <span
+              onClick={onRetake}
+              style={{
+                fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
+                textTransform: 'uppercase', color: 'var(--muted-foreground)', cursor: 'pointer',
+                padding: '5px 14px', borderRadius: 14,
+                border: '1px solid var(--border)', background: 'var(--secondary)',
+                transition: 'all .2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.4)'; e.currentTarget.style.color = 'var(--foreground)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted-foreground)' }}
+            >
+              Retake Quiz
+            </span>
+          )}
+        </div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Myers-Briggs cognitive type -- function stack, personality architecture, and compatibility
         </div>
@@ -402,29 +420,6 @@ function MBTIResults({ typeCode, onRetake }) {
         </div>
       </div>
 
-      {/* RETAKE BUTTON — only show when type came from quiz, not profile */}
-      {onRetake && <div style={{ textAlign: 'center', padding: '8px 0 16px' }}>
-        <span
-          onClick={onRetake}
-          style={{
-            fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 700, letterSpacing: '.2em',
-            textTransform: 'uppercase', color: '#fff', cursor: 'pointer',
-            padding: '8px 20px', borderRadius: 20,
-            background: '#b8860b', border: '2px solid #d4a017',
-            transition: 'all .2s',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.borderColor = '#e8b020'
-            e.currentTarget.style.background = '#c89610'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.borderColor = '#d4a017'
-            e.currentTarget.style.background = '#b8860b'
-          }}
-        >
-          Retake Quiz
-        </span>
-      </div>}
     </>
   )
 }
