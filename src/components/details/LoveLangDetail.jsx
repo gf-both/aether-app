@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
-import { LOVE_LANGUAGES } from '../../engines/loveLangEngine'
+import { LOVE_LANGUAGES, LOVE_LANG_QUESTIONS, getLoveLanguageProfile } from '../../engines/loveLangEngine'
 import LoveLangSymbol from '../canvas/LoveLangSymbol'
 
 const COLORS = {
@@ -215,33 +216,177 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`
 }
 
+const LANG_COLORS_INLINE = {
+  words: { color: '#f0c040', bg: 'rgba(240,192,64,.08)',  border: 'rgba(240,192,64,.25)'  },
+  acts:  { color: '#44ccaa', bg: 'rgba(68,204,170,.08)',  border: 'rgba(68,204,170,.25)'  },
+  gifts: { color: '#dd88cc', bg: 'rgba(221,136,204,.08)', border: 'rgba(221,136,204,.25)' },
+  time:  { color: '#88aaee', bg: 'rgba(136,170,238,.08)', border: 'rgba(136,170,238,.25)' },
+  touch: { color: '#ee8866', bg: 'rgba(238,136,102,.08)', border: 'rgba(238,136,102,.25)' },
+}
+
+function LoveLangQuizInline({ onDone }) {
+  const setLoveLanguage = useGolemStore(s => s.setLoveLanguage)
+  const [step, setStep] = useState(0)
+  const [answers, setAnswers] = useState([])
+  const [result, setResult] = useState(null)
+
+  const total = LOVE_LANG_QUESTIONS.length
+  const q = LOVE_LANG_QUESTIONS[step]
+
+  function handleChoice(lang) {
+    const next = [...answers, lang]
+    setAnswers(next)
+    if (next.length >= total) {
+      const profile = getLoveLanguageProfile(next)
+      setResult(profile)
+      setLoveLanguage(profile.primary?.name || profile.primary?.id)
+    } else {
+      setStep(step + 1)
+    }
+  }
+
+  function handleRetake() {
+    setStep(0); setAnswers([]); setResult(null)
+  }
+
+  if (result) {
+    return (
+      <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 16, textAlign: 'center' }}>
+        <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--muted-foreground)' }}>
+          Quiz Result
+        </div>
+        <div style={{ fontSize: 40 }}>{result.primary?.emoji}</div>
+        <div style={{
+          fontFamily: "'Cinzel', serif", fontSize: 20, letterSpacing: '.1em',
+          color: LANG_COLORS_INLINE[result.primary?.id]?.color || '#ee8866',
+        }}>
+          {result.primary?.name}
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
+          {result.primary?.desc}
+        </div>
+        {/* Score bars */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 5, textAlign: 'left' }}>
+          {LOVE_LANGUAGES.map(lang => {
+            const score = result.scores[lang.id] || 0
+            const pct = Math.round(score / total * 100)
+            return (
+              <div key={lang.id} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 11, color: LANG_COLORS_INLINE[lang.id]?.color }}>
+                    {lang.emoji} {lang.name}
+                  </span>
+                  <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)' }}>
+                    {score}/{total}
+                  </span>
+                </div>
+                <div style={{ height: 4, borderRadius: 2, background: 'var(--secondary)' }}>
+                  <div style={{
+                    height: '100%', borderRadius: 2, width: pct + '%',
+                    background: LANG_COLORS_INLINE[lang.id]?.color, transition: 'width .6s ease',
+                  }} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        <div style={{
+          padding: '8px 14px', borderRadius: 8,
+          background: 'rgba(96,200,80,.08)', border: '1px solid rgba(96,200,80,.2)',
+          fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em', color: '#88dd44',
+        }}>
+          ✓ Saved to your profile
+        </div>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+          <div onClick={handleRetake} style={{
+            padding: '8px 20px', borderRadius: 8, background: 'var(--secondary)',
+            border: '1px solid var(--border)', cursor: 'pointer',
+            fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.1em', color: 'var(--muted-foreground)',
+          }}>Retake</div>
+          {onDone && (
+            <div onClick={onDone} style={{
+              padding: '8px 20px', borderRadius: 8, background: '#b8860b',
+              border: '2px solid #d4a017', cursor: 'pointer',
+              fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 700, letterSpacing: '.1em', color: '#fff',
+            }}>Done</div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ ...S.glass, display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--muted-foreground)' }}>
+          Love Language Quiz
+        </span>
+        <span style={{ fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)' }}>
+          {step + 1} / {total}
+        </span>
+      </div>
+      <div style={{ height: 3, borderRadius: 2, background: 'var(--border)', overflow: 'hidden' }}>
+        <div style={{
+          height: '100%', borderRadius: 2, background: '#ee8866',
+          width: `${((step + 1) / total) * 100}%`,
+          transition: 'width .3s ease',
+        }} />
+      </div>
+      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 14, color: 'var(--foreground)', lineHeight: 1.5, textAlign: 'center', fontStyle: 'italic' }}>
+        Which matters more to you?
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {[q.a, q.b].map((opt, i) => (
+          <div
+            key={i}
+            onClick={() => handleChoice(opt.lang)}
+            style={{
+              padding: '14px 16px', borderRadius: 10, cursor: 'pointer',
+              background: 'var(--secondary)', border: '1px solid var(--border)',
+              transition: 'all .2s', textAlign: 'center',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(238,136,102,.35)'; e.currentTarget.style.background = 'rgba(238,136,102,.06)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--secondary)' }}
+          >
+            <div style={{
+              fontFamily: "'Cinzel', serif", fontSize: 8, letterSpacing: '.15em',
+              color: LANG_COLORS_INLINE[opt.lang]?.color, marginBottom: 4, textTransform: 'uppercase',
+            }}>
+              {LOVE_LANGUAGES.find(l => l.id === opt.lang)?.emoji}{' '}
+              {LOVE_LANGUAGES.find(l => l.id === opt.lang)?.name}
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>{opt.text}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function LoveLangDetail() {
   const loveLanguage = useGolemStore((s) => (s.activeViewProfile || s.primaryProfile)?.loveLanguage)
-  const setActiveQuiz = useGolemStore((s) => s.setActiveQuiz)
+  const setLoveLanguage = useGolemStore((s) => s.setLoveLanguage)
+  const [showQuiz, setShowQuiz] = useState(false)
 
   const primary = loveLanguage
     ? LOVE_LANGUAGES.find(l => l.name === loveLanguage)
     : null
 
-  // If no love language is set, show empty state with quiz button
+  // If no love language is set, show empty state with inline quiz
   if (!primary) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 14, padding: 32 }}>
-        <div style={{ fontSize: 28 }}>💝</div>
-        <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.15em', color: 'var(--gold)' }}>Love Language</div>
-        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', maxWidth: 320, textAlign: 'center', lineHeight: 1.7 }}>
-          How you give and receive love — Words, Touch, Time, Acts, or Gifts. Take the quiz to discover your pattern.
+      <div style={S.panel}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 14, padding: '24px 32px' }}>
+          <div style={{ fontSize: 28 }}>💝</div>
+          <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.15em', color: 'var(--gold)' }}>Love Language</div>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', maxWidth: 320, textAlign: 'center', lineHeight: 1.7 }}>
+            How you give and receive love — Words, Touch, Time, Acts, or Gifts.
+          </div>
         </div>
-        <button
-          onClick={() => setActiveQuiz('lovelang')}
-          style={{
-            fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.15em', textTransform: 'uppercase',
-            color: '#c9a84c', cursor: 'pointer', padding: '10px 28px', borderRadius: 20, marginTop: 4,
-            border: '1px solid rgba(201,168,76,.3)', background: 'rgba(201,168,76,.06)', transition: 'all .2s',
-          }}
-        >
-          Take the Quiz
-        </button>
+        <div>
+          <div style={S.sectionTitle}>Discover Your Love Language</div>
+          <LoveLangQuizInline />
+        </div>
       </div>
     )
   }
@@ -269,24 +414,32 @@ export default function LoveLangDetail() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={S.heading}>{primary.emoji} Love Languages</div>
           <span
-            onClick={() => setActiveQuiz('lovelang')}
+            onClick={() => setShowQuiz(!showQuiz)}
             style={{
               fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-              textTransform: 'uppercase', color: 'var(--muted-foreground)', cursor: 'pointer',
+              textTransform: 'uppercase', color: '#c9a84c', cursor: 'pointer',
               padding: '5px 14px', borderRadius: 14,
-              border: '1px solid var(--border)', background: 'var(--secondary)',
+              border: '1px solid rgba(201,168,76,.3)', background: 'rgba(201,168,76,.06)',
               transition: 'all .2s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.4)'; e.currentTarget.style.color = 'var(--foreground)' }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted-foreground)' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.5)'; e.currentTarget.style.background = 'rgba(201,168,76,.12)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.3)'; e.currentTarget.style.background = 'rgba(201,168,76,.06)' }}
           >
-            Retake Quiz
+            {showQuiz ? 'Cancel' : 'Retake Quiz'}
           </span>
         </div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           How you give and receive love -- understanding your emotional connection style
         </div>
       </div>
+
+      {/* INLINE QUIZ — shown when retake is triggered */}
+      {showQuiz && (
+        <div>
+          <div style={S.sectionTitle}>Retake Quiz</div>
+          <LoveLangQuizInline onDone={() => setShowQuiz(false)} />
+        </div>
+      )}
 
       {/* CANVAS SYMBOL */}
       <div>

@@ -192,6 +192,109 @@ export default function SyncCanvas({ syncs = [] }) {
         }
       }
 
+      // Yellow trigger node — roams the canvas and collides with other nodes
+      const yellowSpeed = 0.0004
+      const yellowPeriod = 8000 // ms between target changes
+      if (!draw._yellow) {
+        draw._yellow = { x: W / 2, y: H / 2, tx: W * 0.3, ty: H * 0.3, vx: 0, vy: 0, lastTarget: 0 }
+        draw._ripples = [] // { x, y, startTime, r, g, b }
+      }
+      const yel = draw._yellow
+      const ripples = draw._ripples
+
+      // Pick new random target periodically or after reaching current target
+      if (t - yel.lastTarget > yellowPeriod || Math.hypot(yel.x - yel.tx, yel.y - yel.ty) < 8) {
+        // Target a random existing node if available, else random position
+        if (nodes.length > 0) {
+          const target = nodes[Math.floor((t * 0.001) % nodes.length)]
+          yel.tx = target.x; yel.ty = target.y
+        } else {
+          yel.tx = 0.15 * W + Math.random() * W * 0.7
+          yel.ty = 0.15 * H + Math.random() * H * 0.7
+        }
+        yel.lastTarget = t
+      }
+
+      // Spring physics toward target
+      yel.vx += (yel.tx - yel.x) * 0.0008
+      yel.vy += (yel.ty - yel.y) * 0.0008
+      yel.vx *= 0.97; yel.vy *= 0.97
+      yel.x += yel.vx; yel.y += yel.vy
+      // Clamp
+      yel.x = Math.max(10, Math.min(W - 10, yel.x))
+      yel.y = Math.max(10, Math.min(H - 10, yel.y))
+
+      // Check collisions with nodes — create ripple on impact
+      for (const node of nodes) {
+        const d = Math.hypot(yel.x - node.x, yel.y - node.y)
+        if (d < 16) {
+          // Collision! Create ripple at node position
+          const alreadyRippling = ripples.some(r => r.nodeId === node.s.id && t - r.startTime < 2000)
+          if (!alreadyRippling) {
+            ripples.push({ x: node.x, y: node.y, startTime: t, r: node.r, g: node.g, b: node.b, nodeId: node.s.id })
+            // Bounce yellow away
+            const angle = Math.atan2(yel.y - node.y, yel.x - node.x)
+            yel.vx += Math.cos(angle) * 1.5
+            yel.vy += Math.sin(angle) * 1.5
+          }
+        }
+      }
+
+      // Draw & update ripples
+      for (let i = ripples.length - 1; i >= 0; i--) {
+        const rip = ripples[i]
+        const age = (t - rip.startTime) / 1000 // seconds
+        if (age > 2.5) { ripples.splice(i, 1); continue }
+        for (let ring = 0; ring < 3; ring++) {
+          const rPhase = Math.min(1, (age - ring * 0.15) / 1.8)
+          if (rPhase < 0) continue
+          const rR = rPhase * 45
+          const rAlpha = 0.35 * (1 - rPhase)
+          ctx.beginPath()
+          ctx.arc(rip.x, rip.y, rR, 0, Math.PI * 2)
+          ctx.strokeStyle = `rgba(${rip.r},${rip.g},${rip.b},${rAlpha})`
+          ctx.lineWidth = 1.2 * (1 - rPhase)
+          ctx.stroke()
+        }
+      }
+
+      // Draw yellow trigger node
+      const yelPulse = 0.85 + 0.15 * Math.sin(t * 0.003)
+      const yelR = 4 * yelPulse
+      // Glow
+      const yelGlow = ctx.createRadialGradient(yel.x, yel.y, 0, yel.x, yel.y, yelR * 6)
+      yelGlow.addColorStop(0, `rgba(255, 220, 60, 0.2)`)
+      yelGlow.addColorStop(1, 'transparent')
+      ctx.fillStyle = yelGlow
+      ctx.beginPath()
+      ctx.arc(yel.x, yel.y, yelR * 6, 0, Math.PI * 2)
+      ctx.fill()
+      // Core
+      ctx.beginPath()
+      ctx.arc(yel.x, yel.y, yelR, 0, Math.PI * 2)
+      const yelCore = ctx.createRadialGradient(yel.x, yel.y, 0, yel.x, yel.y, yelR)
+      yelCore.addColorStop(0, 'rgba(255, 255, 240, 0.95)')
+      yelCore.addColorStop(0.4, 'rgba(255, 220, 60, 0.9)')
+      yelCore.addColorStop(1, 'rgba(200, 170, 20, 0.4)')
+      ctx.fillStyle = yelCore
+      ctx.fill()
+      // Trail
+      const trailLen = Math.hypot(yel.vx, yel.vy) * 8
+      if (trailLen > 2) {
+        const angle = Math.atan2(-yel.vy, -yel.vx)
+        const tailX = yel.x + Math.cos(angle) * trailLen
+        const tailY = yel.y + Math.sin(angle) * trailLen
+        const trailGrad = ctx.createLinearGradient(yel.x, yel.y, tailX, tailY)
+        trailGrad.addColorStop(0, 'rgba(255, 220, 60, 0.5)')
+        trailGrad.addColorStop(1, 'rgba(255, 220, 60, 0)')
+        ctx.beginPath()
+        ctx.moveTo(yel.x, yel.y)
+        ctx.lineTo(tailX, tailY)
+        ctx.strokeStyle = trailGrad
+        ctx.lineWidth = 2
+        ctx.stroke()
+      }
+
       // Draw nodes
       const hov = hovRef.current
       let hoveredNode = null
@@ -205,9 +308,12 @@ export default function SyncCanvas({ syncs = [] }) {
         const isHov = hoveredNode === node
         const age = (Date.now() - node.s.id) / 864e5
         const isRecent = age < 7
+        // Check if this node was recently hit by yellow
+        const recentHit = ripples.find(r => r.nodeId === node.s.id && t - r.startTime < 800)
+        const hitFlash = recentHit ? Math.max(0, 1 - (t - recentHit.startTime) / 800) : 0
         const pulse = isRecent ? 0.85 + 0.15 * Math.sin(t * 0.002 + node.s.id * 0.001) : 1
         const baseR = 2 + node.intensity * 0.8
-        const nodeR = baseR * pulse * (isHov ? 1.5 : 1)
+        const nodeR = baseR * pulse * (isHov ? 1.5 : 1) * (1 + hitFlash * 0.5)
 
         // Ripple rings for recent entries
         if (isRecent) {
@@ -222,21 +328,22 @@ export default function SyncCanvas({ syncs = [] }) {
           }
         }
 
-        // Aura glow
+        // Aura glow — enhanced on hit
+        const glowIntensity = node.intensity * 0.08 + hitFlash * 0.15
         const glow = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, nodeR * 4)
-        glow.addColorStop(0, `rgba(${node.r},${node.g},${node.b},${node.intensity * 0.08})`)
+        glow.addColorStop(0, `rgba(${node.r},${node.g},${node.b},${glowIntensity})`)
         glow.addColorStop(1, 'transparent')
         ctx.fillStyle = glow
         ctx.beginPath()
         ctx.arc(node.x, node.y, nodeR * 4, 0, Math.PI * 2)
         ctx.fill()
 
-        // Node core
+        // Node core — flash white on hit
         ctx.beginPath()
         ctx.arc(node.x, node.y, nodeR, 0, Math.PI * 2)
         const coreGrad = ctx.createRadialGradient(node.x, node.y, 0, node.x, node.y, nodeR)
-        coreGrad.addColorStop(0, `rgba(255,255,255,0.9)`)
-        coreGrad.addColorStop(0.3, `rgba(${node.r},${node.g},${node.b},0.8)`)
+        coreGrad.addColorStop(0, `rgba(255,255,${Math.round(255 - hitFlash * 200)},${0.9 + hitFlash * 0.1})`)
+        coreGrad.addColorStop(0.3, `rgba(${node.r},${node.g},${node.b},${0.8 + hitFlash * 0.2})`)
         coreGrad.addColorStop(1, `rgba(${node.r},${node.g},${node.b},0.3)`)
         ctx.fillStyle = coreGrad
         ctx.fill()

@@ -54,7 +54,14 @@ export default function CycleDetail() {
 
   function handleGenderChange(val) {
     setGender(val)
-    setPrimaryProfile({ gender: val })
+    if (val !== 'female') {
+      // Clear cycle data when switching away from female
+      setLastPeriod('')
+      setCycleLen(28)
+      setPrimaryProfile({ gender: val, lastPeriodDate: '', cycleLength: 28 })
+    } else {
+      setPrimaryProfile({ gender: val })
+    }
   }
 
   const isFemale = gender === 'female'
@@ -124,6 +131,70 @@ export default function CycleDetail() {
               </div>
             )}
           </div>
+
+          {/* Fertility Tracking */}
+          {isFemale && cycle && (
+            <div style={{ marginTop: 16 }}>
+              <div style={S.sectionTitle}>FERTILITY WINDOW</div>
+              <div style={{
+                padding: 16, borderRadius: 10,
+                background: cycle.isFertile ? 'rgba(96,200,80,.06)' : 'rgba(201,168,76,.04)',
+                border: `1px solid ${cycle.isFertile ? 'rgba(96,200,80,.2)' : 'rgba(201,168,76,.12)'}`,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                  <div style={{ fontSize: 24 }}>{cycle.isFertile ? '🌸' : cycle.currentPhase?.name === 'Follicular' ? '🌱' : cycle.currentPhase?.name === 'Luteal' ? '🌙' : '🩸'}</div>
+                  <div>
+                    <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, color: cycle.isFertile ? '#60c850' : '#c9a84c', letterSpacing: '.1em', textTransform: 'uppercase' }}>
+                      {cycle.isFertile ? 'Fertile Window — Active' : `${cycle.currentPhase?.name || 'Cycle'} Phase`}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 2 }}>
+                      Day {cycle.cycleDay} of {cycleLen} · Ovulation day ~{cycle.ovulationDay}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>
+                  {cycle.isFertile
+                    ? 'Peak fertility — ovulation window is open. Egg is released and available for fertilization.'
+                    : cycle.daysToOvulation > 0
+                    ? `Fertility increasing toward ovulation. Fertile window opens around day ${cycle.fertileWindow.start}.`
+                    : 'Post-ovulation — fertility window has passed for this cycle. Progesterone dominant.'}
+                </div>
+                {/* Fertility bar */}
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', marginBottom: 4 }}>
+                    <span>Day 1</span>
+                    <span>Fertile</span>
+                    <span>Day {cycleLen}</span>
+                  </div>
+                  <div style={{ height: 6, borderRadius: 3, background: 'var(--secondary)', position: 'relative', overflow: 'hidden' }}>
+                    {/* Fertile window zone */}
+                    <div style={{
+                      position: 'absolute', height: '100%', borderRadius: 3,
+                      left: `${(cycle.fertileWindow.start / cycleLen) * 100}%`,
+                      width: `${((cycle.fertileWindow.end - cycle.fertileWindow.start) / cycleLen) * 100}%`,
+                      background: 'rgba(96,200,80,.25)',
+                    }} />
+                    {/* Current day marker */}
+                    <div style={{
+                      position: 'absolute', height: '100%', width: 3, borderRadius: 2,
+                      left: `${(cycle.cycleDay / cycleLen) * 100}%`,
+                      background: cycle.isFertile ? '#60c850' : '#c9a84c',
+                      boxShadow: `0 0 4px ${cycle.isFertile ? 'rgba(96,200,80,.6)' : 'rgba(201,168,76,.4)'}`,
+                    }} />
+                  </div>
+                </div>
+                {!cycle.isFertile && cycle.daysToOvulation > 0 && (
+                  <div style={{
+                    marginTop: 8, padding: '6px 12px', borderRadius: 6,
+                    background: 'rgba(201,168,76,.06)', display: 'inline-block',
+                    fontFamily: "'Inconsolata', monospace", fontSize: 11, color: 'var(--muted-foreground)',
+                  }}>
+                    ~{cycle.daysToOvulation} days until ovulation
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

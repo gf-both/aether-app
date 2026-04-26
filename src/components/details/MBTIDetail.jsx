@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { MBTI_TYPES, MBTI_FUNCTIONS, MBTI_QUIZ_QUESTIONS } from '../../data/mbtiData'
-import MBTIQuizOverlay from '../overlays/MBTIQuiz'
+// MBTIQuiz is defined inline below — no modal overlay needed
 
 const FUNCTION_COLORS = {
   Ni: { color: '#9050e0', bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.22)' },
@@ -204,13 +204,13 @@ function MBTIResults({ typeCode, onRetake }) {
               onClick={onRetake}
               style={{
                 fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
-                textTransform: 'uppercase', color: 'var(--muted-foreground)', cursor: 'pointer',
+                textTransform: 'uppercase', color: '#c9a84c', cursor: 'pointer',
                 padding: '5px 14px', borderRadius: 14,
-                border: '1px solid var(--border)', background: 'var(--secondary)',
+                border: '1px solid rgba(201,168,76,.3)', background: 'rgba(201,168,76,.06)',
                 transition: 'all .2s',
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.4)'; e.currentTarget.style.color = 'var(--foreground)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--muted-foreground)' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.5)'; e.currentTarget.style.background = 'rgba(201,168,76,.12)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.3)'; e.currentTarget.style.background = 'rgba(201,168,76,.06)' }}
             >
               Retake Quiz
             </span>
@@ -452,8 +452,22 @@ export default function MBTIDetail() {
   if (resolvedType) {
     return (
       <div style={S.panel}>
-        {/* Overlay quiz for retaking when type is already set */}
-        {showQuizOverlay && <MBTIQuizOverlay onClose={() => setShowQuizOverlay(false)} />}
+        {/* Inline quiz for retaking when type is already set */}
+        {showQuizOverlay && (
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={S.sectionTitle}>Retake Quiz</div>
+              <span
+                onClick={() => setShowQuizOverlay(false)}
+                style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em',
+                  color: 'var(--muted-foreground)', cursor: 'pointer',
+                }}
+              >Cancel</span>
+            </div>
+            <MBTIQuiz onComplete={(code) => { handleQuizComplete(code); setShowQuizOverlay(false) }} />
+          </div>
+        )}
         <MBTIResults typeCode={resolvedType} onRetake={storeType ? () => setShowQuizOverlay(true) : handleRetake} />
       </div>
     )

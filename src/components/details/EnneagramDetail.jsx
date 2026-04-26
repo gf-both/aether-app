@@ -3,7 +3,7 @@ import { useGolemStore } from '../../store/useGolemStore'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { ENNEAGRAM_TYPES, ENNEAGRAM_PROFILE, ENNEAGRAM_QUIZ, INSTINCTUAL_VARIANTS, TRIAD_COLORS } from '../../data/enneagramData'
 import EnneagramSymbol from '../canvas/EnneagramSymbol'
-import EnneagramQuizOverlay from '../overlays/EnneagramQuiz'
+// EnneagramQuiz is defined inline below — no modal overlay needed
 
 /* ---- shared style fragments ---- */
 const S = {
@@ -201,26 +201,19 @@ export default function EnneagramDetail() {
   // No enneagram type — show empty state with quiz button
   if (!storeType) {
     return (
-      <>
-        {showQuizOverlay && <EnneagramQuizOverlay onClose={() => setShowQuizOverlay(false)} />}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', flexDirection: 'column', gap: 14, padding: 32 }}>
+      <div style={S.panel}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, flexDirection: 'column', gap: 14, padding: 32 }}>
           <div style={{ fontSize: 28 }}>◉</div>
           <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.15em', color: 'var(--gold)' }}>Enneagram</div>
           <div style={{ fontSize: 12, color: 'var(--muted-foreground)', maxWidth: 320, textAlign: 'center', lineHeight: 1.7 }}>
             Nine core patterns of perception — your type reveals the lens through which your psyche filters reality.
           </div>
-          <button
-            onClick={() => setShowQuizOverlay(true)}
-            style={{
-              fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.15em', textTransform: 'uppercase',
-              color: '#c9a84c', cursor: 'pointer', padding: '10px 28px', borderRadius: 20, marginTop: 4,
-              border: '1px solid rgba(201,168,76,.3)', background: 'rgba(201,168,76,.06)', transition: 'all .2s',
-            }}
-          >
-            Take the Quiz
-          </button>
         </div>
-      </>
+        <div>
+          <div style={S.sectionTitle}>Discover Your Type</div>
+          <EnneagramQuiz />
+        </div>
+      </div>
     )
   }
 
@@ -266,7 +259,23 @@ export default function EnneagramDetail() {
     <div style={S.panel}>
       {/* HEADER */}
       <div>
-        <div style={S.heading}>{'\u2B21'} Enneagram</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={S.heading}>{'\u2B21'} Enneagram</div>
+          <span
+            onClick={() => setShowQuizOverlay(true)}
+            style={{
+              fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
+              textTransform: 'uppercase', color: '#c9a84c', cursor: 'pointer',
+              padding: '5px 14px', borderRadius: 14,
+              border: '1px solid rgba(201,168,76,.3)', background: 'rgba(201,168,76,.06)',
+              transition: 'all .2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.5)'; e.currentTarget.style.background = 'rgba(201,168,76,.12)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.3)'; e.currentTarget.style.background = 'rgba(201,168,76,.06)' }}
+          >
+            Retake Quiz
+          </span>
+        </div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Personality architecture -- type, wing, tritype, instincts, and growth paths
         </div>
@@ -280,33 +289,20 @@ export default function EnneagramDetail() {
         </div>
       </div>
 
-      {/* QUIZ OVERLAY */}
-      {showQuizOverlay && <EnneagramQuizOverlay onClose={() => setShowQuizOverlay(false)} />}
-
-      {/* INTERACTIVE QUIZ — only show if no type set in profile */}
-      {!storeType && (
+      {/* INLINE QUIZ — shown when retake is triggered */}
+      {showQuizOverlay && (
         <div>
-          <div style={S.sectionTitle}>Discover Your Type</div>
-          <EnneagramQuiz />
-        </div>
-      )}
-
-      {/* RETAKE QUIZ BUTTON — shown when type is already set */}
-      {storeType && (
-        <div>
-          <div style={S.sectionTitle}>Quiz</div>
-          <div
-            onClick={() => setShowQuizOverlay(true)}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '10px 20px', borderRadius: 10, cursor: 'pointer',
-              background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
-              fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.12em',
-              color: 'var(--foreground)', transition: 'all .2s',
-            }}
-          >
-            ↺ Retake Enneagram Quiz
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={S.sectionTitle}>Retake Quiz</div>
+            <span
+              onClick={() => setShowQuizOverlay(false)}
+              style={{
+                fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em',
+                color: 'var(--muted-foreground)', cursor: 'pointer',
+              }}
+            >Cancel</span>
           </div>
+          <EnneagramQuiz />
         </div>
       )}
 

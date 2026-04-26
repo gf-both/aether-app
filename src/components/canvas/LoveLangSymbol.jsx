@@ -89,7 +89,7 @@ const LANG_SHAPES = {
   touch: waves,
 }
 
-const PARTICLE_COUNT = 100
+const PARTICLE_COUNT = 170
 
 export default function LoveLangSymbol() {
   const canvasRef = useRef(null)
@@ -114,8 +114,8 @@ export default function LoveLangSymbol() {
       y: Math.random() * 2 - 1,
       tx: 0, ty: 0,
       vx: 0, vy: 0,
-      size: 0.6 + Math.random() * 1.2,
-      alpha: 0.3 + Math.random() * 0.7,
+      size: 0.5 + Math.random() * 1.8,
+      alpha: 0.5 + Math.random() * 0.5,
       phase: Math.random() * Math.PI * 2,
     }))
 
@@ -168,37 +168,42 @@ export default function LoveLangSymbol() {
 
         const px = cx + p.x * scale
         const py = cy + p.y * scale
-        const twinkle = p.alpha * (0.5 + 0.5 * Math.sin(t * 0.001 + p.phase))
+        const twinkle = p.alpha * (0.65 + 0.35 * Math.sin(t * 0.001 + p.phase))
         const cr = col ? col.r : 201, cg = col ? col.g : 168, cb = col ? col.b : 76
 
-        // Glow
-        const glow = ctx.createRadialGradient(px, py, 0, px, py, p.size * 3.5)
-        glow.addColorStop(0, `rgba(${cr},${cg},${cb},${twinkle * 0.25})`)
+        // Outer glow
+        const glow = ctx.createRadialGradient(px, py, 0, px, py, p.size * 5)
+        glow.addColorStop(0, `rgba(${cr},${cg},${cb},${twinkle * 0.3})`)
+        glow.addColorStop(0.5, `rgba(${cr},${cg},${cb},${twinkle * 0.08})`)
         glow.addColorStop(1, `rgba(${cr},${cg},${cb},0)`)
         ctx.fillStyle = glow
         ctx.beginPath()
-        ctx.arc(px, py, p.size * 3.5, 0, Math.PI * 2)
+        ctx.arc(px, py, p.size * 5, 0, Math.PI * 2)
         ctx.fill()
 
-        // Core
+        // Bright core with white center
         ctx.beginPath()
         ctx.arc(px, py, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(${cr},${cg},${cb},${twinkle})`
+        const coreGrad = ctx.createRadialGradient(px, py, 0, px, py, p.size)
+        coreGrad.addColorStop(0, `rgba(255,250,240,${twinkle})`)
+        coreGrad.addColorStop(0.4, `rgba(${cr},${cg},${cb},${twinkle * 0.9})`)
+        coreGrad.addColorStop(1, `rgba(${cr},${cg},${cb},${twinkle * 0.35})`)
+        ctx.fillStyle = coreGrad
         ctx.fill()
       }
 
-      // Connecting lines
-      for (let i = 0; i < particles.length; i += 4) {
-        for (let j = i + 1; j < Math.min(i + 6, particles.length); j++) {
+      // Connecting lines — stronger structural web
+      const cr2 = col ? col.r : 201, cg2 = col ? col.g : 168, cb2 = col ? col.b : 76
+      for (let i = 0; i < particles.length; i += 2) {
+        for (let j = i + 1; j < Math.min(i + 8, particles.length); j++) {
           const a = particles[i], b = particles[j]
           const d = Math.hypot(a.x - b.x, a.y - b.y)
-          if (d < 0.45) {
-            const cr = col ? col.r : 201, cg = col ? col.g : 168, cb = col ? col.b : 76
+          if (d < 0.35) {
             ctx.beginPath()
             ctx.moveTo(cx + a.x * scale, cy + a.y * scale)
             ctx.lineTo(cx + b.x * scale, cy + b.y * scale)
-            ctx.strokeStyle = `rgba(${cr},${cg},${cb},${(1 - d / 0.45) * 0.06})`
-            ctx.lineWidth = 0.4
+            ctx.strokeStyle = `rgba(${cr2},${cg2},${cb2},${(1 - d / 0.35) * 0.16})`
+            ctx.lineWidth = 0.5
             ctx.stroke()
           }
         }

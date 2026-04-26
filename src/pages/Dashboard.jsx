@@ -669,7 +669,7 @@ function WidgetContent({ widgetId }) {
         return (
           <>
             <div className="ch"><span className="ct">Enneagram · Take Quiz</span><span className="ci">{'\u262F'}</span></div>
-            <div className="cb" onClick={() => setActiveQuiz('enneagram')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+            <div className="cb" onClick={() => setActiveDetail('enn')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontSize: 32, opacity: 0.4 }}>☯</div>
               <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
             </div>
@@ -709,7 +709,7 @@ function WidgetContent({ widgetId }) {
         return (
           <>
             <div className="ch"><span className="ct">Myers-Briggs · Take Quiz</span><span className="ci">{'\u{1F9E0}'}</span></div>
-            <div className="cb" onClick={() => setActiveQuiz('mbti')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+            <div className="cb" onClick={() => setActiveDetail('mbti')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontSize: 32, opacity: 0.4 }}>🧠</div>
               <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
             </div>
@@ -749,7 +749,7 @@ function WidgetContent({ widgetId }) {
         return (
           <>
             <div className="ch"><span className="ct">Ayurvedic Dosha · Take Quiz</span><span className="ci">{'☯'}</span></div>
-            <div className="cb" onClick={() => setActiveQuiz('dosha')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+            <div className="cb" onClick={() => setActiveDetail('dosha')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontSize: 32, opacity: 0.4 }}>☯</div>
               <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
             </div>
@@ -768,7 +768,7 @@ function WidgetContent({ widgetId }) {
         return (
           <>
             <div className="ch"><span className="ct">Archetype · Take Quiz</span><span className="ci">{'⬡'}</span></div>
-            <div className="cb" onClick={() => setActiveQuiz('archetype')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+            <div className="cb" onClick={() => setActiveDetail('archetype')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontSize: 32, opacity: 0.4 }}>⬡</div>
               <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
             </div>
@@ -787,7 +787,7 @@ function WidgetContent({ widgetId }) {
         return (
           <>
             <div className="ch"><span className="ct">Love Language · Take Quiz</span><span className="ci">{'🤗'}</span></div>
-            <div className="cb" onClick={() => setActiveQuiz('lovelang')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
+            <div className="cb" onClick={() => setActiveDetail('lovelang')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 8 }}>
               <div style={{ fontSize: 32, opacity: 0.4 }}>🤗</div>
               <div style={{ fontSize: 10, color: 'var(--gold)', fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.1em' }}>Take Quiz to Discover</div>
             </div>

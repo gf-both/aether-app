@@ -322,11 +322,35 @@ export default function ArchetypeDetail() {
     <div style={S.panel}>
       {/* HEADER */}
       <div>
-        <div style={S.heading}>{'\u2726'} Jungian Archetypes</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={S.heading}>{'\u2726'} Jungian Archetypes</div>
+          <span
+            onClick={() => setShowQuiz(!showQuiz)}
+            style={{
+              fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.15em',
+              textTransform: 'uppercase', color: '#c9a84c', cursor: 'pointer',
+              padding: '5px 14px', borderRadius: 14,
+              border: '1px solid rgba(201,168,76,.3)', background: 'rgba(201,168,76,.06)',
+              transition: 'all .2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.5)'; e.currentTarget.style.background = 'rgba(201,168,76,.12)' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,168,76,.3)'; e.currentTarget.style.background = 'rgba(201,168,76,.06)' }}
+          >
+            {showQuiz ? 'Cancel' : 'Retake Quiz'}
+          </span>
+        </div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           The mythic pattern that shapes your psyche, relationships, and life narrative
         </div>
       </div>
+
+      {/* INLINE QUIZ — shown when retake is triggered */}
+      {showQuiz && (
+        <div>
+          <div style={S.sectionTitle}>Retake Quiz</div>
+          <ArchetypeQuiz />
+        </div>
+      )}
 
       {/* ARCHETYPE SYMBOL CANVAS */}
       <div>
@@ -336,34 +360,7 @@ export default function ArchetypeDetail() {
         </div>
       </div>
 
-      {/* RETAKE QUIZ */}
-      <div>
-        <div style={S.sectionTitle}>Quiz</div>
-        {showQuiz ? (
-          <div>
-            <ArchetypeQuiz />
-            <div onClick={() => setShowQuiz(false)} style={{
-              padding: '6px 18px', borderRadius: 8, background: 'var(--secondary)',
-              border: '1px solid var(--border)', cursor: 'pointer', marginTop: 8,
-              fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--muted-foreground)',
-              display: 'inline-block',
-            }}>Cancel</div>
-          </div>
-        ) : (
-          <div
-            onClick={() => setShowQuiz(true)}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '10px 20px', borderRadius: 10, cursor: 'pointer',
-              background: 'var(--accent)', border: '1px solid rgba(201,168,76,.2)',
-              fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.12em',
-              color: 'var(--foreground)', transition: 'all .2s',
-            }}
-          >
-            Retake Archetype Quiz
-          </div>
-        )}
-      </div>
+      {/* Retake quiz moved to header */}
 
       {/* PRIMARY ARCHETYPE */}
       <div>

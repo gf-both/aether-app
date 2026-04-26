@@ -41,7 +41,7 @@ function lotus(n) {
 }
 
 const DOSHA_SHAPES = { vata: windSpiral, pitta: flame, kapha: lotus }
-const PARTICLE_COUNT = 90
+const PARTICLE_COUNT = 160
 
 export default function DoshaSymbol({ doshaType, scores }) {
   const canvasRef = useRef(null)
@@ -68,8 +68,8 @@ export default function DoshaSymbol({ doshaType, scores }) {
       y: Math.random() * 2 - 1,
       tx: 0, ty: 0,
       vx: 0, vy: 0,
-      size: 0.6 + Math.random() * 1.4,
-      alpha: 0.3 + Math.random() * 0.7,
+      size: 0.5 + Math.random() * 1.8,
+      alpha: 0.5 + Math.random() * 0.5,
       phase: Math.random() * Math.PI * 2,
     }))
 
@@ -119,35 +119,40 @@ export default function DoshaSymbol({ doshaType, scores }) {
 
         const px = cx + p.x * scale
         const py = cy + p.y * scale
-        const twinkle = p.alpha * (0.5 + 0.5 * Math.sin(t * 0.001 + p.phase))
+        const twinkle = p.alpha * (0.65 + 0.35 * Math.sin(t * 0.001 + p.phase))
 
-        // Glow
-        const glow = ctx.createRadialGradient(px, py, 0, px, py, p.size * 3.5)
+        // Outer glow
+        const glow = ctx.createRadialGradient(px, py, 0, px, py, p.size * 5)
         glow.addColorStop(0, `rgba(${col.r},${col.g},${col.b},${twinkle * 0.3})`)
+        glow.addColorStop(0.5, `rgba(${col.r},${col.g},${col.b},${twinkle * 0.08})`)
         glow.addColorStop(1, `rgba(${col.r},${col.g},${col.b},0)`)
         ctx.fillStyle = glow
         ctx.beginPath()
-        ctx.arc(px, py, p.size * 3.5, 0, Math.PI * 2)
+        ctx.arc(px, py, p.size * 5, 0, Math.PI * 2)
         ctx.fill()
 
-        // Core
+        // Bright core with white center
         ctx.beginPath()
         ctx.arc(px, py, p.size, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(${col.r},${col.g},${col.b},${twinkle})`
+        const coreGrad = ctx.createRadialGradient(px, py, 0, px, py, p.size)
+        coreGrad.addColorStop(0, `rgba(255,250,240,${twinkle})`)
+        coreGrad.addColorStop(0.4, `rgba(${col.r},${col.g},${col.b},${twinkle * 0.9})`)
+        coreGrad.addColorStop(1, `rgba(${col.r},${col.g},${col.b},${twinkle * 0.35})`)
+        ctx.fillStyle = coreGrad
         ctx.fill()
       }
 
-      // Connecting lines
-      for (let i = 0; i < particles.length; i += 3) {
-        for (let j = i + 1; j < Math.min(i + 6, particles.length); j++) {
+      // Connecting lines — stronger structural web
+      for (let i = 0; i < particles.length; i += 2) {
+        for (let j = i + 1; j < Math.min(i + 8, particles.length); j++) {
           const a = particles[i], b = particles[j]
           const d = Math.hypot(a.x - b.x, a.y - b.y)
-          if (d < 0.5) {
+          if (d < 0.38) {
             ctx.beginPath()
             ctx.moveTo(cx + a.x * scale, cy + a.y * scale)
             ctx.lineTo(cx + b.x * scale, cy + b.y * scale)
-            ctx.strokeStyle = `rgba(${col.r},${col.g},${col.b},${(1 - d / 0.5) * 0.06})`
-            ctx.lineWidth = 0.4
+            ctx.strokeStyle = `rgba(${col.r},${col.g},${col.b},${(1 - d / 0.38) * 0.16})`
+            ctx.lineWidth = 0.5
             ctx.stroke()
           }
         }

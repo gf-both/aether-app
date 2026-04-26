@@ -7,11 +7,7 @@ import IntroAnimation from './components/ui/IntroAnimation'
 import ProfilePanel from './components/overlays/ProfilePanel'
 import SynastryPanel from './components/overlays/SynastryPanel'
 import AIChatPanel from './components/overlays/AIChatPanel'
-import EnneagramQuiz from './components/overlays/EnneagramQuiz'
-import MBTIQuiz from './components/overlays/MBTIQuiz'
-import DoshaQuiz from './components/overlays/DoshaQuiz'
-import ArchetypeQuiz from './components/overlays/ArchetypeQuiz'
-import LoveLangQuiz from './components/overlays/LoveLangQuiz'
+// Quiz overlays removed — all quizzes are now inline within their detail panels
 // Oracle is now embedded in Dashboard layout (not an overlay)
 import AuthModal from './components/auth/AuthModal'
 import ParticleField from './components/ui/ParticleField'
@@ -62,11 +58,7 @@ function OverlayManager() {
       <ProfilePanel open={activePanel === 'profile'} onClose={() => setActivePanel(null)} />
       <SynastryPanel open={activePanel === 'synastry'} onClose={() => setActivePanel(null)} />
       <AIChatPanel open={activePanel === 'aichat'} onClose={() => setActivePanel(null)} />
-      {activeQuiz === 'enneagram' && <EnneagramQuiz onClose={() => setActiveQuiz(null)} />}
-      {activeQuiz === 'mbti' && <MBTIQuiz onClose={() => setActiveQuiz(null)} />}
-      {activeQuiz === 'dosha' && <DoshaQuiz onClose={() => setActiveQuiz(null)} />}
-      {activeQuiz === 'archetype' && <ArchetypeQuiz onClose={() => setActiveQuiz(null)} />}
-      {activeQuiz === 'lovelang' && <LoveLangQuiz onClose={() => setActiveQuiz(null)} />}
+      {/* Quiz overlays removed — quizzes are now inline in detail panels */}
       <AuthModal open={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>,
     document.body
