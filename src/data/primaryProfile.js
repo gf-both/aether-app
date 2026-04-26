@@ -8,7 +8,7 @@ export const DEFAULT_PRIMARY_PROFILE = {
   // DEV SEED — Gaston Frydlewski
   name: 'Gaston Frydlewski',
   dob: '1981-01-23',
-  tob: '12:00',
+  tob: '22:10',
   pob: 'Buenos Aires, Argentina',
   gender: 'male',
   emoji: '✦',
