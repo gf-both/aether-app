@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
-import { getTibetanProfile, TIBETAN_ELEMENT_NAMES_TIB } from '../../engines/tibetanEngine'
+import { getTibetanProfile, TIBETAN_ELEMENT_NAMES_TIB, MEWA_DATA as ENGINE_MEWA, PARKHA_DATA, LOG_MEN_FORCES } from '../../engines/tibetanEngine'
 
-const ANIMALS = ['Horse','Sheep','Monkey','Bird','Dog','Pig','Mouse','Ox','Tiger','Rabbit','Dragon','Snake']
+const ANIMALS = ['Mouse','Ox','Tiger','Rabbit','Dragon','Snake','Horse','Sheep','Monkey','Bird','Dog','Pig']
 const ELEMENTS = ['Fire','Earth','Iron','Water','Wood']
 const ANIMAL_EMOJI = {
   Horse: '\u{1F40E}', Sheep: '\u{1F411}', Monkey: '\u{1F412}', Bird: '\u{1F426}',
@@ -88,9 +88,9 @@ export default function TibetanDetail() {
     try {
       const [y, m, d] = profile.dob.split('-').map(Number)
       if (!y || !m || !d) return null
-      return getTibetanProfile({ day: d, month: m, year: y })
+      return getTibetanProfile({ day: d, month: m, year: y, gender: profile.gender || 'male' })
     } catch { return null }
-  }, [profile?.dob])
+  }, [profile?.dob, profile?.gender])
 
   if (!tib) {
     return (
@@ -140,7 +140,7 @@ export default function TibetanDetail() {
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
               <span style={S.badge('var(--accent)', 'rgba(201,168,76,.25)', 'var(--foreground)')}>
-                {tib.yinYang}
+                {tib.polarity}
               </span>
               <span style={S.badge(elemColor + '12', elemColor + '30', elemColor)}>
                 {tib.element} ({tibElemName})
@@ -248,34 +248,199 @@ export default function TibetanDetail() {
               <div style={{
                 fontFamily: "'Cinzel', serif", fontSize: 16, letterSpacing: '.12em', color: 'var(--foreground)',
               }}>
-                {tib.mewaMeaning.color} Mewa
+                {tib.mewa.color} Mewa
               </div>
               <div style={{ ...S.monoSm, fontSize: 10 }}>
-                Element: {tib.mewaMeaning.element}
+                Element: {tib.mewa.element}
               </div>
             </div>
           </div>
           <div style={S.interpretation}>
-            {tib.mewaMeaning.meaning}
+            {tib.mewa.meaning}
           </div>
         </div>
       </div>
 
-      {/* MALE/FEMALE POLARITY */}
+      {/* PARKHA (TRIGRAM) */}
+      {tib.parkha && (
+        <div>
+          <div style={S.sectionTitle}>Parkha (Trigram)</div>
+          <div style={{ ...S.glass, padding: '20px 22px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
+              <div style={{
+                width: 56, height: 56, borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(130,100,220,.12)', border: '1px solid rgba(130,100,220,.25)',
+                fontSize: 28,
+              }}>
+                {tib.parkha.symbol}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 16, letterSpacing: '.12em', color: 'var(--foreground)',
+                }}>
+                  {tib.parkha.name}
+                </div>
+                <div style={{ ...S.monoSm, fontSize: 10 }}>
+                  {tib.parkha.meaning} &middot; {tib.parkha.direction}
+                </div>
+              </div>
+            </div>
+            <div style={S.interpretation}>
+              {tib.parkha.quality}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* LOG-MEN FORCES */}
+      {tib.logMen && (
+        <div>
+          <div style={S.sectionTitle}>Log-Men (Five Forces)</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8 }}>
+            {Object.entries(tib.logMen).map(([key, val]) => {
+              const info = LOG_MEN_FORCES[key.charAt(0).toUpperCase() + key.slice(1)] || LOG_MEN_FORCES[key === 'la' ? 'La' : key === 'sok' ? 'Sok' : key === 'lu' ? 'Lu' : key === 'wangthang' ? 'Wangthang' : 'Lungta']
+              const pct = val / 10
+              const hue = pct > 0.6 ? '120' : pct > 0.3 ? '45' : '0'
+              return (
+                <div key={key} style={{
+                  ...S.glass, padding: '14px 10px', textAlign: 'center',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+                }}>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.12em',
+                    textTransform: 'uppercase', color: 'var(--muted-foreground)',
+                  }}>
+                    {key === 'la' ? 'Soul' : key === 'sok' ? 'Life' : key === 'lu' ? 'Body' : key === 'wangthang' ? 'Power' : 'Fortune'}
+                  </div>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: '50%',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: `hsla(${hue}, 60%, 50%, 0.12)`, border: `1px solid hsla(${hue}, 60%, 50%, 0.3)`,
+                    fontFamily: "'Cinzel', serif", fontSize: 16, fontWeight: 700,
+                    color: `hsla(${hue}, 60%, 60%, 1)`,
+                  }}>
+                    {val}
+                  </div>
+                  <div style={{
+                    width: '100%', height: 3, borderRadius: 2,
+                    background: 'var(--accent)',
+                  }}>
+                    <div style={{
+                      width: `${pct * 100}%`, height: '100%', borderRadius: 2,
+                      background: `hsla(${hue}, 60%, 50%, 0.7)`,
+                    }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          <div style={{ marginTop: 8, fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
+            The five forces (La, Sok, Lü, Wangthang, Lungta) describe the strength of your soul, vitality, body, personal power, and fortune. Scale 1-10.
+          </div>
+        </div>
+      )}
+
+      {/* RABJUNG CYCLE */}
+      {tib.rabjung && (
+        <div>
+          <div style={S.sectionTitle}>Rabjung Cycle</div>
+          <div style={{ ...S.glass, padding: '16px 22px', display: 'flex', alignItems: 'center', gap: 20 }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                fontFamily: "'Cinzel', serif", fontSize: 28, color: 'var(--gold)',
+              }}>{tib.rabjung.cycle}</div>
+              <div style={{ ...S.monoSm, fontSize: 9 }}>Rabjung</div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, color: 'var(--foreground)', lineHeight: 1.6 }}>
+                You were born in year <strong>{tib.rabjung.yearInCycle}</strong> of the {tib.rabjung.cycle}th Rabjung (60-year cycle).
+                The Rabjung system, adopted in 1027 CE, structures Tibetan chronology into 60-year cycles combining the 12 animals with the 5 elements.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ANIMAL RELATIONSHIPS */}
+      {tib.animalAlly && (
+        <div>
+          <div style={S.sectionTitle}>Animal Relationships</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+            {[
+              { label: 'Ally', animal: tib.animalAlly, color: '#60c060', desc: 'Deepest compatibility' },
+              { label: 'Friend', animal: tib.animalFriend, color: '#40ccdd', desc: 'Natural harmony' },
+              { label: 'Secret Friend', animal: tib.animalSecret, color: '#c9a84c', desc: 'Hidden connection' },
+              { label: 'Enemy', animal: tib.animalEnemy, color: '#e04040', desc: 'Friction & growth' },
+            ].map(rel => (
+              <div key={rel.label} style={{
+                ...S.glass, padding: '14px 12px', textAlign: 'center',
+                borderColor: rel.color + '22',
+              }}>
+                <div style={{ fontSize: 28, marginBottom: 4 }}>{ANIMAL_EMOJI[rel.animal]}</div>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.1em', color: rel.color,
+                  textTransform: 'uppercase', marginBottom: 2,
+                }}>{rel.label}</div>
+                <div style={{ fontSize: 12, color: 'var(--foreground)' }}>{rel.animal}</div>
+                <div style={{ fontSize: 9, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>{rel.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ELEMENT RELATIONSHIPS */}
+      {tib.elementRelations && (
+        <div>
+          <div style={S.sectionTitle}>Element Cycle</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10 }}>
+            {[
+              { label: 'Mother', elem: tib.elementRelations.mother, desc: 'Generates you' },
+              { label: 'Child', elem: tib.elementRelations.child, desc: 'You generate' },
+              { label: 'Friend', elem: tib.elementRelations.friend, desc: 'Supports you' },
+              { label: 'Enemy', elem: tib.elementRelations.enemy, desc: 'Opposes you' },
+            ].map(rel => {
+              const ec = ELEM_COLORS[rel.elem] || '#888'
+              return (
+                <div key={rel.label} style={{
+                  ...S.glass, padding: '14px 12px', textAlign: 'center',
+                  borderColor: ec + '22',
+                }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: '50%', margin: '0 auto 6px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: ec + '15', border: `1px solid ${ec}33`,
+                    fontFamily: "'Cinzel', serif", fontSize: 14, color: ec,
+                  }}>{rel.elem?.charAt(0)}</div>
+                  <div style={{
+                    fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em', color: 'var(--muted-foreground)',
+                    textTransform: 'uppercase', marginBottom: 2,
+                  }}>{rel.label}</div>
+                  <div style={{ fontSize: 12, color: ec }}>{rel.elem}</div>
+                  <div style={{ fontSize: 9, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 4 }}>{rel.desc}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* POLARITY */}
       <div>
         <div style={S.sectionTitle}>Polarity</div>
         <div style={{ ...S.glass, padding: '20px 22px', textAlign: 'center' }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>
-            {tib.yinYang === 'Male' ? '\u2642' : '\u2640'}
+            {tib.polarity === 'Male' ? '\u2642' : '\u2640'}
           </div>
           <div style={{
             fontFamily: "'Cinzel', serif", fontSize: 16, letterSpacing: '.15em', color: 'var(--foreground)',
             marginBottom: 6,
           }}>
-            {tib.yinYang}
+            {tib.polarity} ({tib.polarity === 'Male' ? 'Pho' : 'Mo'})
           </div>
           <div style={{ fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.5 }}>
-            {tib.yinYang === 'Male'
+            {tib.polarity === 'Male'
               ? 'Male (Pho) polarity represents outward, active, expansive energy. It is associated with assertion, initiative, and the manifest world.'
               : 'Female (Mo) polarity represents inward, receptive, consolidating energy. It is associated with intuition, patience, and the subtle world.'}
           </div>
@@ -429,20 +594,20 @@ export default function TibetanDetail() {
         <div style={S.sectionTitle}>Holistic Interpretation</div>
         <div style={S.interpretation}>
           As a <span style={{ color: 'var(--foreground)' }}>{tib.fullLabel}</span> with{' '}
-          <span style={{ color: mewaColor }}>Mewa {tib.mewaNumber} ({tib.mewaMeaning.color})</span>,{' '}
+          <span style={{ color: mewaColor }}>Mewa {tib.mewaNumber} ({tib.mewa.color})</span>,{' '}
           your Tibetan chart reveals a distinctive interplay of forces.
           The <span style={{ color: elemColor }}>{tib.element}</span> element shapes your fundamental
           nature with its qualities of {ELEMENT_PROPERTIES[tib.element].split('.')[0].toLowerCase()}.
           Your birth animal, the <span style={{ color: 'var(--foreground)' }}>{tib.animal}</span>,
           brings {tib.animalProfile.quality.toLowerCase()} as core strengths, while reminding you
           to watch for tendencies toward {tib.animalProfile.challenge.toLowerCase()}.
-          The {tib.yinYang} polarity gives your expression a{' '}
-          {tib.yinYang === 'Male' ? 'dynamic, outward-moving' : 'receptive, inward-gathering'} quality.
-          Your Mewa {tib.mewaNumber} adds the dimension of {tib.mewaMeaning.meaning.toLowerCase()},
-          connected to the {tib.mewaMeaning.element} element, creating{' '}
-          {tib.mewaMeaning.element === tib.element
+          The {tib.polarity} polarity gives your expression a{' '}
+          {tib.polarity === 'Male' ? 'dynamic, outward-moving' : 'receptive, inward-gathering'} quality.
+          Your Mewa {tib.mewaNumber} adds the dimension of {tib.mewa.meaning.toLowerCase()},
+          connected to the {tib.mewa.element} element, creating{' '}
+          {tib.mewa.element === tib.element
             ? 'a harmonious reinforcement of your natal element.'
-            : `an enriching interplay between ${tib.element} and ${tib.mewaMeaning.element} energies.`}
+            : `an enriching interplay between ${tib.element} and ${tib.mewa.element} energies.`}
         </div>
       </div>
     </div>

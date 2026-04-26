@@ -192,21 +192,29 @@ export default function SyncCanvas({ syncs = [] }) {
         }
       }
 
-      // Yellow trigger node — roams the canvas and collides with other nodes
-      const yellowSpeed = 0.0004
-      const yellowPeriod = 8000 // ms between target changes
+      // Orange trigger node — roams the canvas and collides with different nodes
+      const yellowPeriod = 5000 // ms between target changes
       if (!draw._yellow) {
-        draw._yellow = { x: W / 2, y: H / 2, tx: W * 0.3, ty: H * 0.3, vx: 0, vy: 0, lastTarget: 0 }
-        draw._ripples = [] // { x, y, startTime, r, g, b }
+        draw._yellow = { x: W / 2, y: H / 2, tx: W * 0.3, ty: H * 0.3, vx: 0, vy: 0, lastTarget: 0, targetIdx: 0, hitSet: new Set() }
+        draw._ripples = []
       }
       const yel = draw._yellow
       const ripples = draw._ripples
 
-      // Pick new random target periodically or after reaching current target
+      // Pick next target — cycle through ALL different nodes, reset when all hit
       if (t - yel.lastTarget > yellowPeriod || Math.hypot(yel.x - yel.tx, yel.y - yel.ty) < 8) {
-        // Target a random existing node if available, else random position
         if (nodes.length > 0) {
-          const target = nodes[Math.floor((t * 0.001) % nodes.length)]
+          // Find next node not recently hit
+          let attempts = 0
+          let idx = (yel.targetIdx + 1) % nodes.length
+          while (yel.hitSet.has(idx) && attempts < nodes.length) {
+            idx = (idx + 1) % nodes.length
+            attempts++
+          }
+          if (attempts >= nodes.length) yel.hitSet.clear() // all hit, reset
+          yel.targetIdx = idx
+          yel.hitSet.add(idx)
+          const target = nodes[idx]
           yel.tx = target.x; yel.ty = target.y
         } else {
           yel.tx = 0.15 * W + Math.random() * W * 0.7
@@ -258,40 +266,41 @@ export default function SyncCanvas({ syncs = [] }) {
         }
       }
 
-      // Draw yellow trigger node
+      // Draw orange trigger node — always visible
       const yelPulse = 0.85 + 0.15 * Math.sin(t * 0.003)
-      const yelR = 4 * yelPulse
+      const yelR = 5 * yelPulse
       // Glow
-      const yelGlow = ctx.createRadialGradient(yel.x, yel.y, 0, yel.x, yel.y, yelR * 6)
-      yelGlow.addColorStop(0, `rgba(255, 220, 60, 0.2)`)
+      const yelGlow = ctx.createRadialGradient(yel.x, yel.y, 0, yel.x, yel.y, yelR * 7)
+      yelGlow.addColorStop(0, `rgba(255, 140, 40, 0.25)`)
+      yelGlow.addColorStop(0.5, `rgba(255, 100, 20, 0.08)`)
       yelGlow.addColorStop(1, 'transparent')
       ctx.fillStyle = yelGlow
       ctx.beginPath()
-      ctx.arc(yel.x, yel.y, yelR * 6, 0, Math.PI * 2)
+      ctx.arc(yel.x, yel.y, yelR * 7, 0, Math.PI * 2)
       ctx.fill()
       // Core
       ctx.beginPath()
       ctx.arc(yel.x, yel.y, yelR, 0, Math.PI * 2)
       const yelCore = ctx.createRadialGradient(yel.x, yel.y, 0, yel.x, yel.y, yelR)
-      yelCore.addColorStop(0, 'rgba(255, 255, 240, 0.95)')
-      yelCore.addColorStop(0.4, 'rgba(255, 220, 60, 0.9)')
-      yelCore.addColorStop(1, 'rgba(200, 170, 20, 0.4)')
+      yelCore.addColorStop(0, 'rgba(255, 255, 220, 0.95)')
+      yelCore.addColorStop(0.3, 'rgba(255, 160, 50, 0.9)')
+      yelCore.addColorStop(1, 'rgba(220, 100, 20, 0.5)')
       ctx.fillStyle = yelCore
       ctx.fill()
       // Trail
-      const trailLen = Math.hypot(yel.vx, yel.vy) * 8
+      const trailLen = Math.hypot(yel.vx, yel.vy) * 10
       if (trailLen > 2) {
         const angle = Math.atan2(-yel.vy, -yel.vx)
         const tailX = yel.x + Math.cos(angle) * trailLen
         const tailY = yel.y + Math.sin(angle) * trailLen
         const trailGrad = ctx.createLinearGradient(yel.x, yel.y, tailX, tailY)
-        trailGrad.addColorStop(0, 'rgba(255, 220, 60, 0.5)')
-        trailGrad.addColorStop(1, 'rgba(255, 220, 60, 0)')
+        trailGrad.addColorStop(0, 'rgba(255, 140, 40, 0.6)')
+        trailGrad.addColorStop(1, 'rgba(255, 100, 20, 0)')
         ctx.beginPath()
         ctx.moveTo(yel.x, yel.y)
         ctx.lineTo(tailX, tailY)
         ctx.strokeStyle = trailGrad
-        ctx.lineWidth = 2
+        ctx.lineWidth = 2.5
         ctx.stroke()
       }
 

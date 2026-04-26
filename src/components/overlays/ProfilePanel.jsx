@@ -266,8 +266,6 @@ export default function ProfilePanel({ open, onClose, embedded }) {
                 <option value="">Not specified</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
-                <option value="non-binary">Non-binary</option>
-                <option value="other">Other</option>
               </select>
             </div>
             <div className="pp-field">
@@ -506,8 +504,6 @@ export default function ProfilePanel({ open, onClose, embedded }) {
                   <option value="">Not specified</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
-                  <option value="non-binary">Non-binary</option>
-                  <option value="other">Other</option>
                 </select>
               </div>
             </div>

@@ -394,11 +394,12 @@ html.theme-manuscript-day { --accent-color: #8b6820; --accent-color2: #c9a84c; -
 .col-line { flex: 1; height: 1px; background: var(--border); }
 .col-header-text { text-align: center; flex-shrink: 0; }
 .col-header-title {
-  font-size: 10px; font-weight: 600; letter-spacing: 0.2em;
-  text-transform: uppercase; color: var(--muted-foreground);
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-family: 'Cinzel', serif;
+  opacity: 0.85;
 }
-.col-header-sub { font-size: 10px; color: var(--muted-foreground); margin-top: 2px; letter-spacing: 0.06em; font-family: ui-monospace, monospace; }
+.col-header-sub { font-size: 10px; color: var(--muted-foreground); margin-top: 3px; letter-spacing: 0.06em; font-family: ui-monospace, monospace; opacity: 0.6; }
 
 /* ── Overlays ── */
 .overlay {
@@ -971,7 +972,7 @@ html:not(.dark).theme-manuscript-day {
   /* Section headers: compact */
   .col-header { padding: 8px 0 6px !important; }
   .col-header-sub { display: none !important; }
-  .col-header-title { font-size: 9px !important; }
+  .col-header-title { font-size: 11px !important; }
 
   /* Widget canvas: fill card, no overflow */
   .card canvas { max-width: 100% !important; }

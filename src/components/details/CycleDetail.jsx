@@ -84,7 +84,7 @@ export default function CycleDetail() {
       <div>
         <div style={S.sectionTitle}>PROFILE</div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {['female', 'male', 'non-binary'].map(g => (
+          {['female', 'male'].map(g => (
             <div
               key={g}
               onClick={() => handleGenderChange(g)}

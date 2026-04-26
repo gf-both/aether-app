@@ -53,6 +53,128 @@ const GATE_DESCRIPTIONS = {
   59: 'Dispersion', 6: 'Conflict',
 }
 
+/* ─── Gate tooltip data (center, circuit, keynote, shadow/gift/siddhi) ──── */
+const GATE_TOOLTIPS = {
+  1:  { center: 'G/Self', circuit: 'Individual', keynote: 'Creative self-expression', shadow: 'Entropy', gift: 'Freshness', siddhi: 'Beauty' },
+  2:  { center: 'G/Self', circuit: 'Collective', keynote: 'Direction of the self', shadow: 'Dislocation', gift: 'Orientation', siddhi: 'Unity' },
+  3:  { center: 'Sacral', circuit: 'Individual', keynote: 'Ordering — difficulty at beginning', shadow: 'Chaos', gift: 'Innovation', siddhi: 'Innocence' },
+  4:  { center: 'Ajna', circuit: 'Collective', keynote: 'Formulization — youthful folly', shadow: 'Intolerance', gift: 'Understanding', siddhi: 'Forgiveness' },
+  5:  { center: 'Sacral', circuit: 'Collective', keynote: 'Fixed rhythms and patterns', shadow: 'Impatience', gift: 'Patience', siddhi: 'Timelessness' },
+  6:  { center: 'Solar Plexus', circuit: 'Tribal', keynote: 'Friction — the gate of conflict', shadow: 'Conflict', gift: 'Diplomacy', siddhi: 'Peace' },
+  7:  { center: 'G/Self', circuit: 'Collective', keynote: 'The role of the self', shadow: 'Division', gift: 'Guidance', siddhi: 'Virtue' },
+  8:  { center: 'Throat', circuit: 'Individual', keynote: 'Contribution — holding together', shadow: 'Mediocrity', gift: 'Style', siddhi: 'Exquisiteness' },
+  9:  { center: 'Sacral', circuit: 'Collective', keynote: 'Focus — taming power of small', shadow: 'Inertia', gift: 'Determination', siddhi: 'Invincibility' },
+  10: { center: 'G/Self', circuit: 'Individual', keynote: 'Behavior of the self', shadow: 'Self-obsession', gift: 'Naturalness', siddhi: 'Being' },
+  11: { center: 'Ajna', circuit: 'Collective', keynote: 'Ideas — peace', shadow: 'Obscurity', gift: 'Idealism', siddhi: 'Light' },
+  12: { center: 'Throat', circuit: 'Individual', keynote: 'Caution — standstill', shadow: 'Vanity', gift: 'Discrimination', siddhi: 'Purity' },
+  13: { center: 'G/Self', circuit: 'Collective', keynote: 'The listener — fellowship', shadow: 'Discord', gift: 'Discernment', siddhi: 'Empathy' },
+  14: { center: 'Sacral', circuit: 'Individual', keynote: 'Power skills — possession', shadow: 'Compromise', gift: 'Competence', siddhi: 'Bounteousness' },
+  15: { center: 'G/Self', circuit: 'Collective', keynote: 'Extremes — modesty', shadow: 'Dullness', gift: 'Magnetism', siddhi: 'Florescence' },
+  16: { center: 'Throat', circuit: 'Collective', keynote: 'Skills — enthusiasm', shadow: 'Indifference', gift: 'Versatility', siddhi: 'Mastery' },
+  17: { center: 'Ajna', circuit: 'Collective', keynote: 'Opinions — following', shadow: 'Opinion', gift: 'Far-sightedness', siddhi: 'Omniscience' },
+  18: { center: 'Spleen', circuit: 'Collective', keynote: 'Correction — work on spoilt', shadow: 'Judgement', gift: 'Integrity', siddhi: 'Perfection' },
+  19: { center: 'Root', circuit: 'Tribal', keynote: 'Wanting — approach', shadow: 'Co-dependence', gift: 'Sensitivity', siddhi: 'Sacrifice' },
+  20: { center: 'Throat', circuit: 'Individual', keynote: 'The now — contemplation', shadow: 'Superficiality', gift: 'Self-assurance', siddhi: 'Presence' },
+  21: { center: 'Heart', circuit: 'Tribal', keynote: 'Hunter/Huntress — biting through', shadow: 'Control', gift: 'Authority', siddhi: 'Valour' },
+  22: { center: 'Solar Plexus', circuit: 'Individual', keynote: 'Openness — grace', shadow: 'Dishonour', gift: 'Graciousness', siddhi: 'Grace' },
+  23: { center: 'Throat', circuit: 'Individual', keynote: 'Assimilation — splitting apart', shadow: 'Complexity', gift: 'Simplicity', siddhi: 'Quintessence' },
+  24: { center: 'Ajna', circuit: 'Individual', keynote: 'Rationalization — return', shadow: 'Addiction', gift: 'Invention', siddhi: 'Silence' },
+  25: { center: 'G/Self', circuit: 'Individual', keynote: 'Spirit of the self — innocence', shadow: 'Constriction', gift: 'Acceptance', siddhi: 'Universal Love' },
+  26: { center: 'Heart', circuit: 'Tribal', keynote: 'The egoist — taming power', shadow: 'Pride', gift: 'Artfulness', siddhi: 'Invisibility' },
+  27: { center: 'Sacral', circuit: 'Tribal', keynote: 'Caring — nourishment', shadow: 'Selfishness', gift: 'Altruism', siddhi: 'Selflessness' },
+  28: { center: 'Spleen', circuit: 'Individual', keynote: 'The game player — the great', shadow: 'Purposelessness', gift: 'Totality', siddhi: 'Immortality' },
+  29: { center: 'Sacral', circuit: 'Collective', keynote: 'Perseverance — the abysmal', shadow: 'Half-heartedness', gift: 'Commitment', siddhi: 'Devotion' },
+  30: { center: 'Solar Plexus', circuit: 'Collective', keynote: 'Recognition of feelings', shadow: 'Desire', gift: 'Lightness', siddhi: 'Rapture' },
+  31: { center: 'Throat', circuit: 'Collective', keynote: 'Influence — leading', shadow: 'Arrogance', gift: 'Leadership', siddhi: 'Humility' },
+  32: { center: 'Spleen', circuit: 'Tribal', keynote: 'Continuity — duration', shadow: 'Failure', gift: 'Preservation', siddhi: 'Veneration' },
+  33: { center: 'Throat', circuit: 'Collective', keynote: 'Privacy — retreat', shadow: 'Forgetting', gift: 'Mindfulness', siddhi: 'Revelation' },
+  34: { center: 'Sacral', circuit: 'Individual', keynote: 'Power — power of the great', shadow: 'Force', gift: 'Strength', siddhi: 'Majesty' },
+  35: { center: 'Throat', circuit: 'Collective', keynote: 'Change — progress', shadow: 'Hunger', gift: 'Adventure', siddhi: 'Boundlessness' },
+  36: { center: 'Solar Plexus', circuit: 'Individual', keynote: 'Crisis — darkening of light', shadow: 'Turbulence', gift: 'Humanity', siddhi: 'Compassion' },
+  37: { center: 'Solar Plexus', circuit: 'Tribal', keynote: 'Friendship — the family', shadow: 'Weakness', gift: 'Equality', siddhi: 'Tenderness' },
+  38: { center: 'Root', circuit: 'Individual', keynote: 'The fighter — opposition', shadow: 'Struggle', gift: 'Perseverance', siddhi: 'Honour' },
+  39: { center: 'Root', circuit: 'Individual', keynote: 'Provocation — obstruction', shadow: 'Provocation', gift: 'Dynamism', siddhi: 'Liberation' },
+  40: { center: 'Heart', circuit: 'Tribal', keynote: 'Aloneness — deliverance', shadow: 'Exhaustion', gift: 'Resolve', siddhi: 'Divine Will' },
+  41: { center: 'Root', circuit: 'Collective', keynote: 'Contraction — decrease', shadow: 'Fantasy', gift: 'Anticipation', siddhi: 'Emanation' },
+  42: { center: 'Sacral', circuit: 'Collective', keynote: 'Growth — increase', shadow: 'Expectation', gift: 'Detachment', siddhi: 'Celebration' },
+  43: { center: 'Ajna', circuit: 'Individual', keynote: 'Insight — breakthrough', shadow: 'Deafness', gift: 'Insight', siddhi: 'Epiphany' },
+  44: { center: 'Spleen', circuit: 'Tribal', keynote: 'Alertness — coming to meet', shadow: 'Interference', gift: 'Teamwork', siddhi: 'Synarchy' },
+  45: { center: 'Throat', circuit: 'Tribal', keynote: 'The gatherer — gathering', shadow: 'Dominance', gift: 'Synergy', siddhi: 'Communion' },
+  46: { center: 'G/Self', circuit: 'Collective', keynote: 'Determination of the self', shadow: 'Seriousness', gift: 'Delight', siddhi: 'Ecstasy' },
+  47: { center: 'Ajna', circuit: 'Collective', keynote: 'Realization — oppression', shadow: 'Oppression', gift: 'Transmutation', siddhi: 'Transfiguration' },
+  48: { center: 'Spleen', circuit: 'Collective', keynote: 'Depth — the well', shadow: 'Inadequacy', gift: 'Resourcefulness', siddhi: 'Wisdom' },
+  49: { center: 'Solar Plexus', circuit: 'Tribal', keynote: 'Principles — revolution', shadow: 'Reaction', gift: 'Revolution', siddhi: 'Rebirth' },
+  50: { center: 'Spleen', circuit: 'Tribal', keynote: 'Values — the cauldron', shadow: 'Corruption', gift: 'Equilibrium', siddhi: 'Harmony' },
+  51: { center: 'Heart', circuit: 'Individual', keynote: 'Shock — the arousing', shadow: 'Agitation', gift: 'Initiative', siddhi: 'Awakening' },
+  52: { center: 'Root', circuit: 'Collective', keynote: 'Stillness — keeping still', shadow: 'Stress', gift: 'Restraint', siddhi: 'Stillness' },
+  53: { center: 'Root', circuit: 'Collective', keynote: 'Beginnings — development', shadow: 'Immaturity', gift: 'Expansion', siddhi: 'Superabundance' },
+  54: { center: 'Root', circuit: 'Tribal', keynote: 'Ambition — marrying maiden', shadow: 'Greed', gift: 'Aspiration', siddhi: 'Ascension' },
+  55: { center: 'Solar Plexus', circuit: 'Individual', keynote: 'Spirit — abundance', shadow: 'Victimization', gift: 'Freedom', siddhi: 'Freedom' },
+  56: { center: 'Throat', circuit: 'Collective', keynote: 'Stimulation — the wanderer', shadow: 'Distraction', gift: 'Enrichment', siddhi: 'Intoxication' },
+  57: { center: 'Spleen', circuit: 'Individual', keynote: 'Intuitive clarity — the gentle', shadow: 'Unease', gift: 'Intuition', siddhi: 'Clarity' },
+  58: { center: 'Root', circuit: 'Collective', keynote: 'Vitality — the joyous', shadow: 'Dissatisfaction', gift: 'Vitality', siddhi: 'Bliss' },
+  59: { center: 'Sacral', circuit: 'Tribal', keynote: 'Sexuality — dispersion', shadow: 'Dishonesty', gift: 'Intimacy', siddhi: 'Transparency' },
+  60: { center: 'Root', circuit: 'Individual', keynote: 'Acceptance — limitation', shadow: 'Limitation', gift: 'Realism', siddhi: 'Justice' },
+  61: { center: 'Head', circuit: 'Individual', keynote: 'Mystery — inner truth', shadow: 'Psychosis', gift: 'Inspiration', siddhi: 'Sanctity' },
+  62: { center: 'Throat', circuit: 'Collective', keynote: 'Details — preponderance', shadow: 'Intellect', gift: 'Precision', siddhi: 'Impeccability' },
+  63: { center: 'Head', circuit: 'Collective', keynote: 'Doubt — after completion', shadow: 'Doubt', gift: 'Inquiry', siddhi: 'Truth' },
+  64: { center: 'Head', circuit: 'Collective', keynote: 'Confusion — before completion', shadow: 'Confusion', gift: 'Imagination', siddhi: 'Illumination' },
+}
+
+/* ─── Center tooltip data ────────────────────────────────────────────────── */
+const CENTER_TOOLTIPS = {
+  HEAD:   { bio: 'Pineal gland', theme: 'Inspiration, mental pressure to know', defined: 'Consistent access to inspiration. Fixed way of thinking.', open: 'Amplifies others\' mental pressure. Wisdom: knowing which questions are truly yours.' },
+  AJNA:   { bio: 'Pituitary gland', theme: 'Conceptualizing, processing, analyzing', defined: 'Fixed way of processing information. Reliable mental framework.', open: 'Sees things from many perspectives. Wisdom: no attachment to certainty.' },
+  THROAT: { bio: 'Thyroid / parathyroid', theme: 'Communication, manifestation, metamorphosis', defined: 'Reliable access to expression and action. Can initiate communication.', open: 'Amplifies expression. Wisdom: knowing when silence is more powerful.' },
+  G_SELF: { bio: 'Liver / blood', theme: 'Identity, direction, love', defined: 'Fixed sense of self and direction. Reliable access to love and purpose.', open: 'Identity shifts with environment. Wisdom: freedom of not having a fixed identity.' },
+  HEART:  { bio: 'Heart / stomach / thymus', theme: 'Willpower, ego, self-worth', defined: 'Reliable willpower and sense of self-worth. Can make and keep promises.', open: 'Amplifies will. Wisdom: nothing to prove. Self-worth not tied to achievement.' },
+  SACRAL: { bio: 'Ovaries / testes', theme: 'Life force, sexuality, work capacity', defined: 'Consistent life force energy. Designed to respond. Sustainable work.', open: 'Amplifies sacral energy. Wisdom: knowing when enough is enough.' },
+  SPLEEN: { bio: 'Spleen / lymphatic / T-cells', theme: 'Intuition, survival, time, health', defined: 'Consistent spontaneous intuition. Reliable immune awareness.', open: 'Amplifies fears and intuition. Wisdom: learning what is truly healthy for you.' },
+  SOLAR:  { bio: 'Kidneys / pancreas / nervous system', theme: 'Emotions, feelings, desire, sensitivity', defined: 'Emotional authority. Life in waves. Clarity comes over time.', open: 'Amplifies emotions. Wisdom: emotions you feel may not be yours.' },
+  ROOT:   { bio: 'Adrenal glands', theme: 'Adrenaline, stress, drive, kundalini', defined: 'Consistent adrenal pressure. Can handle stress without overwhelm.', open: 'Amplifies stress. Wisdom: there is no real rush — urgency is borrowed.' },
+}
+
+/* ─── Tooltip component ──────────────────────────────────────────────────── */
+function HDTooltip({ data, children }) {
+  const [show, setShow] = useState(false)
+  if (!data) return children
+  return (
+    <div style={{ position: 'relative', display: 'inline-flex' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      {show && (
+        <div style={{
+          position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+          width: 280, padding: '12px 14px', borderRadius: 10,
+          background: 'rgba(12,12,20,.96)', border: '1px solid rgba(201,168,76,.2)',
+          backdropFilter: 'blur(20px)', zIndex: 999, pointerEvents: 'none',
+          boxShadow: '0 8px 32px rgba(0,0,0,.5)', marginBottom: 6,
+        }}>
+          {data.center && <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'rgba(201,168,76,.6)', marginBottom: 6 }}>{data.center} CENTER {data.circuit ? '\u00B7 ' + data.circuit + ' CIRCUIT' : ''}</div>}
+          {data.keynote && <div style={{ fontSize: 11, color: 'var(--foreground)', marginBottom: 6, lineHeight: 1.4 }}>{data.keynote}</div>}
+          {data.shadow && (
+            <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
+              <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(204,68,68,.15)', color: '#cc6666', border: '1px solid rgba(204,68,68,.2)' }}>Shadow: {data.shadow}</span>
+              <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(201,168,76,.1)', color: '#c9a84c', border: '1px solid rgba(201,168,76,.2)' }}>Gift: {data.gift}</span>
+              <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(144,80,224,.12)', color: '#a878e8', border: '1px solid rgba(144,80,224,.2)' }}>Siddhi: {data.siddhi}</span>
+            </div>
+          )}
+          {data.bio && <div style={{ fontSize: 9, color: 'rgba(201,168,76,.5)', marginBottom: 4 }}>Bio-correlation: {data.bio}</div>}
+          {data.theme && <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginBottom: 4, lineHeight: 1.4 }}>Theme: {data.theme}</div>}
+          {data._isDefined !== undefined && (
+            <div style={{ fontSize: 10, color: 'var(--muted-foreground)', lineHeight: 1.4, fontStyle: 'italic' }}>
+              {data._isDefined ? data.defined : data.open}
+            </div>
+          )}
+          <div style={{ position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%) rotate(45deg)', width: 10, height: 10, background: 'rgba(12,12,20,.96)', borderRight: '1px solid rgba(201,168,76,.2)', borderBottom: '1px solid rgba(201,168,76,.2)' }} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 /* ─── Center info ────────────────────────────────────────────────────────── */
 const CENTER_INFO = {
   HEAD:   { name: 'Head',         glyph: '△',  meaning: 'Inspiration & pressure to think' },
@@ -296,13 +418,18 @@ function MechanicsTab({ chart }) {
           </span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          {centerRows.map((c, i) => (
-            <div key={i} style={{
+          {centerRows.map((c, i) => {
+            const tip = CENTER_TOOLTIPS[c.key]
+            const tipData = tip ? { ...tip, _isDefined: c.defined } : null
+            return (
+            <HDTooltip key={i} data={tipData}>
+            <div style={{
               ...S.glass,
               padding: '10px 14px',
               display: 'flex', alignItems: 'center', gap: 10,
               borderColor: c.defined ? 'rgba(201,168,76,.2)' : 'var(--border)',
               background: c.defined ? 'var(--secondary)' : 'var(--secondary)',
+              cursor: 'help', width: '100%',
             }}>
               <span style={{ fontSize: 22, color: c.defined ? 'var(--foreground)' : 'var(--muted-foreground)', opacity: c.defined ? 1 : 0.4, minWidth: 28, textAlign: 'center' }}>{c.glyph}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -317,7 +444,9 @@ function MechanicsTab({ chart }) {
                 <span style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.4 }}>{c.meaning}</span>
               </div>
             </div>
-          ))}
+            </HDTooltip>
+            )
+          })}
         </div>
       </div>
 
@@ -421,13 +550,16 @@ function VariablesTab({ chart }) {
             const isDesign  = Object.values(chart.design).some(p => p.gate === gate)
             const color = (isPerson && isDesign) ? 'var(--foreground)' : isPerson ? PERSON_COLOR : DESIGN_COLOR
             return (
-              <div key={gate} style={{
-                padding: '6px 10px', borderRadius: 8, border: `1px solid ${(isPerson && isDesign) ? 'rgba(201,168,76,.3)' : isPerson ? 'rgba(255,255,255,.12)' : 'rgba(204,51,51,.3)'}`,
+              <HDTooltip key={gate} data={GATE_TOOLTIPS[gate]}>
+              <div style={{
+                padding: '6px 10px', borderRadius: 8, cursor: 'help',
+                border: `1px solid ${(isPerson && isDesign) ? 'rgba(201,168,76,.3)' : isPerson ? 'rgba(255,255,255,.12)' : 'rgba(204,51,51,.3)'}`,
                 background: (isPerson && isDesign) ? 'rgba(201,168,76,.06)' : isPerson ? 'var(--secondary)' : 'rgba(204,51,51,.05)',
               }}>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, color, textAlign: 'center' }}>{gate}</div>
                 <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)', textAlign: 'center', marginTop: 2 }}>{GATE_DESCRIPTIONS[gate] || `Gate ${gate}`}</div>
               </div>
+              </HDTooltip>
             )
           })}
         </div>

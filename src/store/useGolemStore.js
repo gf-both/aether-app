@@ -384,6 +384,57 @@ export const useGolemStore = create(
       deleteDream: (id) =>
         set((s) => ({ dreams: s.dreams.filter(d => d.id !== id) })),
 
+      // ─── Analytics / Usage Tracking ─────────────────────────────────────
+      engineUsage: {},  // { [engineName]: count }
+      trackEngineUse: (engineName) =>
+        set((s) => ({
+          engineUsage: {
+            ...s.engineUsage,
+            [engineName]: (s.engineUsage[engineName] || 0) + 1,
+          },
+        })),
+
+      tokenUsage: { prompt: 0, completion: 0, total: 0 },
+      trackTokens: (prompt, completion) =>
+        set((s) => ({
+          tokenUsage: {
+            prompt: (s.tokenUsage?.prompt || 0) + (prompt || 0),
+            completion: (s.tokenUsage?.completion || 0) + (completion || 0),
+            total: (s.tokenUsage?.total || 0) + (prompt || 0) + (completion || 0),
+          },
+        })),
+
+      // ─── AI Agent Results (persisted per profile) ─────────────────────────
+      // identitySynthesis: { [profileDob]: { sections, timestamp } }
+      identitySynthesis: {},
+      setIdentitySynthesis: (profileKey, sections) =>
+        set((s) => ({
+          identitySynthesis: {
+            ...s.identitySynthesis,
+            [profileKey]: { sections, timestamp: Date.now() },
+          },
+        })),
+
+      // relationshipAnalysis: { [profileDob::personId::relType]: { sections, timestamp } }
+      relationshipAnalysis: {},
+      setRelationshipAnalysis: (key, sections) =>
+        set((s) => ({
+          relationshipAnalysis: {
+            ...s.relationshipAnalysis,
+            [key]: { sections, timestamp: Date.now() },
+          },
+        })),
+
+      // simulationResults: { [profileDob::personId::relType]: { result, timestamp } }
+      simulationResults: {},
+      setSimulationResult: (key, result) =>
+        set((s) => ({
+          simulationResults: {
+            ...s.simulationResults,
+            [key]: { result, timestamp: Date.now() },
+          },
+        })),
+
       // ─── Synchronicity Log ────────────────────────────────────────────────
       syncs: [],
       addSync: (sync) =>

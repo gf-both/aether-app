@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useComputedProfile as useActiveProfile } from '../hooks/useActiveProfile'
+import { useGolemStore } from '../store/useGolemStore'
 import { getNumerologyProfileFromDob } from '../engines/numerologyEngine'
 import { getMayanProfile } from '../engines/mayanEngine'
 import { getChineseProfileFromDob } from '../engines/chineseEngine'
@@ -9,10 +10,24 @@ import { callAI } from '../lib/ai'
 
 export default function IdentityAgent() {
   const profile = useActiveProfile()
-  const [result, setResult] = useState(null)
+  const identitySynthesis = useGolemStore(s => s.identitySynthesis)
+  const setIdentitySynthesis = useGolemStore(s => s.setIdentitySynthesis)
+  const profileKey = profile?.dob || null
+  const saved = profileKey ? identitySynthesis[profileKey] : null
+  const [result, setResult] = useState(saved?.sections || null)
   const [loading, setLoading] = useState(false)
   const [section, setSection] = useState('mission')
   const [aiError, setAiError] = useState(null)
+
+  // Load saved result when profile changes
+  useEffect(() => {
+    if (profileKey && identitySynthesis[profileKey]?.sections) {
+      setResult(identitySynthesis[profileKey].sections)
+      setSection('mission')
+    } else {
+      setResult(null)
+    }
+  }, [profileKey])
 
   // Compute all engine outputs
   const engineData = useMemo(() => {
@@ -145,6 +160,7 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
         }
 
         setResult(sections)
+        if (profileKey) setIdentitySynthesis(profileKey, sections)
         setSection('mission')
       } else {
         // Generate local synthesis from engine data when AI is unavailable
@@ -179,6 +195,7 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
         }
 
         setResult(localSections)
+        if (profileKey) setIdentitySynthesis(profileKey, localSections)
         setSection('mission')
       }
     } catch (e) {

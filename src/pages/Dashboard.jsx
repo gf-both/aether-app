@@ -1242,7 +1242,6 @@ const MOBILE_NAV_GROUPS = [
     label: 'You',
     items: [
       { icon: '🜁', label: 'Identity', id: 'identity-agent' },
-      { icon: '💫', label: 'Relationship', id: 'relationship-agent' },
       { icon: '🧭', label: 'Life Direction', id: 'life-direction' },
       { icon: '🪬', label: 'Golem', id: 'golem' },
     ],
@@ -1250,10 +1249,11 @@ const MOBILE_NAV_GROUPS = [
   {
     label: 'Others',
     items: [
-      { icon: '✦', label: 'Constellation', id: 'aiagents' },
+      { icon: '💫', label: 'Relationship', id: 'relationship-agent' },
+      { icon: '⊕', label: 'Synastry', id: 'synastry' },
       { icon: '🔮', label: 'Simulation', id: 'golem-sim' },
       { icon: '🐟', label: 'Fishbowl', id: 'watercooler' },
-      { icon: '⊕', label: 'Synastry', id: 'synastry' },
+      { icon: '💕', label: 'Connections', id: 'dating' },
     ],
   },
   {
@@ -1522,9 +1522,8 @@ export default function Dashboard() {
                         const h = isMobile ? 220 : CARD_HEIGHT
                         return (
                           <div key={widgetId} data-widget={widgetId} className="card"
-                            onDoubleClick={() => setActiveDetail(widgetId)}
+                            onClick={() => setActiveDetail(widgetId)}
                             onTouchEnd={(e) => { if (e.cancelable) e.preventDefault(); setActiveDetail(widgetId) }}
-                            onMouseDown={(e) => !isMobile && startDrag(e, widgetId)}
                             style={{
                               height: h,
                               animationDelay: `${globalIdx * 0.04}s`,

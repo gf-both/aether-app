@@ -1,15 +1,35 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useComputedProfile, useComputedPeople } from '../hooks/useActiveProfile'
+import { useGolemStore } from '../store/useGolemStore'
 import { callAI } from '../lib/ai'
 
 export default function RelationshipAgent() {
   const profile = useComputedProfile()
   const people = useComputedPeople()
+  const relationshipAnalysis = useGolemStore(s => s.relationshipAnalysis)
+  const setRelationshipAnalysis = useGolemStore(s => s.setRelationshipAnalysis)
   const [selectedPersonId, setSelectedPersonId] = useState(null)
   const [relType, setRelType] = useState('romantic')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [section, setSection] = useState('attraction')
+
+  // Build persistence key from profile + person + relType
+  const getRelKey = useCallback((personId, type) => {
+    if (!profile?.dob || !personId) return null
+    return `${profile.dob}::${personId}::${type}`
+  }, [profile?.dob])
+
+  // Load saved result when person or relType changes
+  useEffect(() => {
+    const key = getRelKey(selectedPersonId, relType)
+    if (key && relationshipAnalysis[key]?.sections) {
+      setResult(relationshipAnalysis[key].sections)
+      setSection('attraction')
+    } else {
+      setResult(null)
+    }
+  }, [selectedPersonId, relType, getRelKey])
 
   const selectedPerson = people?.find(p => String(p.id) === String(selectedPersonId))
 
@@ -83,13 +103,21 @@ DO NOT give generic compatibility advice. Identify the SPECIFIC patterns, trigge
         }
 
         setResult(sections)
+        const key = getRelKey(selectedPersonId, relType)
+        if (key) setRelationshipAnalysis(key, sections)
       } else {
-        setResult(buildFallback(profile, selectedPerson, relType))
+        const fb = buildFallback(profile, selectedPerson, relType)
+        setResult(fb)
+        const key = getRelKey(selectedPersonId, relType)
+        if (key) setRelationshipAnalysis(key, fb)
       }
       setSection('attraction')
     } catch (e) {
       console.error('Relationship analysis error:', e)
-      setResult(buildFallback(profile, selectedPerson, relType))
+      const fb = buildFallback(profile, selectedPerson, relType)
+      setResult(fb)
+      const key = getRelKey(selectedPersonId, relType)
+      if (key) setRelationshipAnalysis(key, fb)
     }
     setLoading(false)
   }

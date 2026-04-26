@@ -154,7 +154,7 @@ const ENGINES = [
   { name: 'vedicEngine',           status: '✅', input: 'day/month/year/hour/minute/lat/lon/tz',     output: 'Lahiri ayanamsa, nakshatras, Vimshottari Dasha',                       notes: '' },
   { name: 'patternEngine',         status: '✅', input: 'full profile',                              output: 'cross-framework alignments, patterns',                                 notes: '' },
   { name: 'compatibilityEngine',   status: '✅', input: 'two profiles',                              output: 'score 0-100, breakdown, match story',                                  notes: '6 dimensions, weighted' },
-  { name: 'tibetanEngine',         status: '⚠️', input: 'dob',                                       output: 'Losar calendar, mewa square',                                          notes: 'Basic implementation' },
+  { name: 'tibetanEngine',         status: '✅', input: 'dob/gender',                                  output: 'Animal, element, mewa, parkha, log-men forces, rabjung cycle',         notes: 'Full Jungtsi implementation' },
   { name: 'golemEngine',          status: '✅', input: 'creation timestamp + location',             output: 'Full GOLEM profile for AI agents',                                    notes: 'GOLEM identity system' },
   { name: 'careerAlignmentEngine', status: '✅', input: 'profile',                                   output: 'role recommendations by HD+LP',                                        notes: '' },
 ]
@@ -194,8 +194,8 @@ const HEALTH_CHECKS = [
 
 const s = {
   page: {
-    padding: '24px',
-    maxWidth: 1100,
+    padding: '28px 32px',
+    maxWidth: 1200,
     margin: '0 auto',
     fontFamily: 'ui-sans-serif, system-ui, sans-serif',
     color: 'rgba(255,255,255,0.87)',
@@ -254,7 +254,7 @@ const s = {
   },
   th: {
     textAlign: 'left',
-    padding: '8px 12px',
+    padding: '12px 16px',
     fontSize: 10,
     fontWeight: 700,
     letterSpacing: '0.1em',
@@ -262,10 +262,10 @@ const s = {
     borderBottom: '1px solid rgba(255,255,255,0.08)',
   },
   td: {
-    padding: '9px 12px',
+    padding: '14px 16px',
     borderBottom: '1px solid rgba(255,255,255,0.04)',
     verticalAlign: 'top',
-    lineHeight: 1.5,
+    lineHeight: 1.6,
   },
   engineName: {
     fontFamily: 'ui-monospace, monospace',
@@ -281,8 +281,8 @@ const s = {
   card: {
     background: 'rgba(255,255,255,0.03)',
     border: '1px solid rgba(255,255,255,0.07)',
-    borderRadius: 8,
-    padding: '14px 16px',
+    borderRadius: 10,
+    padding: '18px 20px',
   },
   cardTitle: {
     fontSize: 13,
@@ -398,6 +398,7 @@ export default function AdminPanel() {
   const TABS = [
     { id: 'architecture', label: '⬡ Architecture' },
     { id: 'engines',      label: '⚙ Engines' },
+    { id: 'usage',        label: '📊 Usage' },
     { id: 'features',     label: '✦ Features' },
     { id: 'health',       label: '💓 Health' },
   ]
@@ -424,6 +425,7 @@ export default function AdminPanel() {
       <div style={s.panel}>
         {activeTab === 'architecture' && <TabArchitecture />}
         {activeTab === 'engines'      && <TabEngines />}
+        {activeTab === 'usage'        && <TabUsage />}
         {activeTab === 'features'     && <TabFeatures />}
         {activeTab === 'health'       && <TabHealth />}
       </div>
@@ -541,6 +543,99 @@ function TabFeatures() {
             </ul>
           </div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// ─── Tab: Usage ──────────────────────────────────────────────────────────
+
+function TabUsage() {
+  const engineUsage = useGolemStore(s => s.engineUsage || {})
+  const tokenUsage = useGolemStore(s => s.tokenUsage || { prompt: 0, completion: 0, total: 0 })
+
+  const ENGINE_NAMES = [
+    'natal', 'hd', 'geneKeys', 'kabbalah', 'mayan', 'numerology', 'chinese',
+    'egyptian', 'gematria', 'synastry', 'vedic', 'tibetan', 'pattern',
+    'compatibility', 'enneagram', 'mbti', 'dosha', 'archetype', 'loveLang',
+    'career', 'golem', 'cycle',
+  ]
+
+  const sortedEngines = ENGINE_NAMES.map(name => ({
+    name,
+    count: engineUsage[name] || 0,
+  })).sort((a, b) => b.count - a.count)
+
+  const maxCount = Math.max(1, ...sortedEngines.map(e => e.count))
+
+  return (
+    <div>
+      {/* Token Summary */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 14, fontWeight: 600, letterSpacing: '0.06em' }}>
+          AI TOKEN CONSUMPTION
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+          {[
+            { label: 'Prompt Tokens', value: tokenUsage.prompt, color: '#40ccdd' },
+            { label: 'Completion Tokens', value: tokenUsage.completion, color: '#9050e0' },
+            { label: 'Total Tokens', value: tokenUsage.total, color: '#c9a84c' },
+          ].map(item => (
+            <div key={item.label} style={{
+              background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)',
+              borderRadius: 10, padding: '20px 22px', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 32, fontWeight: 700, color: item.color, fontFamily: "'Cinzel', serif" }}>
+                {item.value.toLocaleString()}
+              </div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 6, letterSpacing: '0.06em' }}>
+                {item.label}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 10, fontSize: 11, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
+          Estimated cost: ${((tokenUsage.prompt * 0.25 + tokenUsage.completion * 1.25) / 1e6).toFixed(4)} (Haiku rates)
+        </div>
+      </div>
+
+      {/* Engine Usage */}
+      <div>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 14, fontWeight: 600, letterSpacing: '0.06em' }}>
+          ENGINE COMPUTATION COUNT
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+          {sortedEngines.map(eng => {
+            const pct = eng.count / maxCount
+            return (
+              <div key={eng.name} style={{
+                display: 'flex', alignItems: 'center', gap: 12,
+                padding: '12px 16px', borderRadius: 8,
+                background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)',
+              }}>
+                <div style={{
+                  fontFamily: 'ui-monospace, monospace', fontSize: 11, color: '#40ccdd',
+                  width: 100, flexShrink: 0,
+                }}>{eng.name}</div>
+                <div style={{ flex: 1, height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${Math.max(2, pct * 100)}%`, height: '100%', borderRadius: 3,
+                    background: eng.count > 0 ? 'linear-gradient(90deg, #40ccdd, #9050e0)' : 'rgba(255,255,255,0.08)',
+                    transition: 'width 0.3s',
+                  }} />
+                </div>
+                <div style={{
+                  fontFamily: "'Cinzel', serif", fontSize: 13, fontWeight: 700,
+                  color: eng.count > 0 ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.2)',
+                  width: 36, textAlign: 'right', flexShrink: 0,
+                }}>{eng.count}</div>
+              </div>
+            )
+          })}
+        </div>
+        <div style={{ marginTop: 10, fontSize: 11, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
+          Counts tracked per session. Reset on localStorage clear.
+        </div>
       </div>
     </div>
   )

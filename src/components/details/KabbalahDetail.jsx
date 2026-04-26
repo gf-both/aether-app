@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { SEPHIROTH, PATHS } from '../../data/kabbalahData'
 import { getKabbalahProfile, profileToKabArgs } from '../../engines/kabbalahEngine'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
@@ -66,6 +66,61 @@ const PILLAR_COLORS = {
   Severity: 'var(--rose)',
   Equilibrium: 'var(--foreground)',
   Mercy: 'var(--aqua2)',
+}
+
+/* ─── Sephiroth tooltip data ─────────────────────────────────────────────── */
+const SEPH_TOOLTIPS = {
+  Kether:    { hebrew: '\u05DB\u05EA\u05E8', divine: 'Ehyeh Asher Ehyeh', planet: 'Primum Mobile', body: 'Crown of the head', element: 'Spirit', archangel: 'Metatron', virtue: 'Attainment / Completion of the Great Work', vice: 'None (beyond duality)' },
+  Chokmah:   { hebrew: '\u05D7\u05DB\u05DE\u05D4', divine: 'Yah', planet: 'Zodiac / Neptune', body: 'Left brain', element: 'Fire', archangel: 'Raziel', virtue: 'Devotion', vice: 'None applicable' },
+  Binah:     { hebrew: '\u05D1\u05D9\u05E0\u05D4', divine: 'YHVH Elohim', planet: 'Saturn', body: 'Right brain', element: 'Water', archangel: 'Tzaphkiel', virtue: 'Silence', vice: 'Avarice' },
+  Chesed:    { hebrew: '\u05D7\u05E1\u05D3', divine: 'El', planet: 'Jupiter', body: 'Left arm', element: 'Water', archangel: 'Tzadkiel', virtue: 'Obedience', vice: 'Bigotry / Hypocrisy / Tyranny' },
+  Geburah:   { hebrew: '\u05D2\u05D1\u05D5\u05E8\u05D4', divine: 'Elohim Gibor', planet: 'Mars', body: 'Right arm', element: 'Fire', archangel: 'Khamael', virtue: 'Energy / Courage', vice: 'Cruelty / Destruction' },
+  Tiphareth: { hebrew: '\u05EA\u05E4\u05D0\u05E8\u05EA', divine: 'YHVH Eloah va-Daath', planet: 'Sun', body: 'Heart / chest', element: 'Air', archangel: 'Raphael', virtue: 'Devotion to the Great Work', vice: 'Pride' },
+  Netzach:   { hebrew: '\u05E0\u05E6\u05D7', divine: 'YHVH Tzabaoth', planet: 'Venus', body: 'Left hip / leg', element: 'Fire', archangel: 'Haniel', virtue: 'Unselfishness', vice: 'Unchastity / Lust' },
+  Hod:       { hebrew: '\u05D4\u05D5\u05D3', divine: 'Elohim Tzabaoth', planet: 'Mercury', body: 'Right hip / leg', element: 'Water', archangel: 'Michael', virtue: 'Truthfulness', vice: 'Falsehood / Dishonesty' },
+  Yesod:     { hebrew: '\u05D9\u05E1\u05D5\u05D3', divine: 'Shaddai El Chai', planet: 'Moon', body: 'Generative organs', element: 'Air', archangel: 'Gabriel', virtue: 'Independence', vice: 'Idleness' },
+  Malkuth:   { hebrew: '\u05DE\u05DC\u05DB\u05D5\u05EA', divine: 'Adonai ha-Aretz', planet: 'Earth', body: 'Feet / physical body', element: 'Earth', archangel: 'Sandalphon', virtue: 'Discrimination', vice: 'Avarice / Inertia' },
+}
+
+/* ─── Kabbalah Tooltip component ─────────────────────────────────────────── */
+function KabTooltip({ data, children }) {
+  const [show, setShow] = useState(false)
+  if (!data) return children
+  return (
+    <div style={{ position: 'relative' }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      {show && (
+        <div style={{
+          position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+          width: 300, padding: '14px 16px', borderRadius: 10,
+          background: 'rgba(12,12,20,.96)', border: '1px solid rgba(201,168,76,.2)',
+          backdropFilter: 'blur(20px)', zIndex: 999, pointerEvents: 'none',
+          boxShadow: '0 8px 32px rgba(0,0,0,.5)', marginBottom: 6,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <span style={{ fontSize: 20, fontFamily: 'serif', color: '#c9a84c' }}>{data.hebrew}</span>
+            <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(201,168,76,.6)' }}>DIVINE NAME: {data.divine}</span>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px 12px', marginBottom: 6 }}>
+            <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>Planet: <span style={{ color: '#c9a84c' }}>{data.planet}</span></div>
+            <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>Element: <span style={{ color: '#c9a84c' }}>{data.element}</span></div>
+            <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>Body: <span style={{ color: 'var(--foreground)', opacity: 0.7 }}>{data.body}</span></div>
+            <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>Archangel: <span style={{ color: 'var(--foreground)', opacity: 0.7 }}>{data.archangel}</span></div>
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(201,168,76,.1)', color: '#c9a84c', border: '1px solid rgba(201,168,76,.2)' }}>Virtue: {data.virtue}</span>
+            {data.vice !== 'None (beyond duality)' && data.vice !== 'None applicable' && (
+              <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(204,68,68,.1)', color: '#cc6666', border: '1px solid rgba(204,68,68,.2)' }}>Vice: {data.vice}</span>
+            )}
+          </div>
+          <div style={{ position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%) rotate(45deg)', width: 10, height: 10, background: 'rgba(12,12,20,.96)', borderRight: '1px solid rgba(201,168,76,.2)', borderBottom: '1px solid rgba(201,168,76,.2)' }} />
+        </div>
+      )}
+    </div>
+  )
 }
 
 /* ---- shared styles ---- */
@@ -214,8 +269,9 @@ const kabArgs = profileToKabArgs(profile)
             const orig = SEPHIROTH.find(o => o.name === s.name)
             const colBase = orig ? orig.col : 'rgba(201,168,76,'
             return (
-              <div key={i} style={{
-                ...S.row,
+              <KabTooltip key={i} data={SEPH_TOOLTIPS[s.name]}>
+              <div style={{
+                ...S.row, cursor: 'help',
                 borderColor: s.active ? colBase + '0.2)' : 'var(--secondary)',
                 background: s.active ? colBase + '0.04)' : 'rgba(255,255,255,.015)',
                 flexDirection: 'column', alignItems: 'stretch', gap: 6,
@@ -268,6 +324,7 @@ const kabArgs = profileToKabArgs(profile)
                   {s.interp}
                 </div>
               </div>
+              </KabTooltip>
             )
           })}
         </div>

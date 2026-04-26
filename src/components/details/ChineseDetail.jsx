@@ -157,15 +157,12 @@ export default function ChineseDetail() {
             <div style={{
               fontFamily: "'Cinzel', serif", fontSize: 20, letterSpacing: '.15em', color: 'var(--foreground)',
             }}>
-              {P.polarity} {P.animal}
+              {P.element} {P.animal}
             </div>
             <div style={{ ...S.monoSm, color: 'var(--muted-foreground)' }}>
               {P.stemChinese}{P.branch} &middot; {P.stem} {P.branchPinyin} &middot; Born {P.dob}
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
-              <span style={S.badge('var(--accent)', 'rgba(201,168,76,.25)', 'var(--foreground)')}>
-                {P.yinYang}
-              </span>
               <span style={S.badge('rgba(207,216,220,.1)', 'rgba(207,216,220,.25)', '#cfd8dc')}>
                 {P.element}
               </span>
@@ -373,7 +370,7 @@ export default function ChineseDetail() {
                 <span style={{
                   fontFamily: "'Inconsolata', monospace", fontSize: 10, color: 'var(--muted-foreground)',
                   width: 30, textAlign: 'center',
-                }}>{animal.yinYang}</span>
+                }}>{animal.season?.slice(0,2)}</span>
                 <div style={{ flex: 1, fontSize: 10, color: 'var(--muted-foreground)' }}>
                   {animal.traits.join(' \u00B7 ')}
                 </div>
@@ -469,7 +466,7 @@ export default function ChineseDetail() {
             </div>
           </div>
           <div style={S.interpretation}>
-            <span style={{ color: 'var(--foreground)' }}>{P.polarity} {P.animal} in the Year of the {P.currentYear.label}:</span>{' '}
+            <span style={{ color: 'var(--foreground)' }}>{P.element} {P.animal} in the Year of the {P.currentYear.label}:</span>{' '}
             {P.currentYear.influence}
           </div>
         </div>
@@ -511,7 +508,7 @@ export default function ChineseDetail() {
       <div>
         <div style={S.sectionTitle}>Holistic Interpretation</div>
         <div style={S.interpretation}>
-          As a <span style={{ color: 'var(--foreground)' }}>{P.polarity} {P.animal}</span> with a{' '}
+          As a <span style={{ color: 'var(--foreground)' }}>{P.element} {P.animal}</span> with a{' '}
           <span style={{ color: '#1e88e5' }}>{P.dayMaster}</span> day master, your chart reveals a
           fascinating interplay between the surface and the depths. The {P.animal}'s{' '}
           {(animalData?.traits || []).slice(0, 2).join(' and ').toLowerCase()} nature ({P.element})

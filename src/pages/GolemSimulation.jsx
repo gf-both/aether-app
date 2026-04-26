@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useComputedProfile, useComputedPeople } from '../hooks/useActiveProfile'
 import { useGolemStore } from '../store/useGolemStore'
 import { runCompatibilitySimulation } from '../lib/golemConversation'
@@ -14,11 +14,28 @@ export default function GolemSimulation() {
   const profile = useComputedProfile()
   const people = useComputedPeople()
   const setActiveDetail = useGolemStore(s => s.setActiveDetail)
+  const simulationResults = useGolemStore(s => s.simulationResults)
+  const setSimulationResult = useGolemStore(s => s.setSimulationResult)
   const [selectedId, setSelectedId] = useState(null)
   const [relType, setRelType] = useState('romantic')
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [currentPhase, setCurrentPhase] = useState('')
+
+  const getSimKey = useCallback((personId, type) => {
+    if (!profile?.dob || !personId) return null
+    return `${profile.dob}::${personId}::${type}`
+  }, [profile?.dob])
+
+  // Load saved result when person or relType changes
+  useEffect(() => {
+    const key = getSimKey(selectedId, relType)
+    if (key && simulationResults[key]?.result) {
+      setResult(simulationResults[key].result)
+    } else {
+      setResult(null)
+    }
+  }, [selectedId, relType, getSimKey])
 
   const selectedPerson = (people || []).find(p => String(p.id) === String(selectedId))
 
@@ -50,6 +67,8 @@ export default function GolemSimulation() {
       clearInterval(progressInterval)
       setCurrentPhase('Analysis complete')
       setResult(simResult)
+      const key = getSimKey(selectedId, relType)
+      if (key) setSimulationResult(key, simResult)
     } catch (e) {
       console.error('Simulation error:', e)
       setResult({ error: e.message })
