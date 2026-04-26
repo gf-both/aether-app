@@ -129,55 +129,36 @@ function getRAMC(astroTime, lonDeg) {
 /**
  * Compute MC (Midheaven) ecliptic longitude from RAMC and obliquity.
  * MC = arctan(tan(RAMC) / cos(obliquity))
+ *
+ * Using atan2 which inherently resolves the correct quadrant from the
+ * signs of y (sin RAMC) and x (cos RAMC · cos ε). No additional
+ * quadrant correction needed — atan2 handles it natively.
  */
 function getMC(ramc, oblDeg) {
   const ramcRad = ramc * DEG2RAD
   const oblRad = oblDeg * DEG2RAD
-  let mc = Math.atan2(Math.sin(ramcRad), Math.cos(ramcRad) * Math.cos(oblRad)) * RAD2DEG
-  if (Math.cos(ramcRad) < 0) {
-    mc += 180
-  }
+  const mc = Math.atan2(Math.sin(ramcRad), Math.cos(ramcRad) * Math.cos(oblRad)) * RAD2DEG
   return mod360(mc)
 }
 
 /**
  * Compute ASC (Ascendant) ecliptic longitude.
- * Standard formula using obliquity, latitude, and RAMC.
+ * Swiss Ephemeris formula (swehouse.c):
+ *   ASC = atan2(cos(RAMC), −sin(RAMC)·cos(ε) − tan(φ)·sin(ε))
  *
- * The ascendant is the ecliptic degree rising on the eastern horizon.
- * It must be in the eastern hemisphere of the chart (90° ± 90° from MC+90°).
- *
- * Key insight: at the ASC, the ecliptic crosses the horizon from below.
- * The formula gives two solutions 180° apart; we pick the one in the correct quadrant.
- * For northern latitudes: if RAMC in 0-180, ASC is in 270-90 quadrant (roughly).
- * For southern latitudes: mirrored.
- *
- * Most reliable approach: ASC is the point where ecliptic and horizon intersect on the east.
- * The eastern horizon corresponds to RA = RAMC + 6h = RAMC + 90°.
+ * The atan2 with these sign conventions directly selects the eastern
+ * (rising) intersection of ecliptic and horizon — no quadrant correction needed.
+ * Verified against independent horizon-altitude sweep for all 24 hours.
  */
 function getASC(ramc, oblDeg, latDeg) {
   const ramcRad = ramc * DEG2RAD
   const oblRad = oblDeg * DEG2RAD
   const latRad = latDeg * DEG2RAD
 
-  const y = -Math.cos(ramcRad)
-  const x = Math.sin(ramcRad) * Math.cos(oblRad) + Math.tan(latRad) * Math.sin(oblRad)
-  let asc = Math.atan2(y, x) * RAD2DEG
-  asc = mod360(asc)
+  const y = Math.cos(ramcRad)
+  const x = -Math.sin(ramcRad) * Math.cos(oblRad) - Math.tan(latRad) * Math.sin(oblRad)
 
-  // Quadrant correction using RAMC parity:
-  // When cos(RAMC) > 0 (RAMC in 270-90, i.e. near midnight), ASC needs +180°
-  // to be in the correct rising hemisphere.
-  // Standard rule: RAMC quadrant determines which root to take.
-  //   if RAMC is in (90, 270) => the atan2 result needs no correction
-  //   if RAMC is in (270, 90) => add 180°
-  const mc = getMC(ramc, oblDeg)
-  const ascRelToMC = mod360(asc - mc)
-  if (ascRelToMC > 270 || ascRelToMC < 90) {
-    asc = mod360(asc + 180)
-  }
-
-  return asc
+  return mod360(Math.atan2(y, x) * RAD2DEG)
 }
 
 /**
