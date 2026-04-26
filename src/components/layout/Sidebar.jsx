@@ -23,9 +23,9 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '⊹', label: 'Relationship', id: 'relationship-agent', widget: 'relationship-agent' },
   { type: 'item', icon: '⊕', label: 'Synastry', id: 'synastry', widget: 'synastry' },
   { type: 'item', icon: '◈', label: 'Simulation', id: 'golem-sim', widget: 'golem-sim' },
+  { type: 'item', icon: '✦', label: 'Constellation', id: 'aiagents', widget: 'aiagents' },
   { type: 'item', icon: '⊙', label: 'Fishbowl', id: 'watercooler', widget: 'watercooler' },
   { type: 'item', icon: '❋', label: 'Connections', id: 'dating', widget: 'dating' },
-  { type: 'item', icon: '✦', label: 'Constellation', id: 'aiagents', widget: 'aiagents' },
 
   { type: 'section', label: 'CORE STRUCTURAL' },
   { type: 'item', icon: '☉', label: 'Natal Chart', id: 'natal', widget: 'natal' },
