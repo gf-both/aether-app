@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle', 'ritual', 'frequency', 'dream', 'sync', 'vedic', 'tibetan', 'timeline', 'career']
+const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle', 'ritual', 'frequency', 'yantra', 'dream', 'sync', 'vedic', 'tibetan', 'timeline', 'career']
 
 export const useGolemStore = create(
   persist(
