@@ -1,5 +1,7 @@
 import { useMemo } from 'react'
 import NatalWheel from '../canvas/NatalWheel'
+import NatalRadialBars from '../canvas/NatalRadialBars'
+import NatalHemisphere from '../canvas/NatalHemisphere'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getNatalChart } from '../../engines/natalEngine'
 
@@ -285,6 +287,34 @@ export default function NatalDetail() {
           height: 460, position: 'relative',
         }}>
           <NatalWheel showAspects={true} showHouses={true} />
+        </div>
+      </div>
+
+      {/* RADIAL DATA ARCHITECTURE */}
+      <div>
+        <div style={S.sectionTitle}>Radial Data Architecture</div>
+        <div style={{
+          ...S.glass, padding: 0, overflow: 'hidden',
+          height: 460, position: 'relative',
+        }}>
+          <NatalRadialBars />
+        </div>
+        <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 6, opacity: 0.6 }}>
+          Bar height encodes planetary weight. Color maps to element. Curved lines show aspects between planets.
+        </div>
+      </div>
+
+      {/* SPLIT HEMISPHERE */}
+      <div>
+        <div style={S.sectionTitle}>Hemisphere View</div>
+        <div style={{
+          ...S.glass, padding: 0, overflow: 'hidden',
+          height: 520, position: 'relative',
+        }}>
+          <NatalHemisphere />
+        </div>
+        <div style={{ fontSize: 10, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 6, opacity: 0.6 }}>
+          Day-sect planets (Sun, Jupiter, Saturn) extend left. Night-sect (Moon, Venus, Mars) extend right. Linear zodiac spine from Aries to Pisces.
         </div>
       </div>
 
