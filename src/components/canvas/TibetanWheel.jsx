@@ -283,7 +283,7 @@ export default function TibetanWheel() {
       const labelSize = Math.max(7, centerR * 0.2)
       ctx.font = `bold ${labelSize}px 'Cinzel',serif`
       ctx.fillStyle = 'rgba(255,235,180,.95)'
-      ctx.fillText(tib.fullLabel.toUpperCase(), cx, cy + centerR * 0.18)
+      ctx.fillText((tib.fullLabel || '').toUpperCase(), cx, cy + centerR * 0.18)
 
       // Tibetan Year
       const yearSize = Math.max(6, centerR * 0.15)
@@ -335,7 +335,7 @@ export default function TibetanWheel() {
       ctx.lineWidth = 1
       ctx.stroke()
 
-      const yySymbol = tib.yinYang === 'Male' ? '\u2642' : '\u2640'
+      const yySymbol = (tib.polarity || tib.yinYang) === 'Male' ? '\u2642' : '\u2640'
       const yySymSize = Math.max(10, yyR * 1.3)
       ctx.font = `${yySymSize}px sans-serif`
       ctx.fillStyle = 'rgba(201,168,76,.8)'
@@ -346,7 +346,7 @@ export default function TibetanWheel() {
       const yyLblSize = Math.max(5, yyR * 0.5)
       ctx.font = `${yyLblSize}px 'Cinzel',serif`
       ctx.fillStyle = 'rgba(201,168,76,.45)'
-      ctx.fillText(tib.yinYang.toUpperCase(), yyX, yyY + yyR + yyLblSize + 2)
+      ctx.fillText((tib.polarity || tib.yinYang || '').toUpperCase(), yyX, yyY + yyR + yyLblSize + 2)
 
       // ---- Element color indicator (top-right of center) ----
       const elemIndX = cx + centerR * 0.75, elemIndY = cy - centerR * 0.75
@@ -366,7 +366,7 @@ export default function TibetanWheel() {
       ctx.font = `${elemLblSize}px 'Cinzel',serif`
       ctx.fillStyle = elemColor + 'cc'
       ctx.textAlign = 'center'
-      ctx.fillText(tib.element.toUpperCase(), elemIndX, elemIndY + elemIndR + elemLblSize + 2)
+      ctx.fillText((tib.element || '').toUpperCase(), elemIndX, elemIndY + elemIndR + elemLblSize + 2)
 
       // ---- Signature label (top-right corner) ----
       if (R > 80) {
