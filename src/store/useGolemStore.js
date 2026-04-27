@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle', 'ritual', 'frequency', 'yantra', 'dream', 'sync', 'vedic', 'tibetan', 'timeline', 'career']
+const DEFAULT_WIDGET_ORDER = ['natal', 'tr', 'hd', 'kab', 'gk', 'pat', 'mayan', 'chi', 'egyptian', 'num', 'gem', 'enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'cycle', 'ritual', 'frequency', 'yantra', 'palm', 'dream', 'sync', 'vedic', 'tibetan', 'timeline', 'career']
 
 export const useGolemStore = create(
   persist(
@@ -374,6 +374,10 @@ export const useGolemStore = create(
             { ...client, id: client.id || Date.now().toString() },
           ],
         })),
+
+      // ─── Palm Reading ──────────────────────────────────────────────────────
+      palmReading: null,
+      setPalmReading: (reading) => set({ palmReading: reading }),
 
       // ─── Dream Journal ────────────────────────────────────────────────────
       dreams: [],

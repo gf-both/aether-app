@@ -59,6 +59,8 @@ import RitualWheel from '../components/canvas/RitualWheel'
 import RitualDetail from '../components/details/RitualDetail'
 import FrequencyDetail from '../components/details/FrequencyDetail'
 import YantraDetail from '../components/details/YantraDetail'
+import PalmReadingDetail from '../components/details/PalmReadingDetail'
+import FullReportDetail from '../components/details/FullReportDetail'
 import { getRecommendedRituals } from '../engines/ritualEngine'
 const PricingPage = lazy(() => import('./PricingPage'))
 const PractitionerPortal = lazy(() => import('./PractitionerPortal'))
@@ -339,6 +341,8 @@ const DETAIL_COMPONENTS = {
   ritual: RitualDetail,
   frequency: FrequencyDetail,
   yantra: YantraDetail,
+  palm: PalmReadingDetail,
+  'full-report': FullReportDetail,
   dream: DreamDetail,
   sync: SyncDetail,
   timeline: TimelineDetail,
@@ -389,6 +393,8 @@ const DETAIL_TITLES = {
   ritual: 'Rituals \u2014 Ancient Practices \u00B7 12 Traditions \u00B7 Moon-Aligned',
   frequency: 'Frequency \u2014 Therapeutic Sound \u00B7 Solfeggio \u00B7 Binaural \u00B7 Planetary',
   yantra: 'Yantra \u2014 Sacred Geometry \u00B7 Vedic Timing \u00B7 Hora \u00B7 Tithi',
+  palm: 'Palm Reading \u2014 Chiromancy \u00B7 Lines \u00B7 Mounts \u00B7 AI Analysis',
+  'full-report': 'Full Report \u2014 All Systems \u00B7 Comprehensive PDF',
   dream: 'Dream Journal \u2014 Symbols \u00B7 Patterns \u00B7 The Unconscious',
   sync: 'Synchronicities \u2014 The Acausal Field \u00B7 Meaningful Coincidences',
   timeline: 'Life Timeline \u2014 Life Arc of Your Journey',
@@ -884,6 +890,20 @@ function WidgetContent({ widgetId }) {
           <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, opacity: .5 }}>
             <div style={{ fontSize: 28 }}>{'\u25C7'}</div>
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--gold)' }}>Vedic Timing {'\u00B7'} Hora {'\u00B7'} Tithi</div>
+          </div>
+        </>
+      )
+    }
+    case 'palm': {
+      return (
+        <>
+          <div className="ch">
+            <span className="ct">Palm Reading {'\u00B7'} Chiromancy</span>
+            <span className="ci">{'\u270B'}</span>
+          </div>
+          <div className="cb" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 6, opacity: .5 }}>
+            <div style={{ fontSize: 28 }}>{'\u270B'}</div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'var(--gold)' }}>Lines {'\u00B7'} Mounts {'\u00B7'} AI Analysis</div>
           </div>
         </>
       )

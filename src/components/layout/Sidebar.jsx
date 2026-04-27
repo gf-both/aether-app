@@ -19,6 +19,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '◬', label: 'Rituals', id: 'ritual', widget: 'ritual' },
   { type: 'item', icon: '♫', label: 'Frequency', id: 'frequency', widget: 'frequency' },
   { type: 'item', icon: '⬙', label: 'Yantra', id: 'yantra', widget: 'yantra' },
+  { type: 'item', icon: '⊜', label: 'Palm Reading', id: 'palm', widget: 'palm' },
   { type: 'item', icon: '⏣', label: 'Golem', id: 'golem', widget: 'golem' },
 
   { type: 'section', label: 'OTHERS' },
@@ -60,6 +61,7 @@ const NAV_SECTIONS = [
   { type: 'item', icon: '⟡', label: 'Synchronicities', id: 'sync', widget: 'sync' },
 
   { type: 'section', label: 'TOOLS' },
+  { type: 'item', icon: '⎙', label: 'Full Report', id: 'full-report', widget: 'full-report' },
   { type: 'item', icon: '⬖', label: 'Oracle', id: 'oracle', action: 'toggleOracle' },
   { type: 'item', icon: '◆', label: 'Pricing', id: 'pricing', widget: 'pricing' },
   { type: 'item', icon: '⊡', label: 'Practitioner', id: 'practitioner', widget: 'practitioner' },
