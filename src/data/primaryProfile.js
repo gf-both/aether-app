@@ -36,10 +36,10 @@ export const DEFAULT_PRIMARY_PROFILE = {
 }
 
 export const DEFAULT_PEOPLE = [
-  // DEV SEED — Maria Raquel Waingarten
+  // DEV SEED — Jane Doe (placeholder, remove before launch)
   {
     id: 100001,
-    name: 'Maria Raquel Waingarten',
+    name: 'Jane Doe',
     dob: '1982-04-23',
     tob: '17:25',
     pob: 'Buenos Aires, Argentina',
