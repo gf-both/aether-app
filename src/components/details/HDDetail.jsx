@@ -361,7 +361,7 @@ function generateDesignSummary(chart) {
       2: 'you naturally attract mentorship and are most productive alone',
       3: 'you learn through trial and error — experimentation is your path',
       4: 'you are the connector, building trust and loyalty in relationships',
-      5: 'you're here to solve problems others face; people project onto you',
+      5: "you're here to solve problems others face; people project onto you",
       6: 'you watch from a distance first, then become a guide',
     }
     profileMsg += firstLineThemes[profileParts[0]] || ''
@@ -383,7 +383,7 @@ function generateDesignSummary(chart) {
   // Definition + how they process
   const definitionThemes = {
     'Single': 'You process linearly — one path at a time. Clarity comes step-by-step.',
-    'Split': 'Your definition is split, requiring a bridge from another. You're designed for collaboration or environment-dependent clarity.',
+    'Split': "Your definition is split, requiring a bridge from another. You're designed for collaboration or environment-dependent clarity.",
     'Triple Split': 'Your design fragments across multiple unconnected themes. You need different people or environments to activate each part.',
     'Quadruple Split': 'Your definition is highly dispersed. Integration requires the right environment and people to bring all parts alive.',
   }
