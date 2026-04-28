@@ -185,8 +185,9 @@ export default function PatternsWeb() {
         ctx.fillStyle = `rgba(201,168,76,${0.4 + glow * 0.4})`; ctx.fill()
 
         // Name
+        const isDarkName = document.documentElement.classList.contains('dark')
         ctx.font = `${R * .028}px 'Cormorant Garamond',serif`
-        ctx.fillStyle = 'var(--muted-foreground)'; ctx.textAlign = 'center'
+        ctx.fillStyle = isDarkName ? 'var(--muted-foreground)' : 'rgba(90,74,48,.6)'; ctx.textAlign = 'center'
         ctx.fillText(person.personName.split(' ')[0], px, py + dotR + R * .04)
       })
 
@@ -221,17 +222,19 @@ export default function PatternsWeb() {
         ctx.lineWidth = isHov ? 1.5 : 0.8; ctx.stroke()
 
         // Icon
+        const isDarkIcon = document.documentElement.classList.contains('dark')
         ctx.font = `${nodeR * (isHov ? 1.1 : .9)}px serif`
-        ctx.fillStyle = isHov ? '#fff' : node.col
+        ctx.fillStyle = isHov ? (isDarkIcon ? '#fff' : 'rgba(26,26,46,0.9)') : node.col
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
         ctx.fillText(node.icon, node.x, node.y)
 
         // Label
+        const isDarkLabel = document.documentElement.classList.contains('dark')
         const labelDist = nodeR + R * .04
         const lx = node.x + Math.cos(node.angle) * labelDist * .6
         const ly = node.y + Math.sin(node.angle) * labelDist
         ctx.font = `${R * (isHov ? .036 : .03)}px 'Cinzel',serif`
-        ctx.fillStyle = isHov ? 'var(--foreground)' : 'rgba(201,168,76,.45)'
+        ctx.fillStyle = isHov ? (isDarkLabel ? 'var(--foreground)' : 'rgba(26,26,46,0.9)') : (isDarkLabel ? 'rgba(201,168,76,.45)' : 'rgba(120,80,20,.45)')
         ctx.textAlign = 'center'
         ctx.fillText(node.label, lx, ly)
       })
@@ -263,6 +266,7 @@ export default function PatternsWeb() {
       ctx.fillText(CROSS_FRAMEWORK_ALIGNMENTS.length + ' ALIGNMENTS', cx, cy + centerR * .32)
 
       // Legend
+      const isDarkLegendPatterns = document.documentElement.classList.contains('dark')
       const legendX = 14, legendY = H - 56
       ctx.font = `${R * .023}px 'Cinzel',serif`
       ;[
@@ -275,7 +279,7 @@ export default function PatternsWeb() {
         ctx.beginPath()
         ctx.moveTo(lx2, ly2 + 2); ctx.lineTo(lx2 + 16, ly2 + 2)
         ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.stroke()
-        ctx.fillStyle = 'var(--muted-foreground)'; ctx.textAlign = 'left'
+        ctx.fillStyle = isDarkLegendPatterns ? 'var(--muted-foreground)' : 'rgba(90,74,48,.65)'; ctx.textAlign = 'left'
         ctx.fillText(label, lx2 + 20, ly2 + 5)
       })
 

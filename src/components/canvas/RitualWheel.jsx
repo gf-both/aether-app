@@ -66,18 +66,20 @@ export default function RitualWheel({ topRitual, score }) {
         }
 
         // Icon
+        const isDarkRitual = document.documentElement.classList.contains('dark')
         const midA = (startA + endA) / 2
         const iconR = R * 0.86
         ctx.font = `${Math.max(10, R * 0.09)}px serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.fillStyle = isActive ? '#fff' : 'var(--muted-foreground)'
+        ctx.fillStyle = isActive ? (isDarkRitual ? '#fff' : 'rgba(26,26,46,0.9)') : 'var(--muted-foreground)'
         ctx.fillText(t.icon, cx + iconR * Math.cos(midA), cy + iconR * Math.sin(midA))
 
         // Name (inside arc)
+        const isDarkRitualName = document.documentElement.classList.contains('dark')
         const nameR = R * 0.6
         ctx.font = `${Math.max(6, R * 0.045)}px 'Cinzel',serif`
-        ctx.fillStyle = isActive ? t.color : 'rgba(255,255,255,.25)'
+        ctx.fillStyle = isActive ? t.color : (isDarkRitualName ? 'rgba(255,255,255,.25)' : 'rgba(26,26,46,.35)')
         ctx.fillText(t.name, cx + nameR * Math.cos(midA), cy + nameR * Math.sin(midA))
       })
 
@@ -89,9 +91,10 @@ export default function RitualWheel({ topRitual, score }) {
       ctx.stroke()
 
       // Center — moon phase
+      const isDarkMoonRitual = document.documentElement.classList.contains('dark')
       const moonSize = R * 0.28
       ctx.font = `${moonSize}px serif`
-      ctx.fillStyle = '#fff'
+      ctx.fillStyle = isDarkMoonRitual ? '#fff' : 'rgba(26,26,46,0.9)'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(moon.phaseEmoji, cx, cy - R * 0.12)

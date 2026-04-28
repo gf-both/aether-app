@@ -41,7 +41,7 @@ const S = {
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', paddingBottom: 8,
     borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {

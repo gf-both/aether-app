@@ -311,9 +311,10 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
         ctx.stroke()
 
         // Key number in center of sphere
+        const isDark = document.documentElement.classList.contains('dark')
         const fontSize = Math.max(9, displaySr * .65)
         ctx.font = `bold ${fontSize}px 'Cinzel',serif`
-        ctx.fillStyle = 'var(--foreground)'
+        ctx.fillStyle = isDark ? 'rgba(255,255,255,0.9)' : 'rgba(26,26,46,0.9)'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(s.key), x, y)
@@ -410,6 +411,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
       }
 
       // Legend
+      const isDarkLegend = document.documentElement.classList.contains('dark')
       const lx = 8, ly = H - 42
       const legSize = Math.max(6, R * .048)
       const items = [
@@ -421,7 +423,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
         ctx.fillStyle = color
         ctx.fillRect(lx, ly + i * (legSize + 6), legSize * 2.5, legSize * .8)
         ctx.font = `${legSize}px Cinzel,serif`
-        ctx.fillStyle = 'rgba(170,180,200,.55)'
+        ctx.fillStyle = isDarkLegend ? 'rgba(170,180,200,.65)' : 'rgba(90,74,48,.7)'
         ctx.textAlign = 'left'
         ctx.textBaseline = 'middle'
         ctx.fillText(label, lx + legSize * 3, ly + i * (legSize + 6) + legSize * .4)

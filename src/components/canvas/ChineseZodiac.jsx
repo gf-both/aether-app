@@ -158,23 +158,25 @@ export default function ChineseZodiac() {
         ctx.fillText(animal.emoji, sx, sy)
 
         /* Animal name label outside ring */
+        const isDarkAnimal = document.documentElement.classList.contains('dark')
         const labelR = R * 1.30
         const lx = cx + labelR * Math.cos(midAngle)
         const ly = cy + labelR * Math.sin(midAngle)
         const labelSize = Math.max(6, R * .065)
         ctx.font = `${labelSize}px 'Cinzel',serif`
-        ctx.fillStyle = isActive ? 'rgba(201,168,76,.9)' : isHov ? 'rgba(201,168,76,.6)' : 'rgba(170,180,200,.35)'
+        ctx.fillStyle = isActive ? 'rgba(201,168,76,.9)' : isHov ? 'rgba(201,168,76,.6)' : (isDarkAnimal ? 'rgba(170,180,200,.45)' : 'rgba(90,74,48,.5)')
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(animal.name, lx, ly)
 
         /* Branch character */
+        const isDarkBranch = document.documentElement.classList.contains('dark')
         const branchR = R * 1.40
         const bx = cx + branchR * Math.cos(midAngle)
         const by = cy + branchR * Math.sin(midAngle)
         const branchSize = Math.max(5, R * .05)
         ctx.font = `${branchSize}px serif`
-        ctx.fillStyle = isActive ? 'rgba(201,168,76,.5)' : 'rgba(170,180,200,.18)'
+        ctx.fillStyle = isActive ? 'rgba(201,168,76,.5)' : (isDarkBranch ? 'rgba(170,180,200,.28)' : 'rgba(90,74,48,.35)')
         ctx.fillText(animal.branch, bx, by)
 
         /* Element dot */
@@ -240,12 +242,13 @@ export default function ChineseZodiac() {
         ctx.fillText(elem.chinese, ex, ey)
 
         /* Element name */
+        const isDarkElem = document.documentElement.classList.contains('dark')
         const nlR = innerR + er + Math.max(6, R * .05)
         const nx = cx + nlR * Math.cos(angle)
         const ny = cy + nlR * Math.sin(angle)
         const nSize = Math.max(6, R * .048)
         ctx.font = `${nSize}px 'Cinzel',serif`
-        ctx.fillStyle = elem.color + (isProfileElem ? 'aa' : '44')
+        ctx.fillStyle = isProfileElem ? elem.color + 'aa' : (isDarkElem ? elem.color + '66' : elem.color + '55')
         ctx.fillText(elem.name, nx, ny)
       })
 

@@ -62,10 +62,11 @@ export default function CycleWheel({ cycleDay, cycleLength = 28 }) {
         }
 
         // Phase label
+        const isDarkPhase = document.documentElement.classList.contains('dark')
         const midAngle = (startAngle + endAngle) / 2
         const labelR = R * 0.85
         ctx.font = `${Math.max(7, R * .055)}px 'Cinzel',serif`
-        ctx.fillStyle = isActive ? '#fff' : 'var(--muted-foreground)'
+        ctx.fillStyle = isActive ? (isDarkPhase ? 'rgba(255,255,255,0.9)' : 'rgba(26,26,46,0.9)') : 'var(--muted-foreground)'
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
         ctx.fillText(phase.name, cx + labelR * Math.cos(midAngle), cy + labelR * Math.sin(midAngle))
       })
@@ -84,14 +85,16 @@ export default function CycleWheel({ cycleDay, cycleLength = 28 }) {
       ctx.fillStyle = mg; ctx.fill()
 
       // Marker dot
+      const isDarkMarker = document.documentElement.classList.contains('dark')
       ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI * 2)
       ctx.fillStyle = '#c9a84c'; ctx.fill()
-      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke()
+      ctx.strokeStyle = isDarkMarker ? '#fff' : 'rgba(26,26,46,0.9)'; ctx.lineWidth = 1.5; ctx.stroke()
 
       // Moon phase in center
+      const isDarkMoon = document.documentElement.classList.contains('dark')
       const moonSize = R * 0.35
       ctx.font = `${moonSize}px serif`
-      ctx.fillStyle = '#fff'
+      ctx.fillStyle = isDarkMoon ? '#fff' : 'rgba(26,26,46,0.9)'
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
       ctx.fillText(moon.phaseEmoji, cx, cy - R * 0.08)
 

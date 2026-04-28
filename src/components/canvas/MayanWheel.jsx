@@ -122,6 +122,7 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
         ctx.stroke()
 
         // Seal name
+        const isDarkSeal = document.documentElement.classList.contains('dark')
         const aMid = (a0 + a1) / 2
         const textR = (outerR + innerDayR) / 2
         const tx = cx + textR * Math.cos(aMid)
@@ -131,7 +132,7 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
         ctx.translate(tx, ty)
         ctx.rotate(aMid + Math.PI / 2)
         ctx.font = `${isActive ? 'bold ' : ''}${fs}px 'Cinzel',serif`
-        ctx.fillStyle = isActive ? 'rgba(255,235,180,.95)' : sealCol + '88'
+        ctx.fillStyle = isActive ? (isDarkSeal ? 'rgba(255,235,180,.95)' : 'rgba(120,80,20,.95)') : (isDarkSeal ? sealCol + 'aa' : sealCol + '88')
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(seal.name, 0, 0)
@@ -183,13 +184,14 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
         ctx.stroke()
 
         // Tone number & name
+        const isDarkTone = document.documentElement.classList.contains('dark')
         const aMid = (a0 + a1) / 2
         const numR = (toneOuterR + toneInnerR) / 2
         const nx = cx + numR * Math.cos(aMid)
         const ny = cy + numR * Math.sin(aMid)
         const numSize = Math.max(8, R * .055)
         ctx.font = `${isActive ? 'bold ' : ''}${numSize}px 'Cinzel',serif`
-        ctx.fillStyle = isActive ? 'rgba(255,235,180,.95)' : 'rgba(201,168,76,.4)'
+        ctx.fillStyle = isActive ? (isDarkTone ? 'rgba(255,235,180,.95)' : 'rgba(120,80,20,.95)') : (isDarkTone ? 'rgba(201,168,76,.4)' : 'rgba(120,80,20,.4)')
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(tone.number), nx, ny)
@@ -202,7 +204,7 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
           ctx.translate(nnx, nny)
           ctx.rotate(aMid + Math.PI / 2)
           ctx.font = `${Math.max(5, R * .032)}px 'Inconsolata',monospace`
-          ctx.fillStyle = isActive ? 'rgba(255,235,180,.7)' : 'rgba(201,168,76,.22)'
+          ctx.fillStyle = isActive ? (isDarkTone ? 'rgba(255,235,180,.7)' : 'rgba(120,80,20,.7)') : (isDarkTone ? 'rgba(201,168,76,.22)' : 'rgba(120,80,20,.25)')
           ctx.fillText(tone.name, 0, 0)
           ctx.restore()
         }
@@ -249,9 +251,10 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
       ctx.fillText(centerEmoji, cx, cy - centerCircleR * .22)
 
       // Day Sign name
+      const isDarkDaySign = document.documentElement.classList.contains('dark')
       const nameSize = Math.max(9, centerCircleR * .22)
       ctx.font = `bold ${nameSize}px 'Cinzel',serif`
-      ctx.fillStyle = 'rgba(255,235,180,.95)'
+      ctx.fillStyle = isDarkDaySign ? 'rgba(255,235,180,.95)' : 'rgba(120,80,20,.95)'
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(centerDaySign.toUpperCase(), cx, cy + centerCircleR * .15)
@@ -325,18 +328,20 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
         ctx.stroke()
 
         // Kin number
+        const isDarkKin = document.documentElement.classList.contains('dark')
         const numS = Math.max(6, dr * .75)
         ctx.font = `bold ${numS}px 'Cinzel',serif`
-        ctx.fillStyle = 'var(--foreground)'
+        ctx.fillStyle = isDarkKin ? 'rgba(255,255,255,0.9)' : 'rgba(26,26,46,0.9)'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(entry.kin), px, py)
 
         // Seal name below dot
         if (R > 70) {
+          const isDarkSealName = document.documentElement.classList.contains('dark')
           const lblS = Math.max(5, dr * .38)
           ctx.font = `${lblS}px 'Inconsolata',monospace`
-          ctx.fillStyle = colBase + '0.55)'
+          ctx.fillStyle = isDarkSealName ? colBase + '0.55)' : colBase + '0.45)'
           ctx.fillText(entry.seal.name, px, py + dr + lblS + 2)
         }
       })

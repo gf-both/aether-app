@@ -309,7 +309,7 @@ const S = {
   },
   sectionTitle: {
     fontFamily: "'Cinzel', serif", fontSize: 10, fontWeight: 600, letterSpacing: '.25em',
-    textTransform: 'uppercase', color: 'var(--muted-foreground)', paddingBottom: 8,
+    textTransform: 'uppercase', color: 'var(--foreground)', paddingBottom: 8,
     borderBottom: '1px solid var(--accent)', marginBottom: 4,
   },
   heading: {
@@ -386,7 +386,7 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.heading}>{'\u2B21'} Gene Keys</div>
         <AboutSystemButton systemName="Gene Keys" />
-        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
+        <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', marginTop: 8 }}>
           Hologenetic Profile — {allSpheres.length} keys across three sequences
         </div>
       </div>

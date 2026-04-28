@@ -266,18 +266,20 @@ export default function EnneagramSymbol({ typeOverride, wingOverride } = {}) {
         }
 
         // Type number
+        const isDarkEnum = document.documentElement.classList.contains('dark')
         const numSize = isActive ? 13 : (isWing ? 11 : 9)
         ctx.font = `bold ${numSize}px 'Cinzel',serif`
-        ctx.fillStyle = isActive ? 'var(--foreground)' :
+        ctx.fillStyle = isActive ? (isDarkEnum ? 'rgba(255,255,255,0.9)' : 'rgba(26,26,46,0.9)') :
           isWing ? 'rgba(201,168,76,.8)' :
           isIntegration ? 'rgba(96,200,80,.75)' :
           isDisintegration ? 'rgba(220,60,60,.7)' :
-          isHov ? 'rgba(200,210,230,.8)' : 'rgba(150,160,190,.55)'
+          isHov ? (isDarkEnum ? 'rgba(200,210,230,.8)' : 'rgba(80,60,100,.8)') : (isDarkEnum ? 'rgba(150,160,190,.55)' : 'rgba(100,90,130,.5)')
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(typeNum), px, py)
 
         // Type name outside the circle
+        const isDarkEnumLabel = document.documentElement.classList.contains('dark')
         const labelR = R + (isActive ? 28 : 20)
         const lx = cx + labelR * Math.cos(angle)
         const ly = cy + labelR * Math.sin(angle)
@@ -286,7 +288,7 @@ export default function EnneagramSymbol({ typeOverride, wingOverride } = {}) {
         ctx.fillStyle = isActive ? 'rgba(201,168,76,.85)' :
           isPrimaryWing ? 'rgba(201,168,76,.55)' :
           isSecondaryWing ? 'rgba(201,168,76,.35)' :
-          isHov ? 'rgba(200,210,230,.65)' : 'rgba(120,130,170,.35)'
+          isHov ? (isDarkEnumLabel ? 'rgba(200,210,230,.65)' : 'rgba(80,60,100,.7)') : (isDarkEnumLabel ? 'rgba(120,130,170,.35)' : 'rgba(100,90,130,.4)')
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(typeData.name, lx, ly)
@@ -315,6 +317,7 @@ export default function EnneagramSymbol({ typeOverride, wingOverride } = {}) {
       ctx.fillText(subtitle, cx, cy + centerLabelSize * .8)
 
       // Legend
+      const isDarkLegendEnum = document.documentElement.classList.contains('dark')
       const lx = 8, ly = H - 60
       const legSize = Math.max(6, R * .048)
       const items = [
@@ -327,7 +330,7 @@ export default function EnneagramSymbol({ typeOverride, wingOverride } = {}) {
         ctx.fillStyle = color
         ctx.fillRect(lx, ly + i * (legSize + 6), legSize * 2, legSize * .8)
         ctx.font = `${legSize}px 'Inconsolata',monospace`
-        ctx.fillStyle = 'rgba(170,180,200,.5)'
+        ctx.fillStyle = isDarkLegendEnum ? 'rgba(170,180,200,.6)' : 'rgba(90,74,48,.65)'
         ctx.textAlign = 'left'
         ctx.textBaseline = 'middle'
         ctx.fillText(label, lx + legSize * 2.5, ly + i * (legSize + 6) + legSize * .4)
