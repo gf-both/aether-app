@@ -305,10 +305,136 @@ function PersonalityPlanetRow({ planetKey, planet }) {
   )
 }
 
+/* ─── Generate design summary narrative ──────────────────────────────────── */
+function generateDesignSummary(chart) {
+  if (!chart || !chart.type) return null
+
+  const typeDescriptions = {
+    'Generator': "You're built to respond. Your sacral life force is your compass — wait for life to come to you. Once you feel that clear gut response, you have sustainable energy to follow through.",
+    'Manifesting Generator': "You're a multi-passionate responder with initiative. Your sacral responds AND you can initiate — but always after the response hits. Trust the combination.",
+    'Projector': "You're here to guide and direct. Your gift is seeing others deeply — their gifts, their blindspots, their potential — but only when invited. Wait for the recognition.",
+    'Manifestor': "You're an initiator. You're here to start things and inform others before acting. Your impact comes from moving first, not from waiting.",
+    'Reflector': "You're a mirror of your environment. Your lunar cycle is your authority — wait 28 days for major decisions. You're designed to sample and reflect, not to commit quickly.",
+  }
+
+  const authorityDescriptions = {
+    'Emotional / Solar Plexus': "You ride the emotional wave. Never decide in the highs or lows — wait for clarity to emerge.",
+    'Sacral': "Your gut response is your compass. Trust that spontaneous yes or no — your body knows before your mind does.",
+    'Splenic': "You trust the spontaneous hit. Your intuition speaks once and quietly — catch it early, or it fades.",
+    'Self-Projected / G Center': "Listen to what you hear yourself say. Your truth comes through your own voice, not others'.",
+    'Ego / Heart': "Your willpower and heart are your guide. If your heart's not in it, don't force it.",
+    'None / Outer': "You sample environments and people. Clarity comes from reflection and trying, not from internal pressure.",
+  }
+
+  const type = chart.type || '—'
+  const authority = chart.authority || '—'
+  const profile = chart.profile || '—'
+  const definition = chart.definition || '—'
+  const signature = chart.signature || '—'
+  const notSelf = chart.notSelf || '—'
+
+  // Count defined centers
+  const centers = chart.centers || {}
+  const definedCount = Object.values(centers).filter(c => c && c.defined).length
+  const totalCenters = Object.keys(centers).length
+  const definitionRatio = `${definedCount} of ${totalCenters}`
+
+  // Count channels
+  const channelCount = (chart.activeChannels || []).length
+
+  let summary = []
+
+  // Type + meaning
+  const typeDesc = typeDescriptions[type] || `You are a ${type}.`
+  summary.push(typeDesc)
+
+  // Authority + how they decide
+  const authDesc = authorityDescriptions[authority] || `Your authority is ${authority}.`
+  summary.push(authDesc)
+
+  // Profile + lines
+  const profileParts = profile.split('/').map(p => parseInt(p, 10))
+  let profileMsg = `Your profile is ${profile}. `
+  if (profileParts[0]) {
+    const firstLineThemes = {
+      1: 'the investigator within you brings grounding and truth-seeking',
+      2: 'you naturally attract mentorship and are most productive alone',
+      3: 'you learn through trial and error — experimentation is your path',
+      4: 'you are the connector, building trust and loyalty in relationships',
+      5: 'you're here to solve problems others face; people project onto you',
+      6: 'you watch from a distance first, then become a guide',
+    }
+    profileMsg += firstLineThemes[profileParts[0]] || ''
+  }
+  if (profileParts[1]) {
+    const secondLineThemes = {
+      1: ', and then you synthesize insights into wisdom',
+      2: ', while remaining available and open to unexpected turns',
+      3: ', adapting and pivoting as needed',
+      4: ', bringing structure and loyalty to what you build',
+      5: ', then you inspire others to action',
+      6: ', becoming a mentor or guide to others',
+    }
+    profileMsg += secondLineThemes[profileParts[1]] || ''
+  }
+  profileMsg += '.'
+  summary.push(profileMsg)
+
+  // Definition + how they process
+  const definitionThemes = {
+    'Single': 'You process linearly — one path at a time. Clarity comes step-by-step.',
+    'Split': 'Your definition is split, requiring a bridge from another. You're designed for collaboration or environment-dependent clarity.',
+    'Triple Split': 'Your design fragments across multiple unconnected themes. You need different people or environments to activate each part.',
+    'Quadruple Split': 'Your definition is highly dispersed. Integration requires the right environment and people to bring all parts alive.',
+  }
+  const defMsg = definitionThemes[definition] || `Your definition is ${definition}.`
+  summary.push(defMsg)
+
+  // Signature + compass
+  let sigMsg = `Your signature is ${signature} — that's the emotional tone of life lived correctly. `
+  let notSelfMsg = `When you're out of alignment, you feel ${notSelf}.`
+  summary.push(`${sigMsg}${notSelfMsg}`)
+
+  // Centers + ratio
+  let centerMsg = `You have ${definedCount} defined centers and ${totalCenters - definedCount} open. `
+  if (definedCount >= 6) {
+    centerMsg += 'You carry fixed, consistent themes — your definition is strong.'
+  } else if (definedCount >= 4) {
+    centerMsg += 'You have a balanced mix of definition and openness — you can initiate and adapt.'
+  } else if (definedCount > 0) {
+    centerMsg += 'You amplify what you encounter. Your openness is a gift, though it can feel overwhelming.'
+  } else {
+    centerMsg += 'You are highly sensitive to your environment — you reflect and absorb what surrounds you.'
+  }
+  summary.push(centerMsg)
+
+  // Channels + energy patterns
+  if (channelCount > 0) {
+    let channelMsg = `You have ${channelCount} active channel${channelCount !== 1 ? 's' : ''}, `
+    const circuitCounts = {}
+    ;(chart.activeChannels || []).forEach(ch => {
+      const ckt = ch.circuit || 'Collective'
+      circuitCounts[ckt] = (circuitCounts[ckt] || 0) + 1
+    })
+    const circuits = Object.entries(circuitCounts).map(([ckt, count]) => `${count} ${ckt}`).join(', ')
+    channelMsg += `connecting centers across your design: ${circuits}.`
+    summary.push(channelMsg)
+  }
+
+  // Cross (life theme)
+  if (chart.cross) {
+    summary.push(`Your life theme is the ${chart.cross} — this is the underlying archetype that guides your growth and purpose.`)
+  }
+
+  return summary.join(' ')
+}
+
 /* ─── RAVECHART TAB ──────────────────────────────────────────────────────── */
 function RavechartTab({ chart }) {
   const hd = chart || FALLBACK
   const tc = TYPE_COLORS[hd.type] || TYPE_COLORS.Projector
+
+  const designSummary = useMemo(() => generateDesignSummary(chart), [chart])
 
   return (
     <div style={{ padding: '0 0 24px 0', display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -359,6 +485,16 @@ function RavechartTab({ chart }) {
               <span style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: 'var(--muted-foreground)', minWidth: 80 }}>Personality Type</span>
               <span style={{ ...S.badge(tc.bg, tc.border, tc.color), fontSize: 11, padding: '4px 16px', letterSpacing: '.12em' }}>{hd.type}</span>
             </div>
+
+            {/* NARRATIVE SUMMARY */}
+            {designSummary && (
+              <div style={{ ...S.glass, padding: '14px 16px', marginTop: 8, marginBottom: 8 }}>
+                <div style={S.sectionTitle}>Your Design Summary</div>
+                <div style={{ fontSize: 12, color: 'var(--foreground)', lineHeight: 1.7, fontStyle: 'italic' }}>
+                  {designSummary}
+                </div>
+              </div>
+            )}
 
             {/* Profile, Authority, Definition, Strategy */}
             {[
