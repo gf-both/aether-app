@@ -188,7 +188,7 @@ function generateSummary(section, data) {
       if (data.type) {
         return `Human Design Type ${data.type}: Your energetic authority and strategy are wired to ${data.strategy || 'engage authentically'}. Your definition carries ${data.definition || 'individual impulses'} to manifestation.`
       }
-      return 'Human Design reveals your energetic type, strategy, and definition—how you're designed to move through the world and make decisions.'
+      return "Human Design reveals your energetic type, strategy, and definition\u2014how you're designed to move through the world and make decisions."
       break
     }
     case 'gk': {

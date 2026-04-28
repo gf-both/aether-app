@@ -291,7 +291,7 @@ export default function MayanDetail() {
 
       {/* HEADER */}
       <div>
-        <div style={S.heading}}>Mayan Calendar</div>
+        <div style={S.heading}>Mayan Calendar</div>
         <AboutSystemButton systemName="Mayan Calendar" />
       </div>
 
