@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import { useComputedProfile } from '../../hooks/useActiveProfile'
 import { getRecommendedRituals, TRADITIONS, getRitualById } from '../../engines/ritualEngine'
 import { getMoonPhase } from '../../engines/cycleEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const ELEMENTS = { fire: '🔥', water: '💧', air: '🌬', earth: '🌍', spirit: '✦' }
 const DIFFICULTY = { beginner: { label: 'Beginner', color: '#60b030' }, intermediate: { label: 'Intermediate', color: '#e8a040' }, advanced: { label: 'Advanced', color: '#d44070' } }
@@ -449,6 +450,11 @@ export default function RitualDetail() {
 
   return (
     <div style={{ padding: '0 0 30px' }}>
+
+      {/* ── About Button ── */}
+      <div style={{ padding: '12px 20px' }}>
+        <AboutSystemButton systemName="Ritual" />
+      </div>
 
       {/* ── Conditions Banner ── */}
       <div style={{ padding: '16px 20px', background: 'rgba(201,168,76,.04)', borderBottom: '1px solid rgba(201,168,76,.1)' }}>

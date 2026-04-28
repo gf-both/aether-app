@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { CHINESE_ANIMALS, FIVE_ELEMENTS, CHINESE_PROFILE as STATIC_PROFILE } from '../../data/chineseData'
 import { getChineseProfileFromDob } from '../../engines/chineseEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ---- shared styles (matching app conventions) ---- */
 const S = {
@@ -135,6 +136,7 @@ export default function ChineseDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{animalData.emoji} Chinese Astrology</div>
+        <AboutSystemButton systemName="Chinese Astrology" />
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Four Pillars of Destiny (Ba Zi), zodiac animals, five elements, and annual forecast
         </div>

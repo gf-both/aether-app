@@ -3,6 +3,7 @@ import HumanDesign from '../canvas/HumanDesign'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { computeHDChart } from '../../engines/hdEngine'
 import { PLANET_SYMBOLS, PLANET_ORDER } from '../../data/hdData'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ─── Fallback static profile (generic — shown only when no birth data is available) ── */
 const FALLBACK = {
@@ -135,22 +136,25 @@ const CENTER_TOOLTIPS = {
 }
 
 /* ─── Tooltip component ──────────────────────────────────────────────────── */
-function HDTooltip({ data, children }) {
+function HDTooltip({ data, children, direction }) {
   const [show, setShow] = useState(false)
   if (!data) return children
+  const isBelow = direction === 'below'
   return (
-    <div style={{ position: 'relative', display: 'inline-flex' }}
+    <div style={{ position: 'relative', display: 'flex', width: '100%' }}
       onMouseEnter={() => setShow(true)}
       onMouseLeave={() => setShow(false)}
     >
       {children}
       {show && (
         <div style={{
-          position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+          position: 'absolute',
+          ...(isBelow ? { top: '100%', marginTop: 6 } : { bottom: '100%', marginBottom: 6 }),
+          left: '50%', transform: 'translateX(-50%)',
           width: 280, padding: '12px 14px', borderRadius: 10,
           background: 'rgba(12,12,20,.96)', border: '1px solid rgba(201,168,76,.2)',
           backdropFilter: 'blur(20px)', zIndex: 999, pointerEvents: 'none',
-          boxShadow: '0 8px 32px rgba(0,0,0,.5)', marginBottom: 6,
+          boxShadow: '0 8px 32px rgba(0,0,0,.5)',
         }}>
           {data.center && <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em', textTransform: 'uppercase', color: 'rgba(201,168,76,.6)', marginBottom: 6 }}>{data.center} CENTER {data.circuit ? '\u00B7 ' + data.circuit + ' CIRCUIT' : ''}</div>}
           {data.keynote && <div style={{ fontSize: 11, color: 'var(--foreground)', marginBottom: 6, lineHeight: 1.4 }}>{data.keynote}</div>}
@@ -168,7 +172,14 @@ function HDTooltip({ data, children }) {
               {data._isDefined ? data.defined : data.open}
             </div>
           )}
-          <div style={{ position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%) rotate(45deg)', width: 10, height: 10, background: 'rgba(12,12,20,.96)', borderRight: '1px solid rgba(201,168,76,.2)', borderBottom: '1px solid rgba(201,168,76,.2)' }} />
+          <div style={{
+            position: 'absolute', left: '50%', width: 10, height: 10,
+            background: 'rgba(12,12,20,.96)',
+            ...(isBelow
+              ? { top: -5, transform: 'translateX(-50%) rotate(45deg)', borderLeft: '1px solid rgba(201,168,76,.2)', borderTop: '1px solid rgba(201,168,76,.2)' }
+              : { bottom: -5, transform: 'translateX(-50%) rotate(45deg)', borderRight: '1px solid rgba(201,168,76,.2)', borderBottom: '1px solid rgba(201,168,76,.2)' }
+            ),
+          }} />
         </div>
       )}
     </div>
@@ -422,7 +433,7 @@ function MechanicsTab({ chart }) {
             const tip = CENTER_TOOLTIPS[c.key]
             const tipData = tip ? { ...tip, _isDefined: c.defined } : null
             return (
-            <HDTooltip key={i} data={tipData}>
+            <HDTooltip key={i} data={tipData} direction="below">
             <div style={{
               ...S.glass,
               padding: '10px 14px',
@@ -592,7 +603,10 @@ export default function HDDetail() {
 
   return (
     <div style={S.panel}>
-      {/* TAB BAR */}
+      {/* ABOUT + TAB BAR */}
+      <div style={{ padding: '12px 16px 0', display: 'flex', alignItems: 'center', gap: 12 }}>
+        <AboutSystemButton systemName="Human Design" />
+      </div>
       <div style={S.tabBar}>
         {TABS.map(t => (
           <button key={t.id} style={S.tab(activeTab === t.id)} onClick={() => setActiveTab(t.id)}>

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { FREQUENCIES, FREQUENCY_CATEGORIES, getRecommendedFrequencies, searchFrequencies } from '../../engines/frequencyEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ─── Web Audio Player ──────────────────────────────────────────────────────── */
 function useFrequencyPlayer() {
@@ -12,16 +13,33 @@ function useFrequencyPlayer() {
   const startTimeRef = useRef(0)
 
   const stop = useCallback(() => {
+    // Capture current nodes before clearing ref
     const n = nodesRef.current
+    nodesRef.current = { osc: null, osc2: null, gain: null, lfo: null, lfoGain: null }
+
     try {
-      if (n.gain) { n.gain.gain.exponentialRampToValueAtTime(0.0001, ctxRef.current?.currentTime + 0.5); }
+      if (n.gain && ctxRef.current) {
+        const now = ctxRef.current.currentTime
+        n.gain.gain.cancelScheduledValues(now)
+        n.gain.gain.setValueAtTime(n.gain.gain.value || 0.25, now)
+        n.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3)
+      }
+      // Stop oscillators after short fade
       setTimeout(() => {
         try { n.osc?.stop() } catch {}
         try { n.osc2?.stop() } catch {}
         try { n.lfo?.stop() } catch {}
-        nodesRef.current = { osc: null, osc2: null, gain: null, lfo: null, lfoGain: null }
-      }, 600)
-    } catch {}
+        try { n.gain?.disconnect() } catch {}
+        try { n.lfoGain?.disconnect() } catch {}
+      }, 350)
+    } catch {
+      // Force-stop everything if ramp fails
+      try { n.osc?.stop() } catch {}
+      try { n.osc2?.stop() } catch {}
+      try { n.lfo?.stop() } catch {}
+      try { n.gain?.disconnect() } catch {}
+    }
+
     setPlaying(false)
     setCurrentId(null)
     clearInterval(timerRef.current)
@@ -37,6 +55,11 @@ function useFrequencyPlayer() {
         const ctx = ctxRef.current || new (window.AudioContext || window.webkitAudioContext)()
         ctxRef.current = ctx
         if (ctx.state === 'suspended') ctx.resume()
+        // Ensure any lingering nodes from previous stop are fully cleared
+        const stale = nodesRef.current
+        try { stale.osc?.stop() } catch {}
+        try { stale.osc2?.stop() } catch {}
+        try { stale.lfo?.stop() } catch {}
 
         // Master gain
         const gain = ctx.createGain()
@@ -92,7 +115,7 @@ function useFrequencyPlayer() {
       } catch (err) {
         console.error('FrequencyPlayer error:', err)
       }
-    }, 100)
+    }, 400)
   }, [stop])
 
   // Cleanup on unmount
@@ -228,6 +251,7 @@ export default function FrequencyDetail() {
   return (
     <div style={S.panel}>
       {/* HEADER */}
+      <AboutSystemButton systemName="Frequency" />
       <div>
         <div style={S.heading}>{'\u266B'} Frequency</div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>

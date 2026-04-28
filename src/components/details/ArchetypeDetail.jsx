@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
 import { ARCHETYPES, getArchetypeQuestions, getArchetypeProfile } from '../../engines/archetypeEngine'
 import ArchetypeSymbol from '../canvas/ArchetypeSymbol'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ── Quadrant groupings ── */
 const QUADRANTS = [
@@ -293,6 +294,7 @@ export default function ArchetypeDetail() {
   if (!archetypeType) {
     return (
       <div style={S.panel}>
+        <AboutSystemButton systemName="Archetype" />
         <div>
           <div style={S.heading}>{'\u2726'} Jungian Archetypes</div>
           <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
@@ -320,6 +322,7 @@ export default function ArchetypeDetail() {
 
   return (
     <div style={S.panel}>
+      <AboutSystemButton systemName="Archetype" />
       {/* HEADER */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

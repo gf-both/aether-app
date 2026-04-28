@@ -3,6 +3,7 @@ import { SEPHIROTH, PATHS } from '../../data/kabbalahData'
 import { getKabbalahProfile, profileToKabArgs } from '../../engines/kabbalahEngine'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import KabbalahTree from '../canvas/KabbalahTree'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const SEPHIROTH_INTERP = [
   { name: 'Kether',    attr: 'Crown',         pillar: 'Equilibrium',
@@ -238,6 +239,7 @@ const kabArgs = profileToKabArgs(profile)
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u2721'} Kabbalah</div>
+        <AboutSystemButton systemName="Kabbalah" />
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Tree of Life -- Sephiroth, pillars, paths, and the hidden Da'ath
         </div>

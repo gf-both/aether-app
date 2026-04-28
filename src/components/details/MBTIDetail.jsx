@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { MBTI_TYPES, MBTI_FUNCTIONS, MBTI_QUIZ_QUESTIONS } from '../../data/mbtiData'
+import AboutSystemButton from '../ui/AboutSystemButton'
 // MBTIQuiz is defined inline below — no modal overlay needed
 
 const FUNCTION_COLORS = {
@@ -452,6 +453,7 @@ export default function MBTIDetail() {
   if (resolvedType) {
     return (
       <div style={S.panel}>
+        <AboutSystemButton systemName="Myers-Briggs" />
         {/* Inline quiz for retaking when type is already set */}
         {showQuizOverlay && (
           <div>
@@ -475,6 +477,7 @@ export default function MBTIDetail() {
 
   return (
     <div style={S.panel}>
+      <AboutSystemButton systemName="Myers-Briggs" />
       {showQuiz && !quizType ? (
         <>
           {/* Quiz header */}

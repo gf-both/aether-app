@@ -5,6 +5,7 @@ import {
   detectSymbols, analyzePatterns, getDreamStreak,
   getMoonPhaseForDate, createDreamEntry,
 } from '../../engines/dreamEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ── Shared styles ──────────────────────────────────────────────────────────── */
 const S = {
@@ -449,6 +450,9 @@ export default function DreamDetail() {
 
   return (
     <div style={S.panel}>
+      {/* About Button */}
+      <AboutSystemButton systemName="Dreams" />
+
       {/* Header */}
       <div>
         <div style={{ fontFamily: "'Cinzel', serif", fontSize: 18, letterSpacing: '.18em', color: 'var(--foreground)', marginBottom: 4 }}>

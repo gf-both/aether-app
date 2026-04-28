@@ -6,6 +6,7 @@ import {
   SPECIAL_MARKINGS, DOMINANT_HAND_INFO,
   detectSpecularHighlights, detectSkinTone, buildPalmReadingPrompt,
 } from '../../engines/palmistryEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ── Shared styles ──────────────────────────────────────────────── */
 const S = {
@@ -261,6 +262,7 @@ export default function PalmReadingDetail() {
   return (
     <div style={S.panel}>
       {/* Tabs */}
+      <AboutSystemButton systemName="Palm Reading" />
       <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
         {tabs.map(t => (
           <div

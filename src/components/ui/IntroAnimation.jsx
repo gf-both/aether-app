@@ -484,12 +484,12 @@ function chineseDragon(count) {
       x = sp.x + (Math.random() - 0.5) * bellyW * 0.5
       y = sp.y - 0.15 - Math.random() * 0.08
       z = sp.z + (Math.random() - 0.5) * bellyW
-    } else if (t < 0.82) {
+    } else if (t < 0.84) {
       // ─── BODY ─── serpentine S-curve, DENSE tube of particles
-      const st = (t - 0.59) / 0.23
+      const st = (t - 0.59) / 0.25
       const sp = spine(st)
-      // Body gets thinner toward tail
-      const bodyR = 0.24 * (1 - st * 0.5)
+      // Body gets thinner toward tail, base thickness increased
+      const bodyR = 0.28 * (1 - st * 0.5)
       // Surface-biased distribution (80% near surface for definition)
       const angle = Math.random() * TAU
       const surfaceBias = Math.random() < 0.8
@@ -510,11 +510,27 @@ function chineseDragon(count) {
       ]
       const leg = legPositions[legIdx]
       const sp = spine(leg.bodyT)
-      const legThick = 0.06 * (1 - st * 0.4)
+      const legThick = 0.08 * (1 - st * 0.4)
       const angle = Math.random() * TAU
-      x = leg.bx + Math.cos(angle) * legThick * 0.3
-      y = sp.y - st * 0.38 + Math.sin(angle) * legThick * 0.3
-      z = leg.bz + jj()
+      let x_leg = leg.bx + Math.cos(angle) * legThick * 0.3
+      let y_leg = sp.y - st * 0.38 + Math.sin(angle) * legThick * 0.3
+      let z_leg = leg.bz + jj()
+
+      // Blend into body at top of leg (shoulder/hip joint)
+      if (st < 0.2) {
+        const blendT = st / 0.2 // 0→1 over blend zone
+        const bodyBlend = 1 - blendT
+        x_leg = x_leg * blendT + sp.x * bodyBlend
+        z_leg = z_leg * blendT + leg.bz * bodyBlend
+        // Add extra width at shoulder/hip for smooth connection
+        x_leg += (Math.random() - 0.5) * 0.08 * bodyBlend
+        z_leg += (Math.random() - 0.5) * 0.08 * bodyBlend
+      }
+
+      x = x_leg
+      y = y_leg
+      z = z_leg
+
       // Claws at bottom — three toes spread
       if (st > 0.82) {
         const toe = Math.floor(Math.random() * 3) - 1

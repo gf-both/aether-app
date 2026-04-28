@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getTibetanProfile, TIBETAN_ELEMENT_NAMES_TIB, MEWA_DATA as ENGINE_MEWA, PARKHA_DATA, LOG_MEN_FORCES } from '../../engines/tibetanEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const ANIMALS = ['Mouse','Ox','Tiger','Rabbit','Dragon','Snake','Horse','Sheep','Monkey','Bird','Dog','Pig']
 const ELEMENTS = ['Fire','Earth','Iron','Water','Wood']
@@ -109,6 +110,7 @@ export default function TibetanDetail() {
 
   return (
     <div style={S.panel}>
+      <AboutSystemButton systemName="Tibetan Astrology" />
       {/* HEADER */}
       <div>
         <div style={S.heading}>{ANIMAL_EMOJI[tib.animal]} Tibetan Astrology</div>

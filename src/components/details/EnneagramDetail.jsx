@@ -3,6 +3,7 @@ import { useGolemStore } from '../../store/useGolemStore'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { ENNEAGRAM_TYPES, ENNEAGRAM_PROFILE, ENNEAGRAM_QUIZ, INSTINCTUAL_VARIANTS, TRIAD_COLORS } from '../../data/enneagramData'
 import EnneagramSymbol from '../canvas/EnneagramSymbol'
+import AboutSystemButton from '../ui/AboutSystemButton'
 // EnneagramQuiz is defined inline below — no modal overlay needed
 
 /* ---- shared style fragments ---- */
@@ -202,6 +203,7 @@ export default function EnneagramDetail() {
   if (!storeType) {
     return (
       <div style={S.panel}>
+        <AboutSystemButton systemName="Enneagram" />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 200, flexDirection: 'column', gap: 14, padding: 32 }}>
           <div style={{ fontSize: 28 }}>◉</div>
           <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.15em', color: 'var(--gold)' }}>Enneagram</div>
@@ -257,6 +259,7 @@ export default function EnneagramDetail() {
 
   return (
     <div style={S.panel}>
+      <AboutSystemButton systemName="Enneagram" />
       {/* HEADER */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

@@ -4,6 +4,7 @@ import NatalRadialBars from '../canvas/NatalRadialBars'
 import NatalHemisphere from '../canvas/NatalHemisphere'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getNatalChart } from '../../engines/natalEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const PLANET_SYMS = {
   sun: '☉', moon: '☽', mercury: '☿', venus: '♀', mars: '♂',
@@ -274,6 +275,7 @@ export default function NatalDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u2609'} Natal Astrology</div>
+        <AboutSystemButton systemName="Natal Astrology" />
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Full birth chart analysis — planets, houses, aspects, rising sign, and elemental balance
         </div>

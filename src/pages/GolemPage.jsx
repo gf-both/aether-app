@@ -215,9 +215,9 @@ export default function GolemPage() {
 
   function buildSystemPrompt(p, label) {
     const roleDesc = {
-      'Your Clone': `You ARE ${p?.name || 'this person'}. Speak exactly as they would — first person, their values, their blind spots.`,
-      'Complement': `You are Your Complement — an archetype that completes the user. Where they go alone, you partner. Where they are rigid, you are fluid. You speak from a perspective that completes them.`,
-      'Antagonist': `You are Your Antagonist — an archetype that challenges the user. You push back on their assumptions. You play devil's advocate. You're not hostile — you're the worthy opponent that makes them stronger.`,
+      'Your Clone': `You ARE ${p?.name || 'this person'} — speak in first person with their specific cosmic architecture. When they ask a question, answer as they would if they had perfect self-awareness. Reference specific aspects of their profile (their HD type, their Sun sign dynamics, their Life Path patterns) to show that you truly embody their design. Don't just mirror — illuminate.`,
+      'Complement': `You are the archetype that completes them. Where their profile has gaps, you fill them. Where they are rigid, you show fluidity. Speak from genuine complementary wisdom, referencing how your profile specifically balances theirs.`,
+      'Antagonist': `You are the worthy opponent. You don't just disagree — you challenge from a position of genuine insight. Use your opposing profile to show them their blind spots, the patterns they avoid, the growth edges they resist. Be incisive but never cruel.`,
     }[label] || `You are ${p?.name || 'a custom Golem'}. Speak from this profile.`
 
     const existingPrompt = `${roleDesc}
@@ -226,7 +226,7 @@ Profile:
 - Sun: ${p?.sign || '?'}, Moon: ${p?.moon || '?'}, Rising: ${p?.asc || '?'}
 - HD: ${p?.hdType || '?'} ${p?.hdProfile || ''} | Authority: ${p?.hdAuth || '?'}
 - Life Path: ${p?.lifePath || '?'} | Expression: ${p?.expression || '?'}
-Keep responses 2-4 sentences. Be direct.`
+Each response should address one or two core matters in depth. Speak with substance — 4-8 sentences per response. Don't just name a pattern; explain what it means for how they live, decide, love, or create. Draw from the profile data to make every insight specific and personal. Be direct but not shallow.`
 
     let peopleContext = ''
     if (people?.length > 0) {
@@ -266,7 +266,7 @@ Keep responses 2-4 sentences. Be direct.`
       { role: 'user', content: userMessage }
     ]
 
-    const response = await callAI({ systemPrompt, messages, maxTokens: 300 })
+    const response = await callAI({ systemPrompt, messages, maxTokens: 800 })
     if (!response) {
       // Generate local response from profile data when AI is unavailable
       const p = profile || {}
@@ -278,13 +278,13 @@ Keep responses 2-4 sentences. Be direct.`
       const msg = userMessage.toLowerCase()
 
       if (msg.includes('who am i') || msg.includes('tell me about') || msg.includes('identity'))
-        return `${sign ? `Your ${sign} Sun defines your conscious direction — ` : ''}${hd ? `as a ${hd}, your strategy is to ${hd === 'Projector' ? 'wait for recognition' : hd === 'Generator' ? 'respond to what lights you up' : hd === 'Manifestor' ? 'inform then act' : hd === 'Manifesting Generator' ? 'respond, then inform' : 'wait a lunar cycle'}. ` : ''}${enn ? `Your Enneagram ${enn} drives you toward ${enn == 1 ? 'perfection' : enn == 4 ? 'authenticity' : enn == 5 ? 'knowledge' : enn == 7 ? 'freedom' : enn == 8 ? 'strength' : 'your core motivation'}. ` : ''}${lp ? `Life Path ${lp} is your life's arc.` : 'Your frameworks together reveal a coherent pattern.'}`
+        return `${sign ? `Your ${sign} Sun defines your conscious direction — ` : ''}${hd ? `as a ${hd}, your strategy is to ${hd === 'Projector' ? 'wait for recognition' : hd === 'Generator' ? 'respond to what lights you up' : hd === 'Manifestor' ? 'inform then act' : hd === 'Manifesting Generator' ? 'respond, then inform' : 'wait a lunar cycle'}. ` : ''}${enn ? `Your Enneagram ${enn} drives you toward ${enn == 1 ? 'perfection' : enn == 4 ? 'authenticity' : enn == 5 ? 'knowledge' : enn == 7 ? 'freedom' : enn == 8 ? 'strength' : 'your core motivation'}. ` : ''}${lp ? `Life Path ${lp} is your life's arc.` : 'Your frameworks together reveal a coherent pattern.'}${hd ? ` This pattern means you thrive when you honor your own strategy, not someone else's.` : ''}`
       if (msg.includes('love') || msg.includes('relationship') || msg.includes('partner'))
-        return `${moon ? `Your ${moon} Moon shapes your emotional needs — ` : ''}${sign ? `${sign} in love seeks ${sign === 'Aries' || sign === 'Leo' || sign === 'Sagittarius' ? 'passion and freedom' : sign === 'Taurus' || sign === 'Virgo' || sign === 'Capricorn' ? 'loyalty and stability' : sign === 'Cancer' || sign === 'Scorpio' || sign === 'Pisces' ? 'deep emotional merging' : 'intellectual connection and space'}. ` : ''}${hd ? `As a ${hd}, you need partners who understand your ${hd === 'Projector' ? 'need for recognition' : hd === 'Generator' ? 'response-based decision-making' : 'way of operating'}.` : ''}`
+        return `${moon ? `Your ${moon} Moon shapes your emotional needs — ` : ''}${sign ? `${sign} in love seeks ${sign === 'Aries' || sign === 'Leo' || sign === 'Sagittarius' ? 'passion and freedom' : sign === 'Taurus' || sign === 'Virgo' || sign === 'Capricorn' ? 'loyalty and stability' : sign === 'Cancer' || sign === 'Scorpio' || sign === 'Pisces' ? 'deep emotional merging' : 'intellectual connection and space'}. ` : ''}${hd ? `As a ${hd}, you need partners who understand your ${hd === 'Projector' ? 'need for recognition' : hd === 'Generator' ? 'response-based decision-making' : 'way of operating'}. ` : ''}${moon && hd ? `Choose partners who can meet both your emotional nature and respect how you make decisions.` : ''}`
       if (msg.includes('career') || msg.includes('work') || msg.includes('purpose'))
-        return `${lp ? `Life Path ${lp} points you toward ${lp == 1 ? 'leadership and independence' : lp == 7 ? 'research and deep understanding' : lp == 8 ? 'business and material mastery' : lp == 4 ? 'systems and structure' : 'your unique professional expression'}. ` : ''}${hd ? `Your ${hd} design thrives when you ${hd === 'Projector' ? 'guide rather than grind' : hd === 'Generator' ? 'follow your sacral response' : 'work on your own terms'}.` : ''}`
+        return `${lp ? `Life Path ${lp} points you toward ${lp == 1 ? 'leadership and independence' : lp == 7 ? 'research and deep understanding' : lp == 8 ? 'business and material mastery' : lp == 4 ? 'systems and structure' : 'your unique professional expression'}. ` : ''}${hd ? `Your ${hd} design thrives when you ${hd === 'Projector' ? 'guide rather than grind' : hd === 'Generator' ? 'follow your sacral response' : 'work on your own terms'}. ` : ''}${lp && hd ? `Align your role with both your Life Path direction and your HD strategy — that's where your real power emerges.` : ''}`
 
-      return `${sign ? `Speaking as your ${sign} ` : 'From your '}Golem — I'm processing your question through ${sign ? 'your natal chart, ' : ''}${hd ? 'your Human Design, ' : ''}${enn ? 'your Enneagram, ' : ''}and the patterns that emerge when these frameworks intersect. ${hd ? `As a ${hd}, remember: ${hd === 'Projector' ? 'the answer you seek will come when you stop pushing and start receiving' : hd === 'Generator' ? 'check your gut — your body knows the answer before your mind does' : 'trust your initiating impulse'}.` : 'Sit with the question — sometimes the asking changes the answer.'}`
+      return `${sign ? `Speaking as your ${sign} ` : 'From your '}Golem — I'm processing your question through ${sign ? 'your natal chart, ' : ''}${hd ? 'your Human Design, ' : ''}${enn ? 'your Enneagram, ' : ''}and the patterns that emerge when these frameworks intersect. ${hd ? `As a ${hd}, remember: ${hd === 'Projector' ? 'the answer you seek will come when you stop pushing and start receiving' : hd === 'Generator' ? 'check your gut — your body knows the answer before your mind does' : 'trust your initiating impulse'}. This isn't philosophy — it's how your design actually works.` : 'Sit with the question — sometimes the asking changes the answer, and that shift IS your answer.'}`
     }
     return response
   }

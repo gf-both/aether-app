@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const CORE_COLORS = {
   lifePath:    '#f0c040',
@@ -133,6 +134,7 @@ export default function NumerologyDetail() {
 
   return (
     <div style={S.panel}>
+      <AboutSystemButton systemName="Numerology" />
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u221E'} Numerology</div>

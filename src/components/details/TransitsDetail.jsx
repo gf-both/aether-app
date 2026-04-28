@@ -3,6 +3,7 @@ import TransitWheel from '../canvas/TransitWheel'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { useGolemStore } from '../../store/useGolemStore'
 import { getNatalChart } from '../../engines/natalEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const PLANET_ORDER = ['sun','moon','mercury','venus','mars','jupiter','saturn','uranus','neptune','pluto']
 const PLANET_SYMS_T = { sun:'☉',moon:'☽',mercury:'☿',venus:'♀',mars:'♂',jupiter:'♃',saturn:'♄',uranus:'♅',neptune:'♆',pluto:'♇' }
@@ -225,6 +226,7 @@ export default function TransitsDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'☿'} Planetary Transits</div>
+        <AboutSystemButton systemName="Transits" />
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           {todayLabel} — Current sky positions and natal aspects for {profile?.name || 'your chart'}
         </div>

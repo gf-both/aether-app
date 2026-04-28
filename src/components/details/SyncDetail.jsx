@@ -6,6 +6,7 @@ import {
   createSyncEntry,
 } from '../../engines/synchronicityEngine'
 import SyncCanvas from '../canvas/SyncCanvas'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ── Shared styles ────────────────────────────────────────────────────────── */
 const S = {
@@ -577,6 +578,9 @@ export default function SyncDetail() {
 
   return (
     <div style={S.panel}>
+      {/* About Button */}
+      <AboutSystemButton systemName="Synchronicities" />
+
       {/* Header */}
       <div>
         <div style={{ fontFamily: "'Cinzel', serif", fontSize: 18, letterSpacing: '.18em', color: 'var(--foreground)', marginBottom: 4 }}>

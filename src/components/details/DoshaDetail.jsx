@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
 import { DOSHA_DATA, DOSHA_QUESTIONS, getDoshaProfile } from '../../engines/doshaEngine'
 import DoshaSymbol from '../canvas/DoshaSymbol'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ---- shared style fragments ---- */
 const S = {
@@ -286,6 +287,7 @@ export default function DoshaDetail() {
   if (!doshaType && !showQuiz) {
     return (
       <div style={S.panel}>
+        <AboutSystemButton systemName="Dosha" />
         <div>
           <div style={S.heading}>Dosha</div>
           <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
@@ -302,6 +304,7 @@ export default function DoshaDetail() {
 
   return (
     <div style={S.panel}>
+      <AboutSystemButton systemName="Dosha" />
       {/* Header with retake option */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

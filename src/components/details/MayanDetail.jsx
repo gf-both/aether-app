@@ -1,6 +1,7 @@
 import { DREAMSPELL_SEALS, GALACTIC_TONES, MAYAN_PROFILE, CASTLES, EARTH_FAMILIES, COLOR_FAMILIES, SEAL_COLORS, computeFullProfile, getMayanProfile } from '../../data/mayanData'
 import MayanWheel from '../canvas/MayanWheel'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ---- Day Sign data with emoji & element ---- */
 const DAY_SIGNS = {
@@ -287,6 +288,12 @@ export default function MayanDetail() {
 
   return (
     <div style={S.panel}>
+
+      {/* HEADER */}
+      <div>
+        <div style={S.heading}}>Mayan Calendar</div>
+        <AboutSystemButton systemName="Mayan Calendar" />
+      </div>
 
       {/* ══════════════════════════════════════════
           SECTION 1: YOUR MAYAN SOLAR SEAL (HERO)

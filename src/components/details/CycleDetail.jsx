@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
 import { computeCycleProfile, getMoonPhase } from '../../engines/cycleEngine'
 import CycleWheel from '../canvas/CycleWheel'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const S = {
   panel: {
@@ -70,6 +71,9 @@ export default function CycleDetail() {
 
   return (
     <div style={S.panel}>
+      {/* About Button */}
+      <AboutSystemButton systemName="Cycle" />
+
       {/* Header */}
       <div>
         <div style={{ fontFamily: "'Cinzel',serif", fontSize: 18, letterSpacing: '.18em', color: 'var(--foreground)', marginBottom: 4 }}>

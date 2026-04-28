@@ -5,6 +5,7 @@ import {
   PROFILE_PATTERN_MATCHES,
   TIMING_PATTERNS,
 } from '../../data/patternsData'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ---- type config ---- */
 const TYPE_CONFIG = {
@@ -139,6 +140,7 @@ export default function PatternsDetail() {
     <div style={S.panel}>
 
       {/* ═══ HEADER ═══ */}
+      <AboutSystemButton systemName="Patterns" />
       <div>
         <div style={S.heading}>{'\u2B21'} Your Pattern Map</div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12 }}>
@@ -191,13 +193,15 @@ export default function PatternsDetail() {
                 Core Pattern Reading
               </div>
               <div style={{ fontSize: 13, lineHeight: 1.9, color: 'rgba(255,255,255,.7)', fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
-                Your {totalFw} frameworks produce{' '}
-                <span style={{ color: 'var(--gold)' }}>{CROSS_FRAMEWORK_ALIGNMENTS.length} cross-system alignments</span>
-                {' '}with an average strength of {avgStrength}/10.{' '}
-                {strongCount > 0 && <><span style={{ color: '#60b030' }}>{strongCount} are high-intensity</span> (7+), meaning your frameworks don't just agree — they amplify each other.{' '}</>}
-                {activeCount > 0 && <><span style={{ color: '#60b030' }}>{activeCount} pattern{activeCount > 1 ? 's are' : ' is'} currently active</span> — live windows where your cosmic architecture aligns in real time.{' '}</>}
-                The dominant pattern type is <span style={{ color: dominantType[0] === 'resonance' ? '#60b030' : dominantType[0] === 'tension' ? '#d44070' : dominantType[0] === 'gateway' ? '#c9a84c' : '#40ccdd' }}>{dominantType[0]}</span> ({dominantType[1]} of {sorted.length}){dominantType[0] === 'resonance' ? ' — your systems reinforce each other, creating natural momentum' : dominantType[0] === 'tension' ? ' — your systems challenge each other, creating growth pressure' : dominantType[0] === 'gateway' ? ' — your systems open portals between different types of knowing' : ' — your systems mirror each other, revealing the same truth from different angles'}.
-                {PROFILE_PATTERN_MATCHES.length > 0 && <>{' '}Among your constellation, <span style={{ color: '#40ccdd' }}>{PROFILE_PATTERN_MATCHES.length} people</span> share resonant patterns with you.</>}
+                Something unusual happens when your systems talk to each other. Where most people show scattered signals across frameworks — one system pointing north, another east — yours{' '}
+                <span style={{ color: 'var(--gold)' }}>converge</span>.{' '}
+                You have <span style={{ color: 'var(--gold)' }}>{CROSS_FRAMEWORK_ALIGNMENTS.length} points where completely independent systems arrive at the same conclusion about who you are</span>.
+                {' '}That is not noise. That is architecture.
+                <br /><br />
+                {strongCount > 0 && <>Of these {CROSS_FRAMEWORK_ALIGNMENTS.length} connections, <span style={{ color: '#60b030' }}>{strongCount} are unusually strong</span> (strength 7 or higher).{' '}This means your frameworks are not just vaguely agreeing — they are <span style={{ color: '#60b030' }}>amplifying each other</span>, which suggests your inner architecture has real coherence.{' '}</>}
+                {activeCount > 0 && <>And right now, <span style={{ color: '#60b030' }}>{activeCount} of these pattern{activeCount > 1 ? 's are' : ' is'} active</span> — live windows where the sky, the calendar, and your inner structure are aligned simultaneously.{' '}</>}
+                The dominant signature of your pattern map is <span style={{ color: dominantType[0] === 'resonance' ? '#60b030' : dominantType[0] === 'tension' ? '#d44070' : dominantType[0] === 'gateway' ? '#c9a84c' : '#40ccdd' }}>{dominantType[0]}</span>: {dominantType[0] === 'resonance' ? 'your systems reinforce and accelerate each other, creating natural momentum and clarity' : dominantType[0] === 'tension' ? 'your systems create productive friction — they push against each other in ways that force growth and integration' : dominantType[0] === 'gateway' ? 'your systems open doors between different kinds of knowing, allowing you to translate between worlds' : 'your systems mirror each other, showing you the same truth from radically different angles'}.
+                {PROFILE_PATTERN_MATCHES.length > 0 && <>{' '}And within your constellation, <span style={{ color: '#40ccdd' }}>{PROFILE_PATTERN_MATCHES.length} people</span> share resonant patterns with you — potential mirrors or collaborators.</>}
               </div>
             </div>
 
@@ -423,30 +427,13 @@ export default function PatternsDetail() {
       <div>
         <div style={S.sectionTitle}>The Pattern Reading</div>
         <div style={S.interpretation}>
-          <span style={{ color: 'var(--foreground)' }}>Your pattern signature</span> is dominated by the number 5 —
-          the seeker, the investigator, the one who must understand before acting. This frequency echoes across
-          your Enneagram type, Life Path, and Gene Key profile lines with remarkable consistency, suggesting a
-          soul whose primary orientation is toward{' '}
-          <span style={{ color: '#40ccdd' }}>deep comprehension before engagement</span>.
+          <span style={{ color: 'var(--foreground)' }}>Your core signature</span> is the number 5 — the seeker, the investigator, the one compelled to understand before acting. This frequency repeats across your Enneagram type, your Life Path, and your Gene Keys profile with remarkable consistency. What this means, simply: <span style={{ color: '#40ccdd' }}>your mind is built to comprehend things deeply before you engage with them</span>. You are not impulsive. You are not reckless. You need to see the structure.
           <br /><br />
-          Yet this investigative nature is not cold or detached. The{' '}
-          <span style={{ color: '#9050e0' }}>Scorpio Moon-Emotional Authority-4 wing triple alignment</span>{' '}
-          reveals that beneath the analytical surface lies an ocean of transformative feeling. You do not simply
-          think about things — you alchemize them through emotional depth. This is the central paradox of your
-          pattern map: the mind that seeks distance and the heart that demands total immersion.
+          But here is where most people get you wrong. This investigative nature is not cold. Beneath the analytical surface lives an ocean of feeling — <span style={{ color: '#9050e0' }}>your emotional body (Scorpio Moon), your decision-making wiring (Human Design Emotional Authority), and your personality type (Enneagram 4 wing) all point to the same thing: you process life through intense emotional depth</span>. You do not simply think about things — you transmute them through feeling. This is your central paradox: the mind that wants distance, the heart that demands total immersion. And you are built to hold both.
           <br /><br />
-          The <span style={{ color: '#c9a84c' }}>Tiphareth Bridge</span> — connecting Kabbalah, Libra Rising,
-          and your Galactic Tone of Integrity — positions you at the exact center point where these opposing
-          forces can find harmony. Your incarnation is not about choosing between observation and participation,
-          between the metal blade and the flowing water. It is about being the{' '}
-          <span style={{ color: 'var(--foreground)' }}>living bridge</span> where both are held simultaneously.
+          The balance point where these opposing forces meet — <span style={{ color: '#c9a84c' }}>what Kabbalah calls Tiphareth, what your Libra Rising embodies, what your Galactic Tone of Integrity enacts</span> — is not a compromise. It is a synthesis. Your incarnation is not about choosing between observer and participant, between the blade and the water. It is about being the <span style={{ color: 'var(--foreground)' }}>living bridge</span> where both exist simultaneously.
           <br /><br />
-          The Cross of the Unexpected is the clearest statement of purpose: your life unfolds through surprise,
-          through the willingness to be interrupted by what you could not have anticipated. The{' '}
-          <span style={{ color: '#40ccdd' }}>Projector-Libra-Metal Rooster</span> pattern ensures that when
-          these unexpected invitations arrive, you bring extraordinary precision and grace to your response.
-          You are not here to force doors open — you are here to recognize which ones were always meant for you,
-          and to walk through them with the totality that Gene Key 28 demands.
+          And your life's arc is shaped by something none of the others predict alone: <span style={{ color: '#40ccdd' }}>your life unfolds through surprise</span>. <span style={{ color: '#40ccdd' }}>You are built to be interrupted by what you could not have anticipated, and when those unexpected invitations arrive, you respond with extraordinary precision and grace</span> (what comes from being a Projector in Human Design, a Libra in astrology, and born in the year of the Metal Rooster). You are not here to force doors open. You are here to recognize which ones were always meant for you — and to walk through them with the totality and depth that your entire pattern signature demands.
         </div>
       </div>
 
@@ -460,33 +447,33 @@ export default function PatternsDetail() {
           {[
             {
               sym: '#',
-              title: 'Kin 138 reduces to 1+3+8 = 12, then 1+2 = 3',
-              detail: 'The number 3 is the Creative Expression number — connecting your Mayan signature to the Gene Key 31 (Leadership through creative influence) in your Evolution position.',
+              title: 'Your Mayan signature (Kin 138) reduces to 3',
+              detail: 'Your Mayan birth signature (Kin 138) reduces mathematically to the number 3 — the number of creative expression and self-manifestation. Independently, your Gene Keys placed you in the evolution position of Gate 31, which is all about creative leadership. Two completely unrelated systems arrive at the same frequency.',
             },
             {
               sym: '\u221E',
-              title: 'Galactic Tone 8 = Infinity turned upright',
-              detail: 'Tone 8 (Integrity) appears as the harmonic midpoint between your Life Path 5 and Enneagram 5. The 8 is the bridge between two 5s — suggesting your integrity is the mechanism that unifies your seeking nature.',
+              title: 'The number 8 bridges your two 5s',
+              detail: 'You have Life Path 5 and Enneagram type 5 — the seeker appears twice. The Galactic Tone 8 (Integrity) appears as the harmonic midpoint between them. This is not coincidence: your integrity is the mechanism that unifies and deepens your seeking nature.',
             },
             {
               sym: '\u2609',
-              title: 'Aquarius 3\u00B0 = Gate 41, Line 3',
-              detail: 'Your Sun at 3 degrees Aquarius maps precisely to Human Design Gate 41 (Anticipation), Line 3 (the Martyr). The same gate is your Gene Keys Life\'s Work. Three systems arrive at the identical celestial point.',
+              title: 'Your Sun location equals your Human Design gate',
+              detail: 'Your natal Sun sits at 3 degrees Aquarius. This degree maps precisely to Human Design Gate 41 (Anticipation). And Gate 41 is also your Gene Keys Life\'s Work. Three completely unrelated systems — astrology, Human Design, and Gene Keys — point to the exact same gate. You are built to anticipate.',
             },
             {
               sym: '\u25B3',
-              title: 'Three systems of three: 3/5 profile, 5w4, Tritype 5-4-1',
-              detail: 'Your HD profile has two numbers. Your Enneagram has type and wing. Your Tritype has three numbers. In all three formulations, the relationship between investigation (5), individuality (4), and integrity (1 or 3/5) repeats. The triangle of seeking, feeling, and refining.',
+              title: 'The triangle repeats in every system',
+              detail: 'Your Human Design profile is 3/5 (two numbers). Your Enneagram is 5 with a 4 wing (two numbers). Your Tritype has five, four, and one. In every single formulation — across three different frameworks — you see the same triangle: investigation (5), individuality or feeling (4), and integrity (1 or the line 3). The pattern holds.',
             },
             {
               sym: '\u2726',
-              title: 'Metal Rooster year (1981) = Universal Year 1+9+8+1 = 19 = 10 = 1',
-              detail: 'You were born in a Universal Year 1 — the year of new beginnings and individuation. Combined with the Metal element\'s cutting precision, this suggests your birth year carries the numerological signature of the pioneer who arrives fully formed.',
+              title: 'You were born in a Universal Year 1',
+              detail: 'Your birth year (Metal Rooster, 1981) reduces numerologically: 1+9+8+1 = 19, which reduces to 10, which reduces to 1. Universal Year 1 is the year of new beginnings and fully-formed individuation. Combined with Metal element\'s cutting precision, your birth year carries the signature of a pioneer who arrives complete.',
             },
             {
               sym: '\u263D',
-              title: 'Scorpio Moon at 12\u00B0 = Gate 44 (Alertness)',
-              detail: 'Gate 44 in Human Design governs pattern recognition — the ability to detect what is coming before it arrives. Your Moon (emotional body) is literally positioned in the gate of recognizing patterns. You feel patterns before you see them.',
+              title: 'Your emotional body is wired for pattern recognition',
+              detail: 'Your natal Moon sits at 12 degrees Scorpio. This degree corresponds to Human Design Gate 44 (Alertness) — the gate that governs pattern recognition and the ability to detect what is coming before it arrives. Your emotional body (the Moon) is literally positioned in the gate of seeing patterns. You feel them before you see them.',
             },
           ].map((hc, i) => (
             <div key={i} style={{

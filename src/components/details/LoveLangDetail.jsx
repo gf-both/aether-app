@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
 import { LOVE_LANGUAGES, LOVE_LANG_QUESTIONS, getLoveLanguageProfile } from '../../engines/loveLangEngine'
 import LoveLangSymbol from '../canvas/LoveLangSymbol'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const COLORS = {
   words: '#e8c547',
@@ -376,6 +377,7 @@ export default function LoveLangDetail() {
   if (!primary) {
     return (
       <div style={S.panel}>
+        <AboutSystemButton systemName="Love Language" />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 14, padding: '24px 32px' }}>
           <div style={{ fontSize: 28 }}>💝</div>
           <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", textTransform: 'uppercase', letterSpacing: '.15em', color: 'var(--gold)' }}>Love Language</div>
@@ -409,6 +411,7 @@ export default function LoveLangDetail() {
 
   return (
     <div style={S.panel}>
+      <AboutSystemButton systemName="Love Language" />
       {/* HEADER + RETAKE */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

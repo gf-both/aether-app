@@ -3,6 +3,7 @@ import {
   YANTRAS, PLANET_DATA, getCurrentHora, getTithi,
   getAuspiciousnessScore, findNextWindow, getCountdown, getHoras,
 } from '../../engines/yantraEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ─── Styles ──────────────────────────────────────────────────────────────── */
 const S = {
@@ -245,6 +246,7 @@ export default function YantraDetail() {
   return (
     <div style={S.panel}>
       {/* HEADER */}
+      <AboutSystemButton systemName="Yantra" />
       <div>
         <div style={S.heading}>{'\u25C7'} Yantra — Sacred Geometry</div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>

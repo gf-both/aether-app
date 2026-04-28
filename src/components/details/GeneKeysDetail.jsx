@@ -3,6 +3,7 @@ import { computeGeneKeysData } from '../../data/geneKeysData'
 import { GENE_KEYS_DATA } from '../../engines/geneKeysEngine'
 import GeneKeysWheel from '../canvas/GeneKeysWheel'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 /* ─── Sphere color map ──────────────────────────────────────────────────────── */
 const SPHERE_COLORS = {
@@ -22,52 +23,98 @@ const SPHERE_COLORS = {
   Pearl: '#c9a84c',
 }
 
-/* ─── Tooltip component ─────────────────────────────────────────────────────── */
+/* ─── Tooltip component (HD-style with sphere colors) ──────────────────────── */
 function GKTooltip({ gk, children }) {
   const [show, setShow] = useState(false)
   if (!gk) return children
-  const d = GENE_KEYS_DATA[gk.gate || gk.num || gk.key] || {}
+  const key = gk.gate || gk.num || gk.key
+  const d = GENE_KEYS_DATA[key] || {}
+  const sphereColor = SPHERE_COLORS[gk.sphere || gk.role] || '#c9a84c'
   return (
     <div
-      style={{ position: 'relative', cursor: 'help' }}
+      style={{ position: 'relative', display: 'inline-flex', cursor: 'help' }}
       onMouseEnter={() => setShow(true)}
       onMouseLeave={() => setShow(false)}
     >
       {children}
       {show && (
         <div style={{
-          position: 'absolute', bottom: '105%', left: '50%', transform: 'translateX(-50%)',
-          zIndex: 100, minWidth: 240, maxWidth: 320, padding: '14px 16px',
-          background: 'rgba(14,12,20,.95)', border: '1px solid rgba(201,168,76,.2)',
-          borderRadius: 10, backdropFilter: 'blur(12px)',
-          boxShadow: '0 8px 32px rgba(0,0,0,.6)',
+          position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+          zIndex: 999, minWidth: 260, maxWidth: 320, padding: '12px 14px',
+          background: 'rgba(12,12,20,.96)', border: `1px solid ${sphereColor}33`,
+          borderRadius: 10, backdropFilter: 'blur(20px)', pointerEvents: 'none',
+          boxShadow: `0 8px 32px rgba(0,0,0,.5), 0 0 20px ${sphereColor}15`,
+          marginBottom: 6,
         }}>
-          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 13, color: 'var(--foreground)', marginBottom: 6 }}>
-            Gene Key {gk.gate || gk.num || gk.key} — {gk.sphere || gk.role || ''}
+          {/* Sphere label header */}
+          <div style={{
+            fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.15em',
+            textTransform: 'uppercase', color: sphereColor + 'aa', marginBottom: 6,
+          }}>
+            {gk.sphere || gk.role || ''} SPHERE
+          </div>
+          {/* Key number + name */}
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 13, color: 'var(--foreground)', marginBottom: 4 }}>
+            Gene Key {key}
           </div>
           <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--muted-foreground)', marginBottom: 8 }}>
             Line {gk.line} · {d.iching || ''}
           </div>
-          <div style={{ display: 'flex', gap: 6, marginBottom: 6 }}>
-            <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 6, background: 'rgba(220,60,60,.1)', color: '#dc6060', border: '1px solid rgba(220,60,60,.2)' }}>
+          {/* Shadow / Gift / Siddhi badges — color-coded like HD */}
+          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
+            <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(204,68,68,.15)', color: '#cc6666', border: '1px solid rgba(204,68,68,.2)' }}>
               Shadow: {d.shadow}
             </span>
-            <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 6, background: 'rgba(80,180,220,.1)', color: '#50b4dc', border: '1px solid rgba(80,180,220,.2)' }}>
+            <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: `${sphereColor}18`, color: sphereColor, border: `1px solid ${sphereColor}33` }}>
               Gift: {d.gift}
             </span>
+            <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(144,80,224,.12)', color: '#a878e8', border: '1px solid rgba(144,80,224,.2)' }}>
+              Siddhi: {d.siddhi}
+            </span>
           </div>
-          <div style={{ fontSize: 10, padding: '2px 6px', borderRadius: 6, background: 'rgba(201,168,76,.1)', color: '#c9a84c', border: '1px solid rgba(201,168,76,.2)', display: 'inline-block' }}>
-            Siddhi: {d.siddhi}
-          </div>
+          {/* Amino acid if available */}
+          {d.aminoAcid && (
+            <div style={{ fontSize: 9, color: 'rgba(201,168,76,.5)', marginTop: 4 }}>Amino acid: {d.aminoAcid}</div>
+          )}
+          {/* Arrow pointer */}
           <div style={{
-            position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%)',
-            width: 10, height: 10, background: 'rgba(14,12,20,.95)', border: '1px solid rgba(201,168,76,.2)',
-            borderTop: 'none', borderLeft: 'none',
+            position: 'absolute', bottom: -5, left: '50%',
             transform: 'translateX(-50%) rotate(45deg)',
+            width: 10, height: 10, background: 'rgba(12,12,20,.96)',
+            borderRight: `1px solid ${sphereColor}33`,
+            borderBottom: `1px solid ${sphereColor}33`,
           }} />
         </div>
       )}
     </div>
+  )
+}
+
+/* ─── Glow sphere — circle with hover glow effect (matches HD gate badges) ── */
+function GlowSphere({ gk, color, size = 48, children }) {
+  const [hovered, setHovered] = useState(false)
+  const d = GENE_KEYS_DATA[gk.key || gk.num] || {}
+  return (
+    <GKTooltip gk={{ gate: gk.key || gk.num, line: gk.line, sphere: gk.role, role: gk.role }}>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          width: size, height: size, borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: hovered ? color + '1a' : color + '0c',
+          border: `2px solid ${hovered ? color + '88' : color + '44'}`,
+          fontFamily: "'Cinzel',serif", fontSize: size * 0.44, color, fontWeight: 600,
+          position: 'relative', cursor: 'help',
+          transition: 'all .25s ease',
+          boxShadow: hovered ? `0 0 18px ${color}44, 0 0 6px ${color}22` : 'none',
+          transform: hovered ? 'scale(1.08)' : 'scale(1)',
+        }}
+      >
+        {gk.key || gk.num}
+        {children}
+      </div>
+    </GKTooltip>
   )
 }
 
@@ -89,6 +136,42 @@ function SpectrumBar({ shadow, gift, siddhi, color }) {
   )
 }
 
+/* ─── Sequence node with hover glow ────────────────────────────────────────── */
+function SequenceNode({ sColor, gk, d, isFirst, isLast }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <GKTooltip gk={{ gate: gk.key, line: gk.line, sphere: gk.role, role: gk.role }}>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          flex: 1, textAlign: 'center', padding: '14px 6px',
+          background: hovered ? sColor + '12' : sColor + '06',
+          border: '1px solid ' + (hovered ? sColor + '44' : sColor + '18'),
+          borderRadius: isFirst ? '10px 0 0 10px' : isLast ? '0 10px 10px 0' : '0',
+          borderLeft: isFirst ? undefined : 'none',
+          transition: 'all .25s ease',
+          cursor: 'help',
+          boxShadow: hovered ? `0 0 16px ${sColor}22` : 'none',
+        }}
+      >
+        <div style={{
+          fontFamily: "'Cinzel',serif", fontSize: 7, letterSpacing: '.2em',
+          textTransform: 'uppercase', color: sColor + 'aa', marginBottom: 4,
+        }}>{gk.role}</div>
+        <div style={{
+          fontFamily: "'Cinzel',serif", fontSize: 18, color: sColor, fontWeight: 600,
+          transition: 'text-shadow .25s',
+          textShadow: hovered ? `0 0 12px ${sColor}66` : 'none',
+        }}>{gk.key}</div>
+        <div style={{ fontSize: 9, color: 'var(--muted-foreground)', marginTop: 2 }}>
+          .{gk.line} · {d.gift || ''}
+        </div>
+      </div>
+    </GKTooltip>
+  )
+}
+
 /* ─── Sequence flow visualization ───────────────────────────────────────────── */
 function SequenceFlow({ spheres, color, label, desc }) {
   if (!spheres || spheres.length === 0) return null
@@ -104,27 +187,7 @@ function SequenceFlow({ spheres, color, label, desc }) {
           const d = GENE_KEYS_DATA[s.key] || {}
           return (
             <div key={i} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-              <GKTooltip gk={{ gate: s.key, line: s.line, sphere: s.role, role: s.role }}>
-                <div style={{
-                  flex: 1, textAlign: 'center', padding: '14px 6px',
-                  background: sColor + '06', border: '1px solid ' + sColor + '18',
-                  borderRadius: i === 0 ? '10px 0 0 10px' : i === spheres.length - 1 ? '0 10px 10px 0' : '0',
-                  borderLeft: i === 0 ? undefined : 'none',
-                  transition: 'background .2s',
-                  cursor: 'help',
-                }}>
-                  <div style={{
-                    fontFamily: "'Cinzel',serif", fontSize: 7, letterSpacing: '.2em',
-                    textTransform: 'uppercase', color: sColor + 'aa', marginBottom: 4,
-                  }}>{s.role}</div>
-                  <div style={{
-                    fontFamily: "'Cinzel',serif", fontSize: 18, color: sColor, fontWeight: 600,
-                  }}>{s.key}</div>
-                  <div style={{ fontSize: 9, color: 'var(--muted-foreground)', marginTop: 2 }}>
-                    .{s.line} · {d.gift || ''}
-                  </div>
-                </div>
-              </GKTooltip>
+              <SequenceNode sColor={sColor} gk={s} d={d} isFirst={i === 0} isLast={i === spheres.length - 1} />
               {i < spheres.length - 1 && (
                 <div style={{ fontSize: 14, color: 'var(--muted-foreground)', padding: '0 1px', zIndex: 1 }}>{'\u2192'}</div>
               )}
@@ -133,6 +196,42 @@ function SequenceFlow({ spheres, color, label, desc }) {
         })}
       </div>
     </div>
+  )
+}
+
+/* ─── Map badge with hover glow (Full Map tab) ────────────────────────────── */
+function MapBadge({ gk, fallbackColor }) {
+  const [hovered, setHovered] = useState(false)
+  const c = SPHERE_COLORS[gk.role] || fallbackColor
+  const d = GENE_KEYS_DATA[gk.key] || {}
+  return (
+    <GKTooltip gk={{ gate: gk.key, line: gk.line, sphere: gk.role, role: gk.role }}>
+      <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
+          borderRadius: 10,
+          background: hovered ? c + '14' : c + '08',
+          border: '1px solid ' + (hovered ? c + '44' : c + '22'),
+          cursor: 'help',
+          transition: 'all .25s ease',
+          boxShadow: hovered ? `0 0 14px ${c}22` : 'none',
+        }}
+      >
+        <div style={{
+          fontFamily: "'Cinzel',serif", fontSize: 18, color: c, fontWeight: 600,
+          transition: 'text-shadow .25s',
+          textShadow: hovered ? `0 0 10px ${c}55` : 'none',
+        }}>{gk.key}</div>
+        <div>
+          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: c }}>{gk.role}</div>
+          <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)' }}>
+            {d.shadow} → {d.gift} → {d.siddhi}
+          </div>
+        </div>
+      </div>
+    </GKTooltip>
   )
 }
 
@@ -155,12 +254,7 @@ function KeyCard({ gk, color }) {
     }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{
-          width: 48, height: 48, borderRadius: '50%',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: color + '0c', border: `2px solid ${color}33`,
-          fontFamily: "'Cinzel',serif", fontSize: 22, color, fontWeight: 600, flexShrink: 0,
-        }}>{gk.key || gk.num}</div>
+        <GlowSphere gk={gk} color={color} />
         <div style={{ flex: 1 }}>
           <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, letterSpacing: '.1em', color }}>
             Gene Key {gk.key || gk.num} — {gk.role || gk.sphere}
@@ -233,37 +327,39 @@ const S = {
   },
 }
 
-/* ─── Tab system ────────────────────────────────────────────────────────────── */
-const TABS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'activation', label: 'Activation' },
-  { id: 'venus', label: 'Venus' },
-  { id: 'pearl', label: 'Pearl' },
-  { id: 'map', label: 'Full Map' },
-]
-
 export default function GeneKeysDetail() {
   const profile = useActiveProfile()
-  const [activeTab, setActiveTab] = useState('overview')
+  const [showActivation, setShowActivation] = useState(false)
+  const [showVenus, setShowVenus] = useState(false)
+  const [showPearl, setShowPearl] = useState(false)
 
   const profileData = useMemo(() => {
     if (!profile?.dob) return null
     try {
       const [year, month, day] = profile.dob.split('-').map(Number)
-      const tob = profile.tob || '12:00'
+      const tob = profile.tob || profile.birthTime || '12:00'
       const [hour, minute] = tob.split(':').map(Number)
-      const timezone = profile.birthTimezone ?? -3
-      return computeGeneKeysData({ day, month, year, hour: hour || 12, minute: minute || 0, timezone })
+      const timezone = profile.birthTimezone ?? profile.timezone ?? -3
+      const result = computeGeneKeysData({ day, month, year, hour: hour || 12, minute: minute || 0, timezone })
+      return result
     } catch (e) {
       console.error('GeneKeysDetail error:', e)
       return null
     }
-  }, [profile?.dob, profile?.tob, profile?.birthTimezone])
+  }, [profile?.dob, profile?.tob, profile?.birthTime, profile?.birthTimezone, profile?.timezone])
 
   const activationSpheres = profileData?.SPHERES?.filter(s => !s.center) || []
   const venusSpheres = profileData?.VENUS_SPHERES || []
   const pearlSpheres = profileData?.PEARL_SPHERES || []
   const allSpheres = [...activationSpheres, ...venusSpheres, ...pearlSpheres]
+
+  // Log computed sequences for debugging
+  if (activationSpheres.length > 0 && venusSpheres.length === 0) {
+    console.warn('Gene Keys: Venus Sequence empty despite activation data. Venus raw:', profileData?.profile?.venusSequence)
+  }
+  if (activationSpheres.length > 0 && pearlSpheres.length === 0) {
+    console.warn('Gene Keys: Pearl Sequence empty despite activation data. Pearl raw:', profileData?.profile?.pearlSequence)
+  }
 
   // Empty state
   if (!profile?.dob) {
@@ -289,314 +385,263 @@ export default function GeneKeysDetail() {
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u2B21'} Gene Keys</div>
+        <AboutSystemButton systemName="Gene Keys" />
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Hologenetic Profile — {allSpheres.length} keys across three sequences
         </div>
       </div>
 
-      {/* TABS */}
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-        {TABS.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              padding: '6px 14px', borderRadius: 8, border: 'none',
-              fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.1em',
-              textTransform: 'uppercase', cursor: 'pointer',
-              background: activeTab === tab.id ? 'rgba(201,168,76,.15)' : 'rgba(255,255,255,.03)',
-              color: activeTab === tab.id ? '#c9a84c' : 'var(--muted-foreground)',
-              border: activeTab === tab.id ? '1px solid rgba(201,168,76,.3)' : '1px solid rgba(255,255,255,.06)',
-              transition: 'all .2s',
-            }}
-          >{tab.label}</button>
-        ))}
+      {/* HOLOGENETIC WHEEL */}
+      <div>
+        <div style={S.sectionTitle}>Hologenetic Wheel</div>
+        <div style={{ ...S.glass, padding: 0, overflow: 'hidden', height: 360, position: 'relative' }}>
+          <GeneKeysWheel />
+        </div>
       </div>
 
-      {/* HOLOGENETIC WHEEL */}
-      {activeTab === 'overview' && (
-        <>
-          <div>
-            <div style={S.sectionTitle}>Hologenetic Wheel</div>
-            <div style={{ ...S.glass, padding: 0, overflow: 'hidden', height: 360, position: 'relative' }}>
-              <GeneKeysWheel />
-            </div>
-          </div>
+      {/* HOLOGENETIC PROFILE OVERVIEW — all 12 spheres */}
+      <div>
+        <div style={S.sectionTitle}>Complete Profile — {allSpheres.length} Spheres</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
+          {allSpheres.map((gk, i) => {
+            const color = SPHERE_COLORS[gk.role] || '#40ccdd'
+            const d = GENE_KEYS_DATA[gk.key] || {}
+            return (
+              <div key={i} style={{
+                ...S.glass, textAlign: 'center', padding: '16px 10px',
+                borderColor: color + '22',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+              }}>
+                <div style={{
+                  fontFamily: "'Cinzel',serif", fontSize: 7, letterSpacing: '.2em',
+                  textTransform: 'uppercase', color: color + 'aa',
+                }}>{gk.role}</div>
+                <GlowSphere gk={gk} color={color}>
+                  <div style={{
+                    position: 'absolute', bottom: -2, right: -2,
+                    width: 18, height: 18, borderRadius: '50%',
+                    background: 'var(--card)', border: '1px solid ' + color + '44',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)',
+                  }}>.{gk.line}</div>
+                </GlowSphere>
+                <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)' }}>
+                  {d.gift || ''}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
-          {/* HOLOGENETIC PROFILE OVERVIEW — all 12 spheres */}
-          <div>
-            <div style={S.sectionTitle}>Complete Profile — {allSpheres.length} Spheres</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-              {allSpheres.map((gk, i) => {
-                const color = SPHERE_COLORS[gk.role] || '#40ccdd'
-                const d = GENE_KEYS_DATA[gk.key] || {}
-                return (
-                  <GKTooltip key={i} gk={{ gate: gk.key, line: gk.line, sphere: gk.role, role: gk.role }}>
-                    <div style={{
-                      ...S.glass, textAlign: 'center', padding: '16px 10px',
-                      borderColor: color + '22',
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
-                    }}>
-                      <div style={{
-                        fontFamily: "'Cinzel',serif", fontSize: 7, letterSpacing: '.2em',
-                        textTransform: 'uppercase', color: color + 'aa',
-                      }}>{gk.role}</div>
-                      <div style={{
-                        width: 48, height: 48, borderRadius: '50%',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: color + '0c', border: `2px solid ${color}44`,
-                        fontFamily: "'Cinzel',serif", fontSize: 20, color, fontWeight: 600, position: 'relative',
-                      }}>
-                        {gk.key}
-                        <div style={{
-                          position: 'absolute', bottom: -2, right: -2,
-                          width: 18, height: 18, borderRadius: '50%',
-                          background: 'var(--card)', border: '1px solid ' + color + '44',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)',
-                        }}>.{gk.line}</div>
-                      </div>
-                      <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)' }}>
-                        {d.gift || ''}
-                      </div>
-                    </div>
-                  </GKTooltip>
-                )
-              })}
-            </div>
-          </div>
+      {/* THREE SEQUENCES SUMMARY */}
+      <div>
+        <div style={S.sectionTitle}>The Three Sequences</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <SequenceFlow
+            spheres={activationSpheres}
+            color="#50b4dc"
+            label="Activation Sequence"
+            desc="The awakening path — from Life's Work to Purpose"
+          />
+          <SequenceFlow
+            spheres={venusSpheres}
+            color="#d43070"
+            label="Venus Sequence"
+            desc="The love path — relationships, emotional intelligence, spirit"
+          />
+          <SequenceFlow
+            spheres={pearlSpheres}
+            color="#f0c040"
+            label="Pearl Sequence"
+            desc="The prosperity path — vocation, culture, brand, abundance"
+          />
+        </div>
+      </div>
 
-          {/* THREE SEQUENCES SUMMARY */}
-          <div>
-            <div style={S.sectionTitle}>The Three Sequences</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <SequenceFlow
-                spheres={activationSpheres}
-                color="#50b4dc"
-                label="Activation Sequence"
-                desc="The awakening path — from Life's Work to Purpose"
-              />
-              <SequenceFlow
-                spheres={venusSpheres}
-                color="#d43070"
-                label="Venus Sequence"
-                desc="The love path — relationships, emotional intelligence, spirit"
-              />
-              <SequenceFlow
-                spheres={pearlSpheres}
-                color="#f0c040"
-                label="Pearl Sequence"
-                desc="The prosperity path — vocation, culture, brand, abundance"
-              />
-            </div>
-          </div>
+      {/* CONTEMPLATION */}
+      <div>
+        <div style={S.sectionTitle}>Hologenetic Contemplation</div>
+        <div style={S.interpretation}>
+          {profile?.name || 'Your'} hologenetic profile weaves {allSpheres.length} Gene Keys across three
+          sequences of awakening. The Activation Sequence ({activationSpheres.map(s => s.key).join('-')})
+          reveals your core gifts. The Venus Sequence ({venusSpheres.map(s => s.key).join('-') || 'pending'})
+          illuminates your relational field. The Pearl Sequence ({pearlSpheres.map(s => s.key).join('-') || 'pending'})
+          maps your path to prosperity. The journey from Shadow to Siddhi in each key is spiral — you will revisit
+          each frequency at deeper levels of integration. The Gene Keys teach that{' '}
+          <span style={{ color: 'var(--foreground)' }}>transformation happens through contemplation, not effort</span>.
+        </div>
+      </div>
 
-          {/* CONTEMPLATION */}
-          <div>
-            <div style={S.sectionTitle}>Hologenetic Contemplation</div>
-            <div style={S.interpretation}>
-              {profile?.name || 'Your'} hologenetic profile weaves {allSpheres.length} Gene Keys across three
-              sequences of awakening. The Activation Sequence ({activationSpheres.map(s => s.key).join('-')})
-              reveals your core gifts. The Venus Sequence ({venusSpheres.map(s => s.key).join('-') || 'pending'})
-              illuminates your relational field. The Pearl Sequence ({pearlSpheres.map(s => s.key).join('-') || 'pending'})
-              maps your path to prosperity. The journey from Shadow to Siddhi in each key is spiral — you will revisit
-              each frequency at deeper levels of integration. The Gene Keys teach that{' '}
-              <span style={{ color: 'var(--foreground)' }}>transformation happens through contemplation, not effort</span>.
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* ACTIVATION TAB */}
-      {activeTab === 'activation' && (
-        <>
-          <div>
-            <div style={S.sectionTitle}>Activation Sequence — The Awakening Path</div>
-            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5 }}>
+      {/* ACTIVATION SEQUENCE DETAILS — COLLAPSIBLE */}
+      <div>
+        <div
+          onClick={() => setShowActivation(!showActivation)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
+            padding: '10px 0', userSelect: 'none'
+          }}
+        >
+          <span style={{
+            fontSize: 10, color: '#50b4dc', transition: 'transform .2s',
+            transform: showActivation ? 'rotate(90deg)' : 'rotate(0)'
+          }}>▶</span>
+          <span style={{ ...S.sectionTitle, borderBottom: 'none', paddingBottom: 0, marginBottom: 0 }}>
+            Activation Sequence — The Awakening Path
+          </span>
+        </div>
+        {showActivation && (
+          <>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5, marginTop: 8 }}>
               The Activation Sequence traces the path from Life's Work through Evolution and Radiance to Purpose,
               revealing how your deepest gifts unfold through lived experience.
             </div>
-            <SequenceFlow spheres={activationSpheres} color="#50b4dc" label="" desc="" />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {activationSpheres.map((s, i) => (
-              <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#50b4dc'} />
-            ))}
-          </div>
-        </>
-      )}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {activationSpheres.map((s, i) => (
+                <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#50b4dc'} />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
 
-      {/* VENUS TAB */}
-      {activeTab === 'venus' && (
-        <>
-          <div>
-            <div style={S.sectionTitle}>Venus Sequence — The Path of Love</div>
-            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5 }}>
+      {/* VENUS SEQUENCE DETAILS — COLLAPSIBLE */}
+      <div>
+        <div
+          onClick={() => setShowVenus(!showVenus)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
+            padding: '10px 0', userSelect: 'none'
+          }}
+        >
+          <span style={{
+            fontSize: 10, color: '#d43070', transition: 'transform .2s',
+            transform: showVenus ? 'rotate(90deg)' : 'rotate(0)'
+          }}>▶</span>
+          <span style={{ ...S.sectionTitle, borderBottom: 'none', paddingBottom: 0, marginBottom: 0 }}>
+            Venus Sequence — The Path of Love
+          </span>
+        </div>
+        {showVenus && (
+          <>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5, marginTop: 8 }}>
               The Venus Sequence opens the heart field. It reveals how you attract others (Attraction), how your mind processes
               relationship (IQ), how your emotions navigate intimacy (EQ), and how your spirit transcends separation (SQ).
             </div>
             {venusSpheres.length > 0 ? (
-              <>
-                <SequenceFlow spheres={venusSpheres} color="#d43070" label="" desc="" />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
-                  {venusSpheres.map((s, i) => (
-                    <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#d43070'} />
-                  ))}
-                </div>
-              </>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {venusSpheres.map((s, i) => (
+                  <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#d43070'} />
+                ))}
+              </div>
             ) : (
               <div style={{ textAlign: 'center', opacity: .4, padding: 40 }}>Venus Sequence requires planetary data</div>
             )}
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
 
-      {/* PEARL TAB */}
-      {activeTab === 'pearl' && (
-        <>
-          <div>
-            <div style={S.sectionTitle}>Pearl Sequence — The Path of Prosperity</div>
-            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5 }}>
+      {/* PEARL SEQUENCE DETAILS — COLLAPSIBLE */}
+      <div>
+        <div
+          onClick={() => setShowPearl(!showPearl)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
+            padding: '10px 0', userSelect: 'none'
+          }}
+        >
+          <span style={{
+            fontSize: 10, color: '#f0c040', transition: 'transform .2s',
+            transform: showPearl ? 'rotate(90deg)' : 'rotate(0)'
+          }}>▶</span>
+          <span style={{ ...S.sectionTitle, borderBottom: 'none', paddingBottom: 0, marginBottom: 0 }}>
+            Pearl Sequence — The Path of Prosperity
+          </span>
+        </div>
+        {showPearl && (
+          <>
+            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5, marginTop: 8 }}>
               The Pearl Sequence connects your inner gifts to outer abundance. It reveals your true Vocation, the Culture
               you create, the Brand you embody, and the Pearl — the distilled essence of your contribution to the world.
             </div>
             {pearlSpheres.length > 0 ? (
-              <>
-                <SequenceFlow spheres={pearlSpheres} color="#f0c040" label="" desc="" />
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
-                  {pearlSpheres.map((s, i) => (
-                    <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#f0c040'} />
-                  ))}
-                </div>
-              </>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {pearlSpheres.map((s, i) => (
+                  <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#f0c040'} />
+                ))}
+              </div>
             ) : (
               <div style={{ textAlign: 'center', opacity: .4, padding: 40 }}>Pearl Sequence requires planetary data</div>
             )}
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
 
-      {/* FULL MAP TAB */}
-      {activeTab === 'map' && (
-        <>
+      {/* COMPLETE HOLOGENETIC MAP — ALWAYS VISIBLE */}
+      <div>
+        <div style={S.sectionTitle}>Complete Hologenetic Map — All {allSpheres.length} Keys</div>
+        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 16, lineHeight: 1.5 }}>
+          Your complete Gene Keys profile across all three sequences. Each key holds a spectrum from Shadow to Gift to Siddhi.
+          Hover any key for details.
+        </div>
+
+        {/* Visual map — three concentric rings */}
+        <div style={{
+          ...S.glass, padding: '24px 20px', position: 'relative',
+          display: 'flex', flexDirection: 'column', gap: 20,
+        }}>
+          {/* Activation ring */}
           <div>
-            <div style={S.sectionTitle}>Complete Hologenetic Map — All {allSpheres.length} Keys</div>
-            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 16, lineHeight: 1.5 }}>
-              Your complete Gene Keys profile across all three sequences. Each key holds a spectrum from Shadow to Gift to Siddhi.
-              Hover any key for details.
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#50b4dc88', marginBottom: 8 }}>
+              Activation — Awakening
             </div>
-          </div>
-
-          {/* Visual map — three concentric rings */}
-          <div style={{
-            ...S.glass, padding: '24px 20px', position: 'relative',
-            display: 'flex', flexDirection: 'column', gap: 20,
-          }}>
-            {/* Activation ring */}
-            <div>
-              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#50b4dc88', marginBottom: 8 }}>
-                Activation — Awakening
-              </div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {activationSpheres.map((s, i) => {
-                  const c = SPHERE_COLORS[s.role] || '#50b4dc'
-                  const d = GENE_KEYS_DATA[s.key] || {}
-                  return (
-                    <GKTooltip key={i} gk={{ gate: s.key, line: s.line, sphere: s.role, role: s.role }}>
-                      <div style={{
-                        display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
-                        borderRadius: 10, background: c + '08', border: '1px solid ' + c + '22',
-                        cursor: 'help', transition: 'background .2s',
-                      }}>
-                        <div style={{ fontFamily: "'Cinzel',serif", fontSize: 18, color: c, fontWeight: 600 }}>{s.key}</div>
-                        <div>
-                          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: c }}>{s.role}</div>
-                          <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)' }}>
-                            {d.shadow} → {d.gift} → {d.siddhi}
-                          </div>
-                        </div>
-                      </div>
-                    </GKTooltip>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Connection lines placeholder */}
-            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,.15), transparent)' }} />
-
-            {/* Venus ring */}
-            <div>
-              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#d4307088', marginBottom: 8 }}>
-                Venus — Love
-              </div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {venusSpheres.map((s, i) => {
-                  const c = SPHERE_COLORS[s.role] || '#d43070'
-                  const d = GENE_KEYS_DATA[s.key] || {}
-                  return (
-                    <GKTooltip key={i} gk={{ gate: s.key, line: s.line, sphere: s.role, role: s.role }}>
-                      <div style={{
-                        display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
-                        borderRadius: 10, background: c + '08', border: '1px solid ' + c + '22', cursor: 'help',
-                      }}>
-                        <div style={{ fontFamily: "'Cinzel',serif", fontSize: 18, color: c, fontWeight: 600 }}>{s.key}</div>
-                        <div>
-                          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: c }}>{s.role}</div>
-                          <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)' }}>
-                            {d.shadow} → {d.gift} → {d.siddhi}
-                          </div>
-                        </div>
-                      </div>
-                    </GKTooltip>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,.15), transparent)' }} />
-
-            {/* Pearl ring */}
-            <div>
-              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#f0c04088', marginBottom: 8 }}>
-                Pearl — Prosperity
-              </div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {pearlSpheres.map((s, i) => {
-                  const c = SPHERE_COLORS[s.role] || '#f0c040'
-                  const d = GENE_KEYS_DATA[s.key] || {}
-                  return (
-                    <GKTooltip key={i} gk={{ gate: s.key, line: s.line, sphere: s.role, role: s.role }}>
-                      <div style={{
-                        display: 'flex', alignItems: 'center', gap: 8, padding: '8px 14px',
-                        borderRadius: 10, background: c + '08', border: '1px solid ' + c + '22', cursor: 'help',
-                      }}>
-                        <div style={{ fontFamily: "'Cinzel',serif", fontSize: 18, color: c, fontWeight: 600 }}>{s.key}</div>
-                        <div>
-                          <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: c }}>{s.role}</div>
-                          <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 9, color: 'var(--muted-foreground)' }}>
-                            {d.shadow} → {d.gift} → {d.siddhi}
-                          </div>
-                        </div>
-                      </div>
-                    </GKTooltip>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* All key cards */}
-          <div>
-            <div style={S.sectionTitle}>All Gene Key Profiles</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {allSpheres.map((s, i) => (
-                <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#40ccdd'} />
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {activationSpheres.map((s, i) => (
+                <MapBadge key={i} gk={s} fallbackColor="#50b4dc" />
               ))}
             </div>
           </div>
-        </>
-      )}
+
+          {/* Connection lines placeholder */}
+          <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,.15), transparent)' }} />
+
+          {/* Venus ring */}
+          <div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#d4307088', marginBottom: 8 }}>
+              Venus — Love
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {venusSpheres.map((s, i) => (
+                <MapBadge key={i} gk={s} fallbackColor="#d43070" />
+              ))}
+            </div>
+          </div>
+
+          <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,.15), transparent)' }} />
+
+          {/* Pearl ring */}
+          <div>
+            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#f0c04088', marginBottom: 8 }}>
+              Pearl — Prosperity
+            </div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {pearlSpheres.map((s, i) => (
+                <MapBadge key={i} gk={s} fallbackColor="#f0c040" />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* All key cards */}
+        <div style={{ marginTop: 20 }}>
+          <div style={S.sectionTitle}>All Gene Key Profiles</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {allSpheres.map((s, i) => (
+              <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#40ccdd'} />
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

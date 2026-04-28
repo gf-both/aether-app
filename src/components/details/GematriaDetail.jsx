@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { HEBREW_ALPHABET, GEMATRIA_METHODS, GEMATRIA_PROFILE, getGematriaProfile } from '../../data/gematriaData'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 // Build a dynamically-computed profile from the engine, merged with the rich
 // static content (interpretations, kabbalistic paths) that is editorial in nature.
@@ -318,6 +319,7 @@ export default function GematriaDetail() {
 
   return (
     <div style={S.panel}>
+      <AboutSystemButton systemName="Gematria" />
       {/* 1. HEADER */}
       <div>
         <div style={S.heading}>{'\u05D0'} Gematria</div>

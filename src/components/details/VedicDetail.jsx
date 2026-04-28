@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
 import { getVedicChart, VEDIC_SIGNS, VEDIC_SIGN_MEANINGS, NAKSHATRAS, DASHA_LORDS, DASHA_YEARS } from '../../engines/vedicEngine'
 import { resolvePob } from '../../utils/profileUtils'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const PLANET_LABELS = {
   sun: 'Sun (Surya)', moon: 'Moon (Chandra)', mercury: 'Mercury (Budha)',
@@ -134,6 +135,7 @@ export default function VedicDetail() {
       {/* Title */}
       <div>
         <div style={S.heading}>JYOTISH KUNDALI</div>
+        <AboutSystemButton systemName="Vedic Astrology" />
         <div style={S.dimText}>Vedic Birth Chart Analysis</div>
       </div>
 
