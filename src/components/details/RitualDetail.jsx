@@ -52,258 +52,266 @@ const SHAPE_COLORS = {
   sphere:    { primary: '#c9a84c', secondary: '#e0c070', glow: 'rgba(200,170,80,' },
 }
 
-function drawShape(ctx, shape, cx, cy, scale, t) {
-  const col = SHAPE_COLORS[shape] || SHAPE_COLORS.sphere
-  ctx.lineCap = 'round'; ctx.lineJoin = 'round'
+// ─── Particle agglomeration system — organic clusters, no blobs, no straight lines ───
+// Each shape uses 40-80 particles that cluster into recognizable forms with organic drift
 
-  // Outer glow layer
-  ctx.shadowColor = col.glow + '0.4)'; ctx.shadowBlur = 20
+function seededRandom(seed) {
+  let s = seed
+  return () => { s = (s * 16807 + 0) % 2147483647; return s / 2147483647 }
+}
 
+function generateShapeParticles(shape, count) {
+  const rng = seededRandom(shape.length * 7 + 42)
+  const particles = []
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      phase: rng() * TAU,
+      speed: 0.3 + rng() * 0.7,
+      drift: (rng() - 0.5) * 0.15,
+      size: 1.2 + rng() * 2.5,
+      brightness: 0.4 + rng() * 0.6,
+      offset: rng() * TAU,
+      layer: Math.floor(rng() * 3),
+    })
+  }
+  return particles
+}
+
+// Cache particles per shape
+const shapeParticleCache = {}
+function getShapeParticles(shape, count) {
+  if (!shapeParticleCache[shape]) shapeParticleCache[shape] = generateShapeParticles(shape, count)
+  return shapeParticleCache[shape]
+}
+
+// Get target position for a particle within a shape
+function getShapeTarget(shape, i, count, t, scale) {
+  const frac = i / count
   switch (shape) {
     case 'flame': {
-      // Animated flame with multiple layers
-      for (let layer = 0; layer < 3; layer++) {
-        const flicker = Math.sin(t * 4 + layer * 2) * 0.05
-        const sway = Math.sin(t * 2.5 + layer) * scale * 0.06
-        const h = scale * (0.7 - layer * 0.15)
-        const w = scale * (0.25 - layer * 0.05)
-        ctx.beginPath()
-        ctx.moveTo(cx + sway, cy + h * 0.5)
-        ctx.bezierCurveTo(cx - w + sway + flicker * scale, cy + h * 0.1, cx - w * 0.6 + sway, cy - h * 0.4, cx + sway, cy - h * 0.5 + Math.sin(t * 5) * scale * 0.03)
-        ctx.bezierCurveTo(cx + w * 0.6 + sway, cy - h * 0.4, cx + w + sway - flicker * scale, cy + h * 0.1, cx + sway, cy + h * 0.5)
-        ctx.closePath()
-        const alpha = 0.35 - layer * 0.1
-        ctx.fillStyle = layer === 0 ? `rgba(255,80,20,${alpha})` : layer === 1 ? `rgba(255,150,40,${alpha})` : `rgba(255,220,80,${alpha})`
-        ctx.fill()
-        ctx.strokeStyle = layer === 2 ? col.secondary : col.primary
-        ctx.lineWidth = 1.5 - layer * 0.3; ctx.globalAlpha = 0.6 - layer * 0.15; ctx.stroke(); ctx.globalAlpha = 1
-      }
-      break
+      // Particles rise and sway like fire
+      const rise = frac
+      const sway = Math.sin(t * 3 + i * 0.7) * 0.15 * (1 - rise * 0.5)
+      const width = 0.3 * (1 - rise * 0.7) * (1 + Math.sin(t * 4 + i) * 0.1)
+      const x = sway + (Math.sin(i * 2.3 + t * 2) * width)
+      const y = 0.5 - rise * 0.9 + Math.sin(t * 5 + i * 0.3) * 0.02
+      return { x: x * scale, y: y * scale, size: (1 - rise * 0.6) }
     }
     case 'breath': {
+      // Particles expand and contract in concentric breathing
       const breathPhase = Math.sin(t * 0.8)
-      for (let ring = 0; ring < 4; ring++) {
-        const r = scale * (0.15 + ring * 0.15) * (1 + breathPhase * 0.25)
-        const alpha = 0.5 - ring * 0.1
-        ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU)
-        ctx.strokeStyle = col.glow + alpha + ')'; ctx.lineWidth = 2 - ring * 0.3; ctx.stroke()
-      }
-      // Center dot pulses
-      const cr = scale * 0.06 * (1.2 + breathPhase * 0.3)
-      const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, cr)
-      cg.addColorStop(0, col.glow + '0.8)'); cg.addColorStop(1, 'transparent')
-      ctx.beginPath(); ctx.arc(cx, cy, cr, 0, TAU); ctx.fillStyle = cg; ctx.fill()
-      break
+      const ring = Math.floor(frac * 5)
+      const posInRing = (frac * 5) % 1
+      const angle = posInRing * TAU + ring * 0.5
+      const baseR = (ring + 1) * 0.1
+      const r = baseR * (1 + breathPhase * 0.35) * scale
+      return { x: Math.cos(angle) * r, y: Math.sin(angle) * r, size: 1 + breathPhase * 0.3 }
     }
     case 'heart': {
-      const beat = 1 + Math.sin(t * 2) * 0.06
-      const s = scale * 0.028 * beat
-      ctx.beginPath()
-      for (let i = 0; i <= 200; i++) {
-        const a = (i / 200) * TAU
-        const hx = cx + s * 16 * Math.pow(Math.sin(a), 3)
-        const hy = cy - s * (13 * Math.cos(a) - 5 * Math.cos(2*a) - 2 * Math.cos(3*a) - Math.cos(4*a))
-        i === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy)
-      }
-      ctx.closePath()
-      ctx.fillStyle = col.glow + '0.15)'; ctx.fill()
-      ctx.strokeStyle = col.primary; ctx.lineWidth = 2; ctx.stroke()
-      // Inner glow
-      const hg = ctx.createRadialGradient(cx, cy - scale * 0.05, 0, cx, cy, scale * 0.35)
-      hg.addColorStop(0, col.glow + '0.25)'); hg.addColorStop(1, 'transparent')
-      ctx.beginPath(); ctx.arc(cx, cy - scale * 0.05, scale * 0.35, 0, TAU); ctx.fillStyle = hg; ctx.fill()
-      break
-    }
-    case 'eye': {
-      const blink = Math.max(0, Math.sin(t * 0.3)) // open/close
-      const eyeH = scale * 0.28 * blink
-      // Upper lid
-      ctx.beginPath(); ctx.moveTo(cx - scale * 0.5, cy)
-      ctx.quadraticCurveTo(cx, cy - eyeH, cx + scale * 0.5, cy)
-      // Lower lid
-      ctx.quadraticCurveTo(cx, cy + eyeH * 0.7, cx - scale * 0.5, cy)
-      ctx.closePath()
-      ctx.fillStyle = col.glow + '0.1)'; ctx.fill()
-      ctx.strokeStyle = col.primary; ctx.lineWidth = 1.5; ctx.stroke()
-      // Iris
-      if (blink > 0.3) {
-        const ir = scale * 0.12 * blink
-        const ig = ctx.createRadialGradient(cx, cy, ir * 0.3, cx, cy, ir)
-        ig.addColorStop(0, col.glow + '0.6)'); ig.addColorStop(0.7, col.primary); ig.addColorStop(1, 'transparent')
-        ctx.beginPath(); ctx.arc(cx, cy, ir, 0, TAU); ctx.fillStyle = ig; ctx.fill()
-        // Pupil
-        ctx.beginPath(); ctx.arc(cx, cy, ir * 0.35, 0, TAU); ctx.fillStyle = 'rgba(10,8,20,0.8)'; ctx.fill()
-        // Catchlight
-        ctx.beginPath(); ctx.arc(cx + ir * 0.2, cy - ir * 0.2, ir * 0.12, 0, TAU); ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fill()
-      }
-      break
+      const beat = 1 + Math.sin(t * 2) * 0.08
+      const a = frac * TAU
+      const hScale = scale * 0.03 * beat
+      const x = hScale * 16 * Math.pow(Math.sin(a), 3)
+      const y = -hScale * (13 * Math.cos(a) - 5 * Math.cos(2*a) - 2 * Math.cos(3*a) - Math.cos(4*a))
+      return { x, y, size: 1 + Math.sin(t * 2) * 0.15 }
     }
     case 'water': {
-      for (let row = 0; row < 5; row++) {
-        const yy = cy + (row - 2) * scale * 0.18
-        const alpha = 0.4 - Math.abs(row - 2) * 0.08
-        ctx.beginPath()
-        for (let x = -1; x <= 1; x += 0.01) {
-          const wx = cx + x * scale * 0.7
-          const wy = yy + Math.sin(x * 8 + t * 2 + row * 1.5) * scale * 0.06
-          x === -1 ? ctx.moveTo(wx, wy) : ctx.lineTo(wx, wy)
-        }
-        ctx.strokeStyle = col.glow + alpha + ')'; ctx.lineWidth = 2.5 - row * 0.3; ctx.stroke()
-      }
-      break
+      const row = Math.floor(frac * 6)
+      const posInRow = (frac * 6) % 1
+      const x = (posInRow - 0.5) * 1.4 * scale
+      const y = (row - 2.5) * 0.15 * scale + Math.sin(posInRow * 8 + t * 2 + row * 1.5) * scale * 0.08
+      return { x, y, size: 0.8 + Math.sin(t + i) * 0.2 }
     }
     case 'mountain': {
-      // Mountain silhouette with snow cap
-      ctx.beginPath()
-      ctx.moveTo(cx - scale * 0.7, cy + scale * 0.35)
-      ctx.lineTo(cx - scale * 0.1, cy - scale * 0.4)
-      ctx.lineTo(cx, cy - scale * 0.35) // snow cap notch
-      ctx.lineTo(cx + scale * 0.1, cy - scale * 0.4)
-      ctx.lineTo(cx + scale * 0.7, cy + scale * 0.35)
-      ctx.closePath()
-      ctx.fillStyle = col.glow + '0.1)'; ctx.fill()
-      ctx.strokeStyle = col.primary; ctx.lineWidth = 1.5; ctx.stroke()
-      // Ground line
-      ctx.beginPath(); ctx.moveTo(cx - scale * 0.8, cy + scale * 0.35); ctx.lineTo(cx + scale * 0.8, cy + scale * 0.35)
-      ctx.strokeStyle = col.glow + '0.3)'; ctx.lineWidth = 1; ctx.stroke()
-      // Snow cap glow
-      const sg = ctx.createRadialGradient(cx, cy - scale * 0.35, 0, cx, cy - scale * 0.2, scale * 0.15)
-      sg.addColorStop(0, 'rgba(220,230,255,0.3)'); sg.addColorStop(1, 'transparent')
-      ctx.beginPath(); ctx.arc(cx, cy - scale * 0.35, scale * 0.15, 0, TAU); ctx.fillStyle = sg; ctx.fill()
-      break
+      // Particles cluster along mountain silhouette
+      if (frac < 0.5) {
+        const p = frac * 2
+        const x = (-0.7 + p * 0.6) * scale
+        const y = (0.35 - p * 0.75) * scale
+        return { x, y, size: 0.8 }
+      } else {
+        const p = (frac - 0.5) * 2
+        const x = (-0.1 + p * 0.8) * scale
+        const y = (-0.4 + p * 0.75) * scale
+        return { x, y, size: 0.8 }
+      }
     }
     case 'spiral': {
-      ctx.beginPath()
-      for (let i = 0; i <= 300; i++) {
-        const a = (i / 300) * TAU * 3 + t * 0.3
-        const r = (i / 300) * scale * 0.55
-        const sx = cx + Math.cos(a) * r, sy = cy + Math.sin(a) * r
-        i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy)
-      }
-      ctx.strokeStyle = col.primary; ctx.lineWidth = 2; ctx.globalAlpha = 0.6; ctx.stroke(); ctx.globalAlpha = 1
-      break
+      const a = frac * TAU * 3.5 + t * 0.3
+      const r = frac * scale * 0.55
+      return { x: Math.cos(a) * r, y: Math.sin(a) * r, size: 0.5 + frac }
     }
     case 'tree': {
-      // Trunk
-      ctx.beginPath(); ctx.moveTo(cx, cy + scale * 0.5); ctx.lineTo(cx, cy - scale * 0.1)
-      ctx.strokeStyle = col.glow + '0.5)'; ctx.lineWidth = 3; ctx.stroke()
-      // Branches
-      const branches = 7
-      for (let b = 0; b < branches; b++) {
-        const a = -Math.PI / 2 + (b / (branches - 1) - 0.5) * Math.PI * 0.8
-        const len = scale * (0.25 + Math.sin(t * 0.5 + b) * 0.03)
-        ctx.beginPath(); ctx.moveTo(cx, cy - scale * 0.1)
-        ctx.lineTo(cx + Math.cos(a) * len, cy - scale * 0.1 + Math.sin(a) * len)
-        ctx.strokeStyle = col.glow + '0.4)'; ctx.lineWidth = 1.5; ctx.stroke()
-        // Leaf glow at tip
-        const lg = ctx.createRadialGradient(cx + Math.cos(a) * len, cy - scale * 0.1 + Math.sin(a) * len, 0, cx + Math.cos(a) * len, cy - scale * 0.1 + Math.sin(a) * len, scale * 0.06)
-        lg.addColorStop(0, col.glow + '0.4)'); lg.addColorStop(1, 'transparent')
-        ctx.beginPath(); ctx.arc(cx + Math.cos(a) * len, cy - scale * 0.1 + Math.sin(a) * len, scale * 0.06, 0, TAU); ctx.fillStyle = lg; ctx.fill()
+      if (frac < 0.25) {
+        // Trunk particles
+        const p = frac * 4
+        return { x: (Math.sin(i + t * 0.3) * 0.02) * scale, y: (0.5 - p * 0.6) * scale, size: 1.2 }
+      } else {
+        // Branch/canopy particles — organic spread
+        const p = (frac - 0.25) / 0.75
+        const angle = -Math.PI / 2 + (Math.sin(i * 1.7) * 0.5) * Math.PI * 0.8
+        const len = scale * (0.15 + p * 0.3 + Math.sin(t * 0.5 + i) * 0.02)
+        return { x: Math.cos(angle) * len, y: -0.1 * scale + Math.sin(angle) * len, size: 0.7 + Math.sin(t + i) * 0.3 }
       }
-      break
     }
     case 'star': {
-      const rot = t * 0.15
-      ctx.beginPath()
-      for (let i = 0; i <= 10; i++) {
-        const a = (i / 10) * TAU - Math.PI / 2 + rot
-        const r = i % 2 === 0 ? scale * 0.5 : scale * 0.2
-        const sx = cx + Math.cos(a) * r, sy = cy + Math.sin(a) * r
-        i === 0 ? ctx.moveTo(sx, sy) : ctx.lineTo(sx, sy)
-      }
-      ctx.closePath()
-      ctx.fillStyle = col.glow + '0.12)'; ctx.fill()
-      ctx.strokeStyle = col.primary; ctx.lineWidth = 1.5; ctx.stroke()
-      // Center glow
-      const cg = ctx.createRadialGradient(cx, cy, 0, cx, cy, scale * 0.15)
-      cg.addColorStop(0, col.glow + '0.5)'); cg.addColorStop(1, 'transparent')
-      ctx.beginPath(); ctx.arc(cx, cy, scale * 0.15, 0, TAU); ctx.fillStyle = cg; ctx.fill()
-      break
+      const a = frac * TAU - Math.PI / 2 + t * 0.1
+      const pointIndex = Math.floor(frac * 10)
+      const r = pointIndex % 2 === 0 ? scale * 0.5 : scale * 0.2
+      const jitter = Math.sin(i * 3.7 + t) * scale * 0.03
+      return { x: Math.cos(a) * (r + jitter), y: Math.sin(a) * (r + jitter), size: 0.8 + Math.sin(t * 2 + i) * 0.3 }
     }
-    case 'sound': {
-      // Sound waves emanating from left
-      const ox = cx - scale * 0.3
-      for (let w = 0; w < 5; w++) {
-        const r = scale * (0.1 + w * 0.1) + Math.sin(t * 3 + w) * scale * 0.02
-        const alpha = 0.5 - w * 0.08
-        ctx.beginPath(); ctx.arc(ox, cy, r, -Math.PI * 0.4, Math.PI * 0.4)
-        ctx.strokeStyle = col.glow + alpha + ')'; ctx.lineWidth = 2.5 - w * 0.3; ctx.stroke()
+    case 'eye': {
+      const blink = Math.max(0.1, Math.sin(t * 0.3))
+      if (frac < 0.6) {
+        // Eye outline particles
+        const p = frac / 0.6
+        const angle = (p - 0.5) * Math.PI * 0.8
+        const top = p < 0.5
+        const x = Math.sin(angle) * scale * 0.5
+        const ySpread = scale * 0.28 * blink * (top ? -1 : 0.7)
+        const y = Math.cos(angle) * ySpread * (top ? 0.5 : 0.35)
+        return { x, y, size: 0.8 }
+      } else {
+        // Iris particles — clustered in center
+        const p = (frac - 0.6) / 0.4
+        const a = p * TAU + t * 0.2
+        const r = scale * 0.08 * blink * (0.5 + p * 0.5)
+        return { x: Math.cos(a) * r, y: Math.sin(a) * r, size: 1.2 }
       }
-      // Source dot
-      ctx.beginPath(); ctx.arc(ox, cy, scale * 0.04, 0, TAU); ctx.fillStyle = col.primary; ctx.fill()
-      break
     }
     case 'sun': {
-      // Sun disc + rays
       const pulse = 1 + Math.sin(t * 1.5) * 0.05
-      const sr = scale * 0.18 * pulse
-      const sg = ctx.createRadialGradient(cx, cy, sr * 0.3, cx, cy, sr)
-      sg.addColorStop(0, col.glow + '0.7)'); sg.addColorStop(1, col.glow + '0.1)')
-      ctx.beginPath(); ctx.arc(cx, cy, sr, 0, TAU); ctx.fillStyle = sg; ctx.fill()
-      // Rays
-      for (let r = 0; r < 12; r++) {
-        const a = r * TAU / 12 + t * 0.1
-        const inner = sr * 1.3, outer = sr * 1.3 + scale * 0.2
-        ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * inner, cy + Math.sin(a) * inner)
-        ctx.lineTo(cx + Math.cos(a) * outer, cy + Math.sin(a) * outer)
-        ctx.strokeStyle = col.glow + '0.35)'; ctx.lineWidth = 2; ctx.stroke()
+      if (frac < 0.4) {
+        // Core particles
+        const a = (frac / 0.4) * TAU + t * 0.2
+        const r = scale * 0.15 * pulse * (0.3 + (frac / 0.4) * 0.7)
+        return { x: Math.cos(a) * r, y: Math.sin(a) * r, size: 1.5 }
+      } else {
+        // Ray particles
+        const rayFrac = (frac - 0.4) / 0.6
+        const rayIndex = Math.floor(rayFrac * 12)
+        const a = rayIndex * TAU / 12 + t * 0.1
+        const dist = scale * (0.2 + (rayFrac * 12 % 1) * 0.25) * pulse
+        return { x: Math.cos(a) * dist, y: Math.sin(a) * dist, size: 0.8 }
       }
-      break
     }
     case 'moon': {
-      const mr = scale * 0.3
-      // Outer circle
-      ctx.beginPath(); ctx.arc(cx, cy, mr, 0, TAU)
-      ctx.fillStyle = col.glow + '0.12)'; ctx.fill()
-      ctx.strokeStyle = col.primary; ctx.lineWidth = 1.5; ctx.stroke()
-      // Inner cutout for crescent
-      ctx.beginPath(); ctx.arc(cx + mr * 0.4, cy, mr * 0.85, 0, TAU)
-      ctx.fillStyle = 'rgba(5,3,15,0.8)'; ctx.fill()
-      break
+      const a = frac * TAU
+      const r = scale * 0.3
+      // Only place particles on the crescent (left side)
+      const x = Math.cos(a) * r
+      const y = Math.sin(a) * r
+      const cutX = r * 0.4 // cutout center
+      const cutR = r * 0.85
+      const distFromCut = Math.sqrt((x - cutX) ** 2 + y ** 2)
+      if (distFromCut < cutR * 0.9) return { x: Math.cos(a) * r * 1.02, y: Math.sin(a) * r, size: 0.6 }
+      return { x, y, size: 1 }
+    }
+    case 'sound': {
+      const wave = Math.floor(frac * 5)
+      const posInWave = (frac * 5) % 1
+      const angle = (posInWave - 0.5) * Math.PI * 0.8
+      const r = scale * (0.08 + wave * 0.1) + Math.sin(t * 3 + wave) * scale * 0.02
+      const ox = -0.3 * scale
+      return { x: ox + Math.cos(angle) * r, y: Math.sin(angle) * r, size: 1 - wave * 0.1 }
     }
     case 'hands': {
-      // Open palms
-      for (const side of [-1, 1]) {
-        const hx = cx + side * scale * 0.22
-        // Palm oval
-        ctx.beginPath(); ctx.ellipse(hx, cy + scale * 0.05, scale * 0.12, scale * 0.16, 0, 0, TAU)
-        ctx.strokeStyle = col.glow + '0.35)'; ctx.lineWidth = 1.5; ctx.stroke()
+      const side = frac < 0.5 ? -1 : 1
+      const localFrac = (frac < 0.5 ? frac : frac - 0.5) * 2
+      const hx = side * scale * 0.22
+      if (localFrac < 0.4) {
+        // Palm
+        const a = (localFrac / 0.4) * TAU
+        return { x: hx + Math.cos(a) * scale * 0.1, y: 0.05 * scale + Math.sin(a) * scale * 0.14, size: 1 }
+      } else {
         // Fingers
-        for (let f = 0; f < 5; f++) {
-          const fa = (-0.5 + f * 0.25) * side
-          const fx = hx + Math.sin(fa) * scale * 0.08
-          const fy = cy - scale * 0.12
-          ctx.beginPath(); ctx.moveTo(fx, fy)
-          ctx.lineTo(fx + Math.sin(fa) * scale * 0.15, fy - scale * 0.18 - (f === 2 ? scale * 0.04 : 0))
-          ctx.strokeStyle = col.glow + '0.3)'; ctx.lineWidth = 1.2; ctx.stroke()
-        }
+        const f = Math.floor((localFrac - 0.4) / 0.12)
+        const fa = (-0.5 + f * 0.25) * side
+        const ext = ((localFrac - 0.4) / 0.12 % 1)
+        const fx = hx + Math.sin(fa) * scale * 0.08
+        const fy = -0.12 * scale
+        return { x: fx + Math.sin(fa) * scale * 0.15 * ext, y: fy - scale * 0.18 * ext, size: 0.7 }
       }
-      break
     }
     case 'stillness': {
-      // Single pulsing glow — minimal
       const pulse = 0.5 + 0.5 * Math.sin(t * 0.6)
-      const sr = scale * 0.15 * (0.8 + pulse * 0.4)
-      const sg = ctx.createRadialGradient(cx, cy, 0, cx, cy, sr * 3)
-      sg.addColorStop(0, col.glow + (0.3 + pulse * 0.2).toFixed(2) + ')')
-      sg.addColorStop(0.5, col.glow + '0.08)'); sg.addColorStop(1, 'transparent')
-      ctx.beginPath(); ctx.arc(cx, cy, sr * 3, 0, TAU); ctx.fillStyle = sg; ctx.fill()
-      // Tiny center dot
-      ctx.beginPath(); ctx.arc(cx, cy, 2, 0, TAU); ctx.fillStyle = col.primary; ctx.fill()
-      break
+      const a = frac * TAU + t * 0.05
+      const r = scale * 0.08 * (0.5 + pulse * 0.8) * (0.3 + frac * 0.7)
+      return { x: Math.cos(a) * r, y: Math.sin(a) * r, size: 0.5 + pulse * 0.5 }
     }
     default: {
-      // Gentle orbiting dots
-      for (let i = 0; i < 12; i++) {
-        const a = (i / 12) * TAU + t * 0.2
-        const r = scale * 0.3
-        const dx = cx + Math.cos(a) * r, dy = cy + Math.sin(a) * r
-        ctx.beginPath(); ctx.arc(dx, dy, 2, 0, TAU)
-        ctx.fillStyle = col.glow + '0.5)'; ctx.fill()
-      }
+      const a = frac * TAU + t * 0.2
+      const r = scale * 0.3
+      return { x: Math.cos(a) * r, y: Math.sin(a) * r, size: 1 }
     }
   }
-  ctx.shadowBlur = 0
+}
+
+function drawShape(ctx, shape, cx, cy, scale, t) {
+  const col = SHAPE_COLORS[shape] || SHAPE_COLORS.sphere
+  const count = shape === 'flame' ? 70 : shape === 'breath' ? 60 : shape === 'stillness' ? 30 : 55
+  const particles = getShapeParticles(shape, count)
+
+  // Ambient glow behind the formation
+  const ag = ctx.createRadialGradient(cx, cy, 0, cx, cy, scale * 0.6)
+  ag.addColorStop(0, col.glow + '0.08)')
+  ag.addColorStop(1, 'transparent')
+  ctx.beginPath(); ctx.arc(cx, cy, scale * 0.6, 0, TAU)
+  ctx.fillStyle = ag; ctx.fill()
+
+  // Draw each particle with organic drift
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i]
+    const target = getShapeTarget(shape, i, count, t, scale)
+
+    // Add organic drift — sine-based wobble, not random noise
+    const driftX = Math.sin(t * p.speed + p.phase) * scale * p.drift
+    const driftY = Math.cos(t * p.speed * 0.7 + p.offset) * scale * p.drift * 0.8
+
+    const px = cx + target.x + driftX
+    const py = cy + target.y + driftY
+    const pSize = p.size * target.size
+
+    // Particle glow
+    const alpha = p.brightness * (0.5 + 0.5 * Math.sin(t * 1.5 + p.phase))
+    const glowR = pSize * 3
+    const grd = ctx.createRadialGradient(px, py, 0, px, py, glowR)
+    grd.addColorStop(0, col.glow + Math.min(alpha * 0.6, 0.6).toFixed(2) + ')')
+    grd.addColorStop(1, 'transparent')
+    ctx.beginPath(); ctx.arc(px, py, glowR, 0, TAU)
+    ctx.fillStyle = grd; ctx.fill()
+
+    // Particle core
+    ctx.beginPath(); ctx.arc(px, py, pSize * 0.7, 0, TAU)
+    ctx.fillStyle = p.layer === 0 ? col.primary : p.layer === 1 ? col.secondary : col.glow + '0.7)'
+    ctx.globalAlpha = 0.6 + alpha * 0.4
+    ctx.fill()
+    ctx.globalAlpha = 1
+  }
+
+  // Connecting filaments between nearby particles (organic, not straight)
+  ctx.globalAlpha = 0.12
+  for (let i = 0; i < Math.min(particles.length, 40); i += 2) {
+    const j = (i + 3) % particles.length
+    const pi = getShapeTarget(shape, i, count, t, scale)
+    const pj = getShapeTarget(shape, j, count, t, scale)
+    const di = particles[i], dj = particles[j]
+    const x1 = cx + pi.x + Math.sin(t * di.speed + di.phase) * scale * di.drift
+    const y1 = cy + pi.y + Math.cos(t * di.speed * 0.7 + di.offset) * scale * di.drift * 0.8
+    const x2 = cx + pj.x + Math.sin(t * dj.speed + dj.phase) * scale * dj.drift
+    const y2 = cy + pj.y + Math.cos(t * dj.speed * 0.7 + dj.offset) * scale * dj.drift * 0.8
+    const dist = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    if (dist < scale * 0.4) {
+      // Curved filament, not straight
+      const mx = (x1 + x2) / 2 + Math.sin(t + i) * scale * 0.05
+      const my = (y1 + y2) / 2 + Math.cos(t + i) * scale * 0.04
+      ctx.beginPath(); ctx.moveTo(x1, y1)
+      ctx.quadraticCurveTo(mx, my, x2, y2)
+      ctx.strokeStyle = col.glow + '0.3)'; ctx.lineWidth = 0.6; ctx.stroke()
+    }
+  }
+  ctx.globalAlpha = 1
 }
 
 function InlineParticles({ stepText, active }) {
@@ -491,10 +499,6 @@ export default function RitualDetail() {
       {/* ── Top Recommendation ── */}
       {activeTab === 'recommended' && result.topRecommendation && (
         <div style={{ margin: '16px 20px', padding: 20, borderRadius: 12, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)', position: 'relative', overflow: 'hidden' }}>
-          {/* Background particle visualization */}
-          <div style={{ position: 'absolute', inset: 0, opacity: 0.3, pointerEvents: 'none' }}>
-            <InlineParticles stepText={result.topRecommendation.description} active={false} />
-          </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', position: 'relative', zIndex: 1 }}>
             <div>
               <div style={S.sectionLabel}>Today's Ritual</div>

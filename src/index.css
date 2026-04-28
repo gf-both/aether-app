@@ -727,22 +727,22 @@ html:not(.dark) .nbg { opacity: 0.1; }
    Applied when html does NOT have .dark class
    ════════════════════════════════════════════ */
 html:not(.dark) {
-  --background: #f8f5ee;
+  --background: #f4efe4;
   --foreground: #1a1510;
-  --card: #ffffff;
+  --card: #efe9dc;
   --card-foreground: #1a1510;
-  --popover: #ffffff;
+  --popover: #ede7d8;
   --popover-foreground: #1a1510;
-  --secondary: #f0ebe0;
+  --secondary: #e8e2d4;
   --secondary-foreground: #2a2218;
-  --muted: #e8e2d4;
+  --muted: #e2dbc8;
   --muted-foreground: #5a4a30;
-  --accent: #ede7d8;
+  --accent: #e8e0d0;
   --accent-foreground: #1a1510;
   --border: #d4c8a8;
-  --input: #f0ebe0;
+  --input: #ede7d8;
   --ring: #8b6820;
-  --sidebar: #f0ebe0;
+  --sidebar: #efe9dc;
   --sidebar-foreground: #1a1510;
   --sidebar-border: #d4c8a8;
 }
@@ -752,12 +752,13 @@ html:not(.dark) input[type="date"],
 html:not(.dark) input[type="time"] { background: #f0ebe0; color: #1a1510; border-color: #d4c8a8; }
 
 html:not(.dark).theme-crystal-day {
-  --background: #f5f7fc;
-  --card: #ffffff;
-  --sidebar: #eef1f8;
+  --background: #eef1f8;
+  --card: #e8ecf4;
+  --popover: #e5e9f2;
+  --sidebar: #e8ecf4;
   --border: #c8d0e0;
   --muted-foreground: #4a5580;
-  --accent: #e8ecf4;
+  --accent: #e0e5f0;
   --foreground: #1e293b;
   --secondary-foreground: #2a3850;
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useComputedProfile } from '../../hooks/useActiveProfile'
 import IntegralFigure from '../canvas/IntegralFigure'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 const ZONES = [
   {
@@ -107,8 +108,9 @@ export default function IntegralDetail() {
 
       {/* Detail panel */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px' }}>
+        <AboutSystemButton systemName="Integral" />
         {/* Zone header */}
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 16, marginTop: 12 }}>
           <div style={{
             fontFamily: "'Cinzel',serif", fontSize: 16, fontWeight: 600,
             letterSpacing: '.12em', textTransform: 'uppercase',

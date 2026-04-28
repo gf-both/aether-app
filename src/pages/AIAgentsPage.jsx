@@ -5,7 +5,7 @@
  * and mood, and watch their golems converse in a group chat.
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useGolemStore } from '../store/useGolemStore'
 import { useComputedProfile, useComputedPeople } from '../hooks/useActiveProfile'
 import { runMultiGolemRound } from '../lib/golemConversation'
@@ -218,7 +218,7 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, onClo
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
   const [roundNum, setRoundNum] = useState(0)
-  const [showSetup, setShowSetup] = useState(true)
+  const [showSetup, setShowSetup] = useState(!initialParticipantIds?.length)
   const scrollRef = useRef(null)
 
   const topic = TOPICS.find(t => t.id === topicId) || TOPICS[0]
@@ -281,6 +281,15 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, onClo
   }, [runRound])
 
   const continueDialogue = useCallback(() => { runRound(roundNum) }, [runRound, roundNum])
+
+  // Auto-start dialogue when opened with pre-selected participants
+  const autoStarted = useRef(false)
+  useEffect(() => {
+    if (!autoStarted.current && initialParticipantIds?.length >= 2 && participants.length >= 2 && !loading && roundNum === 0) {
+      autoStarted.current = true
+      startDialogue()
+    }
+  }, [participants.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const canStart = participants.length >= 2
   const maxRounds = topic.rounds.length

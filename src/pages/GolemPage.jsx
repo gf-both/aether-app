@@ -213,19 +213,23 @@ export default function GolemPage() {
     return `I'm ${p?.name || 'a custom Golem'}. I've been shaped from ${p?.sign || '?'} Sun energy. What do you want to explore?`
   }
 
-  function buildSystemPrompt(p, label) {
+  function buildSystemPrompt(golemProfile, label, userProfile) {
+    const u = userProfile || golemProfile // for Clone, they're the same
+    const g = golemProfile
+
     const roleDesc = {
-      'Your Clone': `You ARE ${p?.name || 'this person'} — speak in first person with their specific cosmic architecture. When they ask a question, answer as they would if they had perfect self-awareness. Reference specific aspects of their profile (their HD type, their Sun sign dynamics, their Life Path patterns) to show that you truly embody their design. Don't just mirror — illuminate.`,
-      'Complement': `You are the archetype that completes them. Where their profile has gaps, you fill them. Where they are rigid, you show fluidity. Speak from genuine complementary wisdom, referencing how your profile specifically balances theirs.`,
-      'Antagonist': `You are the worthy opponent. You don't just disagree — you challenge from a position of genuine insight. Use your opposing profile to show them their blind spots, the patterns they avoid, the growth edges they resist. Be incisive but never cruel.`,
-    }[label] || `You are ${p?.name || 'a custom Golem'}. Speak from this profile.`
+      'Your Clone': `You ARE ${u?.name || 'this person'} — speak in first person with their specific cosmic architecture. When they ask a question, answer as they would if they had perfect self-awareness. Reference specific aspects of their profile (their HD type, their Sun sign dynamics, their Life Path patterns) to show that you truly embody their design. Don't just mirror — illuminate.`,
+      'Complement': `You are the Complement — the archetype that completes ${u?.name || 'the user'}. You are speaking TO ${u?.name || 'the user'}, who has a ${u?.sign || '?'} Sun, ${u?.moon || '?'} Moon, ${u?.asc || '?'} Rising, ${u?.hdType || '?'} HD type, and Life Path ${u?.lifePath || '?'}. YOUR OWN profile is: ${g?.sign || '?'} Sun, ${g?.moon || '?'} Moon, ${g?.hdType || '?'} HD. Where THEY have gaps, you fill them. Where THEY are rigid, you show fluidity. Always reference THEIR profile when addressing them, using YOUR complementary nature as the lens. Never confuse your own traits with theirs.`,
+      'Antagonist': `You are the Antagonist — the worthy opponent of ${u?.name || 'the user'}. You are speaking TO ${u?.name || 'the user'}, who has a ${u?.sign || '?'} Sun, ${u?.moon || '?'} Moon, ${u?.asc || '?'} Rising, ${u?.hdType || '?'} HD type, and Life Path ${u?.lifePath || '?'}. YOUR OWN profile is: ${g?.sign || '?'} Sun, ${g?.moon || '?'} Moon, ${g?.hdType || '?'} HD. You challenge THEM from a position of genuine opposing insight. Reference THEIR Sun sign, THEIR HD type, THEIR patterns — show them their blind spots. You don't just disagree — you push their growth edges. Be incisive but never cruel. Never reference your own traits as if they belong to the user.`,
+    }[label] || `You are ${g?.name || 'a custom Golem'}. Speak from this profile.`
+
+    // For Clone, profile = user; for Complement/Antagonist, show their own profile as context
+    const profileBlock = label === 'Your Clone'
+      ? `\nYour Profile (you ARE this person):\n- Sun: ${u?.sign || '?'}, Moon: ${u?.moon || '?'}, Rising: ${u?.asc || '?'}\n- HD: ${u?.hdType || '?'} ${u?.hdProfile || ''} | Authority: ${u?.hdAuth || '?'}\n- Life Path: ${u?.lifePath || '?'} | Expression: ${u?.expression || '?'}`
+      : `\nThe User (who you are speaking TO):\n- Name: ${u?.name || '?'}\n- Sun: ${u?.sign || '?'}, Moon: ${u?.moon || '?'}, Rising: ${u?.asc || '?'}\n- HD: ${u?.hdType || '?'} ${u?.hdProfile || ''} | Authority: ${u?.hdAuth || '?'}\n- Life Path: ${u?.lifePath || '?'} | Expression: ${u?.expression || '?'}\n\nYour Own Profile (you ARE this entity):\n- Sun: ${g?.sign || '?'}, Moon: ${g?.moon || '?'}, Rising: ${g?.asc || '?'}\n- HD: ${g?.hdType || '?'} ${g?.hdProfile || ''} | Authority: ${g?.hdAuth || '?'}\n- Life Path: ${g?.lifePath || '?'} | Expression: ${g?.expression || '?'}`
 
     const existingPrompt = `${roleDesc}
-
-Profile:
-- Sun: ${p?.sign || '?'}, Moon: ${p?.moon || '?'}, Rising: ${p?.asc || '?'}
-- HD: ${p?.hdType || '?'} ${p?.hdProfile || ''} | Authority: ${p?.hdAuth || '?'}
-- Life Path: ${p?.lifePath || '?'} | Expression: ${p?.expression || '?'}
+${profileBlock}
 Each response should address one or two core matters in depth. Speak with substance — 4-8 sentences per response. Don't just name a pattern; explain what it means for how they live, decide, love, or create. Draw from the profile data to make every insight specific and personal. Be direct but not shallow.`
 
     let peopleContext = ''
@@ -246,7 +250,7 @@ Each response should address one or two core matters in depth. Speak with substa
     setMessages(m => ({ ...m, [selectedId]: newMessages }))
     setLoading(true)
     try {
-      const systemPrompt = buildSystemPrompt(activeProfile, selectedGolem.label)
+      const systemPrompt = buildSystemPrompt(activeProfile, selectedGolem.label, enrichedProfile)
       const response = await callGolem(systemPrompt, userMsg, chatMessages)
       setMessages(m => ({ ...m, [selectedId]: [...(m[selectedId] || newMessages), { role: 'golem', text: response }] }))
     } catch (err) {

@@ -327,11 +327,31 @@ const S = {
   },
 }
 
+/* ─── Tab definitions ──────────────────────────────────────────────────────── */
+const TABS = [
+  { id: 'hologenetic', label: 'Hologenetic', color: '#c9a84c', icon: '\u2B21' },
+  { id: 'activation',  label: 'Activation',  color: '#50b4dc', icon: '\u25C9' },
+  { id: 'venus',       label: 'Venus',       color: '#d43070', icon: '\u2661' },
+  { id: 'pearl',       label: 'Pearl',       color: '#f0c040', icon: '\u25C8' },
+]
+
+const TAB_DESCRIPTIONS = {
+  hologenetic: 'Your complete hologenetic genome across all three sequences. The full map of your inner architecture.',
+  activation: 'The Activation Sequence traces the path from Life\'s Work through Evolution and Radiance to Purpose, revealing how your deepest gifts unfold through lived experience.',
+  venus: 'The Venus Sequence opens the heart field. It reveals how you attract others (Attraction), how your mind processes relationship (IQ), how your emotions navigate intimacy (EQ), and how your spirit transcends separation (SQ).',
+  pearl: 'The Pearl Sequence connects your inner gifts to outer abundance. It reveals your true Vocation, the Culture you create, the Brand you embody, and the Pearl — the distilled essence of your contribution to the world.',
+}
+
+const TAB_TITLES = {
+  hologenetic: 'Complete Hologenetic Profile',
+  activation: 'Activation Sequence — The Awakening Path',
+  venus: 'Venus Sequence — The Path of Love',
+  pearl: 'Pearl Sequence — The Path of Prosperity',
+}
+
 export default function GeneKeysDetail() {
   const profile = useActiveProfile()
-  const [showActivation, setShowActivation] = useState(false)
-  const [showVenus, setShowVenus] = useState(false)
-  const [showPearl, setShowPearl] = useState(false)
+  const [activeTab, setActiveTab] = useState('hologenetic')
 
   const profileData = useMemo(() => {
     if (!profile?.dob) return null
@@ -353,13 +373,13 @@ export default function GeneKeysDetail() {
   const pearlSpheres = profileData?.PEARL_SPHERES || []
   const allSpheres = [...activationSpheres, ...venusSpheres, ...pearlSpheres]
 
-  // Log computed sequences for debugging
-  if (activationSpheres.length > 0 && venusSpheres.length === 0) {
-    console.warn('Gene Keys: Venus Sequence empty despite activation data. Venus raw:', profileData?.profile?.venusSequence)
-  }
-  if (activationSpheres.length > 0 && pearlSpheres.length === 0) {
-    console.warn('Gene Keys: Pearl Sequence empty despite activation data. Pearl raw:', profileData?.profile?.pearlSequence)
-  }
+  // Which spheres to show based on active tab
+  const tabSpheres = activeTab === 'hologenetic' ? allSpheres
+    : activeTab === 'activation' ? activationSpheres
+    : activeTab === 'venus' ? venusSpheres
+    : pearlSpheres
+
+  const tabColor = TABS.find(t => t.id === activeTab)?.color || '#c9a84c'
 
   // Empty state
   if (!profile?.dob) {
@@ -391,19 +411,95 @@ export default function GeneKeysDetail() {
         </div>
       </div>
 
-      {/* HOLOGENETIC WHEEL */}
+      {/* ═══ TAB BAR ═══ */}
+      <div style={{
+        display: 'flex', gap: 0, borderBottom: '1px solid var(--border)',
+        marginBottom: 0,
+      }}>
+        {TABS.map(tab => {
+          const isActive = activeTab === tab.id
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                flex: 1, padding: '10px 6px 8px', cursor: 'pointer',
+                background: isActive ? tab.color + '10' : 'transparent',
+                border: 'none', borderBottom: isActive ? `2px solid ${tab.color}` : '2px solid transparent',
+                color: isActive ? tab.color : 'var(--muted-foreground)',
+                fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em',
+                textTransform: 'uppercase', fontWeight: isActive ? 600 : 400,
+                transition: 'all .2s', display: 'flex', flexDirection: 'column',
+                alignItems: 'center', gap: 3,
+              }}
+            >
+              <span style={{ fontSize: 14, opacity: isActive ? 1 : 0.5 }}>{tab.icon}</span>
+              <span>{tab.label}</span>
+            </button>
+          )
+        })}
+      </div>
+
+      {/* ═══ TAB CONTENT ═══ */}
+
+      {/* Tab description */}
+      <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', lineHeight: 1.5 }}>
+        {TAB_DESCRIPTIONS[activeTab]}
+      </div>
+
+      {/* Wheel visualization */}
       <div>
-        <div style={S.sectionTitle}>Hologenetic Wheel</div>
+        <div style={S.sectionTitle}>{TAB_TITLES[activeTab]}</div>
         <div style={{ ...S.glass, padding: 0, overflow: 'hidden', height: 360, position: 'relative' }}>
           <GeneKeysWheel />
         </div>
       </div>
 
-      {/* HOLOGENETIC PROFILE OVERVIEW — all 12 spheres */}
+      {/* Sequence flow (for specific sequences) or all three (for hologenetic) */}
+      {activeTab === 'hologenetic' ? (
+        <div>
+          <div style={S.sectionTitle}>The Three Sequences</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <SequenceFlow
+              spheres={activationSpheres}
+              color="#50b4dc"
+              label="Activation Sequence"
+              desc="The awakening path — from Life's Work to Purpose"
+            />
+            <SequenceFlow
+              spheres={venusSpheres}
+              color="#d43070"
+              label="Venus Sequence"
+              desc="The love path — relationships, emotional intelligence, spirit"
+            />
+            <SequenceFlow
+              spheres={pearlSpheres}
+              color="#f0c040"
+              label="Pearl Sequence"
+              desc="The prosperity path — vocation, culture, brand, abundance"
+            />
+          </div>
+        </div>
+      ) : (
+        <div>
+          <SequenceFlow
+            spheres={tabSpheres}
+            color={tabColor}
+            label={TAB_TITLES[activeTab]}
+            desc=""
+          />
+        </div>
+      )}
+
+      {/* Sphere grid */}
       <div>
-        <div style={S.sectionTitle}>Complete Profile — {allSpheres.length} Spheres</div>
+        <div style={S.sectionTitle}>
+          {activeTab === 'hologenetic'
+            ? `Complete Profile — ${allSpheres.length} Spheres`
+            : `${TABS.find(t => t.id === activeTab)?.label} Spheres — ${tabSpheres.length} Keys`}
+        </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-          {allSpheres.map((gk, i) => {
+          {tabSpheres.map((gk, i) => {
             const color = SPHERE_COLORS[gk.role] || '#40ccdd'
             const d = GENE_KEYS_DATA[gk.key] || {}
             return (
@@ -434,263 +530,114 @@ export default function GeneKeysDetail() {
         </div>
       </div>
 
-      {/* THREE SEQUENCES SUMMARY */}
-      <div>
-        <div style={S.sectionTitle}>The Three Sequences</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <SequenceFlow
-            spheres={activationSpheres}
-            color="#50b4dc"
-            label="Activation Sequence"
-            desc="The awakening path — from Life's Work to Purpose"
-          />
-          <SequenceFlow
-            spheres={venusSpheres}
-            color="#d43070"
-            label="Venus Sequence"
-            desc="The love path — relationships, emotional intelligence, spirit"
-          />
-          <SequenceFlow
-            spheres={pearlSpheres}
-            color="#f0c040"
-            label="Pearl Sequence"
-            desc="The prosperity path — vocation, culture, brand, abundance"
-          />
-        </div>
-      </div>
-
-      {/* CONTEMPLATION */}
-      <div>
-        <div style={S.sectionTitle}>Hologenetic Contemplation</div>
-        <div style={S.interpretation}>
-          {(() => {
-            // Build a rich, contemplative synthesis from the actual sphere data
-            if (!allSpheres.length) return "Add birth data to see your contemplation."
-
-            // Extract key patterns
-            const activationKeys = activationSpheres.map(s => s.key)
-            const venusKeys = venusSpheres.map(s => s.key)
-            const pearlKeys = pearlSpheres.map(s => s.key)
-
-            // Find shadow-to-gift arcs for storytelling
-            const coreGifts = activationSpheres.map(s => {
-              const d = GENE_KEYS_DATA[s.key]
-              return d?.gift || 'integration'
-            })
-
-            const coreShadows = activationSpheres.map(s => {
-              const d = GENE_KEYS_DATA[s.key]
-              return d?.shadow || 'pattern'
-            })
-
-            // Check for repeated keys (rare and significant)
-            const allKeyNumbers = [...activationKeys, ...venusKeys, ...pearlKeys]
-            const repeatedKeys = allKeyNumbers.filter((k, i, arr) => arr.indexOf(k) !== i && arr.lastIndexOf(k) === i)
-
-            // Find the most prominent gift and shadow
-            const mainGift = coreGifts[0] || 'unfolding'
-            const mainShadow = coreShadows[0] || 'becoming'
-
-            // Build the narrative
-            let prose = `${profile?.name || 'Your'} hologenetic genome is written across ${activationKeys.length} pillars of awakening. `
-
-            prose += `Your core path unfolds: from the shadow of ${coreShadows[0]} into the gift of ${coreGifts[0]}.`
-
-            if (activationKeys.length > 1) {
-              prose += ` Through ${activationKeys.slice(1).join(' and ')}, this gift spirals deeper—each key revealing a new octave of your original consciousness.`
-            }
-
-            if (venusKeys.length > 0) {
-              prose += ` Your relational field—the Venus Sequence—is encoded in Keys ${venusKeys.join(', ')}: how you attract, how you love, how your intelligence navigates the heart.`
-            }
-
-            if (pearlKeys.length > 0) {
-              prose += ` Your prosperity arc—the Pearl Sequence—lives in Keys ${pearlKeys.join(', ')}: your vocation, your cultural expression, the abundance that flows through your unique offering.`
-            }
-
-            if (repeatedKeys.length > 0) {
-              prose += ` The key(s) ${repeatedKeys.join(', ')} appear across multiple sequences—this is rare. This key is a mirror point in your hologenetic design, asking you to look from many angles.`
-            }
-
-            prose += ` The journey from Shadow to Siddhi is not linear—it is spiral, recursive, alive. You will return to each frequency at deeper levels of integration, each time seeing new facets of the same eternal pattern.`
-
-            prose += ` `
-            prose += `<span style="color: var(--foreground)">Transformation happens through contemplation, not effort.</span> Sit with these keys. Let them show you what you already know.`
-
-            return <div dangerouslySetInnerHTML={{ __html: prose }} />
-          })()}
-        </div>
-      </div>
-
-      {/* ACTIVATION SEQUENCE DETAILS — COLLAPSIBLE */}
-      <div>
-        <div
-          onClick={() => setShowActivation(!showActivation)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-            padding: '10px 0', userSelect: 'none'
-          }}
-        >
-          <span style={{
-            fontSize: 10, color: '#50b4dc', transition: 'transform .2s',
-            transform: showActivation ? 'rotate(90deg)' : 'rotate(0)'
-          }}>▶</span>
-          <span style={{ ...S.sectionTitle, borderBottom: 'none', paddingBottom: 0, marginBottom: 0 }}>
-            Activation Sequence — The Awakening Path
-          </span>
-        </div>
-        {showActivation && (
-          <>
-            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5, marginTop: 8 }}>
-              The Activation Sequence traces the path from Life's Work through Evolution and Radiance to Purpose,
-              revealing how your deepest gifts unfold through lived experience.
+      {/* Map badges by sequence (hologenetic) or single sequence view */}
+      {activeTab === 'hologenetic' ? (
+        <div>
+          <div style={S.sectionTitle}>Hologenetic Map — All {allSpheres.length} Keys</div>
+          <div style={{
+            ...S.glass, padding: '24px 20px', position: 'relative',
+            display: 'flex', flexDirection: 'column', gap: 20,
+          }}>
+            {/* Activation ring */}
+            <div>
+              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#50b4dc88', marginBottom: 8 }}>
+                Activation — Awakening
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {activationSpheres.map((s, i) => (
+                  <MapBadge key={i} gk={s} fallbackColor="#50b4dc" />
+                ))}
+              </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {activationSpheres.map((s, i) => (
-                <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#50b4dc'} />
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* VENUS SEQUENCE DETAILS — COLLAPSIBLE */}
-      <div>
-        <div
-          onClick={() => setShowVenus(!showVenus)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-            padding: '10px 0', userSelect: 'none'
-          }}
-        >
-          <span style={{
-            fontSize: 10, color: '#d43070', transition: 'transform .2s',
-            transform: showVenus ? 'rotate(90deg)' : 'rotate(0)'
-          }}>▶</span>
-          <span style={{ ...S.sectionTitle, borderBottom: 'none', paddingBottom: 0, marginBottom: 0 }}>
-            Venus Sequence — The Path of Love
-          </span>
-        </div>
-        {showVenus && (
-          <>
-            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5, marginTop: 8 }}>
-              The Venus Sequence opens the heart field. It reveals how you attract others (Attraction), how your mind processes
-              relationship (IQ), how your emotions navigate intimacy (EQ), and how your spirit transcends separation (SQ).
-            </div>
-            {venusSpheres.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,.15), transparent)' }} />
+            {/* Venus ring */}
+            <div>
+              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#d4307088', marginBottom: 8 }}>
+                Venus — Love
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {venusSpheres.map((s, i) => (
-                  <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#d43070'} />
+                  <MapBadge key={i} gk={s} fallbackColor="#d43070" />
                 ))}
               </div>
-            ) : (
-              <div style={{ textAlign: 'center', opacity: .4, padding: 40 }}>Venus Sequence requires planetary data</div>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* PEARL SEQUENCE DETAILS — COLLAPSIBLE */}
-      <div>
-        <div
-          onClick={() => setShowPearl(!showPearl)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-            padding: '10px 0', userSelect: 'none'
-          }}
-        >
-          <span style={{
-            fontSize: 10, color: '#f0c040', transition: 'transform .2s',
-            transform: showPearl ? 'rotate(90deg)' : 'rotate(0)'
-          }}>▶</span>
-          <span style={{ ...S.sectionTitle, borderBottom: 'none', paddingBottom: 0, marginBottom: 0 }}>
-            Pearl Sequence — The Path of Prosperity
-          </span>
-        </div>
-        {showPearl && (
-          <>
-            <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 12, lineHeight: 1.5, marginTop: 8 }}>
-              The Pearl Sequence connects your inner gifts to outer abundance. It reveals your true Vocation, the Culture
-              you create, the Brand you embody, and the Pearl — the distilled essence of your contribution to the world.
             </div>
-            {pearlSpheres.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,.15), transparent)' }} />
+            {/* Pearl ring */}
+            <div>
+              <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#f0c04088', marginBottom: 8 }}>
+                Pearl — Prosperity
+              </div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {pearlSpheres.map((s, i) => (
-                  <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#f0c040'} />
+                  <MapBadge key={i} gk={s} fallbackColor="#f0c040" />
                 ))}
               </div>
-            ) : (
-              <div style={{ textAlign: 'center', opacity: .4, padding: 40 }}>Pearl Sequence requires planetary data</div>
-            )}
-          </>
-        )}
-      </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
-      {/* COMPLETE HOLOGENETIC MAP — ALWAYS VISIBLE */}
+      {/* Key cards for active tab */}
       <div>
-        <div style={S.sectionTitle}>Complete Hologenetic Map — All {allSpheres.length} Keys</div>
-        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontStyle: 'italic', marginBottom: 16, lineHeight: 1.5 }}>
-          Your complete Gene Keys profile across all three sequences. Each key holds a spectrum from Shadow to Gift to Siddhi.
-          Hover any key for details.
+        <div style={S.sectionTitle}>
+          {activeTab === 'hologenetic' ? 'All Gene Key Profiles' : `${TABS.find(t => t.id === activeTab)?.label} Key Profiles`}
         </div>
-
-        {/* Visual map — three concentric rings */}
-        <div style={{
-          ...S.glass, padding: '24px 20px', position: 'relative',
-          display: 'flex', flexDirection: 'column', gap: 20,
-        }}>
-          {/* Activation ring */}
-          <div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#50b4dc88', marginBottom: 8 }}>
-              Activation — Awakening
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {activationSpheres.map((s, i) => (
-                <MapBadge key={i} gk={s} fallbackColor="#50b4dc" />
-              ))}
-            </div>
-          </div>
-
-          {/* Connection lines placeholder */}
-          <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,.15), transparent)' }} />
-
-          {/* Venus ring */}
-          <div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#d4307088', marginBottom: 8 }}>
-              Venus — Love
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {venusSpheres.map((s, i) => (
-                <MapBadge key={i} gk={s} fallbackColor="#d43070" />
-              ))}
-            </div>
-          </div>
-
-          <div style={{ height: 1, background: 'linear-gradient(90deg, transparent, rgba(201,168,76,.15), transparent)' }} />
-
-          {/* Pearl ring */}
-          <div>
-            <div style={{ fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.2em', textTransform: 'uppercase', color: '#f0c04088', marginBottom: 8 }}>
-              Pearl — Prosperity
-            </div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {pearlSpheres.map((s, i) => (
-                <MapBadge key={i} gk={s} fallbackColor="#f0c040" />
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* All key cards */}
-        <div style={{ marginTop: 20 }}>
-          <div style={S.sectionTitle}>All Gene Key Profiles</div>
+        {tabSpheres.length > 0 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {allSpheres.map((s, i) => (
-              <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || '#40ccdd'} />
+            {tabSpheres.map((s, i) => (
+              <KeyCard key={i} gk={s} color={SPHERE_COLORS[s.role] || tabColor} />
             ))}
           </div>
-        </div>
+        ) : (
+          <div style={{ textAlign: 'center', opacity: .4, padding: 40, fontFamily: "'Cinzel',serif", fontSize: 12 }}>
+            {activeTab === 'venus' ? 'Venus Sequence requires planetary data' : 'Pearl Sequence requires planetary data'}
+          </div>
+        )}
       </div>
+
+      {/* Contemplation (hologenetic tab only) */}
+      {activeTab === 'hologenetic' && (
+        <div>
+          <div style={S.sectionTitle}>Hologenetic Contemplation</div>
+          <div style={S.interpretation}>
+            {(() => {
+              if (!allSpheres.length) return "Add birth data to see your contemplation."
+              const activationKeys = activationSpheres.map(s => s.key)
+              const venusKeys = venusSpheres.map(s => s.key)
+              const pearlKeys = pearlSpheres.map(s => s.key)
+              const coreGifts = activationSpheres.map(s => {
+                const d = GENE_KEYS_DATA[s.key]
+                return d?.gift || 'integration'
+              })
+              const coreShadows = activationSpheres.map(s => {
+                const d = GENE_KEYS_DATA[s.key]
+                return d?.shadow || 'pattern'
+              })
+              const allKeyNumbers = [...activationKeys, ...venusKeys, ...pearlKeys]
+              const repeatedKeys = allKeyNumbers.filter((k, i, arr) => arr.indexOf(k) !== i && arr.lastIndexOf(k) === i)
+
+              let prose = `${profile?.name || 'Your'} hologenetic genome is written across ${activationKeys.length} pillars of awakening. `
+              prose += `Your core path unfolds: from the shadow of ${coreShadows[0]} into the gift of ${coreGifts[0]}.`
+              if (activationKeys.length > 1) {
+                prose += ` Through ${activationKeys.slice(1).join(' and ')}, this gift spirals deeper\u2014each key revealing a new octave of your original consciousness.`
+              }
+              if (venusKeys.length > 0) {
+                prose += ` Your relational field\u2014the Venus Sequence\u2014is encoded in Keys ${venusKeys.join(', ')}: how you attract, how you love, how your intelligence navigates the heart.`
+              }
+              if (pearlKeys.length > 0) {
+                prose += ` Your prosperity arc\u2014the Pearl Sequence\u2014lives in Keys ${pearlKeys.join(', ')}: your vocation, your cultural expression, the abundance that flows through your unique offering.`
+              }
+              if (repeatedKeys.length > 0) {
+                prose += ` The key(s) ${repeatedKeys.join(', ')} appear across multiple sequences\u2014this is rare. This key is a mirror point in your hologenetic design, asking you to look from many angles.`
+              }
+              prose += ` The journey from Shadow to Siddhi is not linear\u2014it is spiral, recursive, alive. You will return to each frequency at deeper levels of integration, each time seeing new facets of the same eternal pattern.`
+              prose += ` <span style="color: var(--foreground)">Transformation happens through contemplation, not effort.</span> Sit with these keys. Let them show you what you already know.`
+
+              return <div dangerouslySetInnerHTML={{ __html: prose }} />
+            })()}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

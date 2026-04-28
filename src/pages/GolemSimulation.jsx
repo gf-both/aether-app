@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useComputedProfile, useComputedPeople } from '../hooks/useActiveProfile'
 import { useGolemStore } from '../store/useGolemStore'
 import { runCompatibilitySimulation } from '../lib/golemConversation'
+import { computePersonData } from '../hooks/useActiveProfile'
 
 const SCENARIOS = [
   { id: 'romantic', label: 'Romantic', icon: '💗', desc: 'Dating and relationship compatibility' },
@@ -13,6 +14,8 @@ const SCENARIOS = [
 export default function GolemSimulation() {
   const profile = useComputedProfile()
   const people = useComputedPeople()
+  const primaryProfile = useGolemStore(s => s.primaryProfile)
+  const activeViewProfile = useGolemStore(s => s.activeViewProfile)
   const setActiveDetail = useGolemStore(s => s.setActiveDetail)
   const simulationResults = useGolemStore(s => s.simulationResults)
   const setSimulationResult = useGolemStore(s => s.setSimulationResult)
@@ -21,6 +24,22 @@ export default function GolemSimulation() {
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [currentPhase, setCurrentPhase] = useState('')
+
+  // Build dropdown list: all profiles except the currently active one
+  const simCandidates = useMemo(() => {
+    const activeId = activeViewProfile?.id || activeViewProfile?.name || 'primary'
+    const candidates = []
+    // Include primary profile if it's not the active one
+    if (activeViewProfile && primaryProfile?.name) {
+      candidates.push({ ...computePersonData(primaryProfile), id: 'primary', rel: 'you' })
+    }
+    // Include all secondary people except the active one
+    ;(people || []).forEach(p => {
+      const pid = String(p.id || p.name)
+      if (pid !== String(activeId)) candidates.push(p)
+    })
+    return candidates
+  }, [people, primaryProfile, activeViewProfile])
 
   const getSimKey = useCallback((personId, type) => {
     if (!profile?.dob || !personId) return null
@@ -37,7 +56,7 @@ export default function GolemSimulation() {
     }
   }, [selectedId, relType, getSimKey])
 
-  const selectedPerson = (people || []).find(p => String(p.id) === String(selectedId))
+  const selectedPerson = simCandidates.find(p => String(p.id) === String(selectedId))
 
   async function runSim() {
     if (!profile || !selectedPerson) return
@@ -107,7 +126,7 @@ export default function GolemSimulation() {
       </div>
 
       {/* Empty constellation warning */}
-      {people.length === 0 && (
+      {simCandidates.length === 0 && (
         <div style={{ padding:'14px 18px', borderRadius:10, background:'rgba(201,168,76,.06)', border:'1px solid rgba(201,168,76,.2)', marginBottom:16, display:'flex', alignItems:'center', gap:12 }}>
           <span style={{ fontSize:20 }}>👥</span>
           <div>
@@ -135,8 +154,8 @@ export default function GolemSimulation() {
           onChange={e => setSelectedId(e.target.value || null)}
           style={{ flex:1, minWidth:0, padding:'10px 14px', borderRadius:8, background:'var(--secondary)', border:'1px solid var(--border)', color:'var(--foreground)', fontSize:12, fontFamily:'inherit' }}
         >
-          <option value="">{(people || []).length === 0 ? 'No one in constellation yet — add people in Profiles' : 'Select from constellation...'}</option>
-          {(people || []).map(p => <option key={p.id} value={p.id}>{p.name} ({p.rel || 'other'})</option>)}
+          <option value="">{simCandidates.length === 0 ? 'No one in constellation yet — add people in Profiles' : 'Select from constellation...'}</option>
+          {simCandidates.map(p => <option key={p.id} value={p.id}>{p.name} ({p.rel || 'other'})</option>)}
         </select>
       </div>
 

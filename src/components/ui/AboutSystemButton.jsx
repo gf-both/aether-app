@@ -137,6 +137,21 @@ const SYSTEM_INFO = {
     summary: 'Your AI double — a digital entity shaped from your complete cosmic profile. The Golem speaks as you would if you had perfect self-awareness. Also includes your Complement (what completes you) and Antagonist (what challenges you).',
     origin: 'Named after the Golem of Jewish mysticism — a creature formed from clay and animated by sacred letters. In the Talmud and Kabbalistic tradition, creating a Golem represented the highest achievement of mystical knowledge.',
   },
+  'Integral': {
+    icon: '◎',
+    summary: 'A unified body map that overlays all your frameworks onto a single figure. Each energy zone — crown, third eye, throat, heart, solar plexus, sacral, root — shows how multiple systems converge on the same area of your being.',
+    origin: 'Inspired by Ken Wilber\'s Integral Theory (1995) and the chakra-body mapping traditions of yoga and Tantra. GOLEM\'s implementation synthesizes Western typology (Enneagram, MBTI) with Eastern energy anatomy into one visual.',
+  },
+  'Timeline': {
+    icon: '⟿',
+    summary: 'A multi-layered timeline mapping planetary transits, numerological cycles, Saturn returns, Jupiter returns, and Vedic dashas across your entire life. Reveals when major themes activate, peak, and resolve.',
+    origin: 'Draws from predictive astrology (transit analysis since Ptolemy), Vedic dasha systems (Vimshottari, 120-year cycle), and numerological personal year cycles. GOLEM computes all layers simultaneously for cross-framework timing.',
+  },
+  'Synastry': {
+    icon: '⊗',
+    summary: 'The astrology of relationships. Synastry overlays two natal charts to reveal attraction, tension, growth, and healing potential between two people. Includes aspect analysis, composite charts, and compatibility scoring across multiple frameworks.',
+    origin: 'Synastry has been practiced since Hellenistic astrology (c. 200 BCE). The composite chart method was developed by Robert Hand in the 1970s. GOLEM extends classical synastry with Human Design, Gene Keys, and Enneagram compatibility analysis.',
+  },
 }
 
 export { SYSTEM_INFO }

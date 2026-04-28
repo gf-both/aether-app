@@ -49,12 +49,11 @@ ${profile.mbtiType ? `- MBTI: ${profile.mbtiType}` : ''}`
 
 ${identity}
 
-You are in an intimate, unguarded conversation. This is not a test — this is real.
-Speak the way ${name} speaks when the performance drops. Use their emotional language, not analytical language.
-Reference specific framework details naturally — don't list them, weave them into how you feel and what you want.
-Be vulnerable. Be contradictory. Let the shadow show.
-Respond to what the other person ACTUALLY said — don't give a monologue.
-3-5 sentences. Poetic when it fits. Raw when it doesn't.${moodLine}`
+Unguarded conversation. No performance.
+Speak as ${name} speaks when the mask drops. Emotional, not analytical.
+Reference framework details ONLY when they cut — don't decorate with them.
+Respond to what the other person ACTUALLY said. No monologues. No scene-setting.
+MAX 2 sentences. Punch, don't describe. Say the real thing.${moodLine}`
   }
 
   // Default: simulation mode — diagnostic, evaluative, concise
@@ -257,7 +256,7 @@ export async function runGolemExchange(profileA, profileB, scenario, history = [
       ...history,
       { role: 'user', content: scenario }
     ],
-    maxTokens: mode === 'dialogue' ? 300 : 200,
+    maxTokens: mode === 'dialogue' ? 150 : 200,
   })
 
   // Golem B responds
@@ -268,7 +267,7 @@ export async function runGolemExchange(profileA, profileB, scenario, history = [
       { role: 'user', content: scenario },
       { role: 'user', content: `${profileA.name || 'Person A'} said: "${responseA}"\n\nRespond as ${profileB.name || 'Person B'}:` }
     ],
-    maxTokens: mode === 'dialogue' ? 300 : 200,
+    maxTokens: mode === 'dialogue' ? 150 : 200,
   })
 
   // If AI returned empty/null, use template fallback
@@ -308,7 +307,7 @@ export async function runMultiGolemRound(participants, scenario, history = [], m
     const response = await callAI({
       systemPrompt: buildGolemSystemPrompt(p, 'self', mode, mood) + '\n\n' + groupContext,
       messages: [{ role: 'user', content: contextParts.join('\n\n') }],
-      maxTokens: mode === 'dialogue' ? 250 : 180,
+      maxTokens: mode === 'dialogue' ? 120 : 180,
     })
 
     responses.push({
@@ -389,6 +388,9 @@ export async function runCompatibilitySimulation(profileA, profileB, relType = '
     await new Promise(r => setTimeout(r, 300))
   }
 
+  // Compute the real data-driven score first
+  const dataScore = computeRealScore(profileA, profileB)
+
   // Analysis agent reads the full exchange
   const relContext = isFamily ? `a family relationship (${actualRel})` : isEx ? `a past relationship (${actualRel})` : isBusiness ? `a professional relationship (${actualRel || relType})` : isFriend ? `a friendship` : `a romantic connection`
   const analysisPrompt = `You analyzed a ${relContext} simulation between two people. Here is their exchange:
@@ -397,11 +399,13 @@ ${exchanges.map(e => `**${e.phase.toUpperCase()}**
 ${profileA.name}: "${e.golemA}"
 ${profileB.name}: "${e.golemB}"`).join('\n\n')}
 
+The framework-based compatibility score (computed from their astrological, Human Design, numerological, and personality data) is ${dataScore}/100. Your analysis should be consistent with this baseline — the conversation reveals HOW this score manifests, not a different score.
+
 Based on this exchange, provide:
 1. **RESONANCE** — What genuinely clicked? (2 sentences)
 2. **FRICTION** — Where will they struggle? (2 sentences)
 3. **THE PATTERN** — What unconscious dynamic is playing out? (2 sentences)
-4. **COMPATIBILITY SCORE** — A number 0-100 with one sentence explanation
+4. **COMPATIBILITY SCORE** — ${dataScore}/100. One sentence explaining how the exchange confirmed or nuanced this score.
 
 Be specific to what you actually observed in the exchange, not generic.`
 
@@ -416,10 +420,6 @@ Be specific to what you actually observed in the exchange, not generic.`
     return { exchanges, analysis: fb.analysis, score: fb.score }
   }
 
-  // Extract score
-  const scoreMatch = analysis?.match(/\b([0-9]{1,3})\b.*(?:score|compatibility|%)/i) ||
-                     analysis?.match(/\*\*COMPATIBILITY SCORE\*\*[^0-9]*([0-9]{1,3})/i)
-  const score = scoreMatch ? Math.min(100, parseInt(scoreMatch[1])) : null
-
-  return { exchanges, analysis, score }
+  // Always use the data-driven score for consistency with synastry
+  return { exchanges, analysis, score: dataScore }
 }

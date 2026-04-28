@@ -1,4 +1,5 @@
 import { SynastryInner } from '../overlays/SynastryPanel'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 export default function SynastryDetail() {
   return (
@@ -17,6 +18,9 @@ export default function SynastryDetail() {
           background: transparent !important;
         }
       `}</style>
+      <div style={{ padding: '12px 20px 0' }}>
+        <AboutSystemButton systemName="Synastry" />
+      </div>
       <div className="synastry-detail-embed" style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <SynastryInner />
       </div>

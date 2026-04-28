@@ -2,6 +2,7 @@ import { useMemo, useState, useRef, useCallback } from 'react'
 import { useComputedProfile as useActiveProfile } from '../../hooks/useActiveProfile'
 import { getVedicChart } from '../../engines/vedicEngine'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
+import AboutSystemButton from '../ui/AboutSystemButton'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -541,6 +542,9 @@ export default function TimelineDetail() {
         </div>
         <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 4 }}>
           {birthYear} → {currentYear + 20}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8 }}>
+          <AboutSystemButton systemName="Timeline" />
         </div>
       </div>
 
