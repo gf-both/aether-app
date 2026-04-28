@@ -171,75 +171,402 @@ function computeSectionData(section, profile, store) {
   }
 }
 
+/* ── Generate placement cards for key data ──────────────────── */
+function generateSummary(section, data) {
+  // Create a brief interpretive summary for each section
+  if (!data) return ''
+
+  switch (section.id) {
+    case 'natal': {
+      if (data.sun && data.moon && data.asc) {
+        return `Your cosmic signature is anchored in ${data.sun?.sign || '—'} (solar will), ${data.moon?.sign || '—'} (emotional nature), and ${data.asc?.sign || '—'} (outer presentation). This trinity shapes how you embody presence, feel, and are perceived.`
+      }
+      return 'Your natal chart captures the planetary positions at birth—the fundamental architecture of your consciousness and destiny.'
+      break
+    }
+    case 'hd': {
+      if (data.type) {
+        return `Human Design Type ${data.type}: Your energetic authority and strategy are wired to ${data.strategy || 'engage authentically'}. Your definition carries ${data.definition || 'individual impulses'} to manifestation.`
+      }
+      return 'Human Design reveals your energetic type, strategy, and definition—how you're designed to move through the world and make decisions.'
+      break
+    }
+    case 'gk': {
+      if (data.lifeWork) {
+        return `Your life's work unfolds through Gene Key ${data.lifeWork.keyNumber || '—'}: shadow of ${data.lifeWork.shadow || '—'}, gift of ${data.lifeWork.gift || '—'}, siddhi of ${data.lifeWork.siddhi || '—'}. This is the path of your becoming.`
+      }
+      return 'Gene Keys illuminate the shadow-gift-siddhi architecture within you—the alchemy by which suffering transforms into radiance.'
+      break
+    }
+    case 'num': {
+      if (data.lifePath) {
+        return `Life Path ${data.lifePath.number || '—'}: ${data.lifePath.meaning || 'Your numerological blueprint guides the themes and lessons that define your incarnation.'}`
+      }
+      return 'Numerology translates your birth data into archetypal numbers—each carrying specific frequency and purpose.'
+      break
+    }
+    case 'chi': {
+      if (data.animal && data.element) {
+        return `You are a ${data.animal} of ${data.element}—carrying both the archetypal nature of your zodiacal sign and the elemental quality that colors your expression.`
+      }
+      return 'Chinese astrology assigns you an animal sign and element—together they form a complete personality archetype.'
+      break
+    }
+    case 'kab': {
+      if (data.paths?.length > 0) {
+        return `Your Kabbalistic pattern weaves through the Tree of Life, crossing paths of ${data.paths.slice(0, 3).join(', ')}—each a gateway to deeper self-knowledge.`
+      }
+      return 'Kabbalah maps your spiritual anatomy onto the Tree of Life—sacred geometry that reveals the hidden structure within you.'
+      break
+    }
+    case 'vedic': {
+      if (data.moonSign) {
+        return `In Vedic astrology, your natal moon in ${data.moonSign} is your emotional anchor and past-life carryforward, while your Nakshatra (lunar mansion) colors your deepest nature.`
+      }
+      return 'Vedic astrology brings dharmic depth to your chart—revealing karmic patterns and spiritual purpose.'
+      break
+    }
+    case 'enn': {
+      if (data.type) {
+        return `Enneagram Type ${data.type} carries its own wound, gift, and path toward integration. You are ${data.type}—rooted in ${data.type === '1' ? 'perfection' : data.type === '2' ? 'service' : data.type === '3' ? 'achievement' : data.type === '4' ? 'authenticity' : data.type === '5' ? 'understanding' : data.type === '6' ? 'loyalty' : data.type === '7' ? 'freedom' : data.type === '8' ? 'power' : 'peace'}, moving toward wisdom.`
+      }
+      return 'The Enneagram reveals nine discrete personality structures—each with distinct emotional pattern, defense mechanism, and path to wholeness.'
+      break
+    }
+    case 'mbti': {
+      if (data.type) {
+        return `Your four-letter type (${data.type}) reveals your cognitive wiring: how you perceive information, make decisions, and orient to the outer world.`
+      }
+      return 'Myers-Briggs maps your psychological preferences—a compass for understanding your natural strengths and blind spots.'
+      break
+    }
+    case 'dosha': {
+      if (data.type) {
+        return `Your Ayurvedic dosha (${data.type}) is the bio-energetic foundation of your constitution—the elemental combination that shapes your body, temperament, and health patterns.`
+      }
+      return 'Ayurvedic doshas—Vata, Pitta, Kapha—are the three fundamental bio-energetic types. Knowing yours is knowing how to balance your body and mind.'
+      break
+    }
+    case 'mayan': {
+      if (data.kin && data.trecena) {
+        return `Kin ${data.kin} (${data.trecena}): Your Mayan signature places you in a specific 13-day wave of consciousness. You are a frequency-bearer in the larger cosmic calendar.`
+      }
+      return 'The Mayan calendar encodes the frequencies of creation—your Kin number and wave position map your place in the cosmic spiral.'
+      break
+    }
+    default: {
+      return ''
+    }
+  }
+}
+
 /* ── Format section data to readable text ─────────────────────── */
 function formatSectionHTML(section, data) {
   if (!data) return '<p class="empty">Not yet computed — run this section in GOLEM to populate.</p>'
   if (data.partial) return `<p class="partial">${data.note || 'Partial data — additional input needed.'}</p>`
 
-  // Generic object-to-HTML renderer
-  function renderObj(obj, depth = 0) {
-    if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
-      return `<span>${String(obj)}</span>`
-    }
-    if (Array.isArray(obj)) {
-      if (obj.length === 0) return '<span>—</span>'
-      return '<ul>' + obj.map(item =>
-        typeof item === 'object' && item !== null
-          ? '<li>' + renderObj(item, depth + 1) + '</li>'
-          : `<li>${String(item)}</li>`
-      ).join('') + '</ul>'
-    }
-    if (typeof obj === 'object' && obj !== null) {
-      const entries = Object.entries(obj).filter(([k]) => !k.startsWith('_'))
-      if (entries.length === 0) return '<span>—</span>'
-      // For top level, use a definition-list style
-      return '<div class="obj-grid">' + entries.map(([k, v]) => {
-        const label = k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()
-        const val = typeof v === 'object' && v !== null ? renderObj(v, depth + 1) : String(v ?? '—')
-        return `<div class="obj-row"><span class="obj-key">${label}</span><span class="obj-val">${val}</span></div>`
-      }).join('') + '</div>'
-    }
-    return '<span>—</span>'
+  let html = ''
+
+  // Add summary paragraph
+  const summary = generateSummary(section, data)
+  if (summary) {
+    html += `<p class="section-summary">${summary}</p>`
   }
 
-  // Special handling for Identity Agent
-  if (section.id === 'identity') {
-    if (typeof data === 'string') return `<div class="identity-text">${data.replace(/\n/g, '<br>')}</div>`
-    if (data.synthesis || data.summary) {
-      return `<div class="identity-text">${(data.synthesis || data.summary || '').replace(/\n/g, '<br>')}</div>`
+  // ─────────────────────────────────────────────────────────────
+  // NATAL ASTROLOGY
+  // ─────────────────────────────────────────────────────────────
+  if (section.id === 'natal' && typeof data === 'object') {
+    html += '<div class="placement-grid">'
+
+    // Big 3
+    if (data.sun) {
+      html += `<div class="placement-card big-three">
+        <div class="placement-label">Sun</div>
+        <div class="placement-value">${data.sun.sign || '—'}</div>
+        <div class="placement-degree">${data.sun.degree || ''}°</div>
+      </div>`
+    }
+    if (data.moon) {
+      html += `<div class="placement-card big-three">
+        <div class="placement-label">Moon</div>
+        <div class="placement-value">${data.moon.sign || '—'}</div>
+        <div class="placement-degree">${data.moon.degree || ''}°</div>
+      </div>`
+    }
+    if (data.asc) {
+      html += `<div class="placement-card big-three">
+        <div class="placement-label">Ascendant</div>
+        <div class="placement-value">${data.asc.sign || '—'}</div>
+        <div class="placement-degree">${data.asc.degree || ''}°</div>
+      </div>`
+    }
+
+    html += '</div>'
+
+    // Planets grid
+    if (data.planets && Object.keys(data.planets).length > 0) {
+      html += '<div class="subsection"><h4>Planetary Placements</h4><div class="placement-grid">'
+      Object.entries(data.planets).forEach(([name, planet]) => {
+        if (planet && planet.sign) {
+          html += `<div class="placement-card">
+            <div class="placement-label">${name}</div>
+            <div class="placement-value">${planet.sign || '—'}</div>
+            ${planet.house ? `<div class="placement-house">House ${planet.house}</div>` : ''}
+          </div>`
+        }
+      })
+      html += '</div></div>'
+    }
+
+    // Aspects table
+    if (data.aspects && data.aspects.length > 0) {
+      html += '<div class="subsection"><h4>Key Aspects</h4><table class="aspects-table">'
+      html += '<tr><th>Planets</th><th>Aspect</th><th>Orb</th></tr>'
+      data.aspects.slice(0, 8).forEach(aspect => {
+        html += `<tr><td>${aspect.p1} — ${aspect.p2}</td><td>${aspect.aspect}</td><td>${aspect.orb || '—'}°</td></tr>`
+      })
+      html += '</table></div>'
     }
   }
 
-  // Special handling for palm reading
-  if (section.id === 'palm') {
-    let html = ''
-    if (data.handShape) {
-      html += `<div class="subsection"><h4>Hand Shape: ${data.handShape.type || '—'}</h4><p>${data.handShape.description || ''}</p></div>`
+  // ─────────────────────────────────────────────────────────────
+  // HUMAN DESIGN
+  // ─────────────────────────────────────────────────────────────
+  else if (section.id === 'hd' && typeof data === 'object') {
+    html += '<div class="placement-grid">'
+
+    if (data.type) {
+      html += `<div class="placement-card hd-type">
+        <div class="placement-label">Type</div>
+        <div class="placement-value">${data.type}</div>
+      </div>`
     }
-    if (data.majorLines) {
-      html += '<div class="subsection"><h4>Major Lines</h4>'
-      for (const [key, val] of Object.entries(data.majorLines)) {
-        const label = key.replace(/([A-Z])/g, ' $1').trim()
-        html += `<div class="line-entry"><strong>${label}:</strong> ${val.observed || '—'}<br><em>${val.interpretation || ''}</em></div>`
+    if (data.strategy) {
+      html += `<div class="placement-card">
+        <div class="placement-label">Strategy</div>
+        <div class="placement-value">${data.strategy}</div>
+      </div>`
+    }
+    if (data.authority) {
+      html += `<div class="placement-card">
+        <div class="placement-label">Authority</div>
+        <div class="placement-value">${data.authority}</div>
+      </div>`
+    }
+    if (data.profile) {
+      html += `<div class="placement-card">
+        <div class="placement-label">Profile</div>
+        <div class="placement-value">${data.profile}</div>
+      </div>`
+    }
+
+    html += '</div>'
+
+    // Centers
+    if (data.centers && typeof data.centers === 'object') {
+      html += '<div class="subsection"><h4>Centers</h4><div class="centers-grid">'
+      Object.entries(data.centers).forEach(([name, status]) => {
+        const isActive = status === 'Defined' || status === true
+        html += `<div class="center-card ${isActive ? 'defined' : 'undefined'}">
+          <span class="center-name">${name}</span>
+          <span class="center-status">${isActive ? '◯ Defined' : '◯ Undefined'}</span>
+        </div>`
+      })
+      html += '</div></div>'
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // GENE KEYS
+  // ─────────────────────────────────────────────────────────────
+  else if (section.id === 'gk' && typeof data === 'object') {
+    const spheres = ['lifeWork', 'evolution', 'radiance', 'purpose', 'venus', 'pearl']
+    html += '<div class="genekeys-spheres">'
+
+    spheres.forEach(sphereName => {
+      const sphere = data[sphereName]
+      if (sphere && sphere.keyNumber) {
+        html += `<div class="genekey-card">
+          <div class="genekey-header">${sphereName.replace(/([A-Z])/g, ' $1').trim()}</div>
+          <div class="genekey-number">Key ${sphere.keyNumber}</div>
+          <div class="genekey-arc">
+            <span class="arc-shadow">${sphere.shadow || '—'}</span>
+            <span class="arc-arrow">→</span>
+            <span class="arc-gift">${sphere.gift || '—'}</span>
+            <span class="arc-arrow">→</span>
+            <span class="arc-siddhi">${sphere.siddhi || '—'}</span>
+          </div>
+          ${sphere.iching ? `<div class="genekey-iching">${sphere.iching}</div>` : ''}
+        </div>`
       }
-      html += '</div>'
-    }
-    if (data.synthesis) {
-      html += `<div class="subsection"><h4>Synthesis</h4><p>${data.synthesis.lifePath || ''}</p>`
-      if (data.synthesis.keyThemes?.length) html += `<p><strong>Key Themes:</strong> ${data.synthesis.keyThemes.join(', ')}</p>`
-      if (data.synthesis.strengths?.length) html += `<p><strong>Strengths:</strong> ${data.synthesis.strengths.join(', ')}</p>`
-      if (data.synthesis.advice) html += `<p><em>${data.synthesis.advice}</em></p>`
-      html += '</div>'
-    }
-    return html || renderObj(data)
+    })
+
+    html += '</div>'
   }
 
-  // For quiz-based with just a type
-  if (data.source === 'profile' && data.type) {
-    return `<p class="quiz-result"><strong>Result:</strong> ${typeof data.type === 'object' ? JSON.stringify(data.type) : data.type}</p>`
+  // ─────────────────────────────────────────────────────────────
+  // NUMEROLOGY
+  // ─────────────────────────────────────────────────────────────
+  else if (section.id === 'num' && typeof data === 'object') {
+    html += '<div class="numerology-grid">'
+
+    const numFields = ['lifePath', 'expression', 'soulUrge', 'birthday', 'personalYear']
+    numFields.forEach(field => {
+      const numData = data[field]
+      if (numData && numData.number) {
+        html += `<div class="number-card">
+          <div class="number-value">${numData.number}</div>
+          <div class="number-label">${field.replace(/([A-Z])/g, ' $1').trim()}</div>
+          ${numData.meaning ? `<div class="number-meaning">${numData.meaning}</div>` : ''}
+        </div>`
+      }
+    })
+
+    html += '</div>'
   }
 
-  return renderObj(data)
+  // ─────────────────────────────────────────────────────────────
+  // CHINESE ZODIAC
+  // ─────────────────────────────────────────────────────────────
+  else if (section.id === 'chi' && typeof data === 'object') {
+    html += '<div class="placement-grid">'
+
+    if (data.animal) {
+      html += `<div class="placement-card">
+        <div class="placement-label">Animal</div>
+        <div class="placement-value">${data.animal}</div>
+      </div>`
+    }
+    if (data.element) {
+      html += `<div class="placement-card">
+        <div class="placement-label">Element</div>
+        <div class="placement-value">${data.element}</div>
+      </div>`
+    }
+    if (data.yinYang) {
+      html += `<div class="placement-card">
+        <div class="placement-label">Polarity</div>
+        <div class="placement-value">${data.yinYang}</div>
+      </div>`
+    }
+
+    html += '</div>'
+
+    if (data.traits && data.traits.length > 0) {
+      html += `<div class="subsection"><h4>Character</h4><p>${data.traits.join(', ')}</p></div>`
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // ENNEAGRAM, MBTI, DOSHA (Quiz-based simple types)
+  // ─────────────────────────────────────────────────────────────
+  else if (['enn', 'mbti', 'dosha', 'archetype', 'lovelang', 'egyptian'].includes(section.id)) {
+    let typeValue = data.type || data
+    let typeLabel = typeValue.toString()
+
+    html += `<div class="placement-grid">`
+    html += `<div class="placement-card quiz-type">
+      <div class="placement-label">${section.label}</div>
+      <div class="placement-value" style="font-size: 2.5em;">${typeLabel}</div>
+    </div>`
+    html += `</div>`
+
+    if (data.description) {
+      html += `<div class="subsection"><p>${data.description}</p></div>`
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // KABBALAH
+  // ─────────────────────────────────────────────────────────────
+  else if (section.id === 'kab' && typeof data === 'object') {
+    if (data.paths && data.paths.length > 0) {
+      html += '<div class="subsection"><h4>Tree of Life Paths</h4><div class="paths-list">'
+      data.paths.forEach(path => {
+        html += `<div class="path-item"><strong>${path.name || path}</strong>${path.description ? ` — ${path.description}` : ''}</div>`
+      })
+      html += '</div></div>'
+    }
+    if (data.sephiroth && Object.keys(data.sephiroth).length > 0) {
+      html += '<div class="subsection"><h4>Sephiroth</h4><div class="placement-grid">'
+      Object.entries(data.sephiroth).slice(0, 6).forEach(([name, value]) => {
+        html += `<div class="placement-card"><div class="placement-label">${name}</div><div class="placement-value">${value.number || '—'}</div></div>`
+      })
+      html += '</div></div>'
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // MAYAN CALENDAR
+  // ─────────────────────────────────────────────────────────────
+  else if (section.id === 'mayan' && typeof data === 'object') {
+    html += '<div class="placement-grid">'
+
+    if (data.kin) {
+      html += `<div class="placement-card">
+        <div class="placement-label">Kin</div>
+        <div class="placement-value">${data.kin}</div>
+      </div>`
+    }
+    if (data.trecena) {
+      html += `<div class="placement-card">
+        <div class="placement-label">Trecena (Wave)</div>
+        <div class="placement-value">${data.trecena}</div>
+      </div>`
+    }
+    if (data.tone) {
+      html += `<div class="placement-card">
+        <div class="placement-label">Tone</div>
+        <div class="placement-value">${data.tone}</div>
+      </div>`
+    }
+
+    html += '</div>'
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // IDENTITY AGENT (AI Synthesis)
+  // ─────────────────────────────────────────────────────────────
+  else if (section.id === 'identity') {
+    if (typeof data === 'string') {
+      html = `<div class="identity-synthesis">${data.replace(/\n/g, '<br>')}</div>`
+    } else if (data.synthesis || data.summary) {
+      html = `<div class="identity-synthesis">${(data.synthesis || data.summary || '').replace(/\n/g, '<br>')}</div>`
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────
+  // FALLBACK: Generic object renderer for unmapped sections
+  // ─────────────────────────────────────────────────────────────
+  else if (!html) {
+    function renderObj(obj, depth = 0) {
+      if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+        return `<span>${String(obj)}</span>`
+      }
+      if (Array.isArray(obj)) {
+        if (obj.length === 0) return '<span>—</span>'
+        return '<ul>' + obj.map(item =>
+          typeof item === 'object' && item !== null
+            ? '<li>' + renderObj(item, depth + 1) + '</li>'
+            : `<li>${String(item)}</li>`
+        ).join('') + '</ul>'
+      }
+      if (typeof obj === 'object' && obj !== null) {
+        const entries = Object.entries(obj).filter(([k]) => !k.startsWith('_'))
+        if (entries.length === 0) return '<span>—</span>'
+        return '<div class="obj-grid">' + entries.map(([k, v]) => {
+          const label = k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim()
+          const val = typeof v === 'object' && v !== null ? renderObj(v, depth + 1) : String(v ?? '—')
+          return `<div class="obj-row"><span class="obj-key">${label}</span><span class="obj-val">${val}</span></div>`
+        }).join('') + '</div>'
+      }
+      return '<span>—</span>'
+    }
+    html = renderObj(data)
+  }
+
+  return html
 }
 
 /* ── Generate printable HTML ──────────────────────────────────── */
@@ -287,69 +614,74 @@ function generateReportHTML(profile, sections, sectionData) {
   body {
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-size: 11pt;
-    line-height: 1.7;
-    color: #1a1a2e;
+    line-height: 1.8;
+    color: #2d2d3d;
     background: #fff;
     padding: 0;
   }
 
+  /* ── COVER PAGE ───────────────────────────────────────────── */
   .cover {
     page-break-after: always;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 90vh;
+    min-height: 95vh;
     text-align: center;
     padding: 60px 40px;
   }
 
   .cover-logo {
     font-family: 'Cinzel', serif;
-    font-size: 48pt;
+    font-size: 56pt;
     font-weight: 700;
-    letter-spacing: 0.3em;
+    letter-spacing: 0.4em;
     color: #c9a84c;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
   }
 
   .cover-sub {
     font-family: 'Cinzel', serif;
-    font-size: 10pt;
-    letter-spacing: 0.25em;
+    font-size: 9.5pt;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: #666;
-    margin-bottom: 48px;
+    color: #888;
+    margin-bottom: 64px;
+    font-weight: 400;
   }
 
   .cover-name {
     font-family: 'Cinzel', serif;
-    font-size: 24pt;
+    font-size: 28pt;
     font-weight: 600;
     color: #1a1a2e;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
   }
 
   .cover-dob {
-    font-size: 13pt;
+    font-size: 12pt;
     color: #666;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .cover-date {
-    font-size: 10pt;
-    color: #999;
-    margin-top: 48px;
+    font-size: 9.5pt;
+    color: #aaa;
+    margin-top: 64px;
     font-style: italic;
   }
 
   .cover-line {
-    width: 120px;
-    height: 1px;
+    width: 100px;
+    height: 1.5px;
     background: linear-gradient(90deg, transparent, #c9a84c, transparent);
-    margin: 24px auto;
+    margin: 32px auto;
   }
 
+  /* ── TABLE OF CONTENTS ────────────────────────────────────── */
   .toc {
     page-break-after: always;
     padding: 40px 0;
@@ -357,178 +689,470 @@ function generateReportHTML(profile, sections, sectionData) {
 
   .toc h2 {
     font-family: 'Cinzel', serif;
-    font-size: 14pt;
+    font-size: 13pt;
     font-weight: 600;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
     color: #c9a84c;
-    border-bottom: 1px solid #c9a84c;
-    padding-bottom: 8px;
-    margin-bottom: 24px;
+    border-bottom: 2px solid #c9a84c;
+    padding-bottom: 12px;
+    margin-bottom: 28px;
   }
 
   .toc-category {
     font-family: 'Cinzel', serif;
-    font-size: 10pt;
+    font-size: 9.5pt;
     font-weight: 600;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: #333;
-    margin: 16px 0 8px;
+    color: #2d2d3d;
+    margin: 18px 0 10px;
+    padding-top: 8px;
   }
 
   .toc-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 4px 0 4px 16px;
+    gap: 10px;
+    padding: 5px 0 5px 20px;
     font-size: 11pt;
     color: #444;
   }
 
   .toc-icon {
-    width: 20px;
+    width: 18px;
     text-align: center;
-    font-size: 12pt;
+    font-size: 11pt;
   }
 
   .toc-status {
     margin-left: auto;
     font-size: 8pt;
-    color: #999;
+    color: #aaa;
     font-style: italic;
   }
 
+  /* ── CATEGORY HEADERS ─────────────────────────────────────── */
   .category h2 {
     font-family: 'Cinzel', serif;
-    font-size: 14pt;
+    font-size: 13pt;
     font-weight: 600;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
     color: #c9a84c;
     border-bottom: 2px solid #c9a84c;
-    padding-bottom: 8px;
-    margin: 32px 0 20px;
+    padding-bottom: 10px;
+    margin: 40px 0 24px;
     page-break-after: avoid;
   }
 
+  /* ── SECTION CONTAINERS ───────────────────────────────────── */
   .section {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     page-break-inside: avoid;
   }
 
   .section h3 {
     font-family: 'Cinzel', serif;
-    font-size: 12pt;
+    font-size: 11.5pt;
     font-weight: 600;
-    letter-spacing: 0.1em;
-    color: #1a1a2e;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 6px;
-    margin-bottom: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #2d2d3d;
+    border-bottom: 1.5px solid #c9a84c;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
     page-break-after: avoid;
   }
 
   .section-icon {
-    margin-right: 8px;
+    margin-right: 10px;
+    opacity: 0.8;
   }
 
-  .empty {
-    color: #bbb;
+  /* ── SUMMARY PARAGRAPHS ───────────────────────────────────── */
+  .section-summary {
     font-style: italic;
-    padding: 12px 16px;
-    background: #f8f8f8;
-    border: 1px dashed #ddd;
+    color: #555;
+    margin-bottom: 16px;
+    line-height: 1.7;
+    padding: 10px 0;
+    border-left: 2px solid #c9a84c;
+    padding-left: 12px;
+  }
+
+  /* ── PLACEMENT CARDS (Key data in visual grid) ──────────── */
+  .placement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .placement-card {
+    border: 1px solid #c9a84c;
     border-radius: 6px;
+    padding: 12px 10px;
+    text-align: center;
+    background: #fafaf8;
+    page-break-inside: avoid;
+  }
+
+  .placement-card.big-three {
+    border: 1.5px solid #c9a84c;
+    background: #fef9f0;
+    padding: 14px 10px;
+  }
+
+  .placement-card.hd-type {
+    border: 1.5px solid #c9a84c;
+    background: #fef9f0;
+  }
+
+  .placement-card.quiz-type {
+    border: 1.5px solid #c9a84c;
+    background: #fef9f0;
+  }
+
+  .placement-label {
+    font-family: 'Cinzel', serif;
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c9a84c;
+    margin-bottom: 6px;
+  }
+
+  .placement-value {
+    font-size: 13pt;
+    font-weight: 600;
+    color: #2d2d3d;
+    margin-bottom: 4px;
+  }
+
+  .placement-degree {
+    font-size: 9pt;
+    color: #999;
+  }
+
+  .placement-house {
+    font-size: 8pt;
+    color: #c9a84c;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ── GENE KEYS SPHERES ────────────────────────────────────── */
+  .genekeys-spheres {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .genekey-card {
+    border: 1px solid #c9a84c;
+    border-radius: 6px;
+    padding: 12px;
+    background: #fafaf8;
+    page-break-inside: avoid;
+  }
+
+  .genekey-header {
+    font-family: 'Cinzel', serif;
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c9a84c;
+    margin-bottom: 6px;
+  }
+
+  .genekey-number {
+    font-size: 12pt;
+    font-weight: 600;
+    color: #2d2d3d;
+    margin-bottom: 6px;
+  }
+
+  .genekey-arc {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 9pt;
+    line-height: 1.5;
+  }
+
+  .arc-shadow, .arc-gift, .arc-siddhi {
+    padding: 3px 4px;
+    background: #f0f0f0;
+    border-radius: 4px;
+  }
+
+  .arc-shadow {
+    background: #fff0f0;
+    color: #d32f2f;
+  }
+
+  .arc-gift {
+    background: #f0f8ff;
+    color: #1976d2;
+  }
+
+  .arc-siddhi {
+    background: #f0fff0;
+    color: #388e3c;
+  }
+
+  .arc-arrow {
+    font-size: 8pt;
+    color: #c9a84c;
+    text-align: center;
+  }
+
+  .genekey-iching {
+    font-size: 8pt;
+    color: #999;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  /* ── NUMEROLOGY CARDS ─────────────────────────────────────── */
+  .numerology-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+    margin: 14px 0;
+  }
+
+  .number-card {
+    border: 1.5px solid #c9a84c;
+    border-radius: 6px;
+    padding: 12px 8px;
+    text-align: center;
+    background: #fef9f0;
+    page-break-inside: avoid;
+  }
+
+  .number-value {
+    font-size: 24pt;
+    font-weight: 700;
+    color: #c9a84c;
+    margin-bottom: 4px;
+  }
+
+  .number-label {
+    font-family: 'Cinzel', serif;
+    font-size: 8pt;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #2d2d3d;
+    margin-bottom: 6px;
+  }
+
+  .number-meaning {
+    font-size: 8.5pt;
+    color: #666;
+    line-height: 1.4;
+  }
+
+  /* ── CENTERS GRID (Human Design) ──────────────────────────── */
+  .centers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+  }
+
+  .center-card {
+    border: 1px solid #c9a84c;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    background: #fafaf8;
+  }
+
+  .center-card.defined {
+    background: #f0fff0;
+  }
+
+  .center-card.undefined {
+    background: #f5f5f5;
+  }
+
+  .center-name {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 9pt;
+    font-weight: 600;
+    color: #2d2d3d;
+    margin-bottom: 4px;
+  }
+
+  .center-status {
+    display: block;
+    font-size: 8pt;
+    color: #c9a84c;
+  }
+
+  /* ── SUBSECTIONS (for nested content) ──────────────────────── */
+  .subsection {
+    margin: 14px 0;
+    padding: 12px 14px;
+    background: #f8f8f6;
+    border-left: 2px solid #c9a84c;
+    page-break-inside: avoid;
+  }
+
+  .subsection h4 {
+    font-family: 'Cinzel', serif;
+    font-size: 9.5pt;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #c9a84c;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #c9a84c33;
+  }
+
+  .subsection p {
+    margin: 6px 0;
+    font-size: 10.5pt;
+    line-height: 1.6;
+  }
+
+  /* ── PATHS LIST (Kabbalah) ────────────────────────────────── */
+  .paths-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .path-item {
+    padding: 8px 10px;
+    border-left: 2px solid #c9a84c;
+    padding-left: 12px;
+    font-size: 10pt;
+  }
+
+  /* ── ASPECTS TABLE (Natal) ────────────────────────────────── */
+  .aspects-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 10pt;
+  }
+
+  .aspects-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 8.5pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #c9a84c;
+    border-bottom: 1px solid #c9a84c;
+    padding: 6px 6px;
+    text-align: left;
+  }
+
+  .aspects-table td {
+    padding: 5px 6px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .aspects-table tr:nth-child(odd) td {
+    background: #fafaf8;
+  }
+
+  /* ── IDENTITY SYNTHESIS (AI) ──────────────────────────────── */
+  .identity-synthesis {
+    line-height: 1.8;
+    font-size: 11pt;
+    color: #2d2d3d;
+    padding: 12px 0;
+  }
+
+  /* ── PLACEHOLDER / ERROR STATES ───────────────────────────── */
+  .empty {
+    color: #aaa;
+    font-style: italic;
+    padding: 12px 14px;
+    background: #f5f5f5;
+    border: 1px dashed #ddd;
+    border-radius: 4px;
+    font-size: 10pt;
   }
 
   .partial {
-    color: #e69500;
+    color: #d97706;
     font-style: italic;
-    padding: 12px 16px;
+    padding: 12px 14px;
     background: #fffbf0;
-    border: 1px solid #f0d080;
-    border-radius: 6px;
+    border: 1px solid #fed7aa;
+    border-radius: 4px;
+    font-size: 10pt;
   }
 
-  .quiz-result {
-    padding: 8px 0;
-  }
-
+  /* ── GENERIC OBJECT GRID (fallback) ───────────────────────── */
   .obj-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 4px 0;
+    gap: 2px;
+    padding: 6px 0;
   }
 
   .obj-row {
     display: flex;
-    gap: 8px;
-    padding: 3px 0;
+    gap: 12px;
+    padding: 4px 0;
     border-bottom: 1px solid #f0f0f0;
+    page-break-inside: avoid;
   }
 
   .obj-key {
     font-weight: 600;
     text-transform: capitalize;
     color: #555;
-    min-width: 140px;
+    min-width: 120px;
     flex-shrink: 0;
     font-size: 10pt;
   }
 
   .obj-val {
-    color: #333;
+    color: #2d2d3d;
     flex: 1;
-  }
-
-  .subsection {
-    margin: 12px 0;
-    padding: 12px;
-    background: #fafafa;
-    border-radius: 6px;
-  }
-
-  .subsection h4 {
-    font-family: 'Cinzel', serif;
     font-size: 10pt;
-    font-weight: 600;
-    color: #c9a84c;
-    margin-bottom: 8px;
   }
 
-  .line-entry {
-    margin: 8px 0;
-    padding-left: 12px;
-    border-left: 2px solid #c9a84c44;
-  }
-
-  .identity-text {
-    line-height: 1.8;
-    font-size: 11pt;
-  }
-
-  ul {
-    padding-left: 20px;
-    margin: 4px 0;
-  }
-
-  li { margin: 2px 0; }
-
+  /* ── FOOTER ───────────────────────────────────────────────── */
   .footer {
-    margin-top: 48px;
-    padding-top: 16px;
+    margin-top: 56px;
+    padding-top: 12px;
     border-top: 1px solid #ddd;
     text-align: center;
-    font-size: 9pt;
-    color: #bbb;
+    font-size: 8.5pt;
+    color: #999;
     font-style: italic;
   }
 
+  /* ── LISTS ────────────────────────────────────────────────── */
+  ul {
+    padding-left: 18px;
+    margin: 6px 0;
+  }
+
+  li {
+    margin: 3px 0;
+    font-size: 10pt;
+  }
+
+  /* ── PRINT MEDIA ──────────────────────────────────────────── */
   @media print {
     body { padding: 0; }
     .no-print { display: none !important; }
+    .section { page-break-inside: avoid; }
   }
 </style>
 </head>
@@ -544,7 +1168,7 @@ function generateReportHTML(profile, sections, sectionData) {
   ${profile?.birthPlace ? `<div class="cover-dob">${profile.birthPlace}</div>` : ''}
   <div class="cover-line"></div>
   <div class="cover-date">Generated ${dateStr}</div>
-  <div class="cover-date" style="margin-top:4px; font-size:8pt;">22 Symbolic Frameworks · AI Synthesis · ${sections.length} Sections</div>
+  <div class="cover-date" style="margin-top:4px; font-size:8pt;">22 Symbolic Frameworks · Computation & Synthesis · ${sections.length} Sections</div>
 </div>
 
 <!-- Table of Contents -->
