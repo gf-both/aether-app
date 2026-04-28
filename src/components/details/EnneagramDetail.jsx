@@ -259,7 +259,6 @@ export default function EnneagramDetail() {
 
   return (
     <div style={S.panel}>
-      <AboutSystemButton systemName="Enneagram" />
       {/* HEADER */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -282,6 +281,7 @@ export default function EnneagramDetail() {
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Personality architecture -- type, wing, tritype, instincts, and growth paths
         </div>
+        <AboutSystemButton systemName="Enneagram" />
       </div>
 
       {/* ENNEAGRAM SYMBOL CANVAS */}

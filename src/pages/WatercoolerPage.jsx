@@ -164,51 +164,73 @@ const S = {
     padding: '5px 18px', borderRadius: 16, fontSize: 10, letterSpacing: '.08em',
     cursor: disabled ? 'not-allowed' : 'pointer', fontFamily: "'Cinzel', serif",
     textTransform: 'uppercase',
-    background: disabled ? '#1a1a2e' : 'rgba(147,51,234,0.15)',
-    border: `1px solid ${disabled ? '#333' : 'rgba(147,51,234,0.5)'}`,
-    color: disabled ? '#555' : '#c084fc',
+    background: disabled ? 'var(--secondary, #1a1a2e)' : 'rgba(147,51,234,0.15)',
+    border: `1px solid ${disabled ? 'var(--border, #333)' : 'rgba(147,51,234,0.5)'}`,
+    color: disabled ? 'var(--muted-foreground, #555)' : '#c084fc',
     transition: 'all .15s',
   }),
   // Canvas / graph
-  fishWrap: { position: 'relative', flex: 1, overflow: 'hidden', background: '#0a0a0f' },
+  fishWrap: { position: 'relative', flex: 1, overflow: 'hidden', background: 'var(--background, #0a0a0f)' },
   fishCanvas: { width: '100%', height: '100%', display: 'block' },
   fishBottomRight: { position: 'absolute', bottom: 80, right: 18, zIndex: 10, display: 'flex', flexDirection: 'column', gap: 5 },
   fishCtrlBtn: {
-    width: 34, height: 34, border: '1px solid #333', borderRadius: 6,
-    background: 'rgba(20,20,30,0.9)', color: '#ccc', fontSize: 16,
+    width: 34, height: 34, border: '1px solid var(--border, #333)', borderRadius: 6,
+    background: 'var(--card, rgba(20,20,30,0.9))', color: 'var(--foreground, #ccc)', fontSize: 16,
     cursor: 'pointer', fontFamily: 'monospace',
   },
   fishTimeline: { position: 'absolute', bottom: 18, left: '50%', transform: 'translateX(-50%)', zIndex: 10, textAlign: 'center' },
   fishTimelineTrack: { display: 'flex', gap: 6 },
   fishYearBtn: {
-    padding: '7px 16px', border: '1px solid #333', borderRadius: 8,
-    background: 'rgba(20,20,30,0.9)', color: '#888', fontSize: 12,
+    padding: '7px 16px', border: '1px solid var(--border, #333)', borderRadius: 8,
+    background: 'var(--card, rgba(20,20,30,0.9))', color: 'var(--muted-foreground, #888)', fontSize: 12,
     fontFamily: 'monospace', cursor: 'pointer',
   },
   fishYearBtnActive: { borderColor: '#c9a84c', color: '#c9a84c', background: 'rgba(201,168,76,0.1)' },
   fishSimulating: { marginTop: 6, color: '#c9a84c', fontSize: 11, fontFamily: 'monospace' },
   fishNarrative: {
     position: 'absolute', bottom: 70, left: '50%', transform: 'translateX(-50%)',
-    maxWidth: 560, padding: '10px 18px', background: 'rgba(10,10,15,0.92)',
-    border: '1px solid #333', borderRadius: 10, color: '#bbb', fontSize: 12,
+    maxWidth: 560, padding: '10px 18px', background: 'var(--card, rgba(10,10,15,0.92))',
+    border: '1px solid var(--border, #333)', borderRadius: 10, color: 'var(--muted-foreground, #bbb)', fontSize: 12,
     fontFamily: 'monospace', lineHeight: 1.5, textAlign: 'center', zIndex: 10,
   },
   fishTooltip: {
-    position: 'fixed', padding: '9px 13px', background: 'rgba(10,10,20,0.97)',
+    position: 'fixed', padding: '9px 13px', background: 'var(--card, rgba(10,10,20,0.97))',
     border: '1px solid #c9a84c', borderRadius: 8, zIndex: 999, pointerEvents: 'none',
   },
-  fishTooltipName: { color: '#e0e0e0', fontSize: 12, fontWeight: 600 },
+  fishTooltipName: { color: 'var(--foreground, #e0e0e0)', fontSize: 12, fontWeight: 600 },
   fishTooltipRole: { color: '#9333ea', fontSize: 10, fontFamily: 'monospace', marginTop: 2 },
   fishTooltipStat: { color: '#c9a84c', fontSize: 10, fontFamily: 'monospace', marginTop: 3 },
   statsRow: {
     position: 'absolute', top: 14, right: 18, zIndex: 10,
     display: 'flex', flexDirection: 'column', gap: 3,
-    fontSize: 10, fontFamily: 'monospace', color: '#666',
+    fontSize: 10, fontFamily: 'monospace', color: 'var(--muted-foreground, #666)',
   },
   emptyGraph: {
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-    height: '100%', gap: 12, color: '#888', fontSize: 13, textAlign: 'center', padding: 40,
+    height: '100%', gap: 12, color: 'var(--muted-foreground, #888)', fontSize: 13, textAlign: 'center', padding: 40,
   },
+}
+
+// ── Extract conversation snippets for floating display ──
+function extractSnippets(threads, maxSnippets = 8) {
+  const snippets = []
+  for (const thread of threads.slice(0, 10)) {
+    if (!thread.messages) continue
+    for (const msg of thread.messages) {
+      if (msg.content && msg.content.length > 20 && msg.content.length < 200) {
+        // Take meaningful short fragments
+        const text = msg.content.length > 80 ? msg.content.slice(0, 77) + '...' : msg.content
+        snippets.push({
+          text,
+          agent: msg.agent || msg.agentId || 'Unknown',
+          agentId: String(msg.agentId || msg.agent || ''),
+          timestamp: thread.createdAt || Date.now(),
+        })
+      }
+    }
+  }
+  // Shuffle and limit
+  return snippets.sort(() => Math.random() - 0.5).slice(0, maxSnippets)
 }
 
 // ── Graph view ──
@@ -223,11 +245,14 @@ function GraphView({ threads, profiles, year, setYear }) {
   const mouseRef = useRef({ x: 0, y: 0 })
   const topRef = useRef([])
   const yearRef = useRef(0)
+  const snippetsRef = useRef([])
 
   const [edgeCount, setEdgeCount] = useState(0)
   const [paused, setPaused] = useState(false)
   const [tooltip, setTooltip] = useState(null)
   const [scale, setScale] = useState(1)
+  const [showSnippets, setShowSnippets] = useState(true)
+  const [panelPos, setPanelPos] = useState('bottom') // 'bottom' | 'top' | 'left'
 
   useEffect(() => {
     if (!profiles.length) return
@@ -235,6 +260,16 @@ function GraphView({ threads, profiles, year, setYear }) {
     setEdgeCount(edges.length)
     edgesRef.current = edges
     topRef.current = findTopConnected(profiles, edges)
+    // Extract floating snippets from threads
+    snippetsRef.current = extractSnippets(threads).map((snip, i) => ({
+      ...snip,
+      // Position snippets in a ring around the center with gentle float
+      angle: (2 * Math.PI * i) / Math.max(1, extractSnippets(threads).length),
+      radius: 140 + Math.random() * 100,
+      floatPhase: Math.random() * Math.PI * 2,
+      fadeIn: Math.random() * 200, // frame offset for staggered fade-in
+      opacity: 0,
+    }))
     const radius = 200
     nodesRef.current = profiles.map((p, i) => {
       const id = String(p.id || p.name)
@@ -298,7 +333,8 @@ function GraphView({ threads, profiles, year, setYear }) {
         n.x += Math.sin(frame * 0.01 + n.phase) * 0.3
         n.y += Math.cos(frame * 0.013 + n.phase) * 0.2
       })
-      ctx.fillStyle = '#0a0a0f'
+      const isDark = document.documentElement.classList.contains('dark')
+      ctx.fillStyle = isDark ? '#0a0a0f' : '#f5f0e8'
       ctx.fillRect(0, 0, W, H)
       ctx.save()
       ctx.translate(W / 2, H / 2)
@@ -312,9 +348,19 @@ function GraphView({ threads, profiles, year, setYear }) {
         const age = (now - (e.timestamp || now)) / (1000 * 60 * 60 * 24 * 30)
         const opacity = Math.max(0.07, Math.min(0.75, (0.45 - age * 0.05) * ym))
         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y)
-        ctx.strokeStyle = yr > 0 ? `rgba(144,80,224,${opacity})` : `rgba(201,168,76,${opacity})`
+        if (yr > 0) {
+          // Dynamic projection: animated dashes + color shift per year
+          const yearColors = ['', 'rgba(144,80,224,', 'rgba(212,48,112,', 'rgba(240,192,64,']
+          ctx.strokeStyle = `${yearColors[yr] || yearColors[1]}${opacity})`
+          ctx.setLineDash(yr >= 2 ? [8 + yr * 2, 4] : [])
+          ctx.lineDashOffset = -frame * 0.3
+        } else {
+          ctx.strokeStyle = `rgba(201,168,76,${opacity})`
+          ctx.setLineDash([])
+        }
         ctx.lineWidth = Math.min(5, (0.4 + e.weight * 0.7) * (1 + yr * 0.3))
         ctx.stroke()
+        ctx.setLineDash([])
       })
       const top3 = topRef.current
       nodes.forEach(n => {
@@ -325,12 +371,60 @@ function GraphView({ threads, profiles, year, setYear }) {
           ctx.beginPath(); ctx.arc(n.x, n.y, r * 2.8, 0, Math.PI * 2)
           ctx.fillStyle = glow; ctx.fill()
         }
+        // Dynamic projection: pulsing effect when projecting years
+        if (yr > 0) {
+          const pulse = Math.sin(frame * 0.03 + n.phase) * 0.3 + 0.7
+          const projGlow = ctx.createRadialGradient(n.x, n.y, r, n.x, n.y, r * (1.5 + yr * 0.5))
+          projGlow.addColorStop(0, `${n.color}${Math.round(pulse * 40).toString(16).padStart(2,'0')}`); projGlow.addColorStop(1, `${n.color}00`)
+          ctx.beginPath(); ctx.arc(n.x, n.y, r * (1.5 + yr * 0.5), 0, Math.PI * 2)
+          ctx.fillStyle = projGlow; ctx.fill()
+        }
         ctx.beginPath(); ctx.arc(n.x, n.y, r, 0, Math.PI * 2)
         ctx.fillStyle = n.color + 'cc'; ctx.fill()
         ctx.strokeStyle = n.color; ctx.lineWidth = 1.5; ctx.stroke()
-        ctx.fillStyle = '#ddd'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center'
+        ctx.fillStyle = isDark ? '#ddd' : '#333'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center'
         ctx.fillText(n.name.split(' ')[0], n.x, n.y + r + 14)
       })
+
+      // ── Floating conversation snippets ──
+      const snips = showSnippetsRef.current ? snippetsRef.current : []
+      if (snips.length > 0) {
+        ctx.save()
+        snips.forEach((snip, i) => {
+          // Fade in staggered
+          if (frame > snip.fadeIn) {
+            snip.opacity = Math.min(0.55, snip.opacity + 0.003)
+          }
+          if (snip.opacity <= 0) return
+          // Float gently
+          const sx = snip.radius * Math.cos(snip.angle + frame * 0.001) + Math.sin(frame * 0.008 + snip.floatPhase) * 15
+          const sy = snip.radius * Math.sin(snip.angle + frame * 0.001) + Math.cos(frame * 0.01 + snip.floatPhase) * 10
+          // Cycle through snippets visibility (show 3-4 at a time)
+          const cycle = Math.sin(frame * 0.005 + i * 1.2)
+          const vis = snip.opacity * Math.max(0, cycle * 0.5 + 0.5)
+          if (vis < 0.05) return
+          ctx.globalAlpha = vis
+          // Background pill
+          const maxW = 160
+          ctx.font = '9px monospace'
+          const text = snip.text.length > 50 ? snip.text.slice(0, 47) + '...' : snip.text
+          const tw = Math.min(maxW, ctx.measureText(text).width + 16)
+          ctx.fillStyle = isDark ? 'rgba(10,10,20,0.85)' : 'rgba(245,240,232,0.85)'
+          ctx.beginPath()
+          const bx = sx - tw / 2, by = sy - 10
+          ctx.roundRect(bx, by, tw, 22, 6)
+          ctx.fill()
+          ctx.strokeStyle = isDark ? 'rgba(201,168,76,0.15)' : 'rgba(160,140,80,0.15)'
+          ctx.lineWidth = 0.5; ctx.stroke()
+          // Text
+          ctx.fillStyle = isDark ? 'rgba(200,200,200,0.7)' : 'rgba(60,60,60,0.7)'
+          ctx.textAlign = 'center'
+          ctx.fillText(text, sx, sy + 2)
+          ctx.globalAlpha = 1
+        })
+        ctx.restore()
+      }
+
       ctx.restore()
       const mx = (mouseRef.current.x - W / 2) / s
       const my = (mouseRef.current.y - H / 2) / s
@@ -346,9 +440,11 @@ function GraphView({ threads, profiles, year, setYear }) {
     return () => { cancelAnimationFrame(animRef.current); ro.disconnect() }
   }, [])
 
+  const showSnippetsRef = useRef(true)
   useEffect(() => { pausedRef.current = paused }, [paused])
   useEffect(() => { scaleRef.current = scale }, [scale])
   useEffect(() => { yearRef.current = year }, [year])
+  useEffect(() => { showSnippetsRef.current = showSnippets }, [showSnippets])
 
   const handleMouseMove = useCallback((e) => {
     const rect = canvasRef.current?.getBoundingClientRect()
@@ -375,12 +471,22 @@ function GraphView({ threads, profiles, year, setYear }) {
       </div>
 
       <div style={S.fishBottomRight}>
-        <button style={S.fishCtrlBtn} onClick={() => setScale(s => Math.min(3, s + 0.2))}>+</button>
-        <button style={S.fishCtrlBtn} onClick={() => setScale(s => Math.max(0.3, s - 0.2))}>−</button>
-        <button style={S.fishCtrlBtn} onClick={() => setPaused(p => !p)}>{paused ? '▶' : '⏸'}</button>
+        <button style={S.fishCtrlBtn} onClick={() => setScale(s => Math.min(3, s + 0.2))} title="Zoom in">+</button>
+        <button style={S.fishCtrlBtn} onClick={() => setScale(s => Math.max(0.3, s - 0.2))} title="Zoom out">−</button>
+        <button style={S.fishCtrlBtn} onClick={() => setPaused(p => !p)} title={paused ? 'Play' : 'Pause'}>{paused ? '▶' : '⏸'}</button>
+        <button style={{ ...S.fishCtrlBtn, fontSize: 11 }} onClick={() => setShowSnippets(s => !s)} title="Toggle conversation snippets">
+          {showSnippets ? '💬' : '🔇'}
+        </button>
+        <button style={{ ...S.fishCtrlBtn, fontSize: 11 }} onClick={() => setPanelPos(p => p === 'bottom' ? 'top' : p === 'top' ? 'left' : 'bottom')} title="Move timeline panel">
+          {panelPos === 'bottom' ? '⬇' : panelPos === 'top' ? '⬆' : '⬅'}
+        </button>
       </div>
 
-      <div style={S.fishTimeline}>
+      <div style={{
+        ...S.fishTimeline,
+        ...(panelPos === 'top' ? { top: 14, bottom: 'auto' } : {}),
+        ...(panelPos === 'left' ? { left: 18, bottom: 18, transform: 'none' } : {}),
+      }}>
         <div style={S.fishTimelineTrack}>
           {['Now', '+1 yr', '+2 yr', '+3 yr'].map((label, i) => (
             <button key={i} style={{ ...S.fishYearBtn, ...(year === i ? S.fishYearBtnActive : {}) }} onClick={() => setYear(i)}>
@@ -391,7 +497,11 @@ function GraphView({ threads, profiles, year, setYear }) {
         {year > 0 && <div style={S.fishSimulating}>◈ Projecting constellation evolution · {year} year{year > 1 ? 's' : ''} forward</div>}
       </div>
 
-      {year > 0 && <div style={S.fishNarrative}>{buildYearNarrative(profiles, edgesRef.current, year)}</div>}
+      {year > 0 && <div style={{
+        ...S.fishNarrative,
+        ...(panelPos === 'top' ? { bottom: 'auto', top: 60 } : {}),
+        ...(panelPos === 'left' ? { left: 18, transform: 'none', bottom: 70, maxWidth: 320 } : {}),
+      }}>{buildYearNarrative(profiles, edgesRef.current, year)}</div>}
 
       {tooltip && (
         <div style={{ ...S.fishTooltip, left: tooltip.x + 12, top: tooltip.y - 40 }}>

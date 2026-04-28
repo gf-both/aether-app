@@ -319,10 +319,10 @@ export default function GematriaDetail() {
 
   return (
     <div style={S.panel}>
-      <AboutSystemButton systemName="Gematria" />
       {/* 1. HEADER */}
       <div>
         <div style={S.heading}>{'\u05D0'} Gematria</div>
+        <AboutSystemButton systemName="Gematria" />
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Name numerology -- Hebrew, Pythagorean, Chaldean, and English ordinal analysis
         </div>

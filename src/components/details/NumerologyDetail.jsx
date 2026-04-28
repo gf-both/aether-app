@@ -134,10 +134,10 @@ export default function NumerologyDetail() {
 
   return (
     <div style={S.panel}>
-      <AboutSystemButton systemName="Numerology" />
       {/* HEADER */}
       <div>
         <div style={S.heading}>{'\u221E'} Numerology</div>
+        <AboutSystemButton systemName="Numerology" />
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Core numbers, master numbers, pinnacles, challenges, and personal cycles
         </div>

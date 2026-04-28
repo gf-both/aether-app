@@ -121,11 +121,11 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
 
   const activeSpheres = computedSpheres
 
-  // Initialize particles once
+  // Reinitialize particles when spheres change (tab switch)
   useEffect(() => {
-    if (!particlesRef.current && activeSpheres) {
+    if (activeSpheres) {
       const outerCount = activeSpheres.filter(s => !s.center).length
-      const pathCount = outerCount // one path per outer sphere to center
+      const pathCount = outerCount
       const pairCount = Math.min(outerCount * (outerCount - 1) / 2, 15)
       particlesRef.current = {
         silhouette: createEnergyParticles(40),

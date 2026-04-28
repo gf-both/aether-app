@@ -106,25 +106,50 @@ export function computeGeneKeysData(birthData = DEFAULT_BIRTH) {
     },
   ]
 
-  // Venus Sequence spheres
+  // Venus Sequence spheres — with wheel positions (diamond layout)
   const venus = profile.venusSequence || {}
   const VENUS_SPHERES = venus.attraction ? [
-    { key: venus.attraction.gate, role: 'Attraction', line: venus.attraction.line, col: 'rgba(212,48,112,', sphere: 'attraction', ...venus.attraction },
-    { key: venus.iq.gate, role: 'IQ', line: venus.iq.line, col: 'rgba(80,180,220,', sphere: 'iq', ...venus.iq },
-    { key: venus.eq.gate, role: 'EQ', line: venus.eq.line, col: 'rgba(144,80,224,', sphere: 'eq', ...venus.eq },
-    { key: venus.sq.gate, role: 'SQ', line: venus.sq.line, col: 'rgba(201,168,76,', sphere: 'sq', ...venus.sq },
+    { key: venus.attraction.gate, role: 'Attraction', line: venus.attraction.line, xf: .50, yf: .18, col: 'rgba(212,48,112,', sphere: 'attraction', ...venus.attraction },
+    { key: venus.iq.gate, role: 'IQ', line: venus.iq.line, xf: .78, yf: .48, col: 'rgba(80,180,220,', sphere: 'iq', ...venus.iq },
+    { key: venus.eq.gate, role: 'EQ', line: venus.eq.line, xf: .22, yf: .48, col: 'rgba(144,80,224,', sphere: 'eq', ...venus.eq },
+    { key: venus.sq.gate, role: 'SQ', line: venus.sq.line, xf: .50, yf: .78, col: 'rgba(201,168,76,', sphere: 'sq', ...venus.sq },
   ] : []
 
-  // Pearl Sequence spheres
+  // Pearl Sequence spheres — with wheel positions (diamond layout)
   const pearl = profile.pearlSequence || {}
   const PEARL_SPHERES = pearl.vocation ? [
-    { key: pearl.vocation.gate, role: 'Vocation', line: pearl.vocation.line, col: 'rgba(240,192,64,', sphere: 'vocation', ...pearl.vocation },
-    { key: pearl.culture.gate, role: 'Culture', line: pearl.culture.line, col: 'rgba(100,180,80,', sphere: 'culture', ...pearl.culture },
-    { key: pearl.brand.gate, role: 'Brand', line: pearl.brand.line, col: 'rgba(80,180,220,', sphere: 'brand', ...pearl.brand },
-    { key: pearl.pearl.gate, role: 'Pearl', line: pearl.pearl.line, col: 'rgba(201,168,76,', sphere: 'pearl', ...pearl.pearl },
+    { key: pearl.vocation.gate, role: 'Vocation', line: pearl.vocation.line, xf: .50, yf: .18, col: 'rgba(240,192,64,', sphere: 'vocation', ...pearl.vocation },
+    { key: pearl.culture.gate, role: 'Culture', line: pearl.culture.line, xf: .78, yf: .48, col: 'rgba(100,180,80,', sphere: 'culture', ...pearl.culture },
+    { key: pearl.brand.gate, role: 'Brand', line: pearl.brand.line, xf: .22, yf: .48, col: 'rgba(80,180,220,', sphere: 'brand', ...pearl.brand },
+    { key: pearl.pearl.gate, role: 'Pearl', line: pearl.pearl.line, xf: .50, yf: .78, col: 'rgba(201,168,76,', sphere: 'pearl', ...pearl.pearl },
   ] : []
 
-  return { SPHERES, GK_LIST, VENUS_SPHERES, PEARL_SPHERES, profile }
+  // Hologenetic (all sequences combined) — reposition for unified wheel layout
+  const outerActivation = SPHERES.filter(s => !s.center)
+  const ALL_SPHERES_WHEEL = [
+    // Activation — top arc
+    ...outerActivation.map((s, i) => ({
+      ...s,
+      xf: [.50, .82, .18, .50][i] ?? s.xf,
+      yf: [.14, .38, .38, .62][i] ?? s.yf,
+    })),
+    // Venus — right arc
+    ...VENUS_SPHERES.map((s, i) => ({
+      ...s,
+      xf: [.68, .88, .68, .50][i] ?? s.xf,
+      yf: [.68, .48, .28, .48][i] ?? s.yf,
+    })),
+    // Pearl — left arc
+    ...PEARL_SPHERES.map((s, i) => ({
+      ...s,
+      xf: [.32, .12, .32, .50][i] ?? s.xf,
+      yf: [.68, .48, .28, .82][i] ?? s.yf,
+    })),
+    // Center sphere
+    ...SPHERES.filter(s => s.center),
+  ]
+
+  return { SPHERES, GK_LIST, VENUS_SPHERES, PEARL_SPHERES, ALL_SPHERES_WHEEL, profile }
 }
 
 // Default exports for backward compatibility (computed for Gaston's birth data)

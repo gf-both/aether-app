@@ -369,15 +369,25 @@ export default function GeneKeysDetail() {
   }, [profile?.dob, profile?.tob, profile?.birthTime, profile?.birthTimezone, profile?.timezone])
 
   const activationSpheres = profileData?.SPHERES?.filter(s => !s.center) || []
+  const centerSphere = profileData?.SPHERES?.find(s => s.center)
   const venusSpheres = profileData?.VENUS_SPHERES || []
   const pearlSpheres = profileData?.PEARL_SPHERES || []
   const allSpheres = [...activationSpheres, ...venusSpheres, ...pearlSpheres]
+  const allSpheresWheel = profileData?.ALL_SPHERES_WHEEL || []
 
   // Which spheres to show based on active tab
   const tabSpheres = activeTab === 'hologenetic' ? allSpheres
     : activeTab === 'activation' ? activationSpheres
     : activeTab === 'venus' ? venusSpheres
     : pearlSpheres
+
+  // Spheres for the wheel canvas (with xf/yf positions) — changes per tab
+  const wheelSpheres = useMemo(() => {
+    if (activeTab === 'hologenetic') return allSpheresWheel
+    if (activeTab === 'activation') return [...activationSpheres, ...(centerSphere ? [centerSphere] : [])]
+    if (activeTab === 'venus') return venusSpheres
+    return pearlSpheres
+  }, [activeTab, allSpheresWheel, activationSpheres, venusSpheres, pearlSpheres, centerSphere])
 
   const tabColor = TABS.find(t => t.id === activeTab)?.color || '#c9a84c'
 
@@ -451,7 +461,7 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>{TAB_TITLES[activeTab]}</div>
         <div style={{ ...S.glass, padding: 0, overflow: 'hidden', height: 360, position: 'relative' }}>
-          <GeneKeysWheel />
+          <GeneKeysWheel spheres={wheelSpheres} />
         </div>
       </div>
 

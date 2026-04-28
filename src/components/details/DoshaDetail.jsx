@@ -287,9 +287,11 @@ export default function DoshaDetail() {
   if (!doshaType && !showQuiz) {
     return (
       <div style={S.panel}>
-        <AboutSystemButton systemName="Dosha" />
         <div>
-          <div style={S.heading}>Dosha</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={S.heading}>Dosha</div>
+            <AboutSystemButton systemName="Dosha" />
+          </div>
           <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
             Discover your Ayurvedic mind-body constitution through this assessment
           </div>
@@ -304,11 +306,13 @@ export default function DoshaDetail() {
 
   return (
     <div style={S.panel}>
-      <AboutSystemButton systemName="Dosha" />
       {/* Header with retake option */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={S.heading}>Dosha</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={S.heading}>Dosha</div>
+            <AboutSystemButton systemName="Dosha" />
+          </div>
           {doshaType && (
             <button onClick={() => setShowQuiz(!showQuiz)} style={{
               padding: '8px 18px', borderRadius: 8, border: '2px solid #d4a017',

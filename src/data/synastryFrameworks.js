@@ -2,6 +2,17 @@ export function isRomantic(rel) {
   return rel === 'partner' || rel === 'spouse'
 }
 
+// ─── Bond Type Styles (used by SynastryPanel for badge rendering) ────────────
+export const BOND_STYLES = {
+  soulmate:      { bg: 'rgba(240,192,64,.12)', border: 'rgba(240,192,64,.35)', glow: 'rgba(240,192,64,.2)' },
+  extraordinary: { bg: 'rgba(187,102,255,.10)', border: 'rgba(187,102,255,.30)', glow: 'rgba(187,102,255,.15)' },
+  powerful:      { bg: 'rgba(64,204,221,.10)',  border: 'rgba(64,204,221,.30)',  glow: 'rgba(64,204,221,.15)' },
+  meaningful:    { bg: 'rgba(96,176,48,.10)',   border: 'rgba(96,176,48,.30)',   glow: 'rgba(96,176,48,.15)' },
+  complex:       { bg: 'rgba(232,160,64,.10)',  border: 'rgba(232,160,64,.30)',  glow: 'rgba(232,160,64,.15)' },
+  delicate:      { bg: 'rgba(136,153,204,.10)', border: 'rgba(136,153,204,.30)', glow: 'rgba(136,153,204,.15)' },
+  challenging:   { bg: 'rgba(212,64,112,.10)',  border: 'rgba(212,64,112,.30)',  glow: 'rgba(212,64,112,.15)' },
+}
+
 // ─── computeSynastryFramework ─────────────────────────────────────────────────
 // Converts a getSynastryReport() result into the framework format expected by the UI.
 // Pass the report and whether the relationship is romantic (true) or family (false).

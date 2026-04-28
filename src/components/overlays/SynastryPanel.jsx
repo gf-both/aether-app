@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useGolemStore } from '../../store/useGolemStore'
 import { computePersonData } from '../../hooks/useActiveProfile'
 import { REL_CONFIG } from '../../data/primaryProfile'
-import { isRomantic, romanticFramework, familyFramework, computeSynastryFramework } from '../../data/synastryFrameworks'
+import { isRomantic, romanticFramework, familyFramework, computeSynastryFramework, BOND_STYLES } from '../../data/synastryFrameworks'
 import { getSynastryReport, getBirthParams } from '../../engines/synastryEngine'
 import { getGeneKeysProfile, GENE_KEYS_DATA } from '../../engines/geneKeysEngine'
 import { getNumerologyProfileFromDob } from '../../engines/numerologyEngine'
@@ -77,6 +77,187 @@ function CompositeGrid({ items }) {
           <div className="comp-sub">{item.sub}</div>
         </div>
       ))}
+    </div>
+  )
+}
+
+// ─── Bond Type Badge ──────────────────────────────────────────────────────────
+function BondBadge({ bondType }) {
+  if (!bondType) return null
+  const style = BOND_STYLES[bondType.key] || BOND_STYLES.meaningful
+  return (
+    <div style={{
+      gridColumn: '1/4', padding: '18px 20px', borderRadius: 12,
+      background: style.bg, border: `1px solid ${style.border}`,
+      boxShadow: `0 0 24px ${style.glow}`,
+      display: 'flex', alignItems: 'center', gap: 16, marginBottom: 4,
+    }}>
+      <div style={{ fontSize: 32 }}>{bondType.emoji}</div>
+      <div style={{ flex: 1 }}>
+        <div style={{
+          fontFamily: "'Cinzel',serif", fontSize: 14, fontWeight: 600,
+          letterSpacing: '.12em', textTransform: 'uppercase', color: bondType.color,
+          marginBottom: 4,
+        }}>
+          {bondType.label} Bond
+        </div>
+        <div style={{
+          fontFamily: "'Cormorant Garamond',serif", fontSize: 13, lineHeight: 1.6,
+          color: 'var(--muted-foreground)',
+        }}>
+          {bondType.desc}
+        </div>
+      </div>
+      {bondType.exactAspects > 0 && (
+        <div style={{
+          padding: '4px 10px', borderRadius: 8,
+          background: 'rgba(240,192,64,.08)', border: '1px solid rgba(240,192,64,.15)',
+          fontFamily: "'Inconsolata',monospace", fontSize: 10, color: '#f0c040',
+          whiteSpace: 'nowrap',
+        }}>
+          {bondType.exactAspects} exact aspect{bondType.exactAspects > 1 ? 's' : ''}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Relationship Themes ──────────────────────────────────────────────────────
+function ThemesSection({ themes }) {
+  if (!themes || themes.length === 0) return null
+  return (
+    <div style={{
+      gridColumn: '1/4', display: 'flex', gap: 10, marginBottom: 4,
+    }}>
+      {themes.map((theme, i) => (
+        <div key={i} style={{
+          flex: 1, padding: '14px 16px', borderRadius: 10,
+          background: 'rgba(201,168,76,.03)', border: '1px solid rgba(201,168,76,.08)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <span style={{ fontSize: 18 }}>{theme.icon}</span>
+            <span style={{
+              fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.15em',
+              textTransform: 'uppercase', color: 'var(--foreground)', opacity: .8,
+            }}>{theme.label}</span>
+            <span style={{
+              marginLeft: 'auto', fontFamily: "'Inconsolata',monospace",
+              fontSize: 10, color: 'var(--muted-foreground)',
+            }}>{theme.strength}%</span>
+          </div>
+          <div style={{
+            fontFamily: "'Cormorant Garamond',serif", fontSize: 12, lineHeight: 1.6,
+            color: 'var(--muted-foreground)',
+          }}>
+            {theme.desc}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Narrative Prose Block ────────────────────────────────────────────────────
+function NarrativeBlock({ title, icon, text, color }) {
+  if (!text) return null
+  return (
+    <div style={{
+      padding: '14px 16px', borderRadius: 10,
+      background: 'rgba(201,168,76,.02)', border: '1px solid rgba(201,168,76,.06)',
+      marginBottom: 6,
+    }}>
+      <div style={{
+        fontFamily: "'Cinzel',serif", fontSize: 8, letterSpacing: '.18em',
+        textTransform: 'uppercase', color: color || 'rgba(201,168,76,.5)',
+        marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6,
+      }}>
+        {icon && <span style={{ fontSize: 12 }}>{icon}</span>}
+        {title}
+      </div>
+      <div style={{
+        fontFamily: "'Cormorant Garamond',serif", fontSize: 13, lineHeight: 1.7,
+        color: 'var(--muted-foreground)',
+      }}>
+        {text}
+      </div>
+    </div>
+  )
+}
+
+// ─── Growth Edges Section ─────────────────────────────────────────────────────
+function GrowthEdgesSection({ edges }) {
+  if (!edges || edges.length === 0) return null
+  return (
+    <div style={{
+      gridColumn: '1/4', padding: '16px 18px', borderRadius: 10,
+      background: 'rgba(212,64,112,.03)', border: '1px solid rgba(212,64,112,.08)',
+      marginTop: 4,
+    }}>
+      <div style={{
+        fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.2em',
+        textTransform: 'uppercase', color: 'rgba(212,64,112,.6)',
+        marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6,
+      }}>
+        <span style={{ fontSize: 12 }}>🗡️</span> Growth Edges
+      </div>
+      {edges.map((edge, i) => (
+        <div key={i} style={{
+          fontFamily: "'Cormorant Garamond',serif", fontSize: 12.5, lineHeight: 1.7,
+          color: 'var(--muted-foreground)', marginBottom: i < edges.length - 1 ? 10 : 0,
+          paddingLeft: 12, borderLeft: '2px solid rgba(212,64,112,.15)',
+        }}>
+          {edge}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Timing Windows Section ──────────────────────────────────────────────────
+function TimingSection({ timing }) {
+  if (!timing || timing.length === 0) return null
+  const typeColors = {
+    activation: '#f0c040', romance: '#d43070', transformation: '#9050e0',
+    challenge: '#e8a040', growth: '#40ccdd',
+  }
+  return (
+    <div style={{
+      gridColumn: '1/4', padding: '16px 18px', borderRadius: 10,
+      background: 'rgba(64,204,221,.03)', border: '1px solid rgba(64,204,221,.08)',
+      marginTop: 4,
+    }}>
+      <div style={{
+        fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.2em',
+        textTransform: 'uppercase', color: 'rgba(64,204,221,.6)',
+        marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6,
+      }}>
+        <span style={{ fontSize: 12 }}>⏳</span> Bond Timing Windows
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
+        {timing.map((win, i) => (
+          <div key={i} style={{
+            padding: '12px 14px', borderRadius: 8,
+            background: (typeColors[win.type] || '#999') + '06',
+            border: '1px solid ' + (typeColors[win.type] || '#999') + '18',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+              <span style={{ fontSize: 14 }}>{win.icon}</span>
+              <span style={{
+                fontFamily: "'Cinzel',serif", fontSize: 8.5, letterSpacing: '.12em',
+                textTransform: 'uppercase', color: typeColors[win.type] || '#999',
+              }}>{win.label}</span>
+            </div>
+            <div style={{
+              fontFamily: "'Inconsolata',monospace", fontSize: 11, color: 'var(--foreground)',
+              marginBottom: 6, opacity: .8,
+            }}>{win.period}</div>
+            <div style={{
+              fontFamily: "'Cormorant Garamond',serif", fontSize: 11.5, lineHeight: 1.6,
+              color: 'var(--muted-foreground)',
+            }}>{win.desc}</div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
@@ -327,10 +508,23 @@ function RomanticContent({ a, b, aName, bName, report }) {
     { icon: '🎯', title: `${bName}'s Design`, val: hdB || '?', sub: profB ? `${profB} · ${authB || '?'} authority` : 'Profile pending' },
   ] : fw.hdSection.items(a, b, aName, bName)
 
+  // Extract deep insights from report
+  const bondType = report?.bondType || null
+  const themes = report?.themes || []
+  const narratives = report?.narratives || {}
+  const timing = report?.timing || []
+
   return (
     <>
+      {/* Bond Type Badge */}
+      <BondBadge bondType={bondType} />
+
+      {/* Relationship Themes */}
+      <ThemesSection themes={themes} />
+
       {/* Synthesis Summary */}
       <SynSummary a={a} b={b} aName={aName} bName={bName} report={report} />
+
       {/* Composite Wheel - spans 2 rows */}
       <div className="syn-card" style={{ gridColumn: 1, gridRow: '1/3' }}>
         <div className="syn-ch"><span className="syn-ct">Composite Chart · Midpoint Wheel</span><span>💕</span></div>
@@ -348,6 +542,9 @@ function RomanticContent({ a, b, aName, bName, report }) {
             insight={fw.sections[0].insight}
             aName={aName} bName={bName}
           />
+          {narratives.categories?.attraction && (
+            <NarrativeBlock text={narratives.categories.attraction} color="rgba(240,96,160,.5)" />
+          )}
         </div>
       </div>
 
@@ -362,6 +559,9 @@ function RomanticContent({ a, b, aName, bName, report }) {
             insight={fw.sections[1].insight}
             aName={aName} bName={bName}
           />
+          {narratives.categories?.emotional && (
+            <NarrativeBlock text={narratives.categories.emotional} color="rgba(64,204,221,.5)" />
+          )}
         </div>
       </div>
 
@@ -386,6 +586,29 @@ function RomanticContent({ a, b, aName, bName, report }) {
           />
         </div>
       </div>
+
+      {/* Deep Narrative Sections */}
+      {narratives.categories?.karmic && (
+        <div style={{ gridColumn: '1/4' }}>
+          <NarrativeBlock title="Karmic Architecture" icon="📜" text={narratives.categories.karmic} color="rgba(187,102,255,.5)" />
+        </div>
+      )}
+      {narratives.categories?.depth && (
+        <div style={{ gridColumn: '1/4' }}>
+          <NarrativeBlock title="Shadow & Depth" icon="🌑" text={narratives.categories.depth} color="rgba(144,80,224,.5)" />
+        </div>
+      )}
+      {narratives.categories?.healing && (
+        <div style={{ gridColumn: '1/4' }}>
+          <NarrativeBlock title="Healing Potential" icon="💚" text={narratives.categories.healing} color="rgba(96,176,48,.5)" />
+        </div>
+      )}
+
+      {/* Growth Edges */}
+      <GrowthEdgesSection edges={narratives.growthEdges} />
+
+      {/* Timing Windows */}
+      <TimingSection timing={timing} />
 
       {/* Composite Framework Comparisons */}
       <CompositeSystemsSection a={a} b={b} aName={aName} bName={bName} />
@@ -434,8 +657,20 @@ function FamilyContent({ a, b, aName, bName, report }) {
     ? computed.multiSystemInsight
     : fw.multiSystemSection.getInsight(isParentRel, aName, bName)
 
+  // Extract deep insights from report
+  const bondType = report?.bondType || null
+  const themes = report?.themes || []
+  const narratives = report?.narratives || {}
+  const timing = report?.timing || []
+
   return (
     <>
+      {/* Bond Type Badge */}
+      <BondBadge bondType={bondType} />
+
+      {/* Relationship Themes */}
+      <ThemesSection themes={themes} />
+
       <SynSummary a={a || {}} b={b} aName={aName} bName={bName} report={report} />
       <div className="syn-card" style={{ gridColumn: 1, gridRow: '1/3' }}>
         <div className="syn-ch"><span className="syn-ct">Family Composite Chart · Karmic Axis</span><span>🧬</span></div>
@@ -456,6 +691,9 @@ function FamilyContent({ a, b, aName, bName, report }) {
               <span>{karma.insight}</span>
             </div>
           </div>
+          {narratives.categories?.karmic && (
+            <NarrativeBlock text={narratives.categories.karmic} color="rgba(64,204,221,.5)" />
+          )}
         </div>
       </div>
 
@@ -499,6 +737,24 @@ function FamilyContent({ a, b, aName, bName, report }) {
           </div>
         </div>
       </div>
+
+      {/* Deep Narrative Sections */}
+      {narratives.categories?.depth && (
+        <div style={{ gridColumn: '1/4' }}>
+          <NarrativeBlock title="Family Shadow & Depth" icon="🌑" text={narratives.categories.depth} color="rgba(144,80,224,.5)" />
+        </div>
+      )}
+      {narratives.categories?.healing && (
+        <div style={{ gridColumn: '1/4' }}>
+          <NarrativeBlock title="Healing Inheritance" icon="💚" text={narratives.categories.healing} color="rgba(96,176,48,.5)" />
+        </div>
+      )}
+
+      {/* Growth Edges */}
+      <GrowthEdgesSection edges={narratives.growthEdges} />
+
+      {/* Timing Windows */}
+      <TimingSection timing={timing} />
 
       {/* Composite Framework Comparisons */}
       <CompositeSystemsSection a={a} b={b} aName={aName} bName={bName} />
@@ -576,14 +832,20 @@ export function SynastryInner({ onClose }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginLeft: 10 }}>
           <div
             className={`rel-badge ${hasSelection ? (romantic ? 'rel-romantic' : 'rel-family') : ''}`}
-            style={!hasSelection ? { opacity: .4 } : {}}
+            style={!hasSelection ? { opacity: .4 } : synastryReport?.bondType ? { borderColor: synastryReport.bondType.color + '40', background: synastryReport.bondType.color + '10' } : {}}
           >
-            {hasSelection ? (romantic ? '\u2640 Romantic Synastry' : '\u25C8 Family Synastry') : 'No Selection'}
-            {synastryReport && <span style={{ marginLeft: 8, opacity: 0.85 }}>{synastryReport.overall}%</span>}
+            {hasSelection
+              ? synastryReport?.bondType
+                ? `${synastryReport.bondType.emoji} ${synastryReport.bondType.label} Bond`
+                : (romantic ? '\u2640 Romantic Synastry' : '\u25C8 Family Synastry')
+              : 'No Selection'}
+            {synastryReport && <span style={{ marginLeft: 8, opacity: 0.85, color: synastryReport.bondType?.color || 'inherit' }}>{synastryReport.overall}%</span>}
           </div>
           <div style={{ fontFamily: 'ui-monospace, monospace', fontSize: '7.5px', color: 'var(--muted-foreground)' }}>
             {hasSelection
-              ? (romantic ? 'Venus/Mars \u00B7 Soul Contracts \u00B7 Composite Chart' : 'Karmic Bonds \u00B7 Family Karma \u00B7 Generational Patterns')
+              ? synastryReport?.themes?.length > 0
+                ? synastryReport.themes.map(t => t.label).join(' \u00B7 ')
+                : (romantic ? 'Venus/Mars \u00B7 Soul Contracts \u00B7 Composite Chart' : 'Karmic Bonds \u00B7 Family Karma \u00B7 Generational Patterns')
               : 'Choose people to compare'}
           </div>
         </div>

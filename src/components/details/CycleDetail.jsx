@@ -19,28 +19,45 @@ const S = {
 }
 
 export default function CycleDetail() {
-  const profile = useGolemStore(s => s.activeViewProfile || s.primaryProfile)
+  const activeViewProfile = useGolemStore(s => s.activeViewProfile)
+  const primaryProfile = useGolemStore(s => s.primaryProfile)
+  const profile = activeViewProfile || primaryProfile
+  const isPrimary = !activeViewProfile
   const setPrimaryProfile = useGolemStore(s => s.setPrimaryProfile)
+  const updatePerson = useGolemStore(s => s.updatePerson)
+  const setActiveViewProfile = useGolemStore(s => s.setActiveViewProfile)
+
   const [lastPeriod, setLastPeriod] = useState(profile?.lastPeriodDate || '')
   const [cycleLen, setCycleLen] = useState(profile?.cycleLength || 28)
   const [gender, setGender] = useState(profile?.gender || '')
   const [saved, setSaved] = useState(false)
 
+  // Save to correct target: primaryProfile or person in people array
+  const saveProfile = useCallback((updates) => {
+    if (isPrimary) {
+      setPrimaryProfile(updates)
+    } else if (profile?.id) {
+      updatePerson(profile.id, updates)
+      // Also update the activeViewProfile so the UI reflects changes immediately
+      setActiveViewProfile({ ...profile, ...updates })
+    }
+  }, [isPrimary, profile?.id, setPrimaryProfile, updatePerson, setActiveViewProfile])
+
   // Auto-save cycle data whenever inputs change
   const autoSave = useCallback((lp, cl, g) => {
     const updates = { cycleLength: cl, gender: g }
     if (lp) updates.lastPeriodDate = lp
-    setPrimaryProfile(updates)
+    saveProfile(updates)
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
-  }, [setPrimaryProfile])
+  }, [saveProfile])
 
   // Re-sync local state if profile changes (e.g. switching active profile)
   useEffect(() => {
     setLastPeriod(profile?.lastPeriodDate || '')
     setCycleLen(profile?.cycleLength || 28)
     setGender(profile?.gender || '')
-  }, [profile?.lastPeriodDate, profile?.cycleLength, profile?.gender])
+  }, [profile?.lastPeriodDate, profile?.cycleLength, profile?.gender, profile?.id])
 
   function handleLastPeriodChange(val) {
     setLastPeriod(val)
@@ -59,9 +76,9 @@ export default function CycleDetail() {
       // Clear cycle data when switching away from female
       setLastPeriod('')
       setCycleLen(28)
-      setPrimaryProfile({ gender: val, lastPeriodDate: '', cycleLength: 28 })
+      saveProfile({ gender: val, lastPeriodDate: '', cycleLength: 28 })
     } else {
-      setPrimaryProfile({ gender: val })
+      saveProfile({ gender: val })
     }
   }
 

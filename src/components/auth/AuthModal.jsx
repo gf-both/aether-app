@@ -76,7 +76,7 @@ export default function AuthModal({ open, onClose }) {
 
   const btnGoogle = {
     width: '100%', padding: '10px 0',
-    background: 'rgba(255,255,255,.06)',
+    background: 'var(--border)',
     border: '1px solid rgba(255,255,255,.15)',
     borderRadius: 8, color: 'var(--text)',
     fontSize: 12, fontFamily: "'Cinzel',serif",
@@ -130,7 +130,7 @@ export default function AuthModal({ open, onClose }) {
           display: 'flex', gap: 0, marginBottom: 24,
           background: 'rgba(255,255,255,.04)',
           borderRadius: 8, padding: 3,
-          border: '1px solid rgba(255,255,255,.06)',
+          border: '1px solid var(--border)',
         }}>
           {[['signin', 'Sign In'], ['signup', 'Create Account']].map(([id, label]) => (
             <button

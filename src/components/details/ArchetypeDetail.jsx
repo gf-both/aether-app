@@ -294,9 +294,9 @@ export default function ArchetypeDetail() {
   if (!archetypeType) {
     return (
       <div style={S.panel}>
-        <AboutSystemButton systemName="Archetype" />
-        <div>
+          <div>
           <div style={S.heading}>{'\u2726'} Jungian Archetypes</div>
+          <AboutSystemButton systemName="Archetype" />
           <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
             Discover your primary archetype -- the mythic pattern that shapes your psyche
           </div>
@@ -322,7 +322,6 @@ export default function ArchetypeDetail() {
 
   return (
     <div style={S.panel}>
-      <AboutSystemButton systemName="Archetype" />
       {/* HEADER */}
       <div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -342,6 +341,7 @@ export default function ArchetypeDetail() {
             {showQuiz ? 'Cancel' : 'Retake Quiz'}
           </span>
         </div>
+        <AboutSystemButton systemName="Archetype" />
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           The mythic pattern that shapes your psyche, relationships, and life narrative
         </div>
