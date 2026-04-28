@@ -65,7 +65,7 @@ export default function CycleWheel({ cycleDay, cycleLength = 28 }) {
         const midAngle = (startAngle + endAngle) / 2
         const labelR = R * 0.85
         ctx.font = `${Math.max(7, R * .055)}px 'Cinzel',serif`
-        ctx.fillStyle = isActive ? '#fff' : 'rgba(255,255,255,.4)'
+        ctx.fillStyle = isActive ? '#fff' : 'var(--muted-foreground)'
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
         ctx.fillText(phase.name, cx + labelR * Math.cos(midAngle), cy + labelR * Math.sin(midAngle))
       })
@@ -102,7 +102,7 @@ export default function CycleWheel({ cycleDay, cycleLength = 28 }) {
 
       // Day counter
       ctx.font = `bold ${Math.max(10, R * .08)}px 'Inconsolata',monospace`
-      ctx.fillStyle = 'rgba(255,255,255,.5)'
+      ctx.fillStyle = 'var(--muted-foreground)'
       ctx.fillText(`Day ${cycleDay}`, cx, cy + R * 0.35)
 
       // Moon illumination ring

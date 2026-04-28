@@ -391,7 +391,7 @@ Each response should address one or two core matters in depth. Speak with substa
         {/* Messages */}
         <div style={{ flex:1, overflowY:'auto', padding:'14px 16px', display:'flex', flexDirection:'column', gap:10 }}>
           {chatMessages.map((m, i) => (
-            <div key={i} style={{ alignSelf: m.role==='user' ? 'flex-end' : 'flex-start', maxWidth:'80%', padding:'9px 13px', borderRadius: m.role==='user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px', background: m.role==='user' ? 'var(--accent)' : 'rgba(201,168,76,.07)', border: m.role==='user' ? '1px solid var(--border)' : '1px solid rgba(201,168,76,.14)', fontSize:13, color: m.role==='user' ? 'var(--foreground)' : 'rgba(255,255,255,.85)', lineHeight:1.65 }}>
+            <div key={i} style={{ alignSelf: m.role==='user' ? 'flex-end' : 'flex-start', maxWidth:'80%', padding:'9px 13px', borderRadius: m.role==='user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px', background: m.role==='user' ? 'var(--accent)' : 'rgba(201,168,76,.07)', border: m.role==='user' ? '1px solid var(--border)' : '1px solid rgba(201,168,76,.14)', fontSize:13, color: m.role==='user' ? 'var(--foreground)' : 'var(--foreground)', lineHeight:1.65 }}>
               {m.text}
             </div>
           ))}
@@ -437,7 +437,7 @@ Each response should address one or two core matters in depth. Speak with substa
             <div style={{ color:'var(--foreground)', textAlign:'right', maxWidth:120, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{String(value)}</div>
           </div>
         ))}
-        <div style={{ marginTop:16, padding:'10px', borderRadius:7, background:'rgba(201,168,76,.05)', border:'1px solid rgba(201,168,76,.1)', fontSize:10, color:'rgba(255,255,255,.55)', lineHeight:1.6 }}>
+        <div style={{ marginTop:16, padding:'10px', borderRadius:7, background:'rgba(201,168,76,.05)', border:'1px solid rgba(201,168,76,.1)', fontSize:10, color:'var(--muted-foreground)', lineHeight:1.6 }}>
           {selectedGolem.label === 'Your Clone' && 'Exact mirror of your profile. Speaks as you.'}
           {selectedGolem.label === 'Complement' && 'Your energetic opposite. Completes what you lack.'}
           {selectedGolem.label === 'Antagonist' && 'The force that challenges you. Pushes back.'}

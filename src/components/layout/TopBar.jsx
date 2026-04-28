@@ -370,7 +370,7 @@ function ControlCenter() {
                     flex: 1, padding: '8px 0', borderRadius: 8, textAlign: 'center',
                     cursor: 'pointer', transition: 'all .15s',
                     background: l.id === layoutMode ? 'var(--accent)' : 'transparent',
-                    border: `1px solid ${l.id === layoutMode ? 'var(--ring)' : 'rgba(255,255,255,.06)'}`,
+                    border: `1px solid ${l.id === layoutMode ? 'var(--ring)' : 'var(--border)'}`,
                   }}
                 >
                   <div style={{ fontSize: 16, marginBottom: 2 }}>{l.icon}</div>
@@ -410,7 +410,7 @@ function ControlCenter() {
                   style={{
                     width: 18, height: 18, borderRadius: '50%',
                     background: t.color, cursor: 'pointer',
-                    border: `2px solid ${themeStyle === t.id ? 'rgba(255,255,255,.7)' : 'rgba(255,255,255,.15)'}`,
+                    border: `2px solid ${themeStyle === t.id ? 'var(--muted-foreground)' : 'rgba(255,255,255,.15)'}`,
                     boxShadow: themeStyle === t.id ? `0 0 10px ${t.color}60` : 'none',
                     transition: 'all .2s',
                   }}

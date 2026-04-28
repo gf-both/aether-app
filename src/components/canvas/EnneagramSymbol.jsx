@@ -268,7 +268,7 @@ export default function EnneagramSymbol({ typeOverride, wingOverride } = {}) {
         // Type number
         const numSize = isActive ? 13 : (isWing ? 11 : 9)
         ctx.font = `bold ${numSize}px 'Cinzel',serif`
-        ctx.fillStyle = isActive ? 'rgba(255,255,255,.95)' :
+        ctx.fillStyle = isActive ? 'var(--foreground)' :
           isWing ? 'rgba(201,168,76,.8)' :
           isIntegration ? 'rgba(96,200,80,.75)' :
           isDisintegration ? 'rgba(220,60,60,.7)' :

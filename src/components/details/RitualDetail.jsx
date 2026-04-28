@@ -365,18 +365,18 @@ export default function RitualDetail() {
     return (
       <div style={{ padding: 0, minHeight: '100%' }}>
         {/* Header bar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,.06)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid var(--border)' }}>
           <button onClick={() => { setActiveTab('recommended'); setActiveRitual(null); setRitualStep(0) }}
             style={S.backBtn}>← Back</button>
           <div style={{ textAlign: 'center' }}>
             <div style={S.sectionLabel}>{trad?.name || ''} Tradition</div>
             <div style={{ fontSize: 15, color: '#fff', fontFamily: "'Cinzel',serif" }}>{ritual.name}</div>
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,.4)' }}>{ritual.duration} min</div>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>{ritual.duration} min</div>
         </div>
 
         {/* Progress bar */}
-        <div style={{ height: 2, background: 'rgba(255,255,255,.06)', margin: '0 20px' }}>
+        <div style={{ height: 2, background: 'var(--border)', margin: '0 20px' }}>
           <div style={{ height: '100%', width: `${progress}%`, background: trad?.color || '#c9a84c', transition: 'width .4s ease', borderRadius: 1 }} />
         </div>
 
@@ -390,7 +390,7 @@ export default function RitualDetail() {
           <div style={{ fontSize: 11, color: trad?.color || '#c9a84c', letterSpacing: '.15em', fontFamily: "'Cinzel',serif", marginBottom: 8 }}>
             Step {ritualStep + 1} of {ritual.instructions.length}
           </div>
-          <div style={{ fontSize: 16, lineHeight: 1.9, color: 'rgba(255,255,255,.8)', fontFamily: "'Cormorant Garamond',serif", maxWidth: 480, margin: '0 auto', fontStyle: 'italic' }}>
+          <div style={{ fontSize: 16, lineHeight: 1.9, color: 'var(--foreground)', fontFamily: "'Cormorant Garamond',serif", maxWidth: 480, margin: '0 auto', fontStyle: 'italic' }}>
             {step}
           </div>
         </div>
@@ -429,11 +429,11 @@ export default function RitualDetail() {
         {/* Original name + element */}
         <div style={{ textAlign: 'center', padding: '12px 20px 24px', borderTop: '1px solid rgba(255,255,255,.04)' }}>
           {ritual.originalName && (
-            <div style={{ fontSize: 18, color: 'rgba(255,255,255,.2)', fontFamily: "'Cormorant Garamond',serif", marginBottom: 6 }}>
+            <div style={{ fontSize: 18, color: 'var(--muted-foreground)', fontFamily: "'Cormorant Garamond',serif", marginBottom: 6 }}>
               {ritual.originalName}
             </div>
           )}
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,.3)' }}>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)' }}>
             {ELEMENTS[ritual.element] || '✦'} {ritual.element} element · {DIFFICULTY[ritual.difficulty]?.label || ritual.difficulty}
           </div>
         </div>
@@ -470,7 +470,7 @@ export default function RitualDetail() {
       </div>
 
       {/* ── Tabs ── */}
-      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid rgba(255,255,255,.06)', padding: '0 20px' }}>
+      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', padding: '0 20px' }}>
         {[
           { key: 'recommended', label: 'Recommended' },
           { key: 'traditions', label: 'By Tradition' },
@@ -501,21 +501,21 @@ export default function RitualDetail() {
               <div style={{ fontSize: 18, fontFamily: "'Cinzel',serif", color: '#fff', marginTop: 4 }}>
                 {result.topRecommendation.name}
               </div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,.5)', marginTop: 4 }}>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginTop: 4 }}>
                 {result.topRecommendation.tradition?.name} · {result.topRecommendation.duration} min · {ELEMENTS[result.topRecommendation.element]} {result.topRecommendation.element}
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{
                 fontSize: 24, fontWeight: 300, fontFamily: "'Inconsolata',monospace",
-                color: result.topRecommendation.score > 70 ? '#60b030' : result.topRecommendation.score > 40 ? '#c9a84c' : 'rgba(255,255,255,.4)',
+                color: result.topRecommendation.score > 70 ? '#60b030' : result.topRecommendation.score > 40 ? '#c9a84c' : 'var(--muted-foreground)',
               }}>
                 {result.topRecommendation.score}%
               </div>
-              <div style={{ fontSize: 9, color: 'rgba(255,255,255,.3)', letterSpacing: '.1em' }}>ALIGNMENT</div>
+              <div style={{ fontSize: 9, color: 'var(--muted-foreground)', letterSpacing: '.1em' }}>ALIGNMENT</div>
             </div>
           </div>
-          <div style={{ fontSize: 13, lineHeight: 1.7, color: 'rgba(255,255,255,.6)', fontFamily: "'Cormorant Garamond',serif", marginTop: 12 }}>
+          <div style={{ fontSize: 13, lineHeight: 1.7, color: 'var(--muted-foreground)', fontFamily: "'Cormorant Garamond',serif", marginTop: 12 }}>
             {result.topRecommendation.description}
           </div>
           <button
@@ -550,19 +550,19 @@ export default function RitualDetail() {
           return (
             <div key={r.id} style={{
               padding: '14px 16px', borderRadius: 10,
-              background: 'rgba(255,255,255,.02)', border: '1px solid rgba(255,255,255,.06)',
+              background: 'rgba(255,255,255,.02)', border: '1px solid var(--border)',
               cursor: 'pointer', transition: 'all .2s',
             }}
               onClick={() => { setActiveRitual(r.id); setActiveTab('active'); setRitualStep(0) }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = (trad.color || '#c9a84c') + '40'; e.currentTarget.style.background = 'rgba(255,255,255,.04)' }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,.06)'; e.currentTarget.style.background = 'rgba(255,255,255,.02)' }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'rgba(255,255,255,.02)' }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{ fontSize: 20 }}>{trad.icon || '✦'}</span>
                   <div>
                     <div style={{ fontSize: 13, fontFamily: "'Cinzel',serif", color: '#fff' }}>{r.name}</div>
-                    <div style={{ fontSize: 10, color: 'rgba(255,255,255,.4)', marginTop: 2 }}>
+                    <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 2 }}>
                       {trad.name} · {r.duration} min · {ELEMENTS[r.element]} {r.element}
                     </div>
                   </div>
@@ -574,23 +574,23 @@ export default function RitualDetail() {
                   </span>
                   <span style={{
                     fontSize: 13, fontFamily: "'Inconsolata',monospace", fontWeight: 600,
-                    color: r.score > 70 ? '#60b030' : r.score > 40 ? '#c9a84c' : 'rgba(255,255,255,.35)',
+                    color: r.score > 70 ? '#60b030' : r.score > 40 ? '#c9a84c' : 'var(--muted-foreground)',
                   }}>
                     {r.score}%
                   </span>
                 </div>
               </div>
               {r.originalName && (
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,.2)', fontFamily: "'Cormorant Garamond',serif", marginTop: 4, fontStyle: 'italic' }}>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', fontFamily: "'Cormorant Garamond',serif", marginTop: 4, fontStyle: 'italic' }}>
                   {r.originalName}
                 </div>
               )}
-              <div style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,.45)', fontFamily: "'Cormorant Garamond',serif", marginTop: 6 }}>
+              <div style={{ fontSize: 12, lineHeight: 1.6, color: 'var(--muted-foreground)', fontFamily: "'Cormorant Garamond',serif", marginTop: 6 }}>
                 {r.description.length > 140 ? r.description.slice(0, 140) + '...' : r.description}
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
                 {r.purpose.slice(0, 4).map(p => (
-                  <span key={p} style={{ fontSize: 9, padding: '1px 7px', borderRadius: 8, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.06)', color: 'rgba(255,255,255,.35)' }}>
+                  <span key={p} style={{ fontSize: 9, padding: '1px 7px', borderRadius: 8, background: 'rgba(255,255,255,.04)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}>
                     {p}
                   </span>
                 ))}
@@ -606,7 +606,7 @@ export default function RitualDetail() {
           <div style={S.sectionLabel}>
             {moon.phaseEmoji} Aligned with {moon.phaseName}
           </div>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,.35)', marginTop: 4, fontFamily: "'Cormorant Garamond',serif" }}>
+          <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 4, fontFamily: "'Cormorant Garamond',serif" }}>
             {result.moonAligned.length} ritual{result.moonAligned.length > 1 ? 's' : ''} from {new Set(result.moonAligned.map(r => r.tradition?.name)).size} traditions align with tonight's moon.
           </div>
         </div>

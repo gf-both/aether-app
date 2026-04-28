@@ -71,7 +71,7 @@ export default function RitualWheel({ topRitual, score }) {
         ctx.font = `${Math.max(10, R * 0.09)}px serif`
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.fillStyle = isActive ? '#fff' : 'rgba(255,255,255,.5)'
+        ctx.fillStyle = isActive ? '#fff' : 'var(--muted-foreground)'
         ctx.fillText(t.icon, cx + iconR * Math.cos(midA), cy + iconR * Math.sin(midA))
 
         // Name (inside arc)
@@ -104,18 +104,18 @@ export default function RitualWheel({ topRitual, score }) {
       // Score or label
       if (topRitual && score != null) {
         ctx.font = `bold ${Math.max(9, R * 0.07)}px 'Inconsolata',monospace`
-        ctx.fillStyle = score > 70 ? 'rgba(96,176,48,.8)' : score > 40 ? 'rgba(201,168,76,.7)' : 'rgba(255,255,255,.4)'
+        ctx.fillStyle = score > 70 ? 'rgba(96,176,48,.8)' : score > 40 ? 'rgba(201,168,76,.7)' : 'var(--muted-foreground)'
         ctx.fillText(`${score}% aligned`, cx, cy + R * 0.25)
       } else {
         ctx.font = `${Math.max(8, R * 0.055)}px 'Cinzel',serif`
-        ctx.fillStyle = 'rgba(255,255,255,.35)'
+        ctx.fillStyle = 'var(--muted-foreground)'
         ctx.fillText('12 Traditions', cx, cy + R * 0.25)
       }
 
       // Top ritual name (below center)
       if (topRitual) {
         ctx.font = `${Math.max(8, R * 0.05)}px 'Cormorant Garamond',serif`
-        ctx.fillStyle = 'rgba(255,255,255,.45)'
+        ctx.fillStyle = 'var(--muted-foreground)'
         ctx.fillText(topRitual.name, cx, cy + R * 0.38)
       }
 

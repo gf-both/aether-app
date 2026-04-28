@@ -12,7 +12,7 @@ const TYPE_CONFIG = {
   resonance: { col: '#c9a84c',            bg: 'var(--accent)',  border: 'rgba(201,168,76,.22)', label: 'Resonance' },
   tension:   { col: 'var(--violet2)',      bg: 'rgba(144,80,224,.08)', border: 'rgba(144,80,224,.22)', label: 'Tension' },
   gateway:   { col: '#40ccdd',            bg: 'rgba(64,204,221,.08)', border: 'rgba(64,204,221,.22)', label: 'Gateway' },
-  mirror:    { col: 'rgba(255,255,255,.7)', bg: 'rgba(255,255,255,.05)', border: 'rgba(255,255,255,.12)', label: 'Mirror' },
+  mirror:    { col: 'var(--muted-foreground)', bg: 'rgba(255,255,255,.05)', border: 'var(--muted-foreground)', label: 'Mirror' },
 }
 
 const ACTIVATION_CONFIG = {
@@ -192,7 +192,7 @@ export default function PatternsDetail() {
               <div style={{ fontFamily: "'Cinzel', serif", fontSize: 10, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(201,168,76,.6)', marginBottom: 10 }}>
                 Core Pattern Reading
               </div>
-              <div style={{ fontSize: 13, lineHeight: 1.9, color: 'rgba(255,255,255,.7)', fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+              <div style={{ fontSize: 13, lineHeight: 1.9, color: 'var(--muted-foreground)', fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
                 Something unusual happens when your systems talk to each other. Where most people show scattered signals across frameworks — one system pointing north, another east — yours{' '}
                 <span style={{ color: 'var(--gold)' }}>converge</span>.{' '}
                 You have <span style={{ color: 'var(--gold)' }}>{CROSS_FRAMEWORK_ALIGNMENTS.length} points where completely independent systems arrive at the same conclusion about who you are</span>.
@@ -213,13 +213,13 @@ export default function PatternsDetail() {
               {top3.map((a, i) => (
                 <div key={i} style={{ marginBottom: i < 2 ? 10 : 0, paddingBottom: i < 2 ? 10 : 0, borderBottom: i < 2 ? '1px solid rgba(255,255,255,.04)' : 'none' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,.8)', fontFamily: "'Cinzel',serif" }}>{a.title}</span>
-                    <span style={{ fontSize: 11, fontFamily: "'Inconsolata',monospace", color: a.strength >= 8 ? '#60b030' : a.strength >= 6 ? '#c9a84c' : 'rgba(255,255,255,.4)' }}>{a.strength}/10</span>
+                    <span style={{ fontSize: 12, color: 'var(--foreground)', fontFamily: "'Cinzel',serif" }}>{a.title}</span>
+                    <span style={{ fontSize: 11, fontFamily: "'Inconsolata',monospace", color: a.strength >= 8 ? '#60b030' : a.strength >= 6 ? '#c9a84c' : 'var(--muted-foreground)' }}>{a.strength}/10</span>
                   </div>
-                  <div style={{ fontSize: 12, lineHeight: 1.6, color: 'rgba(255,255,255,.5)', fontFamily: "'Cormorant Garamond',serif" }}>{a.description}</div>
+                  <div style={{ fontSize: 12, lineHeight: 1.6, color: 'var(--muted-foreground)', fontFamily: "'Cormorant Garamond',serif" }}>{a.description}</div>
                   <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
                     {(a.frameworks || []).map(f => (
-                      <span key={f} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 6, background: 'rgba(255,255,255,.04)', border: '1px solid rgba(255,255,255,.06)', color: 'rgba(255,255,255,.35)' }}>{f}</span>
+                      <span key={f} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 6, background: 'rgba(255,255,255,.04)', border: '1px solid var(--border)', color: 'var(--muted-foreground)' }}>{f}</span>
                     ))}
                     <span style={{ fontSize: 8, padding: '1px 6px', borderRadius: 6, background: `${a.type === 'resonance' ? 'rgba(96,176,48,' : a.type === 'tension' ? 'rgba(212,48,112,' : a.type === 'gateway' ? 'rgba(201,168,76,' : 'rgba(64,204,221,'}0.08)`, color: a.type === 'resonance' ? '#60b030' : a.type === 'tension' ? '#d44070' : a.type === 'gateway' ? '#c9a84c' : '#40ccdd' }}>{a.type}</span>
                   </div>
@@ -232,7 +232,7 @@ export default function PatternsDetail() {
               <div style={{ fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(64,204,221,.5)', marginBottom: 8 }}>
                 Framework Hubs — Where Your Systems Converge
               </div>
-              <div style={{ fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,.6)', fontFamily: "'Cormorant Garamond',serif" }}>
+              <div style={{ fontSize: 12, lineHeight: 1.7, color: 'var(--muted-foreground)', fontFamily: "'Cormorant Garamond',serif" }}>
                 {topFw.map(([fw, count], i) => (
                   <span key={fw}>
                     <span style={{ color: '#40ccdd' }}>{fw.toUpperCase()}</span> appears in {count} alignment{count > 1 ? 's' : ''}

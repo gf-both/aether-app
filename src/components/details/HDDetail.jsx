@@ -152,7 +152,7 @@ function HDTooltip({ data, children, direction }) {
           ...(isBelow ? { top: '100%', marginTop: 6 } : { bottom: '100%', marginBottom: 6 }),
           left: '50%', transform: 'translateX(-50%)',
           width: 280, padding: '12px 14px', borderRadius: 10,
-          background: 'rgba(12,12,20,.96)', border: '1px solid rgba(201,168,76,.2)',
+          background: 'var(--popover)', border: '1px solid rgba(201,168,76,.2)',
           backdropFilter: 'blur(20px)', zIndex: 999, pointerEvents: 'none',
           boxShadow: '0 8px 32px rgba(0,0,0,.5)',
         }}>
@@ -174,7 +174,7 @@ function HDTooltip({ data, children, direction }) {
           )}
           <div style={{
             position: 'absolute', left: '50%', width: 10, height: 10,
-            background: 'rgba(12,12,20,.96)',
+            background: 'var(--popover)',
             ...(isBelow
               ? { top: -5, transform: 'translateX(-50%) rotate(45deg)', borderLeft: '1px solid rgba(201,168,76,.2)', borderTop: '1px solid rgba(201,168,76,.2)' }
               : { bottom: -5, transform: 'translateX(-50%) rotate(45deg)', borderRight: '1px solid rgba(201,168,76,.2)', borderBottom: '1px solid rgba(201,168,76,.2)' }
@@ -700,7 +700,7 @@ function VariablesTab({ chart }) {
               <HDTooltip key={gate} data={GATE_TOOLTIPS[gate]}>
               <div style={{
                 padding: '6px 10px', borderRadius: 8, cursor: 'help',
-                border: `1px solid ${(isPerson && isDesign) ? 'rgba(201,168,76,.3)' : isPerson ? 'rgba(255,255,255,.12)' : 'rgba(204,51,51,.3)'}`,
+                border: `1px solid ${(isPerson && isDesign) ? 'rgba(201,168,76,.3)' : isPerson ? 'var(--muted-foreground)' : 'rgba(204,51,51,.3)'}`,
                 background: (isPerson && isDesign) ? 'rgba(201,168,76,.06)' : isPerson ? 'var(--secondary)' : 'rgba(204,51,51,.05)',
               }}>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, color, textAlign: 'center' }}>{gate}</div>

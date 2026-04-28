@@ -394,9 +394,9 @@ function GolemDialogue({ primaryProfile, allPeople, initialParticipantIds, onClo
           if (m.type === 'divider') {
             return (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0 6px' }}>
-                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.06)' }} />
+                <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
                 <span style={{ fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#555', whiteSpace: 'nowrap' }}>{m.label}</span>
-                <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,.06)' }} />
+                <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
               </div>
             )
           }
@@ -587,7 +587,7 @@ function ProfileDetail({ p, primaryProfile, onClose, onStartDialogue }) {
           {rows.map(r => (
             <div key={r.label} style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '6px 10px', borderRadius: 6, background: 'rgba(255,255,255,.03)',
+              padding: '6px 10px', borderRadius: 6, background: 'var(--card)',
             }}>
               <span style={{ fontSize: 10, color: 'var(--muted-foreground)', textTransform: 'uppercase', letterSpacing: '.06em' }}>{r.label}</span>
               <span style={{ fontSize: 12, color: 'var(--foreground)', fontWeight: 500 }}>{r.value}</span>

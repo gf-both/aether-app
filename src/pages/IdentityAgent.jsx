@@ -297,7 +297,7 @@ Write a synthesis in exactly these 6 sections. Each should be 2-4 sentences. Wri
             }}>
               {SECTIONS.find(s => s.key === section)?.label}
             </div>
-            <div style={{ fontSize:14, lineHeight:1.85, color:'rgba(255,255,255,.85)', whiteSpace:'pre-wrap' }}>
+            <div style={{ fontSize:14, lineHeight:1.85, color:'var(--foreground)', whiteSpace:'pre-wrap' }}>
               {result[section] || 'This section is being processed. Try re-running the synthesis.'}
             </div>
           </div>

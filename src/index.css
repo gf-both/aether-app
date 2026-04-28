@@ -727,37 +727,113 @@ html:not(.dark) .nbg { opacity: 0.1; }
    Applied when html does NOT have .dark class
    ════════════════════════════════════════════ */
 html:not(.dark) {
-  --background: #f4f0e8;
+  --background: #f8f5ee;
   --foreground: #1a1510;
-  --card: #ede9df;
+  --card: #ffffff;
   --card-foreground: #1a1510;
-  --popover: #f9f6f0;
+  --popover: #ffffff;
   --popover-foreground: #1a1510;
-  --secondary: #e8e2d4;
-  --secondary-foreground: #1a1510;
-  --muted: #e4dfd0;
-  --muted-foreground: #6b5a3e;
-  --accent: #dfd9c8;
+  --secondary: #f0ebe0;
+  --secondary-foreground: #2a2218;
+  --muted: #e8e2d4;
+  --muted-foreground: #5a4a30;
+  --accent: #ede7d8;
   --accent-foreground: #1a1510;
-  --border: #cfc7b0;
-  --input: #cfc7b0;
-  --ring: #a08040;
-  --sidebar: #ede9df;
+  --border: #d4c8a8;
+  --input: #f0ebe0;
+  --ring: #8b6820;
+  --sidebar: #f0ebe0;
   --sidebar-foreground: #1a1510;
-  --sidebar-border: #cfc7b0;
+  --sidebar-border: #d4c8a8;
 }
 html:not(.dark) select,
 html:not(.dark) input[type="text"],
 html:not(.dark) input[type="date"],
-html:not(.dark) input[type="time"] { background: #f4f0e8; color: #1a1510; border-color: #cfc7b0; }
+html:not(.dark) input[type="time"] { background: #f0ebe0; color: #1a1510; border-color: #d4c8a8; }
 
 html:not(.dark).theme-crystal-day {
-  --background: #f0f4f8; --card: #e8edf4; --sidebar: #e8edf4;
-  --border: #b8c8d8; --muted-foreground: #4060a0; --accent: #dce6f0;
+  --background: #f5f7fc;
+  --card: #ffffff;
+  --sidebar: #eef1f8;
+  --border: #c8d0e0;
+  --muted-foreground: #4a5580;
+  --accent: #e8ecf4;
+  --foreground: #1e293b;
+  --secondary-foreground: #2a3850;
 }
 html:not(.dark).theme-manuscript-day {
-  --background: #f2ead8; --card: #e8dfc8; --sidebar: #e8dfc8;
-  --border: #c8b888; --muted-foreground: #7a6030; --accent: #e0d4b0;
+  --background: #f5edd8;
+  --card: #faf5e8;
+  --sidebar: #f0e5c8;
+  --border: #d0c090;
+  --muted-foreground: #6a5020;
+  --accent: #ebe0c4;
+  --foreground: #2a2010;
+  --secondary-foreground: #3a3018;
+}
+
+/* ── Light mode: element-level overrides ── */
+/* Force card headers to be legible */
+html:not(.dark) .ct {
+  color: #3a3020;
+  font-weight: 600;
+}
+
+/* Status bar values must be dark */
+html:not(.dark) .sb-val {
+  color: #1a1510;
+  font-weight: 500;
+}
+
+/* Sidebar section labels darker in light mode */
+html:not(.dark) .sb-section-label span {
+  color: #5a4a30;
+  opacity: 1;
+}
+
+/* Detail panel content visibility */
+html:not(.dark) .detail-scroll-wrap {
+  color: var(--foreground);
+}
+
+/* Section titles in detail panels (Cinzel font) */
+html:not(.dark) .detail-scroll-wrap [style*="Cinzel"] {
+  opacity: 1;
+  color: #1a1510;
+}
+
+/* Column header titles must be dark */
+html:not(.dark) .col-header-title {
+  color: #1a1510;
+  opacity: 1;
+}
+
+/* Score names and values */
+html:not(.dark) .score-name {
+  color: #5a4a30;
+}
+
+/* Person card names */
+html:not(.dark) .pc-name {
+  color: #1a1510;
+  font-weight: 600;
+}
+
+/* Composite item titles */
+html:not(.dark) .comp-title {
+  color: #5a4a30;
+  font-weight: 600;
+}
+
+/* Transits sign name */
+html:not(.dark) .tr-sign {
+  color: #1a1510;
+  font-weight: 600;
+}
+
+/* Gene Keys gift (italic text) */
+html:not(.dark) .gk-gift {
+  color: #1a1510;
 }
 
 /* ── Grid layout helpers ── */

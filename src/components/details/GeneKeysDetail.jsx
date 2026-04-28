@@ -463,13 +463,62 @@ export default function GeneKeysDetail() {
       <div>
         <div style={S.sectionTitle}>Hologenetic Contemplation</div>
         <div style={S.interpretation}>
-          {profile?.name || 'Your'} hologenetic profile weaves {allSpheres.length} Gene Keys across three
-          sequences of awakening. The Activation Sequence ({activationSpheres.map(s => s.key).join('-')})
-          reveals your core gifts. The Venus Sequence ({venusSpheres.map(s => s.key).join('-') || 'pending'})
-          illuminates your relational field. The Pearl Sequence ({pearlSpheres.map(s => s.key).join('-') || 'pending'})
-          maps your path to prosperity. The journey from Shadow to Siddhi in each key is spiral — you will revisit
-          each frequency at deeper levels of integration. The Gene Keys teach that{' '}
-          <span style={{ color: 'var(--foreground)' }}>transformation happens through contemplation, not effort</span>.
+          {(() => {
+            // Build a rich, contemplative synthesis from the actual sphere data
+            if (!allSpheres.length) return "Add birth data to see your contemplation."
+
+            // Extract key patterns
+            const activationKeys = activationSpheres.map(s => s.key)
+            const venusKeys = venusSpheres.map(s => s.key)
+            const pearlKeys = pearlSpheres.map(s => s.key)
+
+            // Find shadow-to-gift arcs for storytelling
+            const coreGifts = activationSpheres.map(s => {
+              const d = GENE_KEYS_DATA[s.key]
+              return d?.gift || 'integration'
+            })
+
+            const coreShadows = activationSpheres.map(s => {
+              const d = GENE_KEYS_DATA[s.key]
+              return d?.shadow || 'pattern'
+            })
+
+            // Check for repeated keys (rare and significant)
+            const allKeyNumbers = [...activationKeys, ...venusKeys, ...pearlKeys]
+            const repeatedKeys = allKeyNumbers.filter((k, i, arr) => arr.indexOf(k) !== i && arr.lastIndexOf(k) === i)
+
+            // Find the most prominent gift and shadow
+            const mainGift = coreGifts[0] || 'unfolding'
+            const mainShadow = coreShadows[0] || 'becoming'
+
+            // Build the narrative
+            let prose = `${profile?.name || 'Your'} hologenetic genome is written across ${activationKeys.length} pillars of awakening. `
+
+            prose += `Your core path unfolds: from the shadow of ${coreShadows[0]} into the gift of ${coreGifts[0]}.`
+
+            if (activationKeys.length > 1) {
+              prose += ` Through ${activationKeys.slice(1).join(' and ')}, this gift spirals deeper—each key revealing a new octave of your original consciousness.`
+            }
+
+            if (venusKeys.length > 0) {
+              prose += ` Your relational field—the Venus Sequence—is encoded in Keys ${venusKeys.join(', ')}: how you attract, how you love, how your intelligence navigates the heart.`
+            }
+
+            if (pearlKeys.length > 0) {
+              prose += ` Your prosperity arc—the Pearl Sequence—lives in Keys ${pearlKeys.join(', ')}: your vocation, your cultural expression, the abundance that flows through your unique offering.`
+            }
+
+            if (repeatedKeys.length > 0) {
+              prose += ` The key(s) ${repeatedKeys.join(', ')} appear across multiple sequences—this is rare. This key is a mirror point in your hologenetic design, asking you to look from many angles.`
+            }
+
+            prose += ` The journey from Shadow to Siddhi is not linear—it is spiral, recursive, alive. You will return to each frequency at deeper levels of integration, each time seeing new facets of the same eternal pattern.`
+
+            prose += ` `
+            prose += `<span style="color: var(--foreground)">Transformation happens through contemplation, not effort.</span> Sit with these keys. Let them show you what you already know.`
+
+            return <div dangerouslySetInnerHTML={{ __html: prose }} />
+          })()}
         </div>
       </div>
 

@@ -23,7 +23,7 @@ const TYPE_COLORS = {
   resonance: '#c9a84c',
   tension:   '#9050e0',
   gateway:   '#40ccdd',
-  mirror:    'rgba(255,255,255,.7)',
+  mirror:    'var(--muted-foreground)',
 }
 
 // Build connection map from alignments
@@ -186,7 +186,7 @@ export default function PatternsWeb() {
 
         // Name
         ctx.font = `${R * .028}px 'Cormorant Garamond',serif`
-        ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.textAlign = 'center'
+        ctx.fillStyle = 'var(--muted-foreground)'; ctx.textAlign = 'center'
         ctx.fillText(person.personName.split(' ')[0], px, py + dotR + R * .04)
       })
 
@@ -231,7 +231,7 @@ export default function PatternsWeb() {
         const lx = node.x + Math.cos(node.angle) * labelDist * .6
         const ly = node.y + Math.sin(node.angle) * labelDist
         ctx.font = `${R * (isHov ? .036 : .03)}px 'Cinzel',serif`
-        ctx.fillStyle = isHov ? 'rgba(255,255,255,.9)' : 'rgba(201,168,76,.45)'
+        ctx.fillStyle = isHov ? 'var(--foreground)' : 'rgba(201,168,76,.45)'
         ctx.textAlign = 'center'
         ctx.fillText(node.label, lx, ly)
       })
@@ -269,13 +269,13 @@ export default function PatternsWeb() {
         ['resonance', '#c9a84c'],
         ['tension', '#9050e0'],
         ['gateway', '#40ccdd'],
-        ['mirror', 'rgba(255,255,255,.7)'],
+        ['mirror', 'var(--muted-foreground)'],
       ].forEach(([label, col], i) => {
         const lx2 = legendX, ly2 = legendY + i * 13
         ctx.beginPath()
         ctx.moveTo(lx2, ly2 + 2); ctx.lineTo(lx2 + 16, ly2 + 2)
         ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.stroke()
-        ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.textAlign = 'left'
+        ctx.fillStyle = 'var(--muted-foreground)'; ctx.textAlign = 'left'
         ctx.fillText(label, lx2 + 20, ly2 + 5)
       })
 

@@ -93,7 +93,7 @@ export default function IntegralDetail() {
                   textTransform: 'uppercase',
                   background: isActive ? z.color + '0.25)' : 'rgba(5,5,20,0.75)',
                   border: `1px solid ${isActive ? z.color + '0.6)' : 'rgba(255,255,255,0.08)'}`,
-                  color: isActive ? '#fff' : 'rgba(255,255,255,0.4)',
+                  color: isActive ? '#fff' : 'var(--muted-foreground)',
                   backdropFilter: 'blur(8px)',
                   transition: 'all .15s',
                 }}

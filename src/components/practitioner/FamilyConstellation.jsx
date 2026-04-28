@@ -422,7 +422,7 @@ export default function FamilyConstellation({ clientId, clientProfile = {} }) {
               x={boardWidth / 2}
               y={boardHeight - 20}
               textAnchor="middle"
-              style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '11px', fill: 'rgba(255,255,255,0.3)' }}
+              style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: '11px', fill: 'var(--muted-foreground)' }}
             >
               Add family members to begin the constellation
             </text>
@@ -469,7 +469,7 @@ export default function FamilyConstellation({ clientId, clientProfile = {} }) {
             </div>
             <button
               onClick={() => setSelectedMember(null)}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '1.1rem' }}
+              style={{ background: 'none', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer', fontSize: '1.1rem' }}
             >
               ×
             </button>

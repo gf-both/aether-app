@@ -854,14 +854,24 @@ function WidgetContent({ widgetId }) {
     case 'ritual': {
       const ritualResult = getRecommendedRituals(profile)
       const topR = ritualResult.topRecommendation
+      const rituals = ritualResult.rituals || []
       return (
         <>
           <div className="ch">
             <span className="ct">Rituals{topR ? ` · ${topR.name}` : ' · 12 Traditions'}</span>
             <span className="ci">{'🪷'}</span>
           </div>
-          <div className="cb">
-            <RitualWheel topRitual={topR} score={topR?.score} />
+          <div className="cb" style={{ padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 4, overflow: 'hidden' }}>
+            {rituals.slice(0, 4).map((r, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4, background: 'var(--secondary)', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: 14 }}>{r.tradition?.icon || '◬'}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 10, color: 'var(--foreground)', fontWeight: 500 }}>{r.name}</div>
+                  <div style={{ fontSize: 8, color: 'var(--muted-foreground)' }}>{r.tradition?.name} · {r.duration}m</div>
+                </div>
+                {r.score && <span style={{ fontSize: 9, color: 'var(--muted-foreground)', fontFamily: 'monospace' }}>{Math.round(r.score * 100)}%</span>}
+              </div>
+            ))}
           </div>
         </>
       )
@@ -1143,13 +1153,13 @@ function WidgetManagerBar() {
                 transition: 'all .15s', userSelect: 'none',
                 background: isHidden ? 'var(--secondary)' : 'var(--accent)',
                 border: `1px solid ${isHidden ? 'rgba(255,255,255,.08)' : 'var(--ring)'}`,
-                color: isHidden ? 'rgba(255,255,255,.3)' : 'var(--foreground)',
+                color: isHidden ? 'var(--muted-foreground)' : 'var(--foreground)',
               }}
             >
               <span style={{ fontSize: 16 }}>{meta.icon || '✦'}</span>
               <div>
                 <div style={{ fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.04em' }}>{meta.label}</div>
-                <div style={{ fontSize: 9, color: isHidden ? 'rgba(255,255,255,.2)' : 'var(--muted-foreground)', marginTop: 1 }}>
+                <div style={{ fontSize: 9, color: isHidden ? 'var(--muted-foreground)' : 'var(--muted-foreground)', marginTop: 1 }}>
                   {isHidden ? 'hidden · click to show' : 'visible · click to hide'}
                 </div>
               </div>

@@ -170,7 +170,7 @@ export default function GolemSimulation() {
 
           {/* Analysis */}
           {result.analysis && (
-            <div style={{ padding:'16px 20px', borderRadius:10, background:'rgba(144,80,224,.05)', border:'1px solid rgba(144,80,224,.15)', fontSize:13, lineHeight:1.85, color:'rgba(255,255,255,.85)', marginBottom:20, whiteSpace:'pre-wrap' }}>
+            <div style={{ padding:'16px 20px', borderRadius:10, background:'rgba(144,80,224,.05)', border:'1px solid rgba(144,80,224,.15)', fontSize:13, lineHeight:1.85, color:'var(--foreground)', marginBottom:20, whiteSpace:'pre-wrap' }}>
               {result.analysis}
             </div>
           )}

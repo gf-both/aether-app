@@ -120,7 +120,7 @@ export default function PlaceAutocomplete({ value, onChange, placeholder = 'City
           right: 0,
           zIndex: 1000,
           background: 'var(--card, #1a1a2e)',
-          border: '1px solid var(--border, rgba(255,255,255,0.1))',
+          border: '1px solid var(--border, var(--border))',
           borderRadius: 8,
           marginTop: 4,
           overflow: 'hidden',
@@ -145,7 +145,7 @@ export default function PlaceAutocomplete({ value, onChange, placeholder = 'City
               >
                 <span style={{ fontSize: 13, color: 'var(--foreground, #fff)' }}>{main}</span>
                 {secondary && (
-                  <span style={{ fontSize: 11, color: 'var(--muted-foreground, rgba(255,255,255,0.5))', marginLeft: 6 }}>
+                  <span style={{ fontSize: 11, color: 'var(--muted-foreground, var(--muted-foreground))', marginLeft: 6 }}>
                     {secondary}
                   </span>
                 )}

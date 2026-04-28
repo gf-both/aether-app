@@ -327,7 +327,7 @@ export default function MayanWheel({ classicalDaySign, classicalTone, classicalK
         // Kin number
         const numS = Math.max(6, dr * .75)
         ctx.font = `bold ${numS}px 'Cinzel',serif`
-        ctx.fillStyle = 'rgba(255,255,255,.9)'
+        ctx.fillStyle = 'var(--foreground)'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(entry.kin), px, py)

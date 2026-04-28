@@ -687,7 +687,7 @@ Score each response (A, B, C) on the 5 dimensions. Return JSON only.`
               {/* Export buttons */}
               <div style={{ display: 'flex', gap: 8, marginTop: 16, justifyContent: 'flex-end' }}>
                 <button onClick={exportJSON} style={{
-                  padding: '6px 14px', borderRadius: 4, border: '1px solid rgba(255,255,255,0.1)',
+                  padding: '6px 14px', borderRadius: 4, border: '1px solid var(--border)',
                   background: 'rgba(255,255,255,0.04)', color: '#aaa', cursor: 'pointer', fontSize: 12,
                 }}>
                   Export JSON

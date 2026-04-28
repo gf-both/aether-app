@@ -97,7 +97,7 @@ function SynSummary({ a, b, aName, bName, report }) {
         <span style={{ fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.2em', textTransform: 'uppercase', color: 'rgba(201,168,76,.5)' }}>Synthesis</span>
         <span style={{ fontSize: 18, fontWeight: 300, fontFamily: "'Inconsolata',monospace", color: levelColor }}>{overall}%</span>
       </div>
-      <div style={{ fontSize: 12, lineHeight: 1.7, color: 'rgba(255,255,255,.65)', fontFamily: "'Cormorant Garamond',serif" }}>
+      <div style={{ fontSize: 12, lineHeight: 1.7, color: 'var(--muted-foreground)', fontFamily: "'Cormorant Garamond',serif" }}>
         <strong style={{ color: levelColor }}>{level} compatibility</strong> between {aName} and {bName}.
         {a.sign && b.sign ? ` ${a.sign} and ${b.sign} ${elA === elB ? `share ${elA} energy — instant recognition and shared language` : (elA==='fire'&&elB==='air')||(elA==='air'&&elB==='fire') ? 'create a dynamic of ideas and action — air feeds fire' : (elA==='earth'&&elB==='water')||(elA==='water'&&elB==='earth') ? 'nourish each other — emotion meets form' : `bring ${elA} and ${elB} into contact — productive tension that drives growth`}.` : ''}
         {hdA && hdB ? ` ${hdA}/${hdB} ${hdA===hdB ? 'mirror — same operating system, different expression' : 'complement — different strategies create a complete circuit'}.` : ''}

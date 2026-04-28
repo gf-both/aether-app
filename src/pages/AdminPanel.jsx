@@ -24,7 +24,7 @@ function ArchitectureDiagram() {
     const VIOLET = '#9050e0'
     const ROSE   = '#d43070'
     const LIME   = '#60c060'
-    const MUTED  = 'rgba(255,255,255,.5)'
+    const MUTED  = 'var(--muted-foreground)'
 
     const layers = [
       { y: 20,  h: 70,  label: 'USER PROFILE',              color: GOLD,   sub: 'Birth Data · Self-Knowledge · People · Profiles' },
@@ -198,7 +198,7 @@ const s = {
     maxWidth: 1200,
     margin: '0 auto',
     fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-    color: 'rgba(255,255,255,0.87)',
+    color: 'var(--foreground)',
   },
   header: {
     display: 'flex',
@@ -238,7 +238,7 @@ const s = {
     cursor: 'pointer',
     border: 'none',
     background: 'none',
-    color: active ? '#c9a84c' : 'rgba(255,255,255,0.4)',
+    color: active ? '#c9a84c' : 'var(--muted-foreground)',
     borderBottom: active ? '2px solid #c9a84c' : '2px solid transparent',
     marginBottom: -1,
     transition: 'color 0.15s',
@@ -258,7 +258,7 @@ const s = {
     fontSize: 10,
     fontWeight: 700,
     letterSpacing: '0.1em',
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--muted-foreground)',
     borderBottom: '1px solid rgba(255,255,255,0.08)',
   },
   td: {
@@ -297,11 +297,11 @@ const s = {
     margin: 0,
     padding: 0,
     fontSize: 11,
-    color: 'rgba(255,255,255,0.5)',
+    color: 'var(--muted-foreground)',
     lineHeight: 1.8,
   },
   featureDot: {
-    color: 'rgba(255,255,255,0.2)',
+    color: 'var(--muted-foreground)',
     marginRight: 6,
   },
   // Health tab
@@ -331,12 +331,12 @@ const s = {
   healthLabel: {
     fontSize: 12,
     fontWeight: 600,
-    color: 'rgba(255,255,255,0.8)',
+    color: 'var(--foreground)',
     marginBottom: 2,
   },
   healthDetail: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.4)',
+    color: 'var(--muted-foreground)',
   },
   // Access denied
   denied: {
@@ -346,7 +346,7 @@ const s = {
     justifyContent: 'center',
     height: 300,
     gap: 12,
-    color: 'rgba(255,255,255,0.3)',
+    color: 'var(--muted-foreground)',
     fontSize: 14,
   },
   statusBadge: (s) => ({
@@ -389,7 +389,7 @@ export default function AdminPanel() {
     return (
       <div style={s.denied}>
         <span style={{ fontSize: 32 }}>🔒</span>
-        <span style={{ fontWeight: 700, color: 'rgba(255,255,255,0.5)' }}>Access Denied</span>
+        <span style={{ fontWeight: 700, color: 'var(--muted-foreground)' }}>Access Denied</span>
         <span style={{ fontSize: 12 }}>This panel is restricted to admin users.</span>
       </div>
     )
@@ -438,7 +438,7 @@ export default function AdminPanel() {
 function TabArchitecture() {
   return (
     <div>
-      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 16 }}>
+      <p style={{ fontSize: 12, color: 'var(--muted-foreground)', marginBottom: 16 }}>
         Full product architecture — user data flows down through 20 calculation engines,
         into the AI intelligence layer, then surfaces across all product pages.
       </p>
@@ -453,7 +453,7 @@ function TabArchitecture() {
           { col: '#d43070', label: 'Pattern' },
           { col: '#60c060', label: 'Product Surfaces' },
         ].map(({ col, label }) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.5)' }}>
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--muted-foreground)' }}>
             <div style={{ width: 10, height: 10, borderRadius: '50%', background: col, opacity: 0.7 }} />
             {label}
           </div>
@@ -471,7 +471,7 @@ function TabEngines() {
 
   return (
     <div>
-      <div style={{ marginBottom: 14, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+      <div style={{ marginBottom: 14, fontSize: 12, color: 'var(--muted-foreground)' }}>
         <span style={{ color: '#60c060', fontWeight: 700 }}>{pass} active</span>
         {warn > 0 && <> · <span style={{ color: '#ffb400', fontWeight: 700 }}>{warn} partial</span></>}
         {' '}· {ENGINES.length} engines total
@@ -500,9 +500,9 @@ function TabEngines() {
                     {eng.status}
                   </span>
                 </td>
-                <td style={{ ...s.td, fontSize: 11, color: 'rgba(255,255,255,0.5)', maxWidth: 200 }}>{eng.input}</td>
-                <td style={{ ...s.td, fontSize: 11, color: 'rgba(255,255,255,0.7)', maxWidth: 240 }}>{eng.output}</td>
-                <td style={{ ...s.td, fontSize: 11, color: 'rgba(255,255,255,0.35)', maxWidth: 180 }}>{eng.notes}</td>
+                <td style={{ ...s.td, fontSize: 11, color: 'var(--muted-foreground)', maxWidth: 200 }}>{eng.input}</td>
+                <td style={{ ...s.td, fontSize: 11, color: 'var(--muted-foreground)', maxWidth: 240 }}>{eng.output}</td>
+                <td style={{ ...s.td, fontSize: 11, color: 'var(--muted-foreground)', maxWidth: 180 }}>{eng.notes}</td>
               </tr>
             ))}
           </tbody>
@@ -520,7 +520,7 @@ function TabFeatures() {
 
   return (
     <div>
-      <div style={{ marginBottom: 14, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+      <div style={{ marginBottom: 14, fontSize: 12, color: 'var(--muted-foreground)' }}>
         <span style={{ color: '#60c060', fontWeight: 700 }}>{done} complete</span>
         {' · '}
         <span style={{ color: '#ffb400', fontWeight: 700 }}>{pending} in-flight</span>
@@ -530,7 +530,7 @@ function TabFeatures() {
         {FEATURES.map(f => (
           <div key={f.section} style={s.card}>
             <div style={s.cardTitle}>
-              <span style={{ color: 'rgba(255,255,255,0.85)' }}>{f.section}</span>
+              <span style={{ color: 'var(--foreground)' }}>{f.section}</span>
               <span style={s.statusBadge(f.status)}>{f.status}</span>
             </div>
             <ul style={s.featureList}>
@@ -572,7 +572,7 @@ function TabUsage() {
     <div>
       {/* Token Summary */}
       <div style={{ marginBottom: 28 }}>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 14, fontWeight: 600, letterSpacing: '0.06em' }}>
+        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginBottom: 14, fontWeight: 600, letterSpacing: '0.06em' }}>
           AI TOKEN CONSUMPTION
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
@@ -588,20 +588,20 @@ function TabUsage() {
               <div style={{ fontSize: 32, fontWeight: 700, color: item.color, fontFamily: "'Cinzel', serif" }}>
                 {item.value.toLocaleString()}
               </div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', marginTop: 6, letterSpacing: '0.06em' }}>
+              <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 6, letterSpacing: '0.06em' }}>
                 {item.label}
               </div>
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 10, fontSize: 11, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
+        <div style={{ marginTop: 10, fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Estimated cost: ${((tokenUsage.prompt * 0.25 + tokenUsage.completion * 1.25) / 1e6).toFixed(4)} (Haiku rates)
         </div>
       </div>
 
       {/* Engine Usage */}
       <div>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 14, fontWeight: 600, letterSpacing: '0.06em' }}>
+        <div style={{ fontSize: 12, color: 'var(--muted-foreground)', marginBottom: 14, fontWeight: 600, letterSpacing: '0.06em' }}>
           ENGINE COMPUTATION COUNT
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
@@ -626,14 +626,14 @@ function TabUsage() {
                 </div>
                 <div style={{
                   fontFamily: "'Cinzel', serif", fontSize: 13, fontWeight: 700,
-                  color: eng.count > 0 ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.2)',
+                  color: eng.count > 0 ? 'var(--foreground)' : 'var(--muted-foreground)',
                   width: 36, textAlign: 'right', flexShrink: 0,
                 }}>{eng.count}</div>
               </div>
             )
           })}
         </div>
-        <div style={{ marginTop: 10, fontSize: 11, color: 'rgba(255,255,255,0.3)', fontStyle: 'italic' }}>
+        <div style={{ marginTop: 10, fontSize: 11, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Counts tracked per session. Reset on localStorage clear.
         </div>
       </div>
@@ -649,7 +649,7 @@ function TabHealth() {
 
   return (
     <div>
-      <div style={{ marginBottom: 14, fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>
+      <div style={{ marginBottom: 14, fontSize: 12, color: 'var(--muted-foreground)' }}>
         <span style={{ color: '#60c060', fontWeight: 700 }}>{passing} passing</span>
         {' · '}
         <span style={{ color: '#ffb400', fontWeight: 700 }}>{warning} warnings</span>

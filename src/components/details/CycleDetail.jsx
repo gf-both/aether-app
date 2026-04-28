@@ -210,11 +210,11 @@ export default function CycleDetail() {
             <div style={{ padding: 16, borderRadius: 10, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)', textAlign: 'center' }}>
               <div style={{ fontSize: 36, marginBottom: 4 }}>{moon.phaseEmoji}</div>
               <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, color: '#c9a84c', marginBottom: 4 }}>{moon.phaseName}</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', lineHeight: 1.6 }}>{moon.illumination}% illuminated</div>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>{moon.illumination}% illuminated</div>
             </div>
             <div style={{ padding: 16, borderRadius: 10, background: 'rgba(130,90,220,.06)', border: '1px solid rgba(130,90,220,.15)' }}>
               <div style={{ fontSize: 11, color: 'rgba(160,130,220,.7)', fontFamily: "'Cinzel',serif", letterSpacing: '.1em', marginBottom: 8 }}>MOON ENERGY</div>
-              <div style={{ fontSize: 13, lineHeight: 1.7, color: 'rgba(255,255,255,.65)' }}>{moon.phaseEnergy}</div>
+              <div style={{ fontSize: 13, lineHeight: 1.7, color: 'var(--muted-foreground)' }}>{moon.phaseEnergy}</div>
             </div>
           </div>
           <div style={{ fontSize: 12, color: 'rgba(196,77,122,.6)', fontStyle: 'italic', marginTop: 12, textAlign: 'center' }}>
@@ -230,14 +230,14 @@ export default function CycleDetail() {
             <div style={{ padding: 16, borderRadius: 10, background: cycle.currentPhase.color + '15', border: `1px solid ${cycle.currentPhase.color}33` }}>
               <div style={{ fontSize: 28, marginBottom: 4 }}>{cycle.currentPhase.emoji}</div>
               <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, color: cycle.currentPhase.color, marginBottom: 4 }}>{cycle.currentPhase.name} Phase</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', lineHeight: 1.6 }}>Day {cycle.cycleDay} of {cycle.cycleLength}</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,.5)', marginTop: 4, fontStyle: 'italic' }}>{cycle.currentPhase.archetype}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>Day {cycle.cycleDay} of {cycle.cycleLength}</div>
+              <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 4, fontStyle: 'italic' }}>{cycle.currentPhase.archetype}</div>
             </div>
             <div style={{ padding: 16, borderRadius: 10, background: 'rgba(201,168,76,.06)', border: '1px solid rgba(201,168,76,.15)' }}>
               <div style={{ fontSize: 28, marginBottom: 4 }}>{cycle.moonPhase.phaseEmoji}</div>
               <div style={{ fontFamily: "'Cinzel',serif", fontSize: 14, color: '#c9a84c', marginBottom: 4 }}>{cycle.moonPhase.phaseName}</div>
-              <div style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', lineHeight: 1.6 }}>{cycle.moonPhase.illumination}% illuminated</div>
-              <div style={{ fontSize: 11, color: 'rgba(255,255,255,.5)', marginTop: 4, fontStyle: 'italic' }}>{cycle.moonPhase.phaseEnergy}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>{cycle.moonPhase.illumination}% illuminated</div>
+              <div style={{ fontSize: 11, color: 'var(--muted-foreground)', marginTop: 4, fontStyle: 'italic' }}>{cycle.moonPhase.phaseEnergy}</div>
             </div>
           </div>
 
@@ -251,7 +251,7 @@ export default function CycleDetail() {
                   {cycle.moonCycleAlignment.label}
                 </div>
               </div>
-              <div style={{ fontSize: 13, lineHeight: 1.7, color: 'rgba(255,255,255,.65)' }}>
+              <div style={{ fontSize: 13, lineHeight: 1.7, color: 'var(--muted-foreground)' }}>
                 {cycle.moonCycleAlignment.description}
               </div>
             </div>
@@ -269,7 +269,7 @@ export default function CycleDetail() {
           <div>
             <div style={S.sectionTitle}>PHASE ENERGY</div>
             <div style={{ padding: 16, borderRadius: 10, background: cycle.currentPhase.color + '08', border: `1px solid ${cycle.currentPhase.color}20` }}>
-              <div style={{ fontSize: 13, lineHeight: 1.8, color: 'rgba(255,255,255,.7)' }}>
+              <div style={{ fontSize: 13, lineHeight: 1.8, color: 'var(--muted-foreground)' }}>
                 {cycle.currentPhase.energy}
               </div>
               <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>

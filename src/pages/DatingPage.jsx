@@ -148,7 +148,7 @@ export default function DatingPage() {
       {exportOpen && (
         <div style={{ margin:'0 20px 12px', padding:16, borderRadius:10, background:'rgba(201,168,76,.04)', border:'1px solid rgba(201,168,76,.15)' }}>
           <div style={{ fontFamily:"'Cinzel',serif", fontSize:10, letterSpacing:'.15em', textTransform:'uppercase', color:'var(--gold)', marginBottom:10 }}>YOUR GOLEM.MD IDENTITY FILE</div>
-          <pre style={{ fontSize:11, lineHeight:1.6, color:'rgba(255,255,255,.6)', whiteSpace:'pre-wrap', fontFamily:"'Inconsolata',monospace", maxHeight:200, overflowY:'auto', padding:12, borderRadius:8, background:'rgba(0,0,0,.3)', border:'1px solid var(--border)' }}>
+          <pre style={{ fontSize:11, lineHeight:1.6, color:'var(--muted-foreground)', whiteSpace:'pre-wrap', fontFamily:"'Inconsolata',monospace", maxHeight:200, overflowY:'auto', padding:12, borderRadius:8, background:'rgba(0,0,0,.3)', border:'1px solid var(--border)' }}>
             {golemMd}
           </pre>
           <div style={{ display:'flex', gap:8, marginTop:10 }}>
@@ -212,7 +212,7 @@ export default function DatingPage() {
                     </span>
                   </div>
                 </div>
-                <div style={{ fontSize:12, lineHeight:1.6, color:'rgba(255,255,255,.65)' }}>{item.topic}</div>
+                <div style={{ fontSize:12, lineHeight:1.6, color:'var(--muted-foreground)' }}>{item.topic}</div>
               </div>
             ))}
           </div>
@@ -268,7 +268,7 @@ export default function DatingPage() {
                   {selectedMatch?.name === match.name && (
                     <div style={{ marginTop:14, paddingTop:14, borderTop:'1px solid rgba(201,168,76,.1)' }}>
                       <div style={{ fontFamily:"'Cinzel',serif", fontSize:9, letterSpacing:'.12em', textTransform:'uppercase', color:'var(--gold)', marginBottom:8 }}>Golem Conversation Summary</div>
-                      <div style={{ fontSize:12, lineHeight:1.7, color:'rgba(255,255,255,.7)', marginBottom:12 }}>{match.story}</div>
+                      <div style={{ fontSize:12, lineHeight:1.7, color:'var(--muted-foreground)', marginBottom:12 }}>{match.story}</div>
                       {match.tension && (
                         <div style={{ fontSize:11, color:'rgba(255,150,80,.7)', marginBottom:12 }}>⚡ {match.tension}</div>
                       )}
@@ -367,7 +367,7 @@ export default function DatingPage() {
                   <div style={{ fontSize:11, color:'var(--muted-foreground)', marginTop:2 }}>Active · Matching on your behalf</div>
                 </div>
               </div>
-              <div style={{ fontSize:12, lineHeight:1.7, color:'rgba(255,255,255,.65)' }}>
+              <div style={{ fontSize:12, lineHeight:1.7, color:'var(--muted-foreground)' }}>
                 Your Golem holds your complete profile — {pSign} Sun, {pMoon} Moon, {pHdType} in Human Design, Life Path {pLifePath}. It meets other Golems, runs compatibility across 22 frameworks, and brings you matches. You only appear when the frameworks agree.
               </div>
             </div>

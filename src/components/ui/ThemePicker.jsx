@@ -95,7 +95,7 @@ export default function ThemePicker({ onClose }) {
                     style={{
                       flex: 1, height: 88, borderRadius: 10, overflow: 'hidden',
                       background: colors.bg, cursor: 'pointer',
-                      border: `2px solid ${isActive ? colors.accent : 'rgba(255,255,255,.12)'}`,
+                      border: `2px solid ${isActive ? colors.accent : 'var(--muted-foreground)'}`,
                       boxShadow: isActive ? `0 0 16px ${colors.accent}60, inset 0 0 20px rgba(0,0,0,.2)` : 'none',
                       transition: 'all .2s', position: 'relative',
                     }}

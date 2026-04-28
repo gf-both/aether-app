@@ -153,7 +153,7 @@ export default function AboutSystemButton({ systemName }) {
         onMouseLeave={() => setShow(false)}
         style={{
           padding: '4px 10px', borderRadius: 8, cursor: 'help',
-          background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.08)',
+          background: 'var(--card)', border: '1px solid rgba(255,255,255,.08)',
           color: 'var(--muted-foreground)', fontSize: 9,
           fontFamily: "'Cinzel', serif", letterSpacing: '.08em',
           textTransform: 'uppercase', transition: 'all .2s',
@@ -169,7 +169,7 @@ export default function AboutSystemButton({ systemName }) {
         <div style={{
           position: 'absolute', top: '110%', left: 0,
           zIndex: 9999, width: 340, padding: '14px 16px',
-          background: 'rgba(12,12,20,.97)', border: '1px solid rgba(201,168,76,.2)',
+          background: 'var(--popover)', border: '1px solid rgba(201,168,76,.2)',
           borderRadius: 12, backdropFilter: 'blur(24px)',
           boxShadow: '0 12px 48px rgba(0,0,0,.7), 0 0 20px rgba(201,168,76,.06)',
           pointerEvents: 'none',
@@ -188,7 +188,7 @@ export default function AboutSystemButton({ systemName }) {
 
           {/* Summary */}
           <div style={{
-            fontSize: 11, lineHeight: 1.65, color: 'rgba(255,255,255,.75)',
+            fontSize: 11, lineHeight: 1.65, color: 'var(--muted-foreground)',
             fontFamily: "'Cormorant Garamond', Georgia, serif",
             marginBottom: 10,
           }}>
@@ -205,7 +205,7 @@ export default function AboutSystemButton({ systemName }) {
               textTransform: 'uppercase', color: 'rgba(201,168,76,.5)', marginBottom: 4,
             }}>Origin</div>
             <div style={{
-              fontSize: 10, lineHeight: 1.55, color: 'rgba(255,255,255,.5)',
+              fontSize: 10, lineHeight: 1.55, color: 'var(--muted-foreground)',
               fontFamily: "'Cormorant Garamond', Georgia, serif",
             }}>
               {info.origin}
@@ -216,7 +216,7 @@ export default function AboutSystemButton({ systemName }) {
           <div style={{
             position: 'absolute', top: -5, left: 20,
             transform: 'rotate(-135deg)',
-            width: 10, height: 10, background: 'rgba(12,12,20,.97)',
+            width: 10, height: 10, background: 'var(--popover)',
             borderRight: '1px solid rgba(201,168,76,.2)',
             borderBottom: '1px solid rgba(201,168,76,.2)',
           }} />

@@ -331,7 +331,7 @@ export default function FrequencyDetail() {
                 style={{
                   flex: '1 1 200px', padding: '14px 16px', borderRadius: 10, cursor: 'pointer',
                   background: isPlaying ? color + '10' : 'rgba(255,255,255,.02)',
-                  border: `1px solid ${isPlaying ? color + '40' : 'rgba(255,255,255,.06)'}`,
+                  border: `1px solid ${isPlaying ? color + '40' : 'var(--border)'}`,
                   transition: 'all .2s',
                 }}
               >
@@ -355,9 +355,9 @@ export default function FrequencyDetail() {
             style={{
               padding: '5px 12px', borderRadius: 8, border: 'none', cursor: 'pointer',
               fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase',
-              background: activeCategory === 'all' ? 'rgba(201,168,76,.15)' : 'rgba(255,255,255,.03)',
+              background: activeCategory === 'all' ? 'rgba(201,168,76,.15)' : 'var(--card)',
               color: activeCategory === 'all' ? '#c9a84c' : 'var(--muted-foreground)',
-              border: activeCategory === 'all' ? '1px solid rgba(201,168,76,.3)' : '1px solid rgba(255,255,255,.06)',
+              border: activeCategory === 'all' ? '1px solid rgba(201,168,76,.3)' : '1px solid var(--border)',
             }}
           >All ({FREQUENCIES.length})</button>
           {FREQUENCY_CATEGORIES.map(cat => {
@@ -369,9 +369,9 @@ export default function FrequencyDetail() {
                 style={{
                   padding: '5px 12px', borderRadius: 8, border: 'none', cursor: 'pointer',
                   fontFamily: "'Cinzel',serif", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase',
-                  background: activeCategory === cat.id ? cat.color + '15' : 'rgba(255,255,255,.03)',
+                  background: activeCategory === cat.id ? cat.color + '15' : 'var(--card)',
                   color: activeCategory === cat.id ? cat.color : 'var(--muted-foreground)',
-                  border: activeCategory === cat.id ? `1px solid ${cat.color}30` : '1px solid rgba(255,255,255,.06)',
+                  border: activeCategory === cat.id ? `1px solid ${cat.color}30` : '1px solid var(--border)',
                 }}
               >{cat.icon} {cat.label} ({count})</button>
             )
@@ -386,7 +386,7 @@ export default function FrequencyDetail() {
           placeholder="Search frequencies..."
           style={{
             width: '100%', padding: '8px 14px', borderRadius: 8,
-            background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.08)',
+            background: 'var(--card)', border: '1px solid rgba(255,255,255,.08)',
             color: 'var(--foreground)', fontFamily: "'Inconsolata',monospace", fontSize: 12,
             outline: 'none', marginBottom: 12,
           }}
@@ -460,7 +460,7 @@ export default function FrequencyDetail() {
                     <span style={{
                       padding: '2px 8px', borderRadius: 6, fontSize: 8,
                       fontFamily: "'Inconsolata',monospace",
-                      background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.06)',
+                      background: 'var(--card)', border: '1px solid var(--border)',
                       color: 'var(--muted-foreground)',
                     }}>{fmtTime(freq.duration)}</span>
                   </div>
@@ -492,7 +492,7 @@ export default function FrequencyDetail() {
                         <span key={tag} style={{
                           padding: '2px 8px', borderRadius: 8, fontSize: 9,
                           fontFamily: "'Inconsolata',monospace",
-                          background: 'rgba(255,255,255,.03)', border: '1px solid rgba(255,255,255,.06)',
+                          background: 'var(--card)', border: '1px solid var(--border)',
                           color: 'var(--muted-foreground)', cursor: 'pointer',
                         }} onClick={() => setSearch(tag)}>#{tag}</span>
                       ))}

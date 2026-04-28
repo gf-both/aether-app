@@ -695,7 +695,7 @@ export default function SessionMode({ client, onBack }) {
                   style={{
                     ...s.actionCheckbox,
                     background: item.done ? 'rgba(100,200,100,.2)' : 'transparent',
-                    borderColor: item.done ? 'rgba(100,200,100,.4)' : 'rgba(255,255,255,.2)',
+                    borderColor: item.done ? 'rgba(100,200,100,.4)' : 'var(--muted-foreground)',
                     color: item.done ? 'var(--lime2)' : 'transparent',
                   }}
                   onClick={() => toggleAction(item.id)}

@@ -97,7 +97,7 @@ function KabTooltip({ data, children }) {
         <div style={{
           position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
           width: 300, padding: '14px 16px', borderRadius: 10,
-          background: 'rgba(12,12,20,.96)', border: '1px solid rgba(201,168,76,.2)',
+          background: 'var(--popover)', border: '1px solid rgba(201,168,76,.2)',
           backdropFilter: 'blur(20px)', zIndex: 999, pointerEvents: 'none',
           boxShadow: '0 8px 32px rgba(0,0,0,.5)', marginBottom: 6,
         }}>
@@ -117,7 +117,7 @@ function KabTooltip({ data, children }) {
               <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 4, background: 'rgba(204,68,68,.1)', color: '#cc6666', border: '1px solid rgba(204,68,68,.2)' }}>Vice: {data.vice}</span>
             )}
           </div>
-          <div style={{ position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%) rotate(45deg)', width: 10, height: 10, background: 'rgba(12,12,20,.96)', borderRight: '1px solid rgba(201,168,76,.2)', borderBottom: '1px solid rgba(201,168,76,.2)' }} />
+          <div style={{ position: 'absolute', bottom: -5, left: '50%', transform: 'translateX(-50%) rotate(45deg)', width: 10, height: 10, background: 'var(--popover)', borderRight: '1px solid rgba(201,168,76,.2)', borderBottom: '1px solid rgba(201,168,76,.2)' }} />
         </div>
       )}
     </div>

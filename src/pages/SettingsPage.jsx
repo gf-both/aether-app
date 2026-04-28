@@ -102,7 +102,7 @@ export default function SettingsPage() {
                   width: 18, height: 18, borderRadius: '50%', flexShrink: 0,
                   background: t.dot,
                   boxShadow: isActive ? `0 0 12px ${t.dot}80` : 'none',
-                  border: `2px solid ${isActive ? 'rgba(255,255,255,.5)' : 'rgba(255,255,255,.1)'}`,
+                  border: `2px solid ${isActive ? 'var(--muted-foreground)' : 'rgba(255,255,255,.1)'}`,
                   transition: 'all .2s',
                 }} />
                 <div style={{ flex: 1 }}>

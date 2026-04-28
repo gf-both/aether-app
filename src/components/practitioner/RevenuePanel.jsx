@@ -187,7 +187,7 @@ export default function RevenuePanel() {
                 alignItems: 'center',
                 paddingLeft: '6px',
               }}>
-                <span style={{ fontSize: '9px', color: 'rgba(255,255,255,.5)', fontFamily: "'Cinzel',serif", whiteSpace: 'nowrap' }}>
+                <span style={{ fontSize: '9px', color: 'var(--muted-foreground)', fontFamily: "'Cinzel',serif", whiteSpace: 'nowrap' }}>
                   {client.sessions} sessions
                 </span>
               </div>

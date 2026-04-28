@@ -339,9 +339,9 @@ export default function YantraDetail() {
               <button key={y.id} onClick={() => setSelectedYantra(y)} style={{
                 padding: '8px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
                 fontFamily: "'Cinzel',serif", fontSize: 10, letterSpacing: '.08em',
-                background: active ? pd.color + '18' : 'rgba(255,255,255,.03)',
+                background: active ? pd.color + '18' : 'var(--card)',
                 color: active ? pd.color : 'var(--muted-foreground)',
-                border: active ? `1px solid ${pd.color}40` : '1px solid rgba(255,255,255,.06)',
+                border: active ? `1px solid ${pd.color}40` : '1px solid var(--border)',
                 transition: 'all .2s',
               }}>
                 {pd.symbol} {y.name}
@@ -420,7 +420,7 @@ export default function YantraDetail() {
                   ? 'rgba(201,168,76,.1)'
                   : 'linear-gradient(135deg, rgba(201,168,76,.15), rgba(201,168,76,.08))'
                 : 'rgba(255,255,255,.02)',
-              color: canCreate ? '#c9a84c' : 'rgba(255,255,255,.2)',
+              color: canCreate ? '#c9a84c' : 'var(--muted-foreground)',
               border: canCreate ? '1px solid rgba(201,168,76,.3)' : '1px solid rgba(255,255,255,.05)',
               transition: 'all .3s',
             }}

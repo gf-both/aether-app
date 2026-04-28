@@ -31,7 +31,7 @@ export default class ErrorBoundary extends Component {
           <div style={{ fontFamily: "'Cinzel', serif", fontSize: 16, letterSpacing: '.15em', textTransform: 'uppercase', color: '#c9a84c' }}>
             GOLEM — Runtime Error
           </div>
-          <div style={{ fontSize: 12, color: 'rgba(255,255,255,.4)', maxWidth: 420, lineHeight: 1.7 }}>
+          <div style={{ fontSize: 12, color: 'var(--muted-foreground)', maxWidth: 420, lineHeight: 1.7 }}>
             Something crashed. This is usually caused by stale cached data from a recent update.
           </div>
           <div style={{ fontSize: 11, color: 'rgba(201,168,76,.5)', fontFamily: 'monospace', background: 'rgba(0,0,0,.3)', padding: '8px 16px', borderRadius: 6, maxWidth: 500, wordBreak: 'break-all' }}>
@@ -53,7 +53,7 @@ export default class ErrorBoundary extends Component {
           >
             Clear Cache &amp; Reload
           </button>
-          <div style={{ fontSize: 10, color: 'rgba(255,255,255,.2)' }}>
+          <div style={{ fontSize: 10, color: 'var(--muted-foreground)' }}>
             This will reset your local data. Sign in after reload to restore your profile.
           </div>
         </div>

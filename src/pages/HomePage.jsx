@@ -103,7 +103,7 @@ export default function HomePage() {
           </RevealSection>
 
           <RevealSection delay={0.4}>
-            <p style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 'clamp(16px, 3vw, 24px)', color: 'rgba(255,255,255,0.55)', maxWidth: 700, margin: '0 auto 40px', lineHeight: 1.6, fontStyle: 'italic' }}>
+            <p style={{ fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: 'clamp(16px, 3vw, 24px)', color: 'var(--muted-foreground)', maxWidth: 700, margin: '0 auto 40px', lineHeight: 1.6, fontStyle: 'italic' }}>
               Twenty-seven ancient wisdom traditions. One unified portrait of who you are. Not separate readings. One coherent map where astrology meets Human Design, where Gene Keys converge with Kabbalah, where patterns emerge only at the intersection.
             </p>
           </RevealSection>
@@ -140,7 +140,7 @@ export default function HomePage() {
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: 'clamp(24px, 5vw, 42px)', color: 'var(--foreground)', letterSpacing: '.15em', marginBottom: 12 }}>
               ANCIENT WISDOM TRADITIONS
             </div>
-            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 16, color: 'rgba(255,255,255,0.45)', maxWidth: 550, margin: '0 auto', lineHeight: 1.7 }}>
+            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 16, color: 'var(--muted-foreground)', maxWidth: 550, margin: '0 auto', lineHeight: 1.7 }}>
               Each tradition illuminates a different dimension of self. Together, they form your complete portrait — precise, multidimensional, alive.
             </p>
           </div>
@@ -186,7 +186,7 @@ export default function HomePage() {
               <div style={{ fontFamily: "'Cinzel',serif", fontSize: 48, color: step.color, opacity: 0.3, flexShrink: 0, lineHeight: 1 }}>{step.num}</div>
               <div>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 16, letterSpacing: '.2em', color: step.color, marginBottom: 8 }}>{step.title}</div>
-                <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, color: 'rgba(255,255,255,0.55)', lineHeight: 1.8, margin: 0 }}>{step.desc}</p>
+                <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, color: 'var(--muted-foreground)', lineHeight: 1.8, margin: 0 }}>{step.desc}</p>
               </div>
             </div>
           </RevealSection>
@@ -201,7 +201,7 @@ export default function HomePage() {
               <div style={{ fontFamily: "'Cinzel',serif", fontSize: 'clamp(20px, 4vw, 32px)', color: 'var(--foreground)', letterSpacing: '.12em', marginBottom: 16 }}>
                 WHERE ANCIENT TRADITIONS CONVERGE
               </div>
-              <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 15, color: 'var(--muted-foreground)', lineHeight: 1.8 }}>
                 Most apps read one framework. GOLEM feeds your complete cosmic signature to Claude — all 27 systems, every Gate, number, and archetype — in one synthesis. The AI illuminates the patterns that emerge only at the intersection. Where traditions contradict, where they deepen each other. New truths. One coherent portrait.
               </p>
               <div style={{ marginTop: 20, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -210,14 +210,14 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-            <div style={{ padding: 20, borderRadius: 12, background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(201,168,76,0.12)', fontFamily: "'Inconsolata',monospace", fontSize: 11, lineHeight: 1.8, color: 'rgba(255,255,255,0.5)' }}>
+            <div style={{ padding: 20, borderRadius: 12, background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(201,168,76,0.12)', fontFamily: "'Inconsolata',monospace", fontSize: 11, lineHeight: 1.8, color: 'var(--muted-foreground)' }}>
               <span style={{ color: '#c9a84c' }}>golem.portrait</span>({'{'}<br/>
               &nbsp;&nbsp;natal: <span style={{ color: '#40ccdd' }}>"Aquarius Sun, Cancer Moon"</span>,<br/>
               &nbsp;&nbsp;hd: <span style={{ color: '#40ccdd' }}>"2/4 Projector, Splenic"</span>,<br/>
               &nbsp;&nbsp;geneKeys: <span style={{ color: '#40ccdd' }}>"Gate 41.4 → Anticipation"</span>,<br/>
               &nbsp;&nbsp;kabbalah: <span style={{ color: '#40ccdd' }}>"Gevurah / Strength"</span>,<br/>
               &nbsp;&nbsp;enneagram: <span style={{ color: '#40ccdd' }}>"Type 5w4 - The Iconoclast"</span>,<br/>
-              &nbsp;&nbsp;<span style={{ color: 'rgba(255,255,255,0.3)' }}>// ...22 more systems</span><br/>
+              &nbsp;&nbsp;<span style={{ color: 'var(--muted-foreground)' }}>// ...22 more systems</span><br/>
               {'}'}) <span style={{ color: '#60b030' }}>→</span> <span style={{ color: '#c44d7a' }}>unified portrait</span>
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function HomePage() {
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: 'clamp(24px, 5vw, 42px)', color: 'var(--foreground)', letterSpacing: '.15em', marginBottom: 12 }}>
               CONNECTIONS · THE ANTI-DATING APP
             </div>
-            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 16, color: 'rgba(255,255,255,0.45)', maxWidth: 550, margin: '0 auto', lineHeight: 1.7 }}>
+            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 16, color: 'var(--muted-foreground)', maxWidth: 550, margin: '0 auto', lineHeight: 1.7 }}>
               Your Golem meets other Golems. Not profiles. Portraits. Framework compatibility first. Identity earned through depth, not swipe.
             </p>
           </div>
@@ -247,7 +247,7 @@ export default function HomePage() {
               <div style={{ padding: 24, borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: `1px solid ${p.color}22`, textAlign: 'center', height: '100%' }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>{p.icon}</div>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, letterSpacing: '.15em', color: p.color, marginBottom: 10 }}>{p.phase}</div>
-                <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, margin: 0 }}>{p.desc}</p>
+                <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.7, margin: 0 }}>{p.desc}</p>
               </div>
             </RevealSection>
           ))}
@@ -261,7 +261,7 @@ export default function HomePage() {
             <div style={{ fontFamily: "'Cinzel',serif", fontSize: 'clamp(24px, 5vw, 42px)', color: 'var(--foreground)', letterSpacing: '.15em', marginBottom: 12 }}>
               FOR PRACTITIONERS
             </div>
-            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 16, color: 'rgba(255,255,255,0.45)', maxWidth: 550, margin: '0 auto', lineHeight: 1.7 }}>
+            <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 16, color: 'var(--muted-foreground)', maxWidth: 550, margin: '0 auto', lineHeight: 1.7 }}>
               Every tradition at your fingertips. AI note-taking woven with framework intelligence. Deep client archives. Pattern mining across your entire practice. Your clients' inner worlds, fully mapped.
             </p>
           </div>
@@ -277,7 +277,7 @@ export default function HomePage() {
               <div key={feat.title} style={{ padding: 20, borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(201,168,76,0.1)', textAlign: 'center' }}>
                 <div style={{ fontSize: 28, marginBottom: 8 }}>{feat.icon}</div>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 11, color: 'var(--gold)', letterSpacing: '.1em', marginBottom: 6 }}>{feat.title}</div>
-                <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>{feat.desc}</div>
+                <div style={{ fontSize: 12, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>{feat.desc}</div>
               </div>
             ))}
           </div>
@@ -296,7 +296,7 @@ export default function HomePage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
           {[
-            { name: 'SEEKER', price: '$0', desc: 'Your complete cosmic portrait across all 27 traditions.', features: ['27 wisdom systems', 'Interactive portrait', 'Pattern discovery', 'Connections (limited)', 'Cycle tracking'], color: 'rgba(255,255,255,0.5)', border: 'var(--border)' },
+            { name: 'SEEKER', price: '$0', desc: 'Your complete cosmic portrait across all 27 traditions.', features: ['27 wisdom systems', 'Interactive portrait', 'Pattern discovery', 'Connections (limited)', 'Cycle tracking'], color: 'var(--muted-foreground)', border: 'var(--border)' },
             { name: 'EXPLORER', price: '$12/mo', desc: 'AI synthesis. Depth. Your Golem awakens.', features: ['Everything in Seeker', 'AI cross-tradition synthesis', 'Full Connections', 'Portrait export', 'Transits & timing', 'Dream archives'], color: '#c9a84c', border: 'rgba(201,168,76,0.4)', highlight: true },
             { name: 'PRACTITIONER', price: '$39/mo', desc: 'Complete practice intelligence. Wisdom at scale.', features: ['Everything in Explorer', 'Unlimited client portraits', 'Session intelligence', 'Pattern mining', 'Client archives', 'Consultation reports'], color: '#40ccdd', border: 'rgba(64,204,221,0.3)' },
           ].map((tier, i) => (
@@ -312,10 +312,10 @@ export default function HomePage() {
                 )}
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 13, letterSpacing: '.2em', color: tier.color, marginBottom: 8 }}>{tier.name}</div>
                 <div style={{ fontFamily: "'Cinzel',serif", fontSize: 36, color: 'var(--foreground)', marginBottom: 8 }}>{tier.price}</div>
-                <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 20, lineHeight: 1.6 }}>{tier.desc}</p>
+                <p style={{ fontSize: 12, color: 'var(--muted-foreground)', marginBottom: 20, lineHeight: 1.6 }}>{tier.desc}</p>
                 <div style={{ textAlign: 'left' }}>
                   {tier.features.map(f => (
-                    <div key={f} style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                    <div key={f} style={{ fontSize: 12, color: 'var(--muted-foreground)', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                       ✓ {f}
                     </div>
                   ))}
@@ -332,7 +332,7 @@ export default function HomePage() {
           <div style={{ fontFamily: "'Cinzel',serif", fontSize: 'clamp(24px, 6vw, 48px)', color: 'var(--foreground)', letterSpacing: '.15em', marginBottom: 16 }}>
             KNOW THYSELF
           </div>
-          <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 16, color: 'rgba(255,255,255,0.4)', maxWidth: 450, margin: '0 auto 32px', lineHeight: 1.7 }}>
+          <p style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 16, color: 'var(--muted-foreground)', maxWidth: 450, margin: '0 auto 32px', lineHeight: 1.7 }}>
             Not a horoscope app. An inner-life operating system. Your complete portrait across every wisdom tradition. Ready?
           </p>
         </RevealSection>

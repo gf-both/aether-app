@@ -313,7 +313,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
         // Key number in center of sphere
         const fontSize = Math.max(9, displaySr * .65)
         ctx.font = `bold ${fontSize}px 'Cinzel',serif`
-        ctx.fillStyle = 'rgba(255,255,255,.92)'
+        ctx.fillStyle = 'var(--foreground)'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(String(s.key), x, y)
@@ -381,7 +381,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
 
           // Title: Role name
           ctx.font = `bold 14px 'Cinzel',serif`
-          ctx.fillStyle = 'rgba(255,255,255,.95)'
+          ctx.fillStyle = 'var(--foreground)'
           ctx.textAlign = 'left'
           ctx.textBaseline = 'top'
           ctx.fillText(hoveredSphere.role, tooltipX + tooltipPadding, tooltipY + tooltipPadding)

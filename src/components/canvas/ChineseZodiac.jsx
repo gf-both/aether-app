@@ -143,7 +143,7 @@ export default function ChineseZodiac() {
           ctx.fillStyle = cg
           ctx.strokeStyle = `rgba(201,168,76,${isHov ? .9 : .6})`
         } else {
-          ctx.fillStyle = isHov ? 'rgba(255,255,255,.06)' : 'rgba(10,10,30,.5)'
+          ctx.fillStyle = isHov ? 'var(--border)' : 'rgba(10,10,30,.5)'
           ctx.strokeStyle = isHov ? elemCol + '88' : 'rgba(201,168,76,.12)'
         }
         ctx.fill()

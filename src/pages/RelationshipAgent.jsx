@@ -244,7 +244,7 @@ DO NOT give generic compatibility advice. Identify the SPECIFIC patterns, trigge
               }}>
                 {SECTIONS.find(s => s.key === section)?.label}
               </div>
-              <div style={{ fontSize:14, lineHeight:1.85, color:'rgba(255,255,255,.85)' }}>
+              <div style={{ fontSize:14, lineHeight:1.85, color:'var(--foreground)' }}>
                 {result[section] || 'Section not found in response.'}
               </div>
             </div>
@@ -253,7 +253,7 @@ DO NOT give generic compatibility advice. Identify the SPECIFIC patterns, trigge
           <div style={{
             flex:1, padding:'20px', borderRadius:10,
             background:'rgba(212,48,112,.04)', border:'1px solid rgba(212,48,112,.15)',
-            fontSize:13, lineHeight:1.85, color:'rgba(255,255,255,.85)', whiteSpace:'pre-wrap',
+            fontSize:13, lineHeight:1.85, color:'var(--foreground)', whiteSpace:'pre-wrap',
           }}>
             {result.raw}
           </div>

@@ -447,7 +447,7 @@ function OverlayPill({ overlay, active, onToggle }) {
         fontFamily: "'Cinzel', serif", letterSpacing: '.06em',
         background: active ? col + '20' : 'rgba(255,255,255,.04)',
         border: `1px solid ${active ? col + '70' : 'rgba(255,255,255,.1)'}`,
-        color: active ? col : 'rgba(255,255,255,.3)',
+        color: active ? col : 'var(--muted-foreground)',
         transition: 'all .15s',
         whiteSpace: 'nowrap',
       }}
@@ -641,13 +641,13 @@ export default function TimelineDetail() {
                     position: 'relative', zIndex: 2, margin: '8px 0 16px',
                   }}>
                     <div style={{
-                      background: 'rgba(255,255,255,0.1)',
+                      background: 'var(--border)',
                       backdropFilter: 'blur(8px)',
                       padding: '5px 20px', borderRadius: 20,
-                      border: '1px solid rgba(255,255,255,0.3)',
+                      border: '1px solid var(--muted-foreground)',
                       fontSize: 10, fontFamily: "'Cinzel', serif", letterSpacing: '.2em',
                       textTransform: 'uppercase', color: '#ffffff', fontWeight: 700,
-                      boxShadow: '0 0 16px rgba(255,255,255,0.1)',
+                      boxShadow: '0 0 16px var(--border)',
                     }}>
                       ◈ Today {currentYear} · Age {currentYear - birthYear}
                     </div>
