@@ -269,20 +269,19 @@ const kabArgs = profileToKabArgs(profile)
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           {SEPHIROTH_DETAIL.map((s, i) => {
             const orig = SEPHIROTH.find(o => o.name === s.name)
-            const colBase = orig ? orig.col : 'rgba(201,168,76'
             return (
               <KabTooltip key={i} data={SEPH_TOOLTIPS[s.name]}>
               <div style={{
                 ...S.row, cursor: 'help',
-                borderColor: s.active ? colBase + ',0.2)' : 'var(--secondary)',
-                background: s.active ? colBase + ',0.04)' : 'rgba(255,255,255,.015)',
+                borderColor: s.active ? 'rgba(201,168,76,0.2)' : 'var(--secondary)',
+                background: s.active ? 'rgba(201,168,76,0.04)' : 'rgba(255,255,255,.015)',
                 flexDirection: 'column', alignItems: 'stretch', gap: 6,
                 padding: '12px 16px',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <span style={{
                     fontSize: 22, minWidth: 36, textAlign: 'center',
-                    color: s.active ? colBase + ',0.9)' : 'var(--muted-foreground)',
+                    color: s.active ? 'rgba(201,168,76,0.9)' : 'var(--muted-foreground)',
                     opacity: s.active ? 1 : 0.4,
                   }}>
                     {orig?.glyph || '\u25CB'}
@@ -291,7 +290,7 @@ const kabArgs = profileToKabArgs(profile)
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <span style={{
                         fontFamily: "'Cinzel', serif", fontSize: 14, letterSpacing: '.1em',
-                        color: s.active ? colBase + ',0.9)' : 'var(--muted-foreground)',
+                        color: s.active ? 'var(--foreground)' : 'var(--muted-foreground)',
                       }}>
                         {s.name}
                       </span>

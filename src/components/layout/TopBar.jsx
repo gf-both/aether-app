@@ -258,37 +258,38 @@ function ProfileSwitcher() {
                 onClick={() => switchTo(p)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10,
-                  padding: '8px 14px', cursor: 'pointer',
+                  padding: '10px 14px', cursor: 'pointer',
                   background: isActive ? 'var(--accent)' : 'transparent',
+                  borderBottom: '1px solid var(--border)',
                   transition: 'all .15s',
                 }}
                 onMouseEnter={e => e.currentTarget.style.background = 'var(--accent)'}
                 onMouseLeave={e => e.currentTarget.style.background = isActive ? 'var(--accent)' : 'transparent'}
               >
-                <span style={{ fontSize: 16 }}>{p.emoji || '\u2726'}</span>
-                <div style={{ minWidth: 0 }}>
+                <span style={{ fontSize: 20, width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', background: 'var(--secondary)', border: '1px solid var(--border)', flexShrink: 0 }}>{p.emoji || '\u2726'}</span>
+                <div style={{ minWidth: 0, flex: 1 }}>
                   <div style={{
-                    fontSize: 11, fontFamily: 'inherit', letterSpacing: '.04em',
-                    color: isActive ? 'var(--foreground)' : 'var(--foreground)',
+                    fontSize: 12, fontFamily: "'Cinzel',serif", letterSpacing: '.04em',
+                    color: 'var(--foreground)',
                     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                   }}>
                     {p.name}
-                    {p._isPrimary && <span style={{ fontSize: 8, color: 'var(--muted-foreground)', marginLeft: 6 }}>PRIMARY</span>}
+                    {p._isPrimary && <span style={{ fontSize: 8, color: 'rgba(201,168,76,0.7)', marginLeft: 6, fontFamily: 'inherit', letterSpacing: '.1em' }}>YOU</span>}
                   </div>
-                  <div style={{ fontSize: 9, color: 'var(--muted-foreground)' }}>
+                  <div style={{ fontSize: 10, color: 'var(--muted-foreground)', marginTop: 2 }}>
                     {p.sign || '?'} &middot; {formatDOB(p.dob)} {p.rel ? `\u00B7 ${p.rel}` : ''}
                   </div>
                 </div>
-                {isActive && <span style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--foreground)' }}>{'\u2713'}</span>}
+                {isActive && <span style={{ marginLeft: 'auto', fontSize: 12, color: 'rgba(201,168,76,0.8)' }}>{'\u2713'}</span>}
               </div>
             )
           })}
           <div
             onClick={() => { setActiveDetail('profile'); setActiveNav('profile'); setOpen(false) }}
             style={{
-              padding: '8px 14px', cursor: 'pointer', borderTop: '1px solid var(--accent)',
-              fontSize: 10, fontFamily: 'inherit', letterSpacing: '.08em',
-              color: 'var(--foreground)', textAlign: 'center', transition: 'all .15s',
+              padding: '10px 14px', cursor: 'pointer', borderTop: '1px solid var(--border)',
+              fontSize: 11, fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
+              color: 'rgba(201,168,76,0.8)', textAlign: 'center', transition: 'all .15s',
             }}
             onMouseEnter={e => e.currentTarget.style.background = 'var(--accent)'}
             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
@@ -410,7 +411,7 @@ function ControlCenter() {
                   style={{
                     width: 18, height: 18, borderRadius: '50%',
                     background: t.color, cursor: 'pointer',
-                    border: `2px solid ${themeStyle === t.id ? 'var(--muted-foreground)' : 'rgba(255,255,255,.15)'}`,
+                    border: `2px solid ${themeStyle === t.id ? 'var(--foreground)' : 'var(--border)'}`,
                     boxShadow: themeStyle === t.id ? `0 0 10px ${t.color}60` : 'none',
                     transition: 'all .2s',
                   }}
@@ -559,7 +560,7 @@ function LanguagePicker() {
         style={{
           display: 'flex', alignItems: 'center', gap: 3,
           padding: '3px 8px', borderRadius: 6,
-          background: 'var(--secondary)', border: '1px solid rgba(255,255,255,.08)',
+          background: 'var(--secondary)', border: '1px solid var(--border)',
           color: 'var(--muted-foreground)', fontSize: 9, cursor: 'pointer',
           fontFamily: "'Cinzel',serif", letterSpacing: '.08em',
         }}
@@ -570,9 +571,10 @@ function LanguagePicker() {
       {open && (
         <div style={{
           position: 'absolute', top: '100%', right: 0, marginTop: 4,
-          background: 'var(--card)', border: '1px solid var(--border)',
+          background: 'var(--popover)', border: '1px solid var(--border)',
           borderRadius: 8, padding: 4, zIndex: 999,
-          boxShadow: '0 8px 24px rgba(0,0,0,.5)',
+          boxShadow: '0 8px 24px rgba(0,0,0,.3)',
+          backdropFilter: 'blur(16px)',
           minWidth: 90,
         }}>
           {LANGS.map(l => (
@@ -585,7 +587,7 @@ function LanguagePicker() {
                 color: l.code === language ? 'var(--foreground)' : 'var(--muted-foreground)',
                 background: l.code === language ? 'var(--accent)' : 'transparent',
               }}
-              onMouseEnter={e => { if (l.code !== language) e.currentTarget.style.background = 'rgba(255,255,255,.04)' }}
+              onMouseEnter={e => { if (l.code !== language) e.currentTarget.style.background = 'var(--accent)' }}
               onMouseLeave={e => { if (l.code !== language) e.currentTarget.style.background = 'transparent' }}
             >
               {l.flag} {l.label}
@@ -616,8 +618,10 @@ export default function TopBar() {
           className={`oracle-toggle-btn${oracleOpen ? ' active' : ''}`}
           onClick={() => setOracleOpen(!oracleOpen)}
           title="Oracle AI"
+          style={{ gap: 5, padding: '0 10px' }}
         >
-          {'\u25C8'}
+          <span style={{ fontSize: 13 }}>{'\u25C8'}</span>
+          <span style={{ fontSize: 9, fontFamily: "'Cinzel',serif", letterSpacing: '.1em' }}>Oracle</span>
         </button>
         <LanguagePicker />
         <ControlCenter />

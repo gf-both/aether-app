@@ -152,17 +152,18 @@ export default function AboutSystemButton({ systemName }) {
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
         style={{
-          padding: '4px 10px', borderRadius: 8, cursor: 'help',
-          background: 'var(--card)', border: '1px solid rgba(255,255,255,.08)',
-          color: 'var(--muted-foreground)', fontSize: 9,
+          padding: '6px 14px', borderRadius: 8, cursor: 'help',
+          background: 'rgba(201,168,76,0.12)', border: '1px solid rgba(201,168,76,0.25)',
+          color: 'var(--foreground)', fontSize: 10,
           fontFamily: "'Cinzel', serif", letterSpacing: '.08em',
           textTransform: 'uppercase', transition: 'all .2s',
-          display: 'inline-flex', alignItems: 'center', gap: 5,
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          fontWeight: 500,
         }}
         onFocus={() => setShow(true)}
         onBlur={() => setShow(false)}
       >
-        <span style={{ fontSize: 11 }}>ⓘ</span>
+        <span style={{ fontSize: 13, color: 'rgba(201,168,76,0.8)' }}>ⓘ</span>
         About {systemName}
       </button>
       {show && (

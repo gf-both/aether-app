@@ -2,20 +2,20 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { FREQUENCIES, FREQUENCY_CATEGORIES, getRecommendedFrequencies, searchFrequencies } from '../../engines/frequencyEngine'
 import AboutSystemButton from '../ui/AboutSystemButton'
 
-/* ─── Web Audio Player ──────────────────────────────────────────────────────── */
+/* ─── Multi-track Web Audio Player ─────────────────────────────────────────── */
 function useFrequencyPlayer() {
   const ctxRef = useRef(null)
-  const nodesRef = useRef({ osc: null, osc2: null, gain: null, lfo: null, lfoGain: null })
-  const [playing, setPlaying] = useState(false)
-  const [currentId, setCurrentId] = useState(null)
+  const tracksRef = useRef({}) // { [freqId]: { osc, osc2, gain, lfo, lfoGain } }
+  const [playingIds, setPlayingIds] = useState([])
+  const [currentId, setCurrentId] = useState(null) // last-started, for visualizer
   const [elapsed, setElapsed] = useState(0)
   const timerRef = useRef(null)
   const startTimeRef = useRef(0)
 
-  const stop = useCallback(() => {
-    // Capture current nodes before clearing ref
-    const n = nodesRef.current
-    nodesRef.current = { osc: null, osc2: null, gain: null, lfo: null, lfoGain: null }
+  const stopOne = useCallback((freqId) => {
+    const n = tracksRef.current[freqId]
+    if (!n) return
+    delete tracksRef.current[freqId]
 
     try {
       if (n.gain && ctxRef.current) {
@@ -24,7 +24,6 @@ function useFrequencyPlayer() {
         n.gain.gain.setValueAtTime(n.gain.gain.value || 0.25, now)
         n.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3)
       }
-      // Stop oscillators after short fade
       setTimeout(() => {
         try { n.osc?.stop() } catch {}
         try { n.osc2?.stop() } catch {}
@@ -33,95 +32,131 @@ function useFrequencyPlayer() {
         try { n.lfoGain?.disconnect() } catch {}
       }, 350)
     } catch {
-      // Force-stop everything if ramp fails
       try { n.osc?.stop() } catch {}
       try { n.osc2?.stop() } catch {}
       try { n.lfo?.stop() } catch {}
       try { n.gain?.disconnect() } catch {}
     }
 
-    setPlaying(false)
+    setPlayingIds(prev => {
+      const next = prev.filter(id => id !== freqId)
+      if (next.length === 0) {
+        clearInterval(timerRef.current)
+        setElapsed(0)
+        setCurrentId(null)
+      }
+      return next
+    })
+  }, [])
+
+  const stopAll = useCallback(() => {
+    const ids = Object.keys(tracksRef.current)
+    ids.forEach(id => {
+      const n = tracksRef.current[id]
+      if (!n) return
+      try {
+        if (n.gain && ctxRef.current) {
+          const now = ctxRef.current.currentTime
+          n.gain.gain.cancelScheduledValues(now)
+          n.gain.gain.setValueAtTime(n.gain.gain.value || 0.25, now)
+          n.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3)
+        }
+        setTimeout(() => {
+          try { n.osc?.stop() } catch {}
+          try { n.osc2?.stop() } catch {}
+          try { n.lfo?.stop() } catch {}
+          try { n.gain?.disconnect() } catch {}
+          try { n.lfoGain?.disconnect() } catch {}
+        }, 350)
+      } catch {
+        try { n.osc?.stop() } catch {}
+        try { n.osc2?.stop() } catch {}
+        try { n.lfo?.stop() } catch {}
+        try { n.gain?.disconnect() } catch {}
+      }
+    })
+    tracksRef.current = {}
+    setPlayingIds([])
     setCurrentId(null)
     clearInterval(timerRef.current)
     setElapsed(0)
   }, [])
 
   const play = useCallback((freq) => {
-    // Stop any existing playback
-    stop()
+    // If this specific frequency is already playing, stop it
+    if (tracksRef.current[freq.id]) {
+      stopOne(freq.id)
+      return
+    }
 
-    setTimeout(() => {
-      try {
-        const ctx = ctxRef.current || new (window.AudioContext || window.webkitAudioContext)()
-        ctxRef.current = ctx
-        if (ctx.state === 'suspended') ctx.resume()
-        // Ensure any lingering nodes from previous stop are fully cleared
-        const stale = nodesRef.current
-        try { stale.osc?.stop() } catch {}
-        try { stale.osc2?.stop() } catch {}
-        try { stale.lfo?.stop() } catch {}
+    try {
+      const ctx = ctxRef.current || new (window.AudioContext || window.webkitAudioContext)()
+      ctxRef.current = ctx
+      if (ctx.state === 'suspended') ctx.resume()
 
-        // Master gain
-        const gain = ctx.createGain()
-        gain.gain.setValueAtTime(0.0001, ctx.currentTime)
-        gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 1.5)
-        gain.connect(ctx.destination)
+      // Master gain
+      const gain = ctx.createGain()
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime)
+      gain.gain.exponentialRampToValueAtTime(0.25, ctx.currentTime + 1.5)
+      gain.connect(ctx.destination)
 
-        // Main oscillator
-        const osc = ctx.createOscillator()
-        osc.type = freq.waveform || 'sine'
-        osc.frequency.setValueAtTime(freq.frequency, ctx.currentTime)
+      // Main oscillator
+      const osc = ctx.createOscillator()
+      osc.type = freq.waveform || 'sine'
+      osc.frequency.setValueAtTime(freq.frequency, ctx.currentTime)
 
-        // Subtle LFO for warmth
-        const lfo = ctx.createOscillator()
-        const lfoGain = ctx.createGain()
-        lfo.type = 'sine'
-        lfo.frequency.setValueAtTime(0.15, ctx.currentTime)
-        lfoGain.gain.setValueAtTime(freq.frequency * 0.002, ctx.currentTime)
-        lfo.connect(lfoGain)
-        lfoGain.connect(osc.frequency)
-        lfo.start()
+      // Subtle LFO for warmth
+      const lfo = ctx.createOscillator()
+      const lfoGain = ctx.createGain()
+      lfo.type = 'sine'
+      lfo.frequency.setValueAtTime(0.15, ctx.currentTime)
+      lfoGain.gain.setValueAtTime(freq.frequency * 0.002, ctx.currentTime)
+      lfo.connect(lfoGain)
+      lfoGain.connect(osc.frequency)
+      lfo.start()
 
-        osc.connect(gain)
-        osc.start()
+      osc.connect(gain)
+      osc.start()
 
-        let osc2 = null
-        // Binaural beat: second oscillator with offset
-        if (freq.binauralOffset) {
-          osc2 = ctx.createOscillator()
-          osc2.type = freq.waveform || 'sine'
-          osc2.frequency.setValueAtTime(freq.frequency + freq.binauralOffset, ctx.currentTime)
+      let osc2 = null
+      // Binaural beat: second oscillator with offset
+      if (freq.binauralOffset) {
+        osc2 = ctx.createOscillator()
+        osc2.type = freq.waveform || 'sine'
+        osc2.frequency.setValueAtTime(freq.frequency + freq.binauralOffset, ctx.currentTime)
 
-          // Pan: left ear = base, right ear = base + offset
-          const panL = ctx.createStereoPanner()
-          const panR = ctx.createStereoPanner()
-          panL.pan.setValueAtTime(-1, ctx.currentTime)
-          panR.pan.setValueAtTime(1, ctx.currentTime)
+        // Pan: left ear = base, right ear = base + offset
+        const panL = ctx.createStereoPanner()
+        const panR = ctx.createStereoPanner()
+        panL.pan.setValueAtTime(-1, ctx.currentTime)
+        panR.pan.setValueAtTime(1, ctx.currentTime)
 
-          osc.disconnect()
-          osc.connect(panL).connect(gain)
-          osc2.connect(panR).connect(gain)
-          osc2.start()
-        }
-
-        nodesRef.current = { osc, osc2, gain, lfo, lfoGain }
-        setCurrentId(freq.id)
-        setPlaying(true)
-        startTimeRef.current = Date.now()
-        setElapsed(0)
-        timerRef.current = setInterval(() => {
-          setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000))
-        }, 1000)
-      } catch (err) {
-        console.error('FrequencyPlayer error:', err)
+        osc.disconnect()
+        osc.connect(panL).connect(gain)
+        osc2.connect(panR).connect(gain)
+        osc2.start()
       }
-    }, 400)
-  }, [stop])
+
+      tracksRef.current[freq.id] = { osc, osc2, gain, lfo, lfoGain }
+      setCurrentId(freq.id)
+      setPlayingIds(prev => [...prev, freq.id])
+      startTimeRef.current = Date.now()
+      setElapsed(0)
+      clearInterval(timerRef.current)
+      timerRef.current = setInterval(() => {
+        setElapsed(Math.floor((Date.now() - startTimeRef.current) / 1000))
+      }, 1000)
+    } catch (err) {
+      console.error('FrequencyPlayer error:', err)
+    }
+  }, [stopOne])
 
   // Cleanup on unmount
-  useEffect(() => () => { stop() }, [stop])
+  useEffect(() => () => { stopAll() }, [stopAll])
 
-  return { play, stop, playing, currentId, elapsed }
+  const playing = playingIds.length > 0
+
+  return { play, stopOne, stopAll, playing, playingIds, currentId, elapsed }
 }
 
 /* ─── Format time ───────────────────────────────────────────────────────────── */
@@ -231,7 +266,7 @@ const S = {
 
 /* ─── Main Component ────────────────────────────────────────────────────────── */
 export default function FrequencyDetail() {
-  const { play, stop, playing, currentId, elapsed } = useFrequencyPlayer()
+  const { play, stopOne, stopAll, playing, playingIds, currentId, elapsed } = useFrequencyPlayer()
   const [activeCategory, setActiveCategory] = useState('all')
   const [search, setSearch] = useState('')
   const [expandedId, setExpandedId] = useState(null)
@@ -247,13 +282,31 @@ export default function FrequencyDetail() {
   const currentFreq = currentId ? FREQUENCIES.find(f => f.id === currentId) : null
   const currentCat = currentFreq ? FREQUENCY_CATEGORIES.find(c => c.id === currentFreq.category) : null
   const currentColor = currentCat?.color || '#c9a84c'
+  const activeCount = playingIds.length
 
   return (
     <div style={S.panel}>
       {/* HEADER */}
       <AboutSystemButton systemName="Frequency" />
       <div>
-        <div style={S.heading}>{'\u266B'} Frequency</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={S.heading}>{'\u266B'} Frequency</div>
+          {activeCount > 0 && (
+            <button
+              onClick={stopAll}
+              style={{
+                padding: '5px 14px', borderRadius: 8, cursor: 'pointer',
+                fontFamily: "'Cinzel', serif", fontSize: 9, letterSpacing: '.1em',
+                textTransform: 'uppercase',
+                background: 'rgba(220,60,60,.12)', border: '1px solid rgba(220,60,60,.3)',
+                color: '#dc4444', transition: 'all .2s',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}
+            >
+              {'\u25A0'} Stop All ({activeCount})
+            </button>
+          )}
+        </div>
         <div style={{ fontSize: 13, color: 'var(--muted-foreground)', fontStyle: 'italic' }}>
           Therapeutic sound frequencies — solfeggio, binaural beats, planetary tones, chakra alignment
         </div>
@@ -275,7 +328,7 @@ export default function FrequencyDetail() {
             display: 'flex', alignItems: 'center', gap: 12,
           }}>
             <button
-              onClick={stop}
+              onClick={() => stopOne(currentFreq.id)}
               style={{
                 width: 36, height: 36, borderRadius: '50%', border: `2px solid ${currentColor}`,
                 background: 'rgba(0,0,0,.4)', color: currentColor,
@@ -285,6 +338,11 @@ export default function FrequencyDetail() {
             <div style={{ flex: 1 }}>
               <div style={{ fontFamily: "'Cinzel',serif", fontSize: 12, letterSpacing: '.08em', color: currentColor }}>
                 {currentFreq.name}
+                {activeCount > 1 && (
+                  <span style={{ fontSize: 9, color: 'var(--muted-foreground)', marginLeft: 8 }}>
+                    +{activeCount - 1} more playing
+                  </span>
+                )}
               </div>
               <div style={{ fontFamily: "'Inconsolata',monospace", fontSize: 10, color: 'var(--muted-foreground)' }}>
                 {currentFreq.benefit}
@@ -323,11 +381,11 @@ export default function FrequencyDetail() {
           {recommended.slice(0, 4).map(freq => {
             const cat = FREQUENCY_CATEGORIES.find(c => c.id === freq.category)
             const color = cat?.color || '#c9a84c'
-            const isPlaying = currentId === freq.id
+            const isPlaying = playingIds.includes(freq.id)
             return (
               <div
                 key={freq.id}
-                onClick={() => isPlaying ? stop() : play(freq)}
+                onClick={() => play(freq)}
                 style={{
                   flex: '1 1 200px', padding: '14px 16px', borderRadius: 10, cursor: 'pointer',
                   background: isPlaying ? color + '10' : 'rgba(255,255,255,.02)',
@@ -397,7 +455,7 @@ export default function FrequencyDetail() {
           {filteredFrequencies.map(freq => {
             const cat = FREQUENCY_CATEGORIES.find(c => c.id === freq.category)
             const color = cat?.color || '#c9a84c'
-            const isPlaying = currentId === freq.id
+            const isPlaying = playingIds.includes(freq.id)
             const isExpanded = expandedId === freq.id
 
             return (
@@ -418,9 +476,9 @@ export default function FrequencyDetail() {
                   }}
                   onClick={() => setExpandedId(isExpanded ? null : freq.id)}
                 >
-                  {/* Play button */}
+                  {/* Play/Stop button */}
                   <button
-                    onClick={e => { e.stopPropagation(); isPlaying ? stop() : play(freq) }}
+                    onClick={e => { e.stopPropagation(); play(freq) }}
                     style={{
                       width: 36, height: 36, borderRadius: '50%', flexShrink: 0,
                       border: `1.5px solid ${color}60`,
@@ -517,6 +575,7 @@ export default function FrequencyDetail() {
           For best results: use quality headphones (essential for binaural beats), find a quiet space,
           close your eyes, and listen for at least 10 minutes. Solfeggio tones work without headphones.
           Planetary frequencies are best used during meditation. Consistency matters more than duration.
+          You can layer multiple frequencies simultaneously for richer soundscapes.
           <div style={{ marginTop: 10, color: 'var(--foreground)', fontStyle: 'normal', fontSize: 11 }}>
             Note: Sound therapy is complementary and not a substitute for medical treatment.
           </div>

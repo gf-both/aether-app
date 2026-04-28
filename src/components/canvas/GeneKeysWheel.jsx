@@ -3,6 +3,8 @@ import { useCanvasResize } from '../../hooks/useCanvasResize'
 import { useGolemStore } from '../../store/useGolemStore'
 import { SPHERES, computeGeneKeysData } from '../../data/geneKeysData'
 
+const TAU = Math.PI * 2
+
 // Gene Keys data lookup
 const GENE_KEYS_DATA = {
   1:  { shadow: 'Entropy',          gift: 'Freshness',       siddhi: 'Beauty',           iching: 'The Creative' },
@@ -71,13 +73,33 @@ const GENE_KEYS_DATA = {
   64: { shadow: 'Confusion',        gift: 'Imagination',     siddhi: 'Illumination',     iching: 'Before Completion' },
 }
 
-// GeneKeysWheel uses SPHERES derived from the engine (via geneKeysData.js).
-// To render a custom profile, pass a `spheres` prop (array of sphere objects).
-// Default falls back to the statically-computed default profile.
+// Pre-generate energy particles
+function createEnergyParticles(count) {
+  return Array.from({ length: count }, () => ({
+    t: Math.random(),
+    speed: 0.002 + Math.random() * 0.004,
+    size: 1 + Math.random() * 2,
+    phase: Math.random() * TAU,
+    brightness: 0.5 + Math.random() * 0.5,
+  }))
+}
+
+// Hexagonal outline for the wheel silhouette
+const HEXAGON_OUTLINE = (() => {
+  const pts = []
+  const N = 48
+  for (let i = 0; i <= N; i++) {
+    const a = (i / N) * TAU - Math.PI / 2
+    const r = 0.44 + 0.02 * Math.sin(a * 6) // subtle hex wobble
+    pts.push([0.5 + r * Math.cos(a), 0.5 + r * Math.sin(a)])
+  }
+  return pts
+})()
 
 export default function GeneKeysWheel({ spheres: spheresProp }) {
   const canvasRef = useRef(null)
   const animRef = useRef(null)
+  const particlesRef = useRef(null)
   const [hoveredSphereIndex, setHoveredSphereIndex] = useState(null)
   const profile = useGolemStore((s) => s.activeViewProfile || s.primaryProfile)
 
@@ -98,6 +120,22 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
   }, [spheresProp, profile?.dob, profile?.tob, profile?.birthTimezone])
 
   const activeSpheres = computedSpheres
+
+  // Initialize particles once
+  useEffect(() => {
+    if (!particlesRef.current && activeSpheres) {
+      const outerCount = activeSpheres.filter(s => !s.center).length
+      const pathCount = outerCount // one path per outer sphere to center
+      const pairCount = Math.min(outerCount * (outerCount - 1) / 2, 15)
+      particlesRef.current = {
+        silhouette: createEnergyParticles(40),
+        pathsToCenter: Array.from({ length: pathCount }, () => createEnergyParticles(6)),
+        pathsBetween: Array.from({ length: pairCount }, () => createEnergyParticles(4)),
+        sphereOrbiters: activeSpheres.map(() => createEnergyParticles(5)),
+        iChingRing: createEnergyParticles(30),
+      }
+    }
+  }, [activeSpheres])
 
   useCanvasResize(canvasRef)
 
@@ -134,7 +172,6 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
       const R = Math.min(W, H) * .42
       const baseSr = R * .155
 
-      // Check distance to each sphere
       let foundIndex = null
       for (let i = 0; i < activeSpheres.length; i++) {
         const s = activeSpheres[i]
@@ -183,17 +220,18 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
       ctx.save()
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.clearRect(0, 0, W, H)
-      pulse += .012
+      pulse += .014
 
       const cx = W / 2, cy = H / 2
       const R = Math.min(W, H) * .42
+      const particles = particlesRef.current
 
       // Empty state when no profile
       if (!activeSpheres) {
         ctx.font = `bold ${Math.max(11, R * .1)}px 'Cinzel',serif`
         ctx.fillStyle = 'rgba(201,168,76,0.4)'
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle'
-        ctx.fillText('⬡', cx, cy - R * .15)
+        ctx.fillText('\u2B21', cx, cy - R * .15)
         ctx.font = `${Math.max(9, R * .06)}px 'Cinzel',serif`
         ctx.fillText('Add birth date to activate', cx, cy + R * .1)
         ctx.restore()
@@ -201,25 +239,43 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
         return
       }
 
-      // Flower of life background
+      // ─── 1. Silhouette as flowing particle stream ───
+      if (particles) {
+        for (const p of particles.silhouette) {
+          p.t = (p.t + p.speed * 0.4) % 1
+          const idx = p.t * (HEXAGON_OUTLINE.length - 1)
+          const i0 = Math.floor(idx), i1 = Math.min(i0 + 1, HEXAGON_OUTLINE.length - 1)
+          const frac = idx - i0
+          const sx = (HEXAGON_OUTLINE[i0][0] * (1 - frac) + HEXAGON_OUTLINE[i1][0] * frac) * W
+          const sy = (HEXAGON_OUTLINE[i0][1] * (1 - frac) + HEXAGON_OUTLINE[i1][1] * frac) * H
+
+          const alpha = 0.06 + 0.04 * Math.sin(pulse + p.phase)
+          const grd = ctx.createRadialGradient(sx, sy, 0, sx, sy, p.size * 2)
+          grd.addColorStop(0, `rgba(96,176,48,${alpha})`)
+          grd.addColorStop(1, 'transparent')
+          ctx.beginPath(); ctx.arc(sx, sy, p.size * 2, 0, TAU); ctx.fillStyle = grd; ctx.fill()
+        }
+      }
+
+      // ─── 2. Flower of life background ───
       ctx.save()
-      ctx.globalAlpha = .06
+      ctx.globalAlpha = .05
       const fR = R * .3
       const flowerPts = [[0, 0], [1, 0], [-1, 0], [.5, .866], [-.5, .866], [.5, -.866], [-.5, -.866]]
       flowerPts.forEach(([px, py]) => {
         ctx.beginPath()
-        ctx.arc(cx + px * fR, cy + py * fR, fR, 0, Math.PI * 2)
+        ctx.arc(cx + px * fR, cy + py * fR, fR, 0, TAU)
         ctx.strokeStyle = 'rgba(201,168,76,.8)'
         ctx.lineWidth = .6
         ctx.stroke()
       })
       ctx.restore()
 
-      // I-Ching ring (64 hexagrams)
+      // ─── 3. I-Ching ring with flowing particles ───
       ctx.save()
       ctx.globalAlpha = .15
       for (let i = 0; i < 64; i++) {
-        const a = (i / 64) * Math.PI * 2 - Math.PI / 2
+        const a = (i / 64) * TAU - Math.PI / 2
         const rO = R * .98, rI = R * .85
         const a0 = a - Math.PI / 68, a1 = a + Math.PI / 68
         ctx.beginPath()
@@ -241,107 +297,202 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
       }
       ctx.restore()
 
+      // I-Ching ring particles
+      if (particles) {
+        for (const p of particles.iChingRing) {
+          p.t = (p.t + p.speed * 0.3) % 1
+          const angle = p.t * TAU - Math.PI / 2
+          const ringR = R * .915 + Math.sin(pulse + p.phase) * R * .02
+          const px = cx + Math.cos(angle) * ringR
+          const py = cy + Math.sin(angle) * ringR
+          const alpha = 0.08 + 0.05 * Math.sin(pulse * 1.5 + p.phase)
+          const grd = ctx.createRadialGradient(px, py, 0, px, py, p.size * 1.5)
+          grd.addColorStop(0, `rgba(201,168,76,${alpha})`)
+          grd.addColorStop(1, 'transparent')
+          ctx.beginPath(); ctx.arc(px, py, p.size * 1.5, 0, TAU); ctx.fillStyle = grd; ctx.fill()
+        }
+      }
+
       // Concentric rings
       ;[.78, .58, .38].forEach((rf, i) => {
         ctx.beginPath()
-        ctx.arc(cx, cy, R * rf, 0, Math.PI * 2)
+        ctx.arc(cx, cy, R * rf, 0, TAU)
         ctx.strokeStyle = `rgba(201,168,76,${[.08, .06, .04][i]})`
         ctx.lineWidth = .5
         ctx.stroke()
       })
 
-      // Pathways between spheres
+      // ─── 4. Pathways with flowing energy particles ───
       const outerSpheres = activeSpheres.filter(s => !s.center)
       const centerSphere = activeSpheres.find(s => s.center)
 
-      // Connect all outer spheres to center
-      if (centerSphere) {
-        outerSpheres.forEach(s => {
-          ctx.beginPath()
-          ctx.moveTo(s.xf * W, s.yf * H)
-          ctx.lineTo(centerSphere.xf * W, centerSphere.yf * H)
-          ctx.strokeStyle = 'rgba(140,110,70,.2)'
-          ctx.lineWidth = .7
-          ctx.stroke()
+      // Paths from outer to center with particles
+      if (centerSphere && particles) {
+        outerSpheres.forEach((s, oi) => {
+          const x1 = s.xf * W, y1 = s.yf * H
+          const x2 = centerSphere.xf * W, y2 = centerSphere.yf * H
+
+          // Glowing path line
+          ctx.shadowColor = 'rgba(96,176,48,0.3)'
+          ctx.shadowBlur = 5
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2)
+          ctx.strokeStyle = `rgba(96,176,48,${0.25 + 0.08 * Math.sin(pulse + oi)})`
+          ctx.lineWidth = 1.5; ctx.stroke()
+          ctx.shadowBlur = 0
+
+          // Outer glow
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2)
+          ctx.strokeStyle = `rgba(96,176,48,${0.06 + 0.03 * Math.sin(pulse)})`
+          ctx.lineWidth = 6; ctx.stroke()
+
+          // Flowing particles along path
+          if (particles.pathsToCenter[oi]) {
+            for (const p of particles.pathsToCenter[oi]) {
+              p.t = (p.t + p.speed) % 1
+              const px = x1 + (x2 - x1) * p.t
+              const py = y1 + (y2 - y1) * p.t
+              const alpha = 0.5 + 0.3 * Math.sin(pulse * 2 + p.phase)
+              const r = p.size * (0.8 + 0.3 * Math.sin(pulse + p.phase))
+
+              const grd = ctx.createRadialGradient(px, py, 0, px, py, r * 3)
+              grd.addColorStop(0, `rgba(140,210,100,${alpha})`)
+              grd.addColorStop(0.5, `rgba(96,176,48,${alpha * 0.3})`)
+              grd.addColorStop(1, 'transparent')
+              ctx.beginPath(); ctx.arc(px, py, r * 3, 0, TAU); ctx.fillStyle = grd; ctx.fill()
+              // Core dot
+              ctx.beginPath(); ctx.arc(px, py, r * 0.7, 0, TAU)
+              ctx.fillStyle = `rgba(220,255,200,${alpha * 0.8})`; ctx.fill()
+            }
+          }
         })
       }
 
-      // Connect outer spheres to each other
-      for (let i = 0; i < outerSpheres.length; i++) {
-        for (let j = i + 1; j < outerSpheres.length; j++) {
-          ctx.beginPath()
-          ctx.moveTo(outerSpheres[i].xf * W, outerSpheres[i].yf * H)
-          ctx.lineTo(outerSpheres[j].xf * W, outerSpheres[j].yf * H)
-          ctx.strokeStyle = 'rgba(96,176,48,.15)'
-          ctx.lineWidth = .5
-          ctx.stroke()
+      // Paths between outer spheres with particles
+      let pairIdx = 0
+      for (let i = 0; i < outerSpheres.length && pairIdx < 15; i++) {
+        for (let j = i + 1; j < outerSpheres.length && pairIdx < 15; j++) {
+          const x1 = outerSpheres[i].xf * W, y1 = outerSpheres[i].yf * H
+          const x2 = outerSpheres[j].xf * W, y2 = outerSpheres[j].yf * H
+
+          ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2)
+          ctx.strokeStyle = `rgba(96,176,48,${0.10 + 0.04 * Math.sin(pulse + i + j)})`
+          ctx.lineWidth = .7; ctx.stroke()
+
+          // Flowing particles
+          if (particles && particles.pathsBetween[pairIdx]) {
+            for (const p of particles.pathsBetween[pairIdx]) {
+              p.t = (p.t + p.speed * 0.8) % 1
+              const px = x1 + (x2 - x1) * p.t
+              const py = y1 + (y2 - y1) * p.t
+              const alpha = 0.3 + 0.2 * Math.sin(pulse * 2 + p.phase)
+              const r = p.size * 0.6
+
+              const grd = ctx.createRadialGradient(px, py, 0, px, py, r * 2)
+              grd.addColorStop(0, `rgba(96,176,48,${alpha})`)
+              grd.addColorStop(1, 'transparent')
+              ctx.beginPath(); ctx.arc(px, py, r * 2, 0, TAU); ctx.fillStyle = grd; ctx.fill()
+            }
+          }
+          pairIdx++
         }
       }
 
-      // Draw spheres
+      // ─── 5. Draw spheres as particle clusters ───
       const baseSr = R * .155
       activeSpheres.forEach((s, i) => {
         const x = s.xf * W, y = s.yf * H
         const sr = s.center ? baseSr * 1.1 : baseSr
         const glow = .3 + .12 * Math.sin(pulse * 1.5 + i * 1.3)
         const isHovered = hoveredSphereIndex === i
+        // s.col = 'rgba(r,g,b,' — normalize to just RGB digits
+        const rgb = s.col.replace('rgba(', '').replace(/,\s*$/, '')
+        const rgba = (a) => `rgba(${rgb},${a})`
 
-        // Aura glow (brighter when hovered)
+        // Aura glow
         const glowIntensity = isHovered ? glow * 1.5 : glow
-        const aura = ctx.createRadialGradient(x, y, 0, x, y, sr * 2.2)
-        aura.addColorStop(0, s.col + (glowIntensity * .7) + ')')
-        aura.addColorStop(1, s.col + '0)')
+        const aura = ctx.createRadialGradient(x, y, 0, x, y, sr * 2.8)
+        aura.addColorStop(0, rgba(glowIntensity * .7))
+        aura.addColorStop(0.4, rgba(glowIntensity * .25))
+        aura.addColorStop(1, rgba(0))
         ctx.beginPath()
-        ctx.arc(x, y, sr * 2.2, 0, Math.PI * 2)
+        ctx.arc(x, y, sr * 2.8, 0, TAU)
         ctx.fillStyle = aura
         ctx.fill()
 
-        // Sphere body (scale up when hovered)
+        // Inner ring
+        ctx.beginPath(); ctx.arc(x, y, sr * 1.1, 0, TAU)
+        ctx.strokeStyle = rgba(isHovered ? 0.85 : 0.5)
+        ctx.lineWidth = isHovered ? 2 : 1.2; ctx.stroke()
+
+        // Sphere body
         const displaySr = isHovered ? sr * 1.15 : sr
         const sg = ctx.createRadialGradient(x - displaySr * .25, y - displaySr * .25, 0, x, y, displaySr)
-        sg.addColorStop(0, s.col + '0.6)')
-        sg.addColorStop(.6, s.col + '0.35)')
-        sg.addColorStop(1, s.col + '0.12)')
+        sg.addColorStop(0, rgba(0.55))
+        sg.addColorStop(.6, rgba(0.3))
+        sg.addColorStop(1, rgba(0.10))
         ctx.beginPath()
-        ctx.arc(x, y, displaySr, 0, Math.PI * 2)
+        ctx.arc(x, y, displaySr, 0, TAU)
         ctx.fillStyle = sg
         ctx.fill()
-        ctx.strokeStyle = s.col + (isHovered ? '0.95)' : '0.6)')
+        ctx.strokeStyle = rgba(isHovered ? 0.95 : 0.6)
         ctx.lineWidth = isHovered ? 2 : 1.2
         ctx.stroke()
+
+        // Orbiting particles
+        if (particles && particles.sphereOrbiters[i]) {
+          for (const p of particles.sphereOrbiters[i]) {
+            p.t = (p.t + p.speed * 0.6) % 1
+            const angle = p.t * TAU + p.phase
+            const orbitR = sr * 1.5 + Math.sin(pulse + p.phase) * sr * 0.25
+            const px = x + Math.cos(angle) * orbitR
+            const py = y + Math.sin(angle) * orbitR
+            const alpha = 0.45 + 0.25 * Math.sin(pulse * 1.5 + p.phase)
+
+            ctx.beginPath(); ctx.arc(px, py, p.size * 0.6, 0, TAU)
+            ctx.fillStyle = rgba(alpha); ctx.fill()
+            const trail = ctx.createRadialGradient(px, py, 0, px, py, p.size * 1.8)
+            trail.addColorStop(0, rgba(alpha * 0.35))
+            trail.addColorStop(1, 'transparent')
+            ctx.beginPath(); ctx.arc(px, py, p.size * 1.8, 0, TAU); ctx.fillStyle = trail; ctx.fill()
+          }
+        }
 
         // Key number in center of sphere
         const isDark = document.documentElement.classList.contains('dark')
         const fontSize = Math.max(9, displaySr * .65)
         ctx.font = `bold ${fontSize}px 'Cinzel',serif`
-        ctx.fillStyle = isDark ? 'rgba(255,255,255,0.9)' : 'rgba(26,26,46,0.9)'
+        // Drop shadow for readability
+        ctx.fillStyle = isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.6)'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
+        ctx.fillText(String(s.key), x + 0.5, y + 0.5)
+        ctx.fillStyle = isDark ? 'rgba(255,255,255,0.9)' : 'rgba(26,26,46,0.9)'
         ctx.fillText(String(s.key), x, y)
 
         // Role label outside sphere
         if (!s.center) {
           const labelSize = Math.max(8, sr * .44)
           ctx.font = `${labelSize}px 'Cinzel',serif`
-          ctx.fillStyle = s.col + '0.85)'
-          // Position labels: above sphere if in top half, below if bottom half
+          // Drop shadow
+          ctx.fillStyle = isDark ? 'rgba(0,0,0,0.5)' : 'rgba(255,255,255,0.5)'
           const above = s.yf <= .5
           const rawLabelY = above ? y - sr - labelSize * 1.4 : y + sr + labelSize * 1.6
-          // Clamp to canvas bounds
           const labelY = Math.max(labelSize * 1.5, Math.min(H - labelSize, rawLabelY))
+          ctx.fillText(s.role, x + 0.5, labelY + 0.5)
+          ctx.fillStyle = rgba(0.85)
           ctx.fillText(s.role, x, labelY)
 
           // Line number
           const lineSize = Math.max(7, sr * .36)
           ctx.font = `${lineSize}px 'Inconsolata',monospace`
-          ctx.fillStyle = 'rgba(201,168,76,.5)'
+          ctx.fillStyle = isDark ? 'rgba(201,168,76,.5)' : 'rgba(120,100,50,.6)'
           const lineY = above ? labelY - lineSize * 1.6 : labelY + lineSize * 1.8
           const clampedLineY = Math.max(lineSize, Math.min(H - 2, lineY))
           ctx.fillText('Line ' + s.line, x, clampedLineY)
         }
       })
 
-      // Hover tooltip
+      // ─── 6. Hover tooltip ───
       if (hoveredSphereIndex !== null) {
         const hoveredSphere = activeSpheres[hoveredSphereIndex]
         const geneData = GENE_KEYS_DATA[hoveredSphere.key]
@@ -349,51 +500,41 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
         if (geneData) {
           const hx = hoveredSphere.xf * W
           const hy = hoveredSphere.yf * H
-          const baseSr = R * .155
           const sr = hoveredSphere.center ? baseSr * 1.1 : baseSr
 
-          // Tooltip box dimensions
           const tooltipPadding = 12
           const tooltipLineHeight = 18
           const tooltipWidth = 200
           const tooltipHeight = tooltipLineHeight * 5 + tooltipPadding * 2
 
-          // Position tooltip above sphere if possible, otherwise below
           let tooltipY = hy - sr * 1.5 - tooltipHeight - 10
-          if (tooltipY < 20) {
-            tooltipY = hy + sr * 1.5 + 10
-          }
+          if (tooltipY < 20) tooltipY = hy + sr * 1.5 + 10
 
-          // Center horizontally on sphere
           let tooltipX = hx - tooltipWidth / 2
           if (tooltipX < 10) tooltipX = 10
           if (tooltipX + tooltipWidth > W - 10) tooltipX = W - tooltipWidth - 10
 
-          // Dark semi-transparent background
           ctx.fillStyle = 'rgba(20,20,30,.92)'
           ctx.beginPath()
           ctx.roundRect(tooltipX, tooltipY, tooltipWidth, tooltipHeight, 6)
           ctx.fill()
 
-          // Border glow
-          ctx.strokeStyle = hoveredSphere.col + '0.7)'
+          const hRgb = hoveredSphere.col.replace('rgba(', '').replace(/,\s*$/, '')
+          ctx.strokeStyle = `rgba(${hRgb},0.7)`
           ctx.lineWidth = 1.5
           ctx.stroke()
 
-          // Title: Role name
-          ctx.font = `bold 14px 'Cinzel',serif`
-          ctx.fillStyle = 'var(--foreground)'
+          ctx.font = "bold 14px 'Cinzel',serif"
+          ctx.fillStyle = 'rgba(255,255,255,0.95)'
           ctx.textAlign = 'left'
           ctx.textBaseline = 'top'
           ctx.fillText(hoveredSphere.role, tooltipX + tooltipPadding, tooltipY + tooltipPadding)
 
-          // Key + Line
-          ctx.font = `12px 'Inconsolata',monospace`
+          ctx.font = "12px 'Inconsolata',monospace"
           ctx.fillStyle = 'rgba(201,168,76,.85)'
           ctx.fillText(`Key ${hoveredSphere.key} | Line ${hoveredSphere.line}`, tooltipX + tooltipPadding, tooltipY + tooltipPadding + tooltipLineHeight)
 
-          // Shadow → Gift
-          ctx.font = `11px 'Cinzel',serif`
+          ctx.font = "11px 'Cinzel',serif"
           ctx.fillStyle = 'rgba(220,60,60,.75)'
           ctx.fillText(`Shadow: ${geneData.shadow}`, tooltipX + tooltipPadding, tooltipY + tooltipPadding + tooltipLineHeight * 2)
 
@@ -403,14 +544,13 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
           ctx.fillStyle = 'rgba(201,168,76,.75)'
           ctx.fillText(`Siddhi: ${geneData.siddhi}`, tooltipX + tooltipPadding, tooltipY + tooltipPadding + tooltipLineHeight * 4)
 
-          // I-Ching (smaller text)
-          ctx.font = `10px 'Cinzel',serif`
+          ctx.font = "10px 'Cinzel',serif"
           ctx.fillStyle = 'rgba(180,180,200,.65)'
           ctx.fillText(`I-Ching: ${geneData.iching}`, tooltipX + tooltipPadding, tooltipY + tooltipPadding + tooltipLineHeight * 5)
         }
       }
 
-      // Legend
+      // ─── 7. Legend ───
       const isDarkLegend = document.documentElement.classList.contains('dark')
       const lx = 8, ly = H - 42
       const legSize = Math.max(6, R * .048)
@@ -434,7 +574,7 @@ export default function GeneKeysWheel({ spheres: spheresProp }) {
     }
     draw()
     return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
-  }, [profile?.dob, profile?.tob, profile?.birthTimezone, hoveredSphereIndex])
+  }, [activeSpheres, hoveredSphereIndex])
 
   return <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
 }

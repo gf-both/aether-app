@@ -233,25 +233,27 @@ export default function KabbalahTree() {
       sephirothLive.forEach((s, idx) => {
         const x = tx(s.xf), y = ty(s.yf)
         const r = sz * (s.name === 'Kether' ? 1.2 : s.name === 'Tiphareth' || s.name === 'Malkuth' ? 1.1 : 1)
-        const colBase = s.col // 'rgba(r,g,b,'
+        // s.col = 'rgba(r,g,b' (no comma, no paren) — extract just the RGB part
+        const rgb = s.col.replace('rgba(', '')
+        const rgba = (a) => `rgba(${rgb},${a})`
 
         if (s.active) {
           // Aura glow
           const glow = 0.20 + 0.08 * Math.sin(pulse + idx * 0.7)
           const aura = ctx.createRadialGradient(x, y, 0, x, y, r * 2.8)
-          aura.addColorStop(0, colBase + (glow * 0.9) + ')')
-          aura.addColorStop(0.4, colBase + (glow * 0.3) + ')')
-          aura.addColorStop(1, colBase + '0)')
+          aura.addColorStop(0, rgba(glow * 0.9))
+          aura.addColorStop(0.4, rgba(glow * 0.3))
+          aura.addColorStop(1, rgba(0))
           ctx.beginPath(); ctx.arc(x, y, r * 2.8, 0, TAU); ctx.fillStyle = aura; ctx.fill()
 
           // Inner ring
           ctx.beginPath(); ctx.arc(x, y, r * 1.1, 0, TAU)
-          ctx.strokeStyle = colBase + (0.35 + glow) + ')'; ctx.lineWidth = 1.2; ctx.stroke()
+          ctx.strokeStyle = rgba(0.35 + glow); ctx.lineWidth = 1.2; ctx.stroke()
 
           // Filled center with gradient
           const inner = ctx.createRadialGradient(x, y, 0, x, y, r)
-          inner.addColorStop(0, colBase + '0.45)')
-          inner.addColorStop(1, colBase + '0.12)')
+          inner.addColorStop(0, rgba(0.45))
+          inner.addColorStop(1, rgba(0.12))
           ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fillStyle = inner; ctx.fill()
 
           // Orbiting particles
@@ -265,9 +267,9 @@ export default function KabbalahTree() {
               const alpha = 0.45 + 0.25 * Math.sin(pulse * 1.5 + p.phase)
 
               ctx.beginPath(); ctx.arc(px, py, p.size * 0.6, 0, TAU)
-              ctx.fillStyle = colBase + alpha.toFixed(2) + ')'; ctx.fill()
+              ctx.fillStyle = rgba(alpha); ctx.fill()
               const trail = ctx.createRadialGradient(px, py, 0, px, py, p.size * 1.8)
-              trail.addColorStop(0, colBase + (alpha * 0.35).toFixed(2) + ')')
+              trail.addColorStop(0, rgba(alpha * 0.35))
               trail.addColorStop(1, 'transparent')
               ctx.beginPath(); ctx.arc(px, py, p.size * 1.8, 0, TAU); ctx.fillStyle = trail; ctx.fill()
             }
@@ -298,7 +300,7 @@ export default function KabbalahTree() {
         if (s.active) {
           ctx.fillStyle = 'rgba(0,0,0,0.4)'
           ctx.fillText(s.name, x + 0.5, y + r * 1.5 + 0.5)
-          ctx.fillStyle = colBase + '0.75)'
+          ctx.fillStyle = rgba(0.75)
         } else {
           ctx.fillStyle = 'rgba(65,78,138,0.22)'
         }

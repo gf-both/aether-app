@@ -39,19 +39,28 @@ GOLEM is a self-knowledge and relationship intelligence platform. It integrates 
 
 ## Product Status: Alpha → Phase 1
 
-### What's Production-Ready
-- 22 computation engines (19 full, 3 quiz-based): 5,476 LOC of core IP
-- Dashboard with 19 widgets, 23 detail panels, 24 canvas visualizations
+### What's Production-Ready (updated 2026-04-28)
+- 22 computation engines (19 full, 3 quiz-based) including palmistry engine
+- Dashboard with 21 widgets, 26 detail panels, 24 canvas visualizations
+- Palm Reading section with photo upload and AI chiromancy analysis
+- Full Report PDF generator with per-section formatting, summaries, and visual layouts
+- Frequency section with solfeggio/binaural/planetary sound therapy player
+- Yantra creation tool with Vedic timing integration
+- Gene Keys expanded: full sequences (Activation, Venus, Pearl), interactive map with HD/Kabbalah effects, tooltips, shadow-gift-siddhi arcs
+- About System tooltips on all 26 detail sections (origin, summary, icon)
+- AI: browser-direct Anthropic with CORS header, aggressive fallback chain, language injection (EN/ES/HE)
+- Day/light mode: full CSS variable system across 57+ files, canvas components use explicit isDark detection
+- Synastry: real summaries, dynamic scoring, composite charts, healing potential
+- Fishbowl: dynamic 3-year projection across all profiles
+- All quiz modals removed, embedded inline (Enneagram, MBTI, Love Language, Archetype, Dosha)
 - Supabase schema: 8 tables with RLS, auth triggers, indexes
-- AI routing chain: Ollama → Supabase Edge → Anthropic fallback
-- Build pipeline: Vite → dist/ → Vercel auto-deploy
+- Build pipeline: Vite 7 → dist/ → Vercel auto-deploy (confirmed working 2026-04-28)
 
 ### Critical Gaps (Blocking Revenue)
-1. AI synthesis not connected in production (edge function needs Anthropic key)
-2. No payments (Stripe scaffolded, not wired)
-3. No onboarding flow (no guided first-run experience)
-4. No shareable profile cards (viral loop missing)
-5. URL still aether-app-ten.vercel.app
+1. No payments (Stripe scaffolded, not wired)
+2. No onboarding flow (no guided first-run experience)
+3. No shareable profile cards (viral loop missing)
+4. URL still aether-app-ten.vercel.app
 
 ## Phase Plan
 
@@ -110,18 +119,31 @@ GOLEM is a self-knowledge and relationship intelligence platform. It integrates 
 ## Key Files
 ```
 src/
-  engines/          # 22 computation engines (CORE IP)
+  engines/          # 22 computation engines + palmistryEngine.js (CORE IP)
   pages/            # 18 pages (Dashboard, IdentityAgent, Watercooler, Dating, Practitioner, etc.)
-  components/       # 79 components (canvas/, details/, ui/, overlays/, auth/, practitioner/)
+  components/
+    canvas/         # 24 canvas visualizations (GeneKeysWheel, ChineseZodiac, MayanWheel, etc.)
+    details/        # 26 detail panels (one per system + FullReportDetail PDF generator)
+    ui/             # Shared UI (AboutSystemButton, Sidebar, TopBar, etc.)
+    overlays/       # Panels (SynastryPanel, GolemDialogue, etc.)
+    auth/           # AuthModal
+    practitioner/   # Practitioner dashboard components
   hooks/            # useActiveProfile, useComputedProfile
   store/            # useGolemStore.js (Zustand, key: golem-store)
   lib/              # ai.js (routing chain), supabase.js, stripe.js
-  data/             # primaryProfile.js (DEV SEED — remove for prod)
+  data/             # primaryProfile.js (DEV SEED — renamed to Jane Doe for privacy)
 supabase/
   migrations/       # 001_initial.sql (8 tables, RLS, triggers)
   functions/        # ai-chat/index.ts, image-gen/index.ts
 docs/               # Benchmarks, personality standards, marketplace specs
 ```
+
+## Deployment Notes
+- **Vercel auto-deploys** on every push to `main` branch
+- **Build command:** `npm run build` (Vite 7 + esbuild)
+- **CRITICAL:** Never use unescaped apostrophes in single-quoted JS strings (e.g., `'you're'` — use `"you're"` or backticks). esbuild will fail silently on Vercel.
+- **Canvas components** cannot use CSS variables for colors — they need explicit `isDark` detection via `document.documentElement.classList.contains('dark')`
+- **CSS theming:** Dual system — `paperclip-theme.css` (oklch colors) + `index.css` (hex overrides). Light mode: `html:not(.dark)`, dark mode: `html.dark`
 
 ## Context Self-Audit
 After completing any substantial task:
